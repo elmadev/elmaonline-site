@@ -33,6 +33,12 @@ When developing always try to follow these principles.
 Consider these tools to help you.
 - **JSX highlighting**
   - react uses a JSX syntax which your text editor may not be able to highlight properly without plugins. For sublime text for example use [babel sublime](https://github.com/babel/babel-sublime).
+  
+### Useful Tutorials
+- [Explore the example pages](https://github.com/bertho-zero/react-redux-universal-hot-example/blob/master/docs/ExploringTheDemoApp.md)
+- [Editing pages](https://github.com/bertho-zero/react-redux-universal-hot-example/blob/master/docs/AddingToHomePage.md)
+- [Official react tutorial](https://facebook.github.io/react/tutorial/tutorial.html)
+- [Understand react in 5 steps](https://medium.freecodecamp.com/the-5-things-you-need-to-know-to-understand-react-a1dbd5d114a3#.4oloyujg7)
 
 ## Things of note
 - **Experimental phase**
