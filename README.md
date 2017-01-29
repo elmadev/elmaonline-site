@@ -52,6 +52,7 @@ Consider these tools to help you.
 
 ## What to work on
 We are right now in the experiment phase, so feel free to do anything, even if you know some of it might not be useful in the long term, we can learn from it. But you can also consider making some good base components which we can build the site on in the future. Some things you could do are:
+- Check the projects page here on github to find current discussion and tasks you can participate in.
 - Develop a complete page from backend to UI, which can serve as proof of concept for all parts of the code.
 - Develop generel api endpoints to serve the data which may be used by the frontend.
 - Design a page of purely static content, which can be used to discuss user experience and later to fill out with actual data.
