@@ -1,7 +1,7 @@
 {
-  "name": "react-production-starter",
-  "version": "0.2.0",
-  "description": "Isomorphic React Starter with Redux, React Router, Redial, Aphrodite, Express, Webpack.",
+  "name": "elmaonline-site",
+  "version": "0.1.0",
+  "description": "Elasto Mania Online website",
   "scripts": {
     "test": "cross-env NODE_ENV=test ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --recursive",
     "test:watch": "npm test -- --watch",
@@ -14,15 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaredpalmer/react-production-starter.git"
+    "url": "git+https://github.com/elmadev/elmaonline-site.git"
   },
   "keywords": [],
-  "author": "jaredpalmer",
-  "license": "MIT",
+  "author": "sunehs",
+  "license": "",
   "bugs": {
-    "url": "https://github.com/jaredpalmer/react-production-starter/issues"
+    "url": "https://github.com/elmadev/elmaonline-site/issues"
   },
-  "homepage": "https://github.com/jaredpalmer/react-production-starter#readme",
+  "homepage": "http://elmaonline.net",
   "dependencies": {
     "aphrodite": "^1.1.0",
     "assets-webpack-plugin": "^3.3.0",

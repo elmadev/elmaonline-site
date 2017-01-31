@@ -7,13 +7,13 @@ Current website can be seen on http://elmaonline.net/. The point of making a com
 ## Running the project locally
 
 Follow these steps to install the site locally and start developing.
-- Install latest stable version of [Node.js](https://nodejs.org/en/)
+- Install LTS version of [Node.js](https://nodejs.org/en/)
 - Clone this repo using git to your local computer
 - Open the node command prompt
 - Open the directory where you cloned the project
 - Run "npm install" which will install needed dependencies
-- Run "npm run dev" which will start a local server
-- Open [localhost:3000](http://localhost:3000/) on your browser to view the site
+- Run "npm start" which will start a local server
+- [localhost:5000](http://localhost:5000/) will open in your browser
 
 ## Developing on the project
 
@@ -35,8 +35,6 @@ Consider these tools to help you.
   - react uses a JSX syntax which your text editor may not be able to highlight properly without plugins. For sublime text for example use [babel sublime](https://github.com/babel/babel-sublime).
   
 ### Useful Tutorials
-- [Explore the example pages](https://github.com/bertho-zero/react-redux-universal-hot-example/blob/master/docs/ExploringTheDemoApp.md)
-- [Editing pages](https://github.com/bertho-zero/react-redux-universal-hot-example/blob/master/docs/AddingToHomePage.md)
 - [Official react tutorial](https://facebook.github.io/react/tutorial/tutorial.html)
 - [Understand react in 5 steps](https://medium.freecodecamp.com/the-5-things-you-need-to-know-to-understand-react-a1dbd5d114a3#.4oloyujg7)
 
