@@ -4,23 +4,17 @@ Repo for a new open source version of the website for Elma Online.
 
 Current website can be seen on http://elmaonline.net/. The point of making a completely new version is to use better suited frameworks and code structure, something that will better fit a multi developer open source project and the things we want to do with the site.
 
-## Running the project locally
+## Status
 
-Follow these steps to install the site locally and start developing.
-- Install LTS version of [Node.js](https://nodejs.org/en/)
-- Clone this repo using git to your local computer
-- Open the node command prompt
-- Open the directory where you cloned the project
-- Run "npm install" which will install needed dependencies
-- Run "npm start" which will start a local server
-- [localhost:5000](http://localhost:5000/) will open in your browser
+Right now (as of March 2018) we are planning to use a different boilerplate starter kit (see next section) than what's in the repo right now, so don't make any contributions right now. We are in the process of setting on the base of this right now, once this is set up we can start letting more people contribute. The sections below are updated to reflect current plans, so you can still check that out to start learning about things.
 
 ## Developing on the project
 
 ### Frameworks
 The project uses the following frameworks. Consider checking out their tutorials to get started.
-- [Express](http://expressjs.com/) with [Feathers](http://feathersjs.com/) for the backend API
+- [Express](http://expressjs.com/)
 - [react](https://facebook.github.io/react/) for the frontend user interface
+- [react-starter-kit](https://github.com/kriasoft/react-starter-kit) boilerplate starter kit that we plan on using, includes backend and frontend
 
 ### Principles
 When developing always try to follow these principles.
@@ -30,32 +24,11 @@ When developing always try to follow these principles.
   - The UI should follow the generel principles of [Material Design](https://material.io/guidelines/). We'll be using a react component for this, so you can just take UI components you need and build the page from that, adding in data component to fill them out.
 
 ### Dev tools
-Consider these tools to help you.
-- **JSX highlighting**
-  - react uses a JSX syntax which your text editor may not be able to highlight properly without plugins. For sublime text for example use [babel sublime](https://github.com/babel/babel-sublime).
+Check these tools for your preferred IDE: https://github.com/kriasoft/react-starter-kit/blob/master/docs/how-to-configure-text-editors.md
   
 ### Useful Tutorials
 - [Official react tutorial](https://facebook.github.io/react/tutorial/tutorial.html)
 - [Understand react in 5 steps](https://medium.freecodecamp.com/the-5-things-you-need-to-know-to-understand-react-a1dbd5d114a3#.4oloyujg7)
-
-## Things of note
-- **Experimental phase**
-  - We are still very much in the experimental phase, nothing written here is set in stone, so if you have any feedback on any of these please speak up.
-- **Example code**
-  - The project currently has a lot of example code from the starter kit we've used. These are kept in place for the time being to serve as example you can learn from. In time when we have written our own which can serve as examples they'll be removed.
-- **Unnecessary dependencies**
-  - The project comes with a lot of dependencies at the moment, many might be be needed and will be cleaned out when we have a better idea of what we need.
-- **Database**
-  - The project will be using a MySQL database, as this is what the game server uses we can't change this. This is not currently set up in the project.
-
-## What to work on
-We are right now in the experiment phase, so feel free to do anything, even if you know some of it might not be useful in the long term, we can learn from it. But you can also consider making some good base components which we can build the site on in the future. Some things you could do are:
-- Check the projects page here on github to find current discussion and tasks you can participate in.
-- Develop a complete page from backend to UI, which can serve as proof of concept for all parts of the code.
-- Develop generel api endpoints to serve the data which may be used by the frontend.
-- Design a page of purely static content, which can be used to discuss user experience and later to fill out with actual data.
-- Develop good base component for the frontend, serving some of the data that would be used a lot throughout the site.
-- Research on some good dependencies that would be useful for the site.
 
 ## Communication
 Feel free to create issues here on github in order to discuss things related to the project. You can also join the [elma discord](https://discord.gg/j5WMFC6) #developers channel to chat.
