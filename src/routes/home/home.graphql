@@ -1,0 +1,24 @@
+query HomeNews {
+  reactjsGetAllNews {
+    title
+    link
+    author
+    pubDate
+    content
+  }
+  getBattles {
+    BattleIndex
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Started
+    Duration
+  }
+  getReplays {
+    ReplayIndex
+    KuskiIndex
+    LevelIndex
+    ReplayTime
+    Uploaded
+  }
+}
