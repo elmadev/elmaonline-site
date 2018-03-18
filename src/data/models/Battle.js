@@ -1,7 +1,8 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const Battle = Model.define( // give the model same name as the db table
+const Battle = Model.define(
+  // give the model same name as the db table
   'battle', // the actual MySQL table name
   {
     BattleIndex: {
