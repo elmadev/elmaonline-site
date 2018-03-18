@@ -11,7 +11,7 @@ async function action({ client }) {
     title: 'Elma Online',
     component: (
       <Layout>
-        <Home /> {/* place the secondary component here */}
+        <Home news={data} />
       </Layout>
     ),
   };
