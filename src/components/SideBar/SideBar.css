@@ -1,21 +1,19 @@
 @import '../variables.css';
 
-body {
-  margin-left: var(--side-bar-width);
-}
-
 .root {
-  background: #eaeaea;
   color: black;
   position: fixed;
-  height: 100%;
   width: var(--side-bar-width);
   top: 0;
   left: 0;
+  z-index: 11;
+}
+
+.expanded {
+  height: 100%;
 }
 
 .container {
-  padding-top: var(--top-bar-height);
   height: 100%;
   max-height: 100%;
   box-sizing: border-box;
@@ -25,4 +23,19 @@ body {
   height: 100%;
   max-height: 100%;
   overflow-y: auto;
+  display: none;
+  background: #f7f7f7;
+}
+
+.expanded .content {
+  display: block;
+}
+
+.title {
+  background: #383838;
+  line-height: var(--top-bar-height);
+  color: #fff;
+  text-transform: uppercase;
+  padding: 0 14px;
+  cursor: pointer;
 }

@@ -4,7 +4,11 @@ import s from './TopBar.css';
 
 class TopBar extends React.Component {
   render() {
-    return <div className={s.root}>TopBar</div>;
+    return (
+      <div className={s.root}>
+        <div className={s.container}>TopBar</div>
+      </div>
+    );
   }
 }
 

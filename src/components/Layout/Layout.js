@@ -22,11 +22,26 @@ class Layout extends React.Component {
     children: PropTypes.node.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      sideBarExpanded: true,
+    };
+  }
+  toggleSideBar() {
+    this.setState(prevState => ({
+      sideBarExpanded: !prevState.sideBarExpanded,
+    }));
+  }
   render() {
+    const className = this.state.sideBarExpanded ? `${s.sideBarExpanded}` : '';
     return (
-      <div>
+      <div className={className}>
         <TopBar />
-        <SideBar />
+        <SideBar
+          expanded={this.state.sideBarExpanded}
+          onToggle={() => this.toggleSideBar()}
+        />
         {this.props.children}
       </div>
     );
