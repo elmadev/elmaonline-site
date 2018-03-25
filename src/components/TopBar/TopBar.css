@@ -1,0 +1,16 @@
+@import '../variables.css';
+
+body {
+  margin-top: var(--top-bar-height);
+}
+
+.root {
+  top: 0;
+  left: 0;
+  background: #232323;
+  color: #f1f1f1;
+  position: fixed;
+  width: 100%;
+  line-height: var(--top-bar-height);
+  z-index: 10;
+}
