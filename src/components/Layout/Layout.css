@@ -188,6 +188,6 @@ textarea {
 
 @media all and (min-width: 1000px) {
   .sideBarExpanded {
-    margin-left: 300px;
+    margin-left: var(--side-bar-width);
   }
 }
