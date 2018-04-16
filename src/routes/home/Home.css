@@ -13,9 +13,3 @@
   padding-left: 20px;
   padding-right: 20px;
 }
-
-.container {
-  margin: 0 auto;
-  padding: 0 0 40px;
-  max-width: var(--max-content-width);
-}

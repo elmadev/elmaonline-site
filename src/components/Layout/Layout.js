@@ -14,22 +14,35 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 // external-global styles must be imported in your JS.
 import normalizeCss from 'normalize.css';
 import s from './Layout.css';
-import Header from '../Header';
-import Feedback from '../Feedback';
-import Footer from '../Footer';
+import TopBar from '../TopBar';
+import SideBar from '../SideBar';
 
 class Layout extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      sideBarExpanded: true,
+    };
+  }
+  toggleSideBar() {
+    this.setState(prevState => ({
+      sideBarExpanded: !prevState.sideBarExpanded,
+    }));
+  }
   render() {
+    const className = this.state.sideBarExpanded ? `${s.sideBarExpanded}` : '';
     return (
-      <div>
-        <Header />
+      <div className={className}>
+        <TopBar />
+        <SideBar
+          expanded={this.state.sideBarExpanded}
+          onToggle={() => this.toggleSideBar()}
+        />
         {this.props.children}
-        <Feedback />
-        <Footer />
       </div>
     );
   }
