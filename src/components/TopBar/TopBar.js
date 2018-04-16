@@ -6,7 +6,7 @@ class TopBar extends React.Component {
   render() {
     return (
       <div className={s.root}>
-        <div className={s.container}>TopBar</div>
+        <div className={s.container}>Elma Online</div>
       </div>
     );
   }
