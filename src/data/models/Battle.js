@@ -59,6 +59,11 @@ const Battle = Model.define(
     RecFileName: {
       type: DataType.STRING(15),
     },
+    RecData: {
+      type: DataType.BLOB,
+      allowNull: true,
+      defaultValue: '',
+    },
   },
   {
     indexes: [{ fields: ['Started', 'LevelIndex', 'KuskiIndex'] }],

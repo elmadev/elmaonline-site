@@ -1,0 +1,22 @@
+@import '../variables.css';
+
+body {
+  margin-top: var(--top-bar-height);
+}
+
+.root {
+  top: 0;
+  left: 0;
+  background: #219653;
+  color: #f1f1f1;
+  position: fixed;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: var(--top-bar-height);
+  padding-left: var(--side-bar-width);
+  z-index: 10;
+}
+
+.container {
+  margin: 0 14px;
+}

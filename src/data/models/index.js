@@ -5,6 +5,9 @@ import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
 import Battle from './Battle'; // add the data model here to import
 import Replay from './Replay';
+import Level from './Level';
+import Kuski from './Kuski';
+import Battletime from './Battletime';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -32,4 +35,14 @@ function sync(...args) {
 }
 
 export default { sync };
-export { User, UserLogin, UserClaim, UserProfile, Battle, Replay }; // add the data model here as well so it exports
+export {
+  User,
+  UserLogin,
+  UserClaim,
+  UserProfile,
+  Battle,
+  Replay,
+  Level,
+  Kuski,
+  Battletime,
+}; // add the data model here as well so it exports
