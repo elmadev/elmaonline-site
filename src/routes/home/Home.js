@@ -14,6 +14,8 @@ import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
+import { Kuski, Level, BattleType } from '../../components/Names';
+import history from '../../history';
 
 class Home extends React.Component {
   static propTypes = {
@@ -32,12 +34,20 @@ class Home extends React.Component {
     }).isRequired,
   };
 
+  gotoBattle = battleIndex => {
+    if (!Number.isNaN(battleIndex)) {
+      history.push(`/battle/${battleIndex}`);
+    }
+  };
+
   render() {
-    const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const {
+      data: { loading, getBattles, getReplays },
+    } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={7}>
             <Typography variant="display2" gutterBottom>
               Latest Battles
             </Typography>
@@ -57,13 +67,28 @@ class Home extends React.Component {
                   {loading
                     ? 'Loading...'
                     : getBattles.map(i => (
-                        <TableRow key={i.BattleIndex}>
+                        <TableRow
+                          style={{ cursor: 'pointer' }}
+                          hover
+                          key={i.BattleIndex}
+                          onClick={() => {
+                            this.gotoBattle(i.BattleIndex);
+                          }}
+                        >
                           <TableCell>
-                            <Moment format="HH:mm:ss">{i.Started}</Moment>
+                            <Moment add={{ hours: 10 }} format="HH:mm:ss">
+                              {i.Started}
+                            </Moment>
                           </TableCell>
-                          <TableCell>{i.LevelIndex}</TableCell>
-                          <TableCell>{i.KuskiIndex}</TableCell>
-                          <TableCell>{i.BattleType}</TableCell>
+                          <TableCell>
+                            <Level index={i.LevelIndex} />
+                          </TableCell>
+                          <TableCell>
+                            <Kuski index={i.KuskiIndex} />
+                          </TableCell>
+                          <TableCell>
+                            <BattleType type={i.BattleType} />
+                          </TableCell>
                           <TableCell>{i.Duration}</TableCell>
                         </TableRow>
                       ))}
@@ -71,7 +96,7 @@ class Home extends React.Component {
               </Table>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={5}>
             <Typography variant="display2" gutterBottom>
               Latest Replays
             </Typography>

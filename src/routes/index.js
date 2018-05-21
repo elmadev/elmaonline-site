@@ -46,8 +46,12 @@ const routes = {
       load: () => import(/* webpackChunkName: 'admin' */ './admin'),
     },
     {
-      path: '/battle',
+      path: '/battle/:id',
       load: () => import(/* webpackChunkName: 'battle' */ './battle'),
+    },
+    {
+      path: '/battle',
+      load: () => import(/* webpackChunkName: 'battle' */ './home'),
     },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {

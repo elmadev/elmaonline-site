@@ -5,7 +5,7 @@
 }
 
 .playerContainer {
-  width: 70%;
+  width: 910px;
   float: left;
   padding: 7px;
   box-sizing: border-box;
@@ -13,12 +13,13 @@
 
 .player {
   background: #2d9cdb;
-  height: 400px;
+  height: 504px;
+  width: 896px;
 }
 
 .rightBarContainer {
-  float: right;
-  width: 30%;
+  float: left;
+  width: auto;
   padding: 7px;
   box-sizing: border-box;
 }
