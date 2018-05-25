@@ -22,20 +22,19 @@ class Battle extends React.Component {
   render() {
     console.info(this.props);
     const { BattleIndex } = this.props;
-    const {
-      data: { getBattle },
-    } = this.props;
+    const { data: { getBattle } } = this.props;
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
-            <Recplayer
-              rec={BattleIndex ? `${BattleIndex}` : ''}
-              lev={getBattle ? `${getBattle.LevelIndex}` : ''}
-              height="504"
-              width="896"
-              controls={getBattle ? !!getBattle.RecFileName : false}
-            />
+            {getBattle && (
+              <Recplayer
+                rec={BattleIndex ? `${BattleIndex}` : ''}
+                lev={getBattle ? `${getBattle.LevelIndex}` : ''}
+                width="auto"
+                controls={getBattle ? !!getBattle.RecFileName : false}
+              />
+            )}
           </div>
         </div>
         <div className={s.rightBarContainer}>

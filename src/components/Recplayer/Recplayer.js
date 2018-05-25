@@ -25,7 +25,7 @@ class Recplayer extends React.Component {
     const { rec, lev, width, height, zoom, controls } = this.props;
     console.info(this.props);
     return (
-      <div>
+      <React.Fragment>
         {RecPlayer ? (
           <RecPlayer
             recUrl={rec ? `/dl/replay/${rec}` : ''}
@@ -36,9 +36,9 @@ class Recplayer extends React.Component {
             controls={controls}
           />
         ) : (
-          <p>Loading..</p>
+          <span>Loading..</span>
         )}
-      </div>
+      </React.Fragment>
     );
   }
 }
