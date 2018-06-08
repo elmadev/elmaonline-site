@@ -47,6 +47,7 @@ const attributes = [
   'Finished',
   'InQueue',
   'Countdown',
+  'RecFileName',
 ];
 
 // database queries are called resolvers
