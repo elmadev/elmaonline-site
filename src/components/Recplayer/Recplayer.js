@@ -23,7 +23,6 @@ class Recplayer extends React.Component {
 
   render() {
     const { rec, lev, width, height, zoom, controls } = this.props;
-    console.info(this.props);
     return (
       <React.Fragment>
         {RecPlayer ? (

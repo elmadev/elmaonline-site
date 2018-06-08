@@ -32,10 +32,24 @@ export const queries = [
 `,
 ];
 
+const attributes = [
+  'LevelIndex',
+  'LevelName',
+  'CRC',
+  'LongName',
+  'Apples',
+  'Killers',
+  'Flowers',
+  'Locked',
+  'SiteLock',
+  'Hidden',
+];
+
 export const resolvers = {
   RootQuery: {
     async getLevels() {
       const levels = await Level.findAll({
+        attributes,
         limit: 100,
         order: [['LevelIndex', 'DESC']],
       });
@@ -43,6 +57,7 @@ export const resolvers = {
     },
     async getLevel(parent, { LevelIndex }) {
       const level = await Level.findOne({
+        attributes,
         where: { LevelIndex },
       });
       return level;

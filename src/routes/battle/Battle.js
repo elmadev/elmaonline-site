@@ -12,17 +12,18 @@ class Battle extends React.Component {
   static propTypes = {
     BattleIndex: PropTypes.number.isRequired,
     data: PropTypes.shape({
-      Loading: PropTypes.bool.isRequired,
+      Loading: PropTypes.bool,
       getBattle: PropTypes.shape({
-        LevelIndex: PropTypes.number.isRequired,
-      }).isRequired,
+        LevelIndex: PropTypes.number,
+      }),
     }).isRequired,
   };
 
   render() {
-    console.info(this.props);
     const { BattleIndex } = this.props;
-    const { data: { getBattle } } = this.props;
+    const {
+      data: { getBattle },
+    } = this.props;
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
@@ -46,7 +47,7 @@ class Battle extends React.Component {
               </div>
               <div>
                 Started:{' '}
-                <Moment format="DD MMM YYYY HH:mm:ss">
+                <Moment parse="X" format="DD MMM YYYY HH:mm:ss">
                   {getBattle.Started}
                 </Moment>
               </div>

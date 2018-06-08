@@ -76,9 +76,13 @@ class Home extends React.Component {
                           }}
                         >
                           <TableCell>
-                            <Moment add={{ hours: 10 }} format="HH:mm:ss">
-                              {i.Started}
-                            </Moment>
+                            {i.InQueue === 1 ? (
+                              'Queued'
+                            ) : (
+                              <Moment parse="X" format="HH:mm:ss">
+                                {i.Started}
+                              </Moment>
+                            )}
                           </TableCell>
                           <TableCell>
                             <Level index={i.LevelIndex} />

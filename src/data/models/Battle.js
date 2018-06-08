@@ -1,3 +1,4 @@
+import moment from 'moment';
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
@@ -30,6 +31,11 @@ const Battle = Model.define(
       type: DataType.STRING(19),
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
+      get() {
+        return moment(this.getDataValue('Started'))
+          .add(8, 'hours')
+          .format('X');
+      },
     },
     Duration: {
       type: DataType.INTEGER,
