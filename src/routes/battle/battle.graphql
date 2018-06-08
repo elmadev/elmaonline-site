@@ -1,0 +1,15 @@
+query Battletime($BattleIndex: Int!) {
+  getBattletime(BattleIndex: $BattleIndex) {
+    KuskiIndex
+    Time
+    Apples
+  }
+  getBattle(BattleIndex: $BattleIndex) {
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Duration
+    RecFileName
+    Started
+  }
+}

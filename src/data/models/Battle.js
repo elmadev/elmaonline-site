@@ -1,7 +1,9 @@
+import moment from 'moment';
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const Battle = Model.define( // give the model same name as the db table
+const Battle = Model.define(
+  // give the model same name as the db table
   'battle', // the actual MySQL table name
   {
     BattleIndex: {
@@ -29,6 +31,11 @@ const Battle = Model.define( // give the model same name as the db table
       type: DataType.STRING(19),
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
+      get() {
+        return moment(this.getDataValue('Started'))
+          .add(8, 'hours')
+          .format('X');
+      },
     },
     Duration: {
       type: DataType.INTEGER,
@@ -57,6 +64,11 @@ const Battle = Model.define( // give the model same name as the db table
     },
     RecFileName: {
       type: DataType.STRING(15),
+    },
+    RecData: {
+      type: DataType.BLOB,
+      allowNull: true,
+      defaultValue: '',
     },
   },
   {

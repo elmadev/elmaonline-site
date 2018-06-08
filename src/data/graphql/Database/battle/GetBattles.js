@@ -36,6 +36,19 @@ export const queries = [
 `,
 ];
 
+const attributes = [
+  'BattleIndex',
+  'KuskiIndex',
+  'LevelIndex',
+  'BattleType',
+  'Started',
+  'Duration',
+  'Aborted',
+  'Finished',
+  'InQueue',
+  'Countdown',
+];
+
 // database queries are called resolvers
 // here you build the actual queries using the sequelize functions
 // see more on querying here: http://docs.sequelizejs.com/manual/tutorial/querying.html
@@ -43,13 +56,15 @@ export const resolvers = {
   RootQuery: {
     async getBattles() {
       const battles = await Battle.findAll({
-        limit: 100,
+        attributes,
+        limit: 25,
         order: [['BattleIndex', 'DESC']],
       });
       return battles;
     },
     async getBattle(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
+        attributes,
         where: { BattleIndex },
       });
       return battle;

@@ -1,0 +1,7 @@
+query Level($KuskiIndex: Int!) {
+  getKuski(KuskiIndex: $KuskiIndex) {
+    Kuski
+    Country
+    TeamIndex
+  }
+}

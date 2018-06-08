@@ -1,0 +1,31 @@
+@import '../../components/variables.css';
+
+.root {
+  padding: 7px;
+}
+
+.playerContainer {
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.player {
+  background: #2d9cdb;
+  height: 500px;
+}
+
+.rightBarContainer {
+  float: right;
+  width: 30%;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.levelStatsContainer {
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}

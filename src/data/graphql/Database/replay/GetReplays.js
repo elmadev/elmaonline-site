@@ -31,10 +31,23 @@ export const queries = [
 `,
 ];
 
+const attributes = [
+  'ReplayIndex',
+  'KuskiIndex',
+  'LevelIndex',
+  'TimeIndex',
+  'ReplayTime',
+  'Uploaded',
+  'ShareDesigner',
+  'ShareTeam',
+  'ShareAll',
+];
+
 export const resolvers = {
   RootQuery: {
     async getReplays() {
       const replays = await Replay.findAll({
+        attributes,
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
       });
@@ -42,6 +55,7 @@ export const resolvers = {
     },
     async getReplay(parent, { ReplayIndex }) {
       const replay = await Replay.findOne({
+        attributes,
         where: { ReplayIndex },
       });
       return replay;

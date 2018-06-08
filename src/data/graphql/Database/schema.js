@@ -23,6 +23,24 @@ import {
 } from './replay/GetReplays';
 
 import {
+  schema as GetLevels,
+  queries as GetLevelsQueries,
+  resolvers as GetLevelsResolver,
+} from './level/GetLevels';
+
+import {
+  schema as GetKuskis,
+  queries as GetKuskisQueries,
+  resolvers as GetKuskisResolver,
+} from './kuski/GetKuskis';
+
+import {
+  schema as GetBattletime,
+  queries as GetBattletimeQueries,
+  resolvers as GetBattletimeResolver,
+} from './battle/GetBattletime';
+
+import {
   queries as GetLoggedInUserQueries,
   resolvers as GetLoggedInUserResolver,
 } from './users/GetLoggedInUser';
@@ -39,6 +57,9 @@ export const schema = [
   ...CreateUserInput,
   ...GetBattles, // export the schema object here
   ...GetReplays,
+  ...GetLevels,
+  ...GetKuskis,
+  ...GetBattletime,
 ];
 
 export const queries = [
@@ -46,6 +67,9 @@ export const queries = [
   ...GetLoggedInUserQueries,
   ...GetBattlesQueries, // export the query object here
   ...GetReplaysQueries,
+  ...GetLevelsQueries,
+  ...GetKuskisQueries,
+  ...GetBattletimeQueries,
 ];
 
 export const mutations = [...CreateUser];
@@ -56,4 +80,7 @@ export const resolvers = merge(
   CreateUserResolver,
   GetBattlesResolver, // export the resolver object here
   GetReplaysResolver,
+  GetLevelsResolver,
+  GetKuskisResolver,
+  GetBattletimeResolver,
 );

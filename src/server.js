@@ -21,6 +21,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
+import stream from 'stream';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
@@ -28,6 +29,7 @@ import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
 import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
+import { getReplay, getLevel } from './download';
 import router from './router';
 import models from './data/models';
 import schema from './data/schema';
@@ -99,6 +101,41 @@ app.get(
     res.redirect('/');
   },
 );
+
+//
+// Downloading files
+//--------------------------------------------
+app.get('/dl/replay/:id', async (req, res, next) => {
+  try {
+    const { file, filename } = await getReplay(req.params.id);
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/dl/level/:id', async (req, res, next) => {
+  try {
+    const { file, filename } = await getLevel(req.params.id);
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 //
 // Register API middleware
