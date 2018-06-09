@@ -13,7 +13,7 @@
 
 .player {
   background: #2d9cdb;
-  height: 500px;
+  height: 400px;
 }
 
 .rightBarContainer {
@@ -28,4 +28,40 @@
   float: left;
   padding: 7px;
   box-sizing: border-box;
+}
+
+.battleType {
+  text-transform: lowercase;
+}
+
+@media all and (max-width: 992px) {
+  .playerContainer {
+    width: 100%;
+  }
+
+  .rightBarContainer {
+    width: 40%;
+  }
+
+  .levelStatsContainer {
+    width: 60%;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .rightBarContainer {
+    width: 100%;
+  }
+
+  .levelStatsContainer {
+    width: 100%;
+  }
+
+  .battleDescription {
+    float: left;
+  }
+
+  .battleTimestamp {
+    float: right;
+  }
 }

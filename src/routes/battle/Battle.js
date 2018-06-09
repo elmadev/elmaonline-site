@@ -3,6 +3,13 @@ import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Moment from 'react-moment';
+import Table, {
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from 'material-ui/Table';
+import Typography from 'material-ui/Typography';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
@@ -38,25 +45,171 @@ class Battle extends React.Component {
         <div className={s.rightBarContainer}>
           {getBattle && (
             <div>
-              <div>
-                Battle in <Level index={getBattle.LevelIndex} /> by{' '}
-                <Kuski index={getBattle.KuskiIndex} />
+              <div className={s.battleDescription}>
+                <Typography variant="subheading">
+                  {getBattle.Duration} minute{' '}
+                  <span className={s.battleType}>
+                    <BattleType type={getBattle.BattleType} />
+                  </span>{' '}
+                  battle in <Level index={getBattle.LevelIndex} />.lev by{' '}
+                  <Kuski index={getBattle.KuskiIndex} />
+                </Typography>
               </div>
-              <div>
-                Started:{' '}
+              <div className={s.battleTimestamp}>
                 <Moment parse="X" format="DD MMM YYYY HH:mm:ss">
                   {getBattle.Started}
                 </Moment>
               </div>
-              <div>
-                Battle type: <BattleType type={getBattle.BattleType} />
-              </div>
-              <div>Duration: {getBattle.Duration} minutes</div>
             </div>
           )}
         </div>
         <div className={s.levelStatsContainer}>
-          <div>stats</div>
+          <Typography variant="headline" gutterBottom>
+            Battle results
+          </Typography>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  style={{
+                    width: '.5rem',
+                  }}
+                >
+                  #
+                </TableCell>
+                <TableCell
+                  style={{
+                    width: '6rem',
+                  }}
+                >
+                  Kuski
+                </TableCell>
+                <TableCell>Time</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>longnicknamehere</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>1</TableCell>
+                <TableCell>2</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </div>
       </div>
     );
