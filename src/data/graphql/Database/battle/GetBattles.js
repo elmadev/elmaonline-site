@@ -1,4 +1,5 @@
 import { Battle } from 'data/models'; // import the data model
+import Kuski from '../../../models/Kuski';
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -18,6 +19,7 @@ export const schema = [
     InQueue: Int
     Countdown: Int
     RecFileName: String
+    KuskiData: DatabaseKuski
   }
 `,
 ];
@@ -58,14 +60,25 @@ export const resolvers = {
       const battles = await Battle.findAll({
         attributes,
         limit: 25,
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
         order: [['BattleIndex', 'DESC']],
       });
       return battles;
     },
     async getBattle(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
-        attributes,
         where: { BattleIndex },
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
       });
       return battle;
     },

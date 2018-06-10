@@ -13,7 +13,7 @@ import Typography from 'material-ui/Typography';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
-import { Kuski, Level, BattleType } from '../../components/Names';
+import { Level, BattleType } from '../../components/Names';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -52,7 +52,7 @@ class Battle extends React.Component {
                     <BattleType type={getBattle.BattleType} />
                   </span>{' '}
                   battle in <Level index={getBattle.LevelIndex} />.lev by{' '}
-                  <Kuski index={getBattle.KuskiIndex} />
+                  {getBattle.KuskiData.Kuski}
                 </Typography>
               </div>
               <div className={s.battleTimestamp}>
