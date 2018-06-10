@@ -16,6 +16,7 @@ const Battle = Model.define(
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+      foreignKey: true,
     },
     LevelIndex: {
       type: DataType.INTEGER,

@@ -25,10 +25,10 @@ class Recplayer extends React.Component {
     const { rec, lev, width, height, zoom, controls } = this.props;
     return (
       <React.Fragment>
-        {RecPlayer ? (
+        {RecPlayer && lev ? (
           <RecPlayer
-            recUrl={rec ? `/dl/replay/${rec}` : ''}
-            levUrl={lev ? `/dl/level/${lev}` : ''}
+            recUrl={rec || ''}
+            levUrl={lev}
             width={width}
             height={height}
             zoom={zoom}

@@ -30,6 +30,16 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
+Battle.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Battle.hasMany(Battletime, {
+  foreignKey: 'BattleIndex',
+  as: 'Results',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

@@ -3,10 +3,17 @@ import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Moment from 'react-moment';
+import Table, {
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from 'material-ui/Table';
+import Typography from 'material-ui/Typography';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
-import { Kuski, Level, BattleType } from '../../components/Names';
+import { Level, BattleType, Kuski } from '../../components/Names';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -21,19 +28,17 @@ class Battle extends React.Component {
 
   render() {
     const { BattleIndex } = this.props;
-    const {
-      data: { getBattle },
-    } = this.props;
+    const { data: { getBattle } } = this.props;
+    let i = 0;
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
             {getBattle && (
               <Recplayer
-                rec={BattleIndex ? `${BattleIndex}` : ''}
-                lev={getBattle ? `${getBattle.LevelIndex}` : ''}
-                width="auto"
-                controls={getBattle ? !!getBattle.RecFileName : false}
+                rec={`/dl/battlereplay/${BattleIndex}`}
+                lev={`/dl/level/${getBattle.LevelIndex}`}
+                controls
               />
             )}
           </div>
@@ -41,25 +46,66 @@ class Battle extends React.Component {
         <div className={s.rightBarContainer}>
           {getBattle && (
             <div>
-              <div>
-                Battle in <Level index={getBattle.LevelIndex} /> by{' '}
-                <Kuski index={getBattle.KuskiIndex} />
+              <div className={s.battleDescription}>
+                <Typography variant="subheading">
+                  {getBattle.Duration} minute{' '}
+                  <span className={s.battleType}>
+                    <BattleType type={getBattle.BattleType} />
+                  </span>{' '}
+                  battle in <Level index={getBattle.LevelIndex} />.lev by{' '}
+                  {getBattle.KuskiData.Kuski}
+                </Typography>
               </div>
-              <div>
-                Started:{' '}
+              <div className={s.battleTimestamp}>
                 <Moment parse="X" format="DD MMM YYYY HH:mm:ss">
                   {getBattle.Started}
                 </Moment>
               </div>
-              <div>
-                Battle type: <BattleType type={getBattle.BattleType} />
-              </div>
-              <div>Duration: {getBattle.Duration} minutes</div>
             </div>
           )}
         </div>
         <div className={s.levelStatsContainer}>
-          <div>stats</div>
+          <Typography variant="headline" gutterBottom>
+            Battle results
+          </Typography>
+          {getBattle &&
+            getBattle.Results && (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        width: '.5rem',
+                      }}
+                    >
+                      #
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: '6rem',
+                      }}
+                    >
+                      Kuski
+                    </TableCell>
+                    <TableCell>Time</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getBattle.Results.map(r => {
+                    i += 1;
+                    return (
+                      <TableRow key={i}>
+                        <TableCell>{i}.</TableCell>
+                        <TableCell>
+                          <Kuski index={r.KuskiIndex} />
+                        </TableCell>
+                        <TableCell>{r.Time}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
         </div>
       </div>
     );

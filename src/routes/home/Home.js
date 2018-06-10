@@ -41,9 +41,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const {
-      data: { loading, getBattles, getReplays },
-    } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     return (
       <div className={s.root}>
         <Grid container spacing={24}>

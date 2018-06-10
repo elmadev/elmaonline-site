@@ -29,7 +29,7 @@ import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
 import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
-import { getReplay, getLevel } from './download';
+import { getReplayByBattleId, getLevel } from './download';
 import router from './router';
 import models from './data/models';
 import schema from './data/schema';
@@ -105,9 +105,9 @@ app.get(
 //
 // Downloading files
 //--------------------------------------------
-app.get('/dl/replay/:id', async (req, res, next) => {
+app.get('/dl/battlereplay/:id', async (req, res, next) => {
   try {
-    const { file, filename } = await getReplay(req.params.id);
+    const { file, filename } = await getReplayByBattleId(req.params.id);
     const readStream = new stream.PassThrough();
     readStream.end(file);
     res.set({

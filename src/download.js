@@ -1,16 +1,16 @@
 import { Battle, Level } from './data/models';
 
-const getReplayData = async id => {
+const getReplayDataByBattleId = async battleId => {
   const replayData = await Battle.findOne({
     attributes: ['RecFileName', 'RecData'],
-    where: { BattleIndex: id },
+    where: { BattleIndex: battleId },
   });
   return replayData;
 };
 
-export function getReplay(id) {
+export function getReplayByBattleId(battleId) {
   return new Promise(resolve => {
-    getReplayData(id).then(data => {
+    getReplayDataByBattleId(battleId).then(data => {
       resolve({
         file: data.dataValues.RecData,
         filename: `${data.dataValues.RecFileName}.rec`,
