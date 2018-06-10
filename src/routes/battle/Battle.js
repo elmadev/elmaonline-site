@@ -13,7 +13,7 @@ import Typography from 'material-ui/Typography';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
-import { Level, BattleType } from '../../components/Names';
+import { Level, BattleType, Kuski } from '../../components/Names';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -29,6 +29,7 @@ class Battle extends React.Component {
   render() {
     const { BattleIndex } = this.props;
     const { data: { getBattle } } = this.props;
+    let i = 0;
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
@@ -67,149 +68,44 @@ class Battle extends React.Component {
           <Typography variant="headline" gutterBottom>
             Battle results
           </Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  style={{
-                    width: '.5rem',
-                  }}
-                >
-                  #
-                </TableCell>
-                <TableCell
-                  style={{
-                    width: '6rem',
-                  }}
-                >
-                  Kuski
-                </TableCell>
-                <TableCell>Time</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>longnicknamehere</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>2</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          {getBattle &&
+            getBattle.Results && (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        width: '.5rem',
+                      }}
+                    >
+                      #
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: '6rem',
+                      }}
+                    >
+                      Kuski
+                    </TableCell>
+                    <TableCell>Time</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getBattle.Results.map(r => {
+                    i += 1;
+                    return (
+                      <TableRow key={i}>
+                        <TableCell>{i}.</TableCell>
+                        <TableCell>
+                          <Kuski index={r.KuskiIndex} />
+                        </TableCell>
+                        <TableCell>{r.Time}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
         </div>
       </div>
     );

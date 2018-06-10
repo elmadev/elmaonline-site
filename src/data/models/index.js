@@ -35,6 +35,11 @@ Battle.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Battle.hasMany(Battletime, {
+  foreignKey: 'BattleIndex',
+  as: 'Results',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

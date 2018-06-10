@@ -1,5 +1,4 @@
-import { Battle } from 'data/models'; // import the data model
-import Kuski from '../../../models/Kuski';
+import { Battle, Kuski, Battletime } from 'data/models'; // import the data model
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -20,6 +19,7 @@ export const schema = [
     Countdown: Int
     RecFileName: String
     KuskiData: DatabaseKuski
+    Results: [DatabaseBattletime]
   }
 `,
 ];
@@ -77,6 +77,10 @@ export const resolvers = {
           {
             model: Kuski,
             as: 'KuskiData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
           },
         ],
       });
