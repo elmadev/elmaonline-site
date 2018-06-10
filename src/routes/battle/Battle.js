@@ -35,8 +35,8 @@ class Battle extends React.Component {
           <div className={s.player}>
             {getBattle && (
               <Recplayer
-                rec={`${BattleIndex}`}
-                lev={`${getBattle.LevelIndex}`}
+                rec={`/dl/battlereplay/${BattleIndex}`}
+                lev={`/dl/level/${getBattle.LevelIndex}`}
                 controls
               />
             )}
