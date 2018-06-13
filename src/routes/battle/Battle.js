@@ -14,6 +14,7 @@ import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
 import { Level, BattleType, Kuski } from '../../components/Names';
+import Time from '../../components/Time';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -99,7 +100,9 @@ class Battle extends React.Component {
                         <TableCell>
                           <Kuski index={r.KuskiIndex} />
                         </TableCell>
-                        <TableCell>{r.Time}</TableCell>
+                        <TableCell>
+                          <Time time={r.Time} />
+                        </TableCell>
                       </TableRow>
                     );
                   })}
