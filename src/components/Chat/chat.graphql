@@ -1,0 +1,11 @@
+query Chat($start: String, $end: String) {
+  getChatLines(start: $start, end: $end) {
+    ChatIndex
+    Text
+    Entered
+    KuskiIndex
+    KuskiData {
+      Kuski
+    }
+  }
+}

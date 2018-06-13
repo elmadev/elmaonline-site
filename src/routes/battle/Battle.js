@@ -15,6 +15,7 @@ import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
 import { Level, BattleType, Kuski } from '../../components/Names';
 import Time from '../../components/Time';
+import Chat from '../../components/Chat';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -64,6 +65,16 @@ class Battle extends React.Component {
               </div>
             </div>
           )}
+          <div className={s.chatContainer}>
+            {getBattle && (
+              <Chat
+                start={getBattle.Started}
+                end={
+                  Number(getBattle.Started) + Number(getBattle.Duration * 60)
+                }
+              />
+            )}
+          </div>
         </div>
         <div className={s.levelStatsContainer}>
           <Typography variant="headline" gutterBottom>
