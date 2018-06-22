@@ -45,6 +45,12 @@ import {
   resolvers as GetLoggedInUserResolver,
 } from './users/GetLoggedInUser';
 
+import {
+  schema as GetChatLines,
+  queries as GetChatLinesQueries,
+  resolvers as GetChatLinesResolver,
+} from './chat/GetChatLines';
+
 /** * Mutations ** */
 import {
   schema as CreateUserInput,
@@ -60,6 +66,7 @@ export const schema = [
   ...GetLevels,
   ...GetKuskis,
   ...GetBattletime,
+  ...GetChatLines,
 ];
 
 export const queries = [
@@ -70,6 +77,7 @@ export const queries = [
   ...GetLevelsQueries,
   ...GetKuskisQueries,
   ...GetBattletimeQueries,
+  ...GetChatLinesQueries,
 ];
 
 export const mutations = [...CreateUser];
@@ -83,4 +91,5 @@ export const resolvers = merge(
   GetLevelsResolver,
   GetKuskisResolver,
   GetBattletimeResolver,
+  GetChatLinesResolver,
 );

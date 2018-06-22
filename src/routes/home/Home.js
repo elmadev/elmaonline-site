@@ -3,15 +3,14 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Table, {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from 'material-ui/Table';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';

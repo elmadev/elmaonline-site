@@ -14,9 +14,7 @@ class Level extends React.Component {
   };
 
   render() {
-    const {
-      data: { getLevel, variables },
-    } = this.props;
+    const { data: { getLevel, variables } } = this.props;
     return <span>{getLevel ? getLevel.LevelName : variables.LevelIndex}</span>;
   }
 }
