@@ -30,13 +30,19 @@ export const schema = [
 
 export const queries = [
   `
-  # Retrieves all levels stored in the database
+  # Retrieves all kuskis stored in the database
   getKuskis: [DatabaseKuski]
 
-  # Retrieves a single level from the database
+  # Retrieves a single kuski from the database from id
   getKuski(
     # The level's id
     KuskiIndex: Int!
+  ): DatabaseKuski
+
+  # Retrieves a single kuski ud from the database from name
+  getKuskiId(
+    # The kuski's name
+    Name: String!
   ): DatabaseKuski
 `,
 ];
@@ -74,6 +80,13 @@ export const resolvers = {
       const kuski = await Kuski.findOne({
         attributes,
         where: { KuskiIndex },
+      });
+      return kuski;
+    },
+    async getKuskiId(parent, { Name }) {
+      const kuski = await Kuski.findOne({
+        attributes,
+        where: { Kuski: Name },
       });
       return kuski;
     },

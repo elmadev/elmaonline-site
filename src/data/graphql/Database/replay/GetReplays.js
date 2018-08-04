@@ -5,15 +5,18 @@ export const schema = [
   # A replay stored in the database
   type DatabaseReplay {
     ReplayIndex: Int
-    KuskiIndex: Int
+    DrivenBy: Int
+    UploadedBy: Int
     LevelIndex: Int
     TimeIndex: Int
     ReplayTime: Int
-    Uploaded: String
-    RecData: String
+    Finished: Int
+    Uploaded: Int
     ShareDesigner: Int
     ShareTeam: Int
-    ShareAll: Int
+    Unlisted: Int
+    UUID: String
+    RecFileName: String
   }
 `,
 ];
@@ -33,14 +36,18 @@ export const queries = [
 
 const attributes = [
   'ReplayIndex',
-  'KuskiIndex',
+  'DrivenBy',
+  'UploadedBy',
   'LevelIndex',
   'TimeIndex',
   'ReplayTime',
+  'Finished',
   'Uploaded',
   'ShareDesigner',
   'ShareTeam',
-  'ShareAll',
+  'Unlisted',
+  'UUID',
+  'RecFileName',
 ];
 
 export const resolvers = {
