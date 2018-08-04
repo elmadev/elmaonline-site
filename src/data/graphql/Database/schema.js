@@ -58,6 +58,12 @@ import {
   resolvers as CreateUserResolver,
 } from './users/CreateUser';
 
+import {
+  schema as InsertReplay,
+  mutation as InsertReplayMutation,
+  resolvers as InsertReplayResolver,
+} from './replay/InsertReplays';
+
 export const schema = [
   ...GetAllUsers,
   ...CreateUserInput,
@@ -67,6 +73,7 @@ export const schema = [
   ...GetKuskis,
   ...GetBattletime,
   ...GetChatLines,
+  ...InsertReplay,
 ];
 
 export const queries = [
@@ -80,7 +87,7 @@ export const queries = [
   ...GetChatLinesQueries,
 ];
 
-export const mutations = [...CreateUser];
+export const mutations = [...CreateUser, ...InsertReplayMutation];
 
 export const resolvers = merge(
   GetAllUsersResolver,
@@ -92,4 +99,5 @@ export const resolvers = merge(
   GetKuskisResolver,
   GetBattletimeResolver,
   GetChatLinesResolver,
+  InsertReplayResolver,
 );

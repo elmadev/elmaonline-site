@@ -15,6 +15,8 @@ import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
+import Upload from '../../components/Upload';
+import RecList from '../../components/RecList';
 
 class Home extends React.Component {
   static propTypes = {
@@ -99,18 +101,31 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Typography variant="display2" gutterBottom>
+              Upload Replays
+            </Typography>
+            <Upload filetype=".rec" />
+            <Typography variant="display2" gutterBottom>
               Latest Replays
             </Typography>
-            {loading
-              ? 'Loading...'
-              : getReplays.map(i => (
-                  <div key={i.ReplayIndex}>
-                    <h2>
-                      {i.ReplayTime} in {i.LevelIndex} by {i.KuskiIndex}
-                    </h2>
-                    <div>Uploaded: {i.Uploaded}</div>
-                  </div>
-                ))}
+            <Paper>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Replay</TableCell>
+                    <TableCell>Level</TableCell>
+                    <TableCell>Time</TableCell>
+                    <TableCell>By</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading
+                    ? 'Loading...'
+                    : getReplays.map(i => (
+                        <RecList key={i.ReplayIndex} replay={i} />
+                      ))}
+                </TableBody>
+              </Table>
+            </Paper>
           </Grid>
         </Grid>
       </div>

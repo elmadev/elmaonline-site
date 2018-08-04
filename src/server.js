@@ -22,6 +22,8 @@ import ReactDOM from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
+import cors from 'cors';
+import fileUpload from 'express-fileupload';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
@@ -30,6 +32,7 @@ import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
+import { uploadReplay } from './upload';
 import router from './router';
 import models from './data/models';
 import schema from './data/schema';
@@ -54,6 +57,8 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use(fileUpload());
 
 //
 // Authentication
@@ -134,6 +139,40 @@ app.get('/dl/level/:id', async (req, res, next) => {
     next();
   } catch (error) {
     next(error);
+  }
+});
+
+//
+// Uploading files
+//--------------------------------------------
+app.post('/upload/:type', async (req, res) => {
+  const replayFile = req.files.file;
+  let folder = 'misc';
+  if (req.params.type === 'replay') {
+    folder = 'replays';
+    const {
+      file,
+      uuid,
+      time,
+      finished,
+      crc,
+      levelName,
+      LevelIndex,
+      error,
+    } = await uploadReplay(replayFile, folder, req.body.filename);
+    if (!error) {
+      res.json({
+        file,
+        uuid,
+        time,
+        finished,
+        crc,
+        levelName,
+        LevelIndex,
+      });
+    } else {
+      res.status(500).send(error);
+    }
   }
 });
 
