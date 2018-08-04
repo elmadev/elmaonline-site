@@ -1,11 +1,4 @@
 query HomeNews {
-  reactjsGetAllNews {
-    title
-    link
-    author
-    pubDate
-    content
-  }
   getBattles {
     BattleIndex
     KuskiIndex
@@ -16,9 +9,12 @@ query HomeNews {
   }
   getReplays {
     ReplayIndex
-    KuskiIndex
+    UploadedBy
     LevelIndex
     ReplayTime
     Uploaded
+    RecFileName
+    UUID
+    DrivenBy
   }
 }

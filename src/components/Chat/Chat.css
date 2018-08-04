@@ -1,0 +1,16 @@
+.chat {
+  margin: 1rem 0;
+}
+
+.chatLine {
+  font-size: 14px;
+}
+
+.kuski {
+  font-weight: 600;
+}
+
+.timestamp {
+  color: #c0c0c0;
+  font-size: 10px;
+}

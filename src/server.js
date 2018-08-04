@@ -22,6 +22,8 @@ import ReactDOM from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
+import cors from 'cors';
+import fileUpload from 'express-fileupload';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
@@ -29,7 +31,8 @@ import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
 import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
-import { getReplay, getLevel } from './download';
+import { getReplayByBattleId, getLevel } from './download';
+import { uploadReplay } from './upload';
 import router from './router';
 import models from './data/models';
 import schema from './data/schema';
@@ -54,6 +57,8 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use(fileUpload());
 
 //
 // Authentication
@@ -105,9 +110,9 @@ app.get(
 //
 // Downloading files
 //--------------------------------------------
-app.get('/dl/replay/:id', async (req, res, next) => {
+app.get('/dl/battlereplay/:id', async (req, res, next) => {
   try {
-    const { file, filename } = await getReplay(req.params.id);
+    const { file, filename } = await getReplayByBattleId(req.params.id);
     const readStream = new stream.PassThrough();
     readStream.end(file);
     res.set({
@@ -134,6 +139,40 @@ app.get('/dl/level/:id', async (req, res, next) => {
     next();
   } catch (error) {
     next(error);
+  }
+});
+
+//
+// Uploading files
+//--------------------------------------------
+app.post('/upload/:type', async (req, res) => {
+  const replayFile = req.files.file;
+  let folder = 'misc';
+  if (req.params.type === 'replay') {
+    folder = 'replays';
+    const {
+      file,
+      uuid,
+      time,
+      finished,
+      crc,
+      levelName,
+      LevelIndex,
+      error,
+    } = await uploadReplay(replayFile, folder, req.body.filename);
+    if (!error) {
+      res.json({
+        file,
+        uuid,
+        time,
+        finished,
+        crc,
+        levelName,
+        LevelIndex,
+      });
+    } else {
+      res.status(500).send(error);
+    }
   }
 });
 

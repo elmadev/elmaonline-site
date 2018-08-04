@@ -11,6 +11,15 @@ Current website can be seen on http://elmaonline.net/. The point of making a com
 
 As of March 18th 2018 we have set up a new boilerplate starter kit which is the one we're going to use moving forward. Which means we can now start accepting contributions. The [data flow](./docs/data-flow.md) doc contains a complete explanation of how to fetch data from the database and show it in the UI. Any comments or suggestions for improvements to this data flow is welcome right now.
 
+## Branches
+
+- **develop**
+  - The primary branch to use while developing. Make all changes to this branch, preferably as pull requests.
+- **test**
+  - This branch reflects the version currently deployed on [test.elma.online](http://test.elma.online), only people actually deploying will be pulling code to this.
+- **master**
+  - This branch reflects the version currently deployed on [elma.online](http://elma.online), only people actually deploying will be pulling code to this.
+
 ## Developing on the project
 
 Please check the guidelines in docs folder before you start developing, so we can follow the same principles more or less.

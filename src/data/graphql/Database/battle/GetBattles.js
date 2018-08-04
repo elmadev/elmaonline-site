@@ -1,4 +1,4 @@
-import { Battle } from 'data/models'; // import the data model
+import { Battle, Kuski, Battletime } from 'data/models'; // import the data model
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -18,6 +18,8 @@ export const schema = [
     InQueue: Int
     Countdown: Int
     RecFileName: String
+    KuskiData: DatabaseKuski
+    Results: [DatabaseBattletime]
   }
 `,
 ];
@@ -36,6 +38,20 @@ export const queries = [
 `,
 ];
 
+const attributes = [
+  'BattleIndex',
+  'KuskiIndex',
+  'LevelIndex',
+  'BattleType',
+  'Started',
+  'Duration',
+  'Aborted',
+  'Finished',
+  'InQueue',
+  'Countdown',
+  'RecFileName',
+];
+
 // database queries are called resolvers
 // here you build the actual queries using the sequelize functions
 // see more on querying here: http://docs.sequelizejs.com/manual/tutorial/querying.html
@@ -43,7 +59,14 @@ export const resolvers = {
   RootQuery: {
     async getBattles() {
       const battles = await Battle.findAll({
-        limit: 100,
+        attributes,
+        limit: 25,
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
         order: [['BattleIndex', 'DESC']],
       });
       return battles;
@@ -51,6 +74,16 @@ export const resolvers = {
     async getBattle(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
         where: { BattleIndex },
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+          },
+        ],
       });
       return battle;
     },

@@ -12,6 +12,8 @@ class Recplayer extends React.Component {
     height: PropTypes.string,
     zoom: PropTypes.number,
     controls: PropTypes.bool,
+    imageUrl: PropTypes.string,
+    autoPlay: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -19,26 +21,38 @@ class Recplayer extends React.Component {
     height: 'auto',
     zoom: 0.7,
     controls: true,
+    imageUrl: 'https://elma.online/recplayer',
+    autoPlay: false,
   };
 
   render() {
-    const { rec, lev, width, height, zoom, controls } = this.props;
-    console.info(this.props);
+    const {
+      rec,
+      lev,
+      width,
+      height,
+      zoom,
+      controls,
+      imageUrl,
+      autoPlay,
+    } = this.props;
     return (
-      <div>
-        {RecPlayer ? (
+      <React.Fragment>
+        {RecPlayer && lev ? (
           <RecPlayer
-            recUrl={rec ? `/dl/replay/${rec}` : ''}
-            levUrl={lev ? `/dl/level/${lev}` : ''}
+            recUrl={rec || ''}
+            levUrl={lev}
             width={width}
             height={height}
             zoom={zoom}
             controls={controls}
+            imageUrl={imageUrl}
+            autoPlay={autoPlay}
           />
         ) : (
-          <p>Loading..</p>
+          <span>Loading..</span>
         )}
-      </div>
+      </React.Fragment>
     );
   }
 }

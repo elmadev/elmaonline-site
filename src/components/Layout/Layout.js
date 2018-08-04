@@ -29,9 +29,15 @@ class Layout extends React.Component {
     };
   }
   toggleSideBar() {
-    this.setState(prevState => ({
-      sideBarExpanded: !prevState.sideBarExpanded,
-    }));
+    this.setState(
+      prevState => ({
+        sideBarExpanded: !prevState.sideBarExpanded,
+      }),
+      () => {
+        // trigger window resize event so that recplayer knows to resize itself
+        window.dispatchEvent(new Event('resize'));
+      },
+    );
   }
   render() {
     const className = this.state.sideBarExpanded ? `${s.sideBarExpanded}` : '';

@@ -5,7 +5,7 @@
 }
 
 .playerContainer {
-  width: 910px;
+  width: 70%;
   float: left;
   padding: 7px;
   box-sizing: border-box;
@@ -13,13 +13,12 @@
 
 .player {
   background: #2d9cdb;
-  height: 504px;
-  width: 896px;
+  height: 400px;
 }
 
 .rightBarContainer {
-  float: left;
-  width: auto;
+  float: right;
+  width: 30%;
   padding: 7px;
   box-sizing: border-box;
 }
@@ -29,4 +28,44 @@
   float: left;
   padding: 7px;
   box-sizing: border-box;
+}
+
+.battleType {
+  text-transform: lowercase;
+}
+
+@media all and (max-width: 992px) {
+  .playerContainer {
+    width: 100%;
+  }
+
+  .rightBarContainer {
+    width: 40%;
+  }
+
+  .levelStatsContainer {
+    width: 60%;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .rightBarContainer {
+    width: 100%;
+  }
+
+  .levelStatsContainer {
+    width: 100%;
+  }
+
+  .battleDescription {
+    float: left;
+  }
+
+  .battleTimestamp {
+    float: right;
+  }
+}
+
+.chatContainer {
+  clear: both;
 }

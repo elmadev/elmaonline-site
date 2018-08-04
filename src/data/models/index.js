@@ -8,6 +8,7 @@ import Replay from './Replay';
 import Level from './Level';
 import Kuski from './Kuski';
 import Battletime from './Battletime';
+import Chat from './Chat';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -30,6 +31,21 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
+Battle.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Battle.hasMany(Battletime, {
+  foreignKey: 'BattleIndex',
+  as: 'Results',
+});
+
+Chat.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -45,4 +61,5 @@ export {
   Level,
   Kuski,
   Battletime,
+  Chat,
 }; // add the data model here as well so it exports

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
@@ -15,6 +16,7 @@ const Battle = Model.define(
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+      foreignKey: true,
     },
     LevelIndex: {
       type: DataType.INTEGER,
@@ -30,6 +32,9 @@ const Battle = Model.define(
       type: DataType.STRING(19),
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
+      get() {
+        return moment(this.getDataValue('Started')).format('X');
+      },
     },
     Duration: {
       type: DataType.INTEGER,

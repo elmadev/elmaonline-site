@@ -3,19 +3,20 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Table, {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from 'material-ui/Table';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
+import Upload from '../../components/Upload';
+import RecList from '../../components/RecList';
 
 class Home extends React.Component {
   static propTypes = {
@@ -41,9 +42,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const {
-      data: { loading, getBattles, getReplays },
-    } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
@@ -76,9 +75,13 @@ class Home extends React.Component {
                           }}
                         >
                           <TableCell>
-                            <Moment add={{ hours: 10 }} format="HH:mm:ss">
-                              {i.Started}
-                            </Moment>
+                            {i.InQueue === 1 ? (
+                              'Queued'
+                            ) : (
+                              <Moment parse="X" format="HH:mm:ss">
+                                {i.Started}
+                              </Moment>
+                            )}
                           </TableCell>
                           <TableCell>
                             <Level index={i.LevelIndex} />
@@ -98,18 +101,31 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Typography variant="display2" gutterBottom>
+              Upload Replays
+            </Typography>
+            <Upload filetype=".rec" />
+            <Typography variant="display2" gutterBottom>
               Latest Replays
             </Typography>
-            {loading
-              ? 'Loading...'
-              : getReplays.map(i => (
-                  <div key={i.ReplayIndex}>
-                    <h2>
-                      {i.ReplayTime} in {i.LevelIndex} by {i.KuskiIndex}
-                    </h2>
-                    <div>Uploaded: {i.Uploaded}</div>
-                  </div>
-                ))}
+            <Paper>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Replay</TableCell>
+                    <TableCell>Level</TableCell>
+                    <TableCell>Time</TableCell>
+                    <TableCell>By</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading
+                    ? 'Loading...'
+                    : getReplays.map(i => (
+                        <RecList key={i.ReplayIndex} replay={i} />
+                      ))}
+                </TableBody>
+              </Table>
+            </Paper>
           </Grid>
         </Grid>
       </div>
