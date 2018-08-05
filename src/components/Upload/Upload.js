@@ -91,6 +91,7 @@ class Upload extends React.Component {
   handleDrivenBy = name => event => {
     const newFileInfo = this.state.fileInfo;
     newFileInfo[name].drivenBy = event.target.value;
+    this.setState({ fileInfo: newFileInfo });
     this.props.client
       .query({
         query: gql`

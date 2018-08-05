@@ -39,6 +39,9 @@ module.exports = {
     database: 'eol1',
   },
 
+  // files
+  publicFolder: '/public',
+
   // Web analytics
   analytics: {
     // https://analytics.google.com/
