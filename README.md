@@ -1,6 +1,6 @@
 # elmaonline-site
 
-Repo for a new open source version of the website for Elma Online.
+Repo for an open source version of the website for Elma Online.
 
 Current website can be seen on http://elmaonline.net/. The point of making a completely new version is to use better suited frameworks and code structure, something that will better fit a multi developer open source project and the things we want to do with the site. The new site will be available on a secondary URL until such a time as it can completely replace the old site.
 
@@ -9,7 +9,7 @@ Current website can be seen on http://elmaonline.net/. The point of making a com
 
 ## Status
 
-As of March 18th 2018 we have set up a new boilerplate starter kit which is the one we're going to use moving forward. Which means we can now start accepting contributions. The [data flow](./docs/data-flow.md) doc contains a complete explanation of how to fetch data from the database and show it in the UI. Any comments or suggestions for improvements to this data flow is welcome right now.
+As of summer 2018 we have started making the first features on the site. Which means we can now start accepting contributions, and there's some code you can take a look at to get an idea for the structure. The [data flow](./docs/data-flow.md) doc contains a complete explanation of how to fetch data from the database and show it in the UI. Any comments or suggestions for improvements to this data flow is welcome right now.
 
 ## Branches
 
@@ -44,7 +44,7 @@ When developing always try to follow these principles.
 - **Thinking in components**
   - Break the frontend code and HTML into small reusable components. Components should ideally only do one thing each, have its own js file, and use other components inside it as far as possible. Read more on react's [page on components](https://reactjs.org/docs/thinking-in-react.html) which also covers the technical aspect.
 - **Material Design**
-  - The UI should follow the general principles of [Material Design](https://material.io/guidelines/). We'll be using a react component for this, so you can just take UI components you need and build the page from that, adding in data component to fill them out.
+  - The UI should follow the general principles of [Material Design](https://material.io/guidelines/). We are using [Material UI](https://material-ui.com/) for this, so you can just take UI components you need and build the page from that, adding in data component to fill them out.
 
 ### Dev tools
 Check these tools for your preferred IDE. [More](./docs/how-to-configure-text-editors.md)
