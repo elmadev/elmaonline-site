@@ -9,6 +9,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
@@ -30,11 +35,12 @@ class Battle extends React.Component {
   render() {
     const { BattleIndex } = this.props;
     const { data: { getBattle } } = this.props;
-    let i = 0;
+
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
+            {!getBattle && <CircularProgress />}
             {getBattle && (
               <Recplayer
                 rec={`/dl/battlereplay/${BattleIndex}`}
@@ -46,7 +52,7 @@ class Battle extends React.Component {
         </div>
         <div className={s.rightBarContainer}>
           {getBattle && (
-            <div>
+            <div className={s.title}>
               <div className={s.battleDescription}>
                 <Typography variant="subheading">
                   {getBattle.Duration} minute{' '}
@@ -64,15 +70,24 @@ class Battle extends React.Component {
               </div>
             </div>
           )}
+          <br />
           <div className={s.chatContainer}>
-            {getBattle && (
-              <Chat
-                start={getBattle.Started}
-                end={
-                  Number(getBattle.Started) + Number(getBattle.Duration * 60)
-                }
-              />
-            )}
+            <ExpansionPanel defaultExpanded={1}>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Chat</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                {getBattle && (
+                  <Chat
+                    start={getBattle.Started}
+                    end={
+                      Number(getBattle.Started) +
+                      Number(getBattle.Duration * 60)
+                    }
+                  />
+                )}
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
           </div>
         </div>
         <div className={s.levelStatsContainer}>
@@ -102,20 +117,17 @@ class Battle extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {getBattle.Results.map(r => {
-                    i += 1;
-                    return (
-                      <TableRow key={i}>
-                        <TableCell>{i}.</TableCell>
-                        <TableCell>
-                          <Kuski index={r.KuskiIndex} />
-                        </TableCell>
-                        <TableCell>
-                          <Time time={r.Time} />
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {getBattle.Results.map((r, i) => (
+                    <TableRow key={r.KuskiIndex}>
+                      <TableCell>{i + 1}.</TableCell>
+                      <TableCell>
+                        <Kuski index={r.KuskiIndex} />
+                      </TableCell>
+                      <TableCell>
+                        <Time time={r.Time} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             )}

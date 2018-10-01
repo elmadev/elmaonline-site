@@ -12,8 +12,11 @@
 }
 
 .player {
-  background: #2d9cdb;
+  background: #f1f1f1;
   height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .rightBarContainer {
@@ -21,6 +24,10 @@
   width: 30%;
   padding: 7px;
   box-sizing: border-box;
+}
+
+.title {
+  margin-bottom: 10px;
 }
 
 .levelStatsContainer {
@@ -34,7 +41,7 @@
   text-transform: lowercase;
 }
 
-@media all and (max-width: 992px) {
+@media all and (max-width: 1400px) {
   .playerContainer {
     width: 100%;
   }

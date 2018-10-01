@@ -17,6 +17,12 @@ body {
   z-index: 10;
 }
 
+@media (max-width: 768px) {
+  .root {
+    padding-left: 50px;
+  }
+}
+
 .container {
   margin: 0 14px;
 }

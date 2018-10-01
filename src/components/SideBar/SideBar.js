@@ -22,7 +22,7 @@ class SideBar extends React.Component {
             onKeyUp={() => this.props.onToggle()}
             onClick={() => this.props.onToggle()}
           >
-            Toggle
+            &#9776; <span className={s.text}>Sidebar</span>
           </div>
           <div className={s.content}>
             sidebar<br />
