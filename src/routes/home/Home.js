@@ -95,7 +95,7 @@ class Home extends React.Component {
                               'Queued'
                             ) : (
                               <Moment parse="X" format="HH:mm:ss">
-                                {i.Started}
+                                {i.StartedUtc}
                               </Moment>
                             )}
                           </TableCell>
@@ -112,7 +112,7 @@ class Home extends React.Component {
                             {i.InQueue === 0 &&
                             i.Aborted === 0 &&
                             i.Finished === 0
-                              ? `${this.remaining(i.Started)}/${i.Duration}`
+                              ? `${this.remaining(i.StartedUtc)}/${i.Duration}`
                               : i.Duration}
                           </TableCell>
                         </TableRow>

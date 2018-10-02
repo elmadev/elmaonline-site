@@ -12,6 +12,7 @@ export const schema = [
     LevelIndex: Int
     BattleType: String
     Started: String
+    StartedUtc: Int
     Duration: Int
     Aborted: Int
     Finished: Int
@@ -44,6 +45,7 @@ const attributes = [
   'LevelIndex',
   'BattleType',
   'Started',
+  'StartedUtc',
   'Duration',
   'Aborted',
   'Finished',
