@@ -33,6 +33,14 @@ const Battle = Model.define(
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
       get() {
+        return moment(this.getDataValue('Started')).format('X');
+      },
+    },
+    StartedUtc: {
+      type: DataType.VIRTUAL,
+      allowNull: true,
+      defaultValue: '0000-00-00 00:00:00',
+      get() {
         return moment(this.getDataValue('Started'))
           .add(8, 'hours')
           .format('X');
