@@ -42,7 +42,7 @@
   max-height: 100%;
   overflow-y: auto;
   display: none;
-  background: #f7f7f7;
+  background: #1f1f1f;
 }
 
 .expanded .content {
@@ -57,4 +57,15 @@
   padding: 0 17px;
   outline: 0;
   cursor: pointer;
+}
+
+a {
+  color: #c3c3c3;
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+}
+
+a:hover {
+  background: rgba(0, 0, 0, 0.1);
 }

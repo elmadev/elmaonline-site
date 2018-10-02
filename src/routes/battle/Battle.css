@@ -26,11 +26,6 @@
   box-sizing: border-box;
 }
 
-.title {
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
 .levelStatsContainer {
   width: 70%;
   float: left;
@@ -40,6 +35,14 @@
 
 .battleType {
   text-transform: lowercase;
+}
+
+.battleDescription {
+  font-size: 14px;
+}
+
+.battleTimestamp {
+  color: #7d7d7d;
 }
 
 @media all and (max-width: 1400px) {
@@ -63,14 +66,6 @@
 
   .levelStatsContainer {
     width: 100%;
-  }
-
-  .battleDescription {
-    float: left;
-  }
-
-  .battleTimestamp {
-    float: right;
   }
 }
 
