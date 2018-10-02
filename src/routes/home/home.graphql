@@ -6,6 +6,9 @@ query HomeNews {
     BattleType
     Started
     Duration
+    InQueue
+    Aborted
+    Finished
   }
   getReplays {
     ReplayIndex
