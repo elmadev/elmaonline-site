@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import chatQuery from './chat.graphql';
 import s from './Chat.css';
 
@@ -21,13 +22,20 @@ class Chat extends React.Component {
 
     return (
       <div className={s.chat}>
-        {getChatLines.map(l => (
-          <div className={s.chatLine} key={l.ChatIndex}>
-            <span className={s.kuski}>{l.KuskiData.Kuski}:</span>{' '}
-            <span>{l.Text}</span>
-            <div className={s.timestamp}>{l.Entered}</div>
-          </div>
-        ))}
+        {getChatLines
+          .slice(0)
+          .reverse()
+          .map(l => (
+            <div className={s.chatLine} key={l.ChatIndex}>
+              <div className={s.timestamp}>
+                {moment(l.Entered).format('HH:mm:ss')}
+              </div>{' '}
+              <div className={s.message}>
+                <span className={s.kuski}>&lt;{l.KuskiData.Kuski}&gt;</span>{' '}
+                <span>{l.Text}</span>
+              </div>
+            </div>
+          ))}
       </div>
     );
   }
