@@ -72,12 +72,12 @@ class Battle extends React.Component {
           )}
           <br />
           <div className={s.chatContainer}>
-            <ExpansionPanel defaultExpanded={1}>
+            <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Chat</Typography>
               </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                {getBattle && (
+              {getBattle && (
+                <ExpansionPanelDetails>
                   <Chat
                     start={getBattle.Started}
                     end={
@@ -85,8 +85,8 @@ class Battle extends React.Component {
                       Number(getBattle.Duration * 60)
                     }
                   />
-                )}
-              </ExpansionPanelDetails>
+                </ExpansionPanelDetails>
+              )}
             </ExpansionPanel>
           </div>
         </div>

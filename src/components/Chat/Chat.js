@@ -27,13 +27,13 @@ class Chat extends React.Component {
           .reverse()
           .map(l => (
             <div className={s.chatLine} key={l.ChatIndex}>
-              <span className={s.timestamp}>
+              <div className={s.timestamp}>
                 {moment(l.Entered).format('HH:mm:ss')}
-              </span>{' '}
-              <span className={s.message}>
+              </div>{' '}
+              <div className={s.message}>
                 <span className={s.kuski}>&lt;{l.KuskiData.Kuski}&gt;</span>{' '}
                 <span>{l.Text}</span>
-              </span>
+              </div>
             </div>
           ))}
       </div>
