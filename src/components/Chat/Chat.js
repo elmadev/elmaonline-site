@@ -24,7 +24,6 @@ class Chat extends React.Component {
       <div className={s.chat}>
         {getChatLines
           .slice(0)
-          .reverse()
           .map(l => (
             <div className={s.chatLine} key={l.ChatIndex}>
               <div className={s.timestamp}>
