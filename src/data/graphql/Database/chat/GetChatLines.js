@@ -6,6 +6,7 @@ export const schema = [
         ChatIndex: Int
         KuskiIndex: Int
         Entered: String
+        EnteredUtc: Int
         Text: String
         KuskiData: DatabaseKuski
     }
