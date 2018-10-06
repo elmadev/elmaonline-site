@@ -74,7 +74,7 @@ class Battle extends React.Component {
                     battle
                     <div className={s.battleTimestamp}>
                       <Moment parse="X" format="DD MMM YYYY HH:mm:ss">
-                        {getBattle.Started}
+                        {getBattle.StartedUtc}
                       </Moment>
                     </div>
                   </div>

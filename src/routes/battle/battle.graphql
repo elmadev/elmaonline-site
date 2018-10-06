@@ -11,6 +11,7 @@ query Battletime($BattleIndex: Int!) {
     Duration
     RecFileName
     Started
+    StartedUtc
     KuskiData {
       Kuski
     }
