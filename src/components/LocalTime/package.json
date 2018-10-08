@@ -1,0 +1,6 @@
+{
+  "name": "localtime",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./LocalTime.js"
+}
