@@ -18,7 +18,7 @@ const formatDate = (date, format) => {
 
 const LocalTime = props => {
   const { date, format } = props;
-  return <div>{formatDate(date, format)}</div>;
+  return <React.Fragment>{formatDate(date, format)}</React.Fragment>;
 };
 
 LocalTime.propTypes = {
