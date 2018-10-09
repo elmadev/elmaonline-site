@@ -25,7 +25,7 @@ class Chat extends React.Component {
         {getChatLines.map(l => (
           <div className={s.chatLine} key={l.ChatIndex}>
             <div className={s.timestamp}>
-              <LocalTime date={l.Entered} format="HH:mm:ss" />
+              <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
             </div>{' '}
             <div className={s.message}>
               <span className={s.kuski}>&lt;{l.KuskiData.Kuski}&gt;</span>{' '}

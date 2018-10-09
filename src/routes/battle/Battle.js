@@ -76,6 +76,7 @@ class Battle extends React.Component {
                       <LocalTime
                         date={getBattle.Started}
                         format="DD.MM.YYYY HH:mm:ss"
+                        parse="X"
                       />
                     </div>
                   </div>
