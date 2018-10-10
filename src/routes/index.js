@@ -53,6 +53,10 @@ const routes = {
       path: '/battle',
       load: () => import(/* webpackChunkName: 'battle' */ './home'),
     },
+    {
+      path: '/editor',
+      load: () => import('./editor'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

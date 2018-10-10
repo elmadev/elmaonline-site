@@ -64,6 +64,13 @@ class Html extends React.Component {
               dangerouslySetInnerHTML={{ __html: style.cssText }}
             />
           ))}
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+      #app {height: 100% !important;}
+    `,
+            }}
+          />
         </head>
         <body>
           <div id="app" dangerouslySetInnerHTML={{ __html: children }} />
