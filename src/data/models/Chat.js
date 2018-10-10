@@ -1,4 +1,5 @@
 import DataType from 'sequelize';
+import moment from 'moment';
 import Model from '../sequelize';
 
 const Chat = Model.define('chat', {
@@ -18,6 +19,9 @@ const Chat = Model.define('chat', {
     type: DataType.STRING(19),
     defaultValue: '0000-00-00 00:00:00',
     allowNull: false,
+    get() {
+      return moment(this.getDataValue('Entered')).format('X');
+    },
   },
 
   Text: {

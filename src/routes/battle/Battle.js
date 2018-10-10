@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Moment from 'react-moment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,6 +20,7 @@ import Recplayer from '../../components/Recplayer';
 import { Level, BattleType, Kuski } from '../../components/Names';
 import Time from '../../components/Time';
 import Chat from '../../components/Chat';
+import LocalTime from '../../components/LocalTime';
 
 class Battle extends React.Component {
   static propTypes = {
@@ -73,9 +73,11 @@ class Battle extends React.Component {
                     </span>{' '}
                     battle
                     <div className={s.battleTimestamp}>
-                      <Moment parse="X" format="DD MMM YYYY HH:mm:ss">
-                        {getBattle.Started}
-                      </Moment>
+                      <LocalTime
+                        date={getBattle.Started}
+                        format="DD.MM.YYYY HH:mm:ss"
+                        parse="X"
+                      />
                     </div>
                   </div>
                 </ExpansionPanelDetails>
