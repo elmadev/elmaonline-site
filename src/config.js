@@ -30,12 +30,11 @@ module.exports = {
   },
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
   mysql: {
-    host: 'eol1test.cyn0krffkpzu.us-east-2.rds.amazonaws.com',
+    host: 'sql.elma.online',
     port: 3306,
-    user: 'balls',
-    pass: 'poppetmaster',
+    user: 'sandbox',
+    pass: 'Icommandthesun',
     database: 'eol1',
   },
 
