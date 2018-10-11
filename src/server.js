@@ -119,7 +119,6 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
   } catch (error) {
     next(error);
   }
@@ -135,7 +134,6 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
   } catch (error) {
     next(error);
   }
