@@ -8,7 +8,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -37,18 +36,17 @@ class Battle extends React.Component {
     const { BattleIndex } = this.props;
     const { data: { getBattle } } = this.props;
 
+    if (!getBattle) return null;
+
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
-            {!getBattle && <CircularProgress />}
-            {getBattle && (
-              <Recplayer
-                rec={`/dl/battlereplay/${BattleIndex}`}
-                lev={`/dl/level/${getBattle.LevelIndex}`}
-                controls
-              />
-            )}
+            <Recplayer
+              rec={`/dl/battlereplay/${BattleIndex}`}
+              lev={`/dl/level/${getBattle.LevelIndex}`}
+              controls
+            />
           </div>
         </div>
         <div className={s.rightBarContainer}>
@@ -56,90 +54,82 @@ class Battle extends React.Component {
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body2">
-                  {getBattle && (
-                    <React.Fragment>
-                      <Level index={getBattle.LevelIndex} />.lev by{' '}
-                      {getBattle.KuskiData.Kuski}
-                    </React.Fragment>
-                  )}
+                  <React.Fragment>
+                    <Level index={getBattle.LevelIndex} />.lev by{' '}
+                    {getBattle.KuskiData.Kuski}
+                  </React.Fragment>
                 </Typography>
               </ExpansionPanelSummary>
-              {getBattle && (
-                <ExpansionPanelDetails>
-                  <div className={s.battleDescription}>
-                    {getBattle.Duration} minute{' '}
-                    <span className={s.battleType}>
-                      <BattleType type={getBattle.BattleType} />
-                    </span>{' '}
-                    battle
-                    <div className={s.battleTimestamp}>
-                      <LocalTime
-                        date={getBattle.Started}
-                        format="DD.MM.YYYY HH:mm:ss"
-                        parse="X"
-                      />
-                    </div>
+              <ExpansionPanelDetails>
+                <div className={s.battleDescription}>
+                  {getBattle.Duration} minute{' '}
+                  <span className={s.battleType}>
+                    <BattleType type={getBattle.BattleType} />
+                  </span>{' '}
+                  battle
+                  <div className={s.battleTimestamp}>
+                    <LocalTime
+                      date={getBattle.Started}
+                      format="DD.MM.YYYY HH:mm:ss"
+                      parse="X"
+                    />
                   </div>
-                </ExpansionPanelDetails>
-              )}
+                </div>
+              </ExpansionPanelDetails>
             </ExpansionPanel>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body2">Chat</Typography>
               </ExpansionPanelSummary>
-              {getBattle && (
-                <ExpansionPanelDetails>
-                  <Chat
-                    start={getBattle.Started}
-                    end={
-                      Number(getBattle.Started) +
-                      Number(getBattle.Duration * 60)
-                    }
-                  />
-                </ExpansionPanelDetails>
-              )}
+              <ExpansionPanelDetails>
+                <Chat
+                  start={getBattle.Started}
+                  end={
+                    Number(getBattle.Started) + Number(getBattle.Duration * 60)
+                  }
+                />
+              </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>
         </div>
         <div className={s.levelStatsContainer}>
           <Paper>
-            {getBattle &&
-              getBattle.Results && (
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        style={{
-                          width: '.5rem',
-                        }}
-                      >
-                        #
+            {getBattle.Results && (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        width: '.5rem',
+                      }}
+                    >
+                      #
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: '6rem',
+                      }}
+                    >
+                      Kuski
+                    </TableCell>
+                    <TableCell>Time</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getBattle.Results.map((r, i) => (
+                    <TableRow key={r.KuskiIndex}>
+                      <TableCell>{i + 1}.</TableCell>
+                      <TableCell>
+                        <Kuski index={r.KuskiIndex} />
                       </TableCell>
-                      <TableCell
-                        style={{
-                          width: '6rem',
-                        }}
-                      >
-                        Kuski
+                      <TableCell>
+                        <Time time={r.Time} />
                       </TableCell>
-                      <TableCell>Time</TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {getBattle.Results.map((r, i) => (
-                      <TableRow key={r.KuskiIndex}>
-                        <TableCell>{i + 1}.</TableCell>
-                        <TableCell>
-                          <Kuski index={r.KuskiIndex} />
-                        </TableCell>
-                        <TableCell>
-                          <Time time={r.Time} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </Paper>
         </div>
       </div>

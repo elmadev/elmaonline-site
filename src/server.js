@@ -18,12 +18,18 @@ import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import nodeFetch from 'node-fetch';
 import React from 'react';
-import ReactDOM from 'react-dom/server';
+import ReactDOMServer from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
+import { SheetsRegistry } from 'react-jss/lib/jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {
+  MuiThemeProvider,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
@@ -34,12 +40,12 @@ import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
 import { uploadReplay } from './upload';
 import router from './router';
-import models from './data/models';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
+import muiTheme from './muiTheme';
 
 const app = express();
 
@@ -120,7 +126,6 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
   } catch (error) {
     next(error);
   }
@@ -136,7 +141,6 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
   } catch (error) {
     next(error);
   }
@@ -258,12 +262,26 @@ app.get('*', async (req, res, next) => {
     }
 
     const data = { ...route };
-    const rootComponent = <App context={context}>{route.component}</App>;
+    const sheetsRegistry = new SheetsRegistry();
+    const sheetsManager = new Map();
+    const generateClassName = createGenerateClassName();
+
+    const rootComponent = (
+      <JssProvider
+        registry={sheetsRegistry}
+        generateClassName={generateClassName}
+      >
+        <MuiThemeProvider theme={muiTheme} sheetsManager={sheetsManager}>
+          <App context={context}>{route.component}</App>
+        </MuiThemeProvider>
+      </JssProvider>
+    );
     await getDataFromTree(rootComponent);
     // this is here because of Apollo redux APOLLO_QUERY_STOP action
     await Promise.delay(0);
-    data.children = await ReactDOM.renderToString(rootComponent);
-    data.styles = [{ id: 'css', cssText: [...css].join('') }];
+    data.children = await ReactDOMServer.renderToString(rootComponent);
+    const materialUICss = sheetsRegistry.toString();
+    data.styles = [{ id: 'css', cssText: [...css].join(materialUICss) }];
 
     data.scripts = [assets.vendor.js];
     if (route.chunks) {
@@ -282,7 +300,7 @@ app.get('*', async (req, res, next) => {
       apolloState: context.client.extract(),
     };
 
-    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {
@@ -300,13 +318,13 @@ pe.skipPackage('express');
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(pe.render(err));
-  const html = ReactDOM.renderToStaticMarkup(
+  const html = ReactDOMServer.renderToStaticMarkup(
     <Html
       title="Internal Server Error"
       description={err.message}
       styles={[{ id: 'css', cssText: errorPageStyle._getCss() }]} // eslint-disable-line no-underscore-dangle
     >
-      {ReactDOM.renderToString(<ErrorPageWithoutStyle error={err} />)}
+      {ReactDOMServer.renderToString(<ErrorPageWithoutStyle error={err} />)}
     </Html>,
   );
   res.status(err.status || 500);
@@ -316,12 +334,9 @@ app.use((err, req, res, next) => {
 //
 // Launch the server
 // -----------------------------------------------------------------------------
-const promise = models.sync().catch(err => console.error(err.stack));
 if (!module.hot) {
-  promise.then(() => {
-    app.listen(config.port, () => {
-      console.info(`The server is running at http://localhost:${config.port}/`);
-    });
+  app.listen(config.port, () => {
+    console.info(`The server is running at http://localhost:${config.port}/`);
   });
 }
 
