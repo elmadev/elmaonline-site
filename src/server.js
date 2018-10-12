@@ -266,8 +266,16 @@ app.get('*', async (req, res, next) => {
     const sheetsManager = new Map();
     const theme = createMuiTheme({
       palette: {
-        accent: '#D2862E',
-        type: 'light',
+        primary: {
+          light: '#60ad5e',
+          main: '#ff4400',
+          dark: '#005005',
+        },
+        secondary: {
+          light: '#a4a4a4',
+          main: '#757575',
+          dark: '#494949',
+        },
       },
     });
 
