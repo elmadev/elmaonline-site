@@ -18,12 +18,19 @@ import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import nodeFetch from 'node-fetch';
 import React from 'react';
-import ReactDOM from 'react-dom/server';
+import ReactDOMServer from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
+import { SheetsRegistry } from 'react-jss/lib/jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
@@ -255,12 +262,33 @@ app.get('*', async (req, res, next) => {
     }
 
     const data = { ...route };
-    const rootComponent = <App context={context}>{route.component}</App>;
+    const sheetsRegistry = new SheetsRegistry();
+    const sheetsManager = new Map();
+    const theme = createMuiTheme({
+      palette: {
+        accent: '#D2862E',
+        type: 'light',
+      },
+    });
+
+    const generateClassName = createGenerateClassName();
+
+    const rootComponent = (
+      <JssProvider
+        registry={sheetsRegistry}
+        generateClassName={generateClassName}
+      >
+        <MuiThemeProvider theme={theme} sheetsManager={sheetsManager}>
+          <App context={context}>{route.component}</App>
+        </MuiThemeProvider>
+      </JssProvider>
+    );
     await getDataFromTree(rootComponent);
     // this is here because of Apollo redux APOLLO_QUERY_STOP action
     await Promise.delay(0);
-    data.children = await ReactDOM.renderToString(rootComponent);
-    data.styles = [{ id: 'css', cssText: [...css].join('') }];
+    data.children = await ReactDOMServer.renderToString(rootComponent);
+    const materialUICss = sheetsRegistry.toString();
+    data.styles = [{ id: 'css', cssText: [...css].join(materialUICss) }];
 
     data.scripts = [assets.vendor.js];
     if (route.chunks) {
@@ -279,7 +307,7 @@ app.get('*', async (req, res, next) => {
       apolloState: context.client.extract(),
     };
 
-    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {
@@ -297,13 +325,13 @@ pe.skipPackage('express');
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(pe.render(err));
-  const html = ReactDOM.renderToStaticMarkup(
+  const html = ReactDOMServer.renderToStaticMarkup(
     <Html
       title="Internal Server Error"
       description={err.message}
       styles={[{ id: 'css', cssText: errorPageStyle._getCss() }]} // eslint-disable-line no-underscore-dangle
     >
-      {ReactDOM.renderToString(<ErrorPageWithoutStyle error={err} />)}
+      {ReactDOMServer.renderToString(<ErrorPageWithoutStyle error={err} />)}
     </Html>,
   );
   res.status(err.status || 500);
