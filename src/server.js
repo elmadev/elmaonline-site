@@ -28,7 +28,6 @@ import { SheetsRegistry } from 'react-jss/lib/jss';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {
   MuiThemeProvider,
-  createMuiTheme,
   createGenerateClassName,
 } from '@material-ui/core/styles';
 import createApolloClient from './core/createApolloClient';
@@ -46,6 +45,7 @@ import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
+import muiTheme from './muiTheme';
 
 const app = express();
 
@@ -264,21 +264,6 @@ app.get('*', async (req, res, next) => {
     const data = { ...route };
     const sheetsRegistry = new SheetsRegistry();
     const sheetsManager = new Map();
-    const theme = createMuiTheme({
-      palette: {
-        primary: {
-          light: '#60ad5e',
-          main: '#ff4400',
-          dark: '#005005',
-        },
-        secondary: {
-          light: '#a4a4a4',
-          main: '#757575',
-          dark: '#494949',
-        },
-      },
-    });
-
     const generateClassName = createGenerateClassName();
 
     const rootComponent = (
@@ -286,7 +271,7 @@ app.get('*', async (req, res, next) => {
         registry={sheetsRegistry}
         generateClassName={generateClassName}
       >
-        <MuiThemeProvider theme={theme} sheetsManager={sheetsManager}>
+        <MuiThemeProvider theme={muiTheme} sheetsManager={sheetsManager}>
           <App context={context}>{route.component}</App>
         </MuiThemeProvider>
       </JssProvider>
