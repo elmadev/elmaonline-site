@@ -35,6 +35,7 @@
     "history": "^4.7.2",
     "isomorphic-style-loader": "^4.0.0",
     "jsonwebtoken": "^8.1.0",
+    "level-editor-gui": "https://github.com/ville-j/level-editor-gui.git",
     "lodash": "^4.17.4",
     "moment": "^2.22.1",
     "moment-timezone": "^0.5.21",
