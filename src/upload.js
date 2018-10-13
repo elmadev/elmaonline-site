@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import { Replay } from 'node-elma';
 import readChunk from 'read-chunk';
 import fs from 'fs';
+import generate from 'nanoid/generate';
 import { Level } from './data/models';
 import config from './config';
 
@@ -15,10 +15,7 @@ const getLevelsFromName = async LevelName => {
 
 export function uploadReplay(replayFile, folder, filename) {
   return new Promise(resolve => {
-    const uuid = crypto
-      .randomBytes(20)
-      .toString('hex')
-      .substring(10, 20);
+    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
     fs.mkdir(`.${config.publicFolder}/${folder}/${uuid}`, mkDirErr => {
       if (mkDirErr) {
         resolve({ error: mkDirErr });
