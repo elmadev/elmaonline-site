@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Dropzone from 'react-dropzone';
 import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -12,6 +13,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import insertReplay from './upload.graphql';
+import s from './Upload.css';
 
 class Upload extends React.Component {
   static propTypes = {
@@ -91,6 +93,7 @@ class Upload extends React.Component {
   handleDrivenBy = name => event => {
     const newFileInfo = this.state.fileInfo;
     newFileInfo[name].drivenBy = event.target.value;
+    this.setState({ fileInfo: newFileInfo });
     this.props.client
       .query({
         query: gql`
@@ -164,9 +167,13 @@ class Upload extends React.Component {
             )}
           </Dropzone>
         </div>
-        <Grid container>
+        <Grid className={s.uploadButtonContainer} container>
           <Grid item xs={6}>
-            <Typography variant="subheading" gutterBottom>
+            <Typography
+              className={s.uploadedFiles}
+              variant="subheading"
+              gutterBottom
+            >
               Selected files
             </Typography>
           </Grid>
@@ -186,7 +193,7 @@ class Upload extends React.Component {
         {!this.state.files
           ? '<div>None..</div>'
           : this.state.files.map(rec => (
-              <Card key={rec.name}>
+              <Card className={s.uploadCard} key={rec.name}>
                 <CardContent>
                   <Typography color="textSecondary">{rec.name}</Typography>
                   <div>
@@ -225,4 +232,5 @@ export default compose(
     name: 'insertReplay',
   }),
   withApollo,
+  withStyles(s),
 )(Upload);

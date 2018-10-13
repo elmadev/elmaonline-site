@@ -4,8 +4,11 @@ query HomeNews {
     KuskiIndex
     LevelIndex
     BattleType
-    Started
+    StartedUtc
     Duration
+    InQueue
+    Aborted
+    Finished
   }
   getReplays {
     ReplayIndex

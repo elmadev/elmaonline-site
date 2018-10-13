@@ -1,8 +1,9 @@
-import crypto from 'crypto';
 import { Replay } from 'node-elma';
 import readChunk from 'read-chunk';
 import fs from 'fs';
+import generate from 'nanoid/generate';
 import { Level } from './data/models';
+import config from './config';
 
 const getLevelsFromName = async LevelName => {
   const levels = await Level.findAll({
@@ -14,64 +15,71 @@ const getLevelsFromName = async LevelName => {
 
 export function uploadReplay(replayFile, folder, filename) {
   return new Promise(resolve => {
-    const uuid = crypto
-      .randomBytes(20)
-      .toString('hex')
-      .substring(10, 20);
-    fs.mkdir(`./public/${folder}/${uuid}`, mkDirErr => {
+    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+    fs.mkdir(`.${config.publicFolder}/${folder}/${uuid}`, mkDirErr => {
       if (mkDirErr) {
         resolve({ error: mkDirErr });
-      }
-      replayFile.mv(`./public/${folder}/${uuid}/${filename}`, mvErr => {
-        if (mvErr) {
-          resolve({ error: mvErr });
-        }
-        const replayCRC = readChunk.sync(
-          `./public/${folder}/${uuid}/${filename}`,
-          16,
-          4,
-        );
-        let replayLevel = readChunk.sync(
-          `./public/${folder}/${uuid}/${filename}`,
-          20,
-          12,
-        );
-        replayLevel = replayLevel.toString('utf-8').split('.')[0];
-        getLevelsFromName(replayLevel).then(levels => {
-          let LevelIndex = 0;
-          levels.forEach(level => {
-            if (level.LevelData && replayCRC) {
-              if (
-                level.LevelData.toString('hex').substring(14, 22) ===
-                replayCRC.toString('hex')
-              ) {
-                LevelIndex = level.LevelIndex;
-              }
+      } else {
+        replayFile.mv(
+          `.${config.publicFolder}/${folder}/${uuid}/${filename}`,
+          mvErr => {
+            if (mvErr) {
+              resolve({ error: mvErr });
+            } else {
+              const replayCRC = readChunk.sync(
+                `.${config.publicFolder}/${folder}/${uuid}/${filename}`,
+                16,
+                4,
+              );
+              let replayLevel = readChunk.sync(
+                `.${config.publicFolder}/${folder}/${uuid}/${filename}`,
+                20,
+                12,
+              );
+              replayLevel = replayLevel.toString('utf-8').split('.')[0];
+              getLevelsFromName(replayLevel).then(levels => {
+                let LevelIndex = 0;
+                levels.forEach(level => {
+                  if (level.LevelData && replayCRC) {
+                    if (
+                      level.LevelData.toString('hex').substring(14, 22) ===
+                      replayCRC.toString('hex')
+                    ) {
+                      LevelIndex = level.LevelIndex;
+                    }
+                  }
+                });
+                Replay.load(
+                  `.${config.publicFolder}/${folder}/${uuid}/${filename}`,
+                )
+                  .then(result => {
+                    const replayData = result.getTime();
+                    resolve({
+                      file: filename,
+                      uuid,
+                      time: replayData.time,
+                      finished: +replayData.finished,
+                      LevelIndex,
+                    });
+                  })
+                  .catch(error => {
+                    resolve({ error });
+                  });
+              });
             }
-          });
-          Replay.load(`./public/${folder}/${uuid}/${filename}`).then(result => {
-            const replayData = result.getTime();
-            resolve({
-              file: filename,
-              uuid,
-              time: replayData.time,
-              finished: +replayData.finished,
-              LevelIndex,
-            });
-          });
-        });
-        return true;
-      });
+            return true;
+          },
+        );
+      }
       return true;
     });
   });
 }
 
-export function getReplayByReplayId() {
+export function Dummy() {
   return new Promise(resolve => {
     resolve({
-      file: '',
-      filename: '',
+      key: '',
     });
   });
 }

@@ -66,12 +66,13 @@ class RecList extends React.Component {
           TransitionComponent={Transition}
         >
           {this.state.open && (
-            <Recplayer
-              rec={`/replays/${replay.UUID}/${replay.RecFileName}`}
-              lev={`/dl/level/${replay.LevelIndex}`}
-              controls
-              autoPlay
-            />
+            <div style={{ width: '711px', height: '400px', margin: 'auto' }}>
+              <Recplayer
+                rec={`/replays/${replay.UUID}/${replay.RecFileName}`}
+                lev={`/dl/level/${replay.LevelIndex}`}
+                controls
+              />
+            </div>
           )}
         </Dialog>
       </TableRow>

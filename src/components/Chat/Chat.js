@@ -2,6 +2,8 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import LocalTime from '../../components/LocalTime';
 import chatQuery from './chat.graphql';
 import s from './Chat.css';
 
@@ -18,14 +20,17 @@ class Chat extends React.Component {
     if (loading) return <span>Loading chat</span>;
 
     if (!getChatLines) return null;
-
     return (
       <div className={s.chat}>
         {getChatLines.map(l => (
           <div className={s.chatLine} key={l.ChatIndex}>
-            <span className={s.kuski}>{l.KuskiData.Kuski}:</span>{' '}
-            <span>{l.Text}</span>
-            <div className={s.timestamp}>{l.Entered}</div>
+            <div className={s.timestamp}>
+              <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
+            </div>{' '}
+            <div className={s.message}>
+              <span className={s.kuski}>&lt;{l.KuskiData.Kuski}&gt;</span>{' '}
+              <span>{l.Text}</span>
+            </div>
           </div>
         ))}
       </div>
@@ -38,8 +43,12 @@ export default compose(
   graphql(chatQuery, {
     options: ownProps => ({
       variables: {
-        start: new Date(ownProps.start * 1000),
-        end: new Date(ownProps.end * 1000),
+        start: moment(ownProps.start, 'X')
+          .utc()
+          .format(),
+        end: moment(ownProps.end, 'X')
+          .utc()
+          .format(),
       },
     }),
   }),

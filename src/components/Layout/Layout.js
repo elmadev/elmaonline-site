@@ -40,7 +40,9 @@ class Layout extends React.Component {
     );
   }
   render() {
-    const className = this.state.sideBarExpanded ? `${s.sideBarExpanded}` : '';
+    const className = this.state.sideBarExpanded
+      ? `${s.sideBarExpanded}`
+      : `${s.layout}`;
     return (
       <div className={className}>
         <TopBar />

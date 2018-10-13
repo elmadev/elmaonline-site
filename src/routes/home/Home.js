@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
+import m from 'moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Table from '@material-ui/core/Table';
@@ -41,6 +42,12 @@ class Home extends React.Component {
     }
   };
 
+  remaining = started => {
+    const now = m().format('X');
+    const diff = now - started;
+    return Math.round(diff / 60, 0);
+  };
+
   render() {
     const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     return (
@@ -67,7 +74,16 @@ class Home extends React.Component {
                     ? 'Loading...'
                     : getBattles.map(i => (
                         <TableRow
-                          style={{ cursor: 'pointer' }}
+                          style={
+                            i.InQueue === 0 &&
+                            i.Aborted === 0 &&
+                            i.Finished === 0
+                              ? {
+                                  cursor: 'pointer',
+                                  backgroundColor: '#219653',
+                                }
+                              : { cursor: 'pointer' }
+                          }
                           hover
                           key={i.BattleIndex}
                           onClick={() => {
@@ -79,7 +95,7 @@ class Home extends React.Component {
                               'Queued'
                             ) : (
                               <Moment parse="X" format="HH:mm:ss">
-                                {i.Started}
+                                {i.StartedUtc}
                               </Moment>
                             )}
                           </TableCell>
@@ -92,7 +108,13 @@ class Home extends React.Component {
                           <TableCell>
                             <BattleType type={i.BattleType} />
                           </TableCell>
-                          <TableCell>{i.Duration}</TableCell>
+                          <TableCell>
+                            {i.InQueue === 0 &&
+                            i.Aborted === 0 &&
+                            i.Finished === 0
+                              ? `${this.remaining(i.StartedUtc)}/${i.Duration}`
+                              : i.Duration}
+                          </TableCell>
                         </TableRow>
                       ))}
                 </TableBody>
