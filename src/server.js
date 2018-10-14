@@ -281,7 +281,10 @@ app.get('*', async (req, res, next) => {
     await Promise.delay(0);
     data.children = await ReactDOMServer.renderToString(rootComponent);
     const materialUICss = sheetsRegistry.toString();
-    data.styles = [{ id: 'css', cssText: [...css].join(materialUICss) }];
+    data.styles = [
+      { id: 'css', cssText: [...css].join('') },
+      { id: 'materialUI', cssText: materialUICss },
+    ];
 
     data.scripts = [assets.vendor.js];
     if (route.chunks) {
