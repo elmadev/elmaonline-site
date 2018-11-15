@@ -5,7 +5,7 @@ class Editor extends React.Component {
   componentDidMount() {
     this.editor = new LevelEditorGui({
       element: 'level-editor',
-      server: 'http://janka.la:3123',
+      server: 'https://janka.la:3123',
     });
   }
   componentWillUnmount() {
