@@ -26,7 +26,7 @@ class SideBar extends React.Component {
           </div>
           <div className={s.content}>
             <Link to="/">Home</Link>
-            <Link to="/battle">Battles</Link>
+            <Link to="/battles">Battles</Link>
             <Link to="/editor">Editor</Link>
           </div>
         </div>

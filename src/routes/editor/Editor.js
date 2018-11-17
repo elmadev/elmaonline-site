@@ -14,22 +14,12 @@ class Editor extends React.Component {
   render() {
     return (
       <div
+        id="level-editor"
         style={{
+          width: '100%',
           height: '100%',
-          marginTop: -50,
-          paddingTop: 50,
-          boxSizing: 'border-box',
-          background: '#000000',
         }}
-      >
-        <div
-          id="level-editor"
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      </div>
+      />
     );
   }
 }

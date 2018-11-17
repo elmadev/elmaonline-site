@@ -36,6 +36,17 @@ Battle.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Battle.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
+Battletime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  targetKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 Battle.hasMany(Battletime, {
   foreignKey: 'BattleIndex',
   as: 'Results',

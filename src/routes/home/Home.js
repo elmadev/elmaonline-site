@@ -38,7 +38,7 @@ class Home extends React.Component {
 
   gotoBattle = battleIndex => {
     if (!Number.isNaN(battleIndex)) {
-      history.push(`/battle/${battleIndex}`);
+      history.push(`/battles/${battleIndex}`);
     }
   };
 

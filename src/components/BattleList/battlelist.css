@@ -1,0 +1,57 @@
+.battleList {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.battleList a {
+  color: black;
+  display: table-row;
+}
+
+.battleList a:hover {
+  background: #f9f9f9;
+}
+
+.listHeader > * {
+  border-bottom: 1px solid #eaeaea;
+  padding: 10px;
+  display: table-cell;
+}
+
+.battleList a > * {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+  display: table-cell;
+}
+
+.levelFileName {
+  width: 100px;
+}
+
+.designerName {
+  width: 150px;
+}
+
+.winnerTime {
+  width: 150px;
+}
+
+.winnerKuski {
+  width: 150px;
+}
+
+.battleStarted {
+  width: 150px;
+}
+
+.listHeader {
+  font-weight: 500;
+  display: table-row;
+}
+
+.battles {
+  display: table;
+  table-layout: fixed;
+  min-width: 100%;
+}

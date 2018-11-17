@@ -1,4 +1,4 @@
-import { Battle, Kuski, Battletime } from 'data/models'; // import the data model
+import { Battle, Kuski, Battletime, Level } from 'data/models'; // import the data model
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -21,6 +21,7 @@ export const schema = [
     RecFileName: String
     KuskiData: DatabaseKuski
     Results: [DatabaseBattletime]
+    LevelData: DatabaseLevel
   }
 `,
 ];
@@ -30,6 +31,9 @@ export const queries = [
   `
   # Retrieves all battles stored in the database
   getBattles: [DatabaseBattle]
+
+  # Retrieves all battles between two dates
+  getBattlesBetween(start: String, end: String): [DatabaseBattle]
 
   # Retrieves a single battle from the database
   getBattle(
@@ -70,6 +74,39 @@ export const resolvers = {
           },
         ],
         order: [['BattleIndex', 'DESC']],
+      });
+      return battles;
+    },
+    async getBattlesBetween(parent, { start, end }) {
+      const battles = await Battle.findAll({
+        limit: 50,
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+          {
+            model: Level,
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            limit: 1,
+            include: [
+              {
+                model: Kuski,
+                as: 'KuskiData',
+              },
+            ],
+          },
+        ],
+        order: [['Started', 'ASC']],
+        where: {
+          Started: {
+            between: [start, end],
+          },
+        },
       });
       return battles;
     },
