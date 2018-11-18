@@ -9,12 +9,16 @@ const getReplayDataByBattleId = async battleId => {
 };
 
 export function getReplayByBattleId(battleId) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     getReplayDataByBattleId(battleId).then(data => {
-      resolve({
-        file: data.dataValues.RecData,
-        filename: `${data.dataValues.RecFileName}.rec`,
-      });
+      if (data !== null) {
+        resolve({
+          file: data.dataValues.RecData,
+          filename: `${data.dataValues.RecFileName}.rec`,
+        });
+      } else {
+        reject(new Error('replay not found'));
+      }
     });
   });
 }
@@ -28,12 +32,16 @@ const getLevelData = async id => {
 };
 
 export function getLevel(id) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     getLevelData(id).then(data => {
-      resolve({
-        file: data.dataValues.LevelData,
-        filename: `${data.dataValues.LevelName}.lev`,
-      });
+      if (data !== null) {
+        resolve({
+          file: data.dataValues.LevelData,
+          filename: `${data.dataValues.LevelName}.lev`,
+        });
+      } else {
+        reject(new Error('level not found'));
+      }
     });
   });
 }

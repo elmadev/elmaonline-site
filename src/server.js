@@ -33,8 +33,6 @@ import {
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
-import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
-import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
@@ -126,8 +124,11 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
   }
 });
 
@@ -141,8 +142,11 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
   }
 });
 
@@ -321,17 +325,8 @@ pe.skipPackage('express');
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(pe.render(err));
-  const html = ReactDOMServer.renderToStaticMarkup(
-    <Html
-      title="Internal Server Error"
-      description={err.message}
-      styles={[{ id: 'css', cssText: errorPageStyle._getCss() }]} // eslint-disable-line no-underscore-dangle
-    >
-      {ReactDOMServer.renderToString(<ErrorPageWithoutStyle error={err} />)}
-    </Html>,
-  );
   res.status(err.status || 500);
-  res.send(`<!doctype html>${html}`);
+  res.send(err.msg);
 });
 
 //

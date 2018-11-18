@@ -25,7 +25,9 @@ const BattleList = props => {
         {!loading &&
           getBattlesBetween.map(b => (
             <Link key={b.BattleIndex} to={`battles/${b.BattleIndex}`}>
-              <span className={s.levelFileName}>{b.LevelData.LevelName}</span>
+              <span className={s.levelFileName}>
+                {b.LevelData && b.LevelData.LevelName}
+              </span>
               <span className={s.designerName}>{b.KuskiData.Kuski}</span>
               <span className={s.winnerKuski}>
                 {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}
