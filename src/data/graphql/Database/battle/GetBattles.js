@@ -79,7 +79,7 @@ export const resolvers = {
     },
     async getBattlesBetween(parent, { start, end }) {
       const battles = await Battle.findAll({
-        limit: 50,
+        limit: 100,
         include: [
           {
             model: Kuski,
@@ -101,7 +101,7 @@ export const resolvers = {
             ],
           },
         ],
-        order: [['Started', 'ASC']],
+        order: [['Started', 'DESC']],
         where: {
           Started: {
             between: [start, end],

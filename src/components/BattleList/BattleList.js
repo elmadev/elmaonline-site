@@ -6,6 +6,7 @@ import { toServerTime } from 'utils';
 import LocalTime from '../../components/LocalTime';
 import Link from '../../components/Link';
 import Time from '../../components/Time';
+import Loading from '../../components/Loading';
 import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 
@@ -38,16 +39,13 @@ const BattleList = props => {
                 ) : null}
               </span>
               <span className={s.battleStarted}>
-                <LocalTime
-                  date={b.Started}
-                  format="DD.MM.YYYY HH:mm:ss"
-                  parse="X"
-                />
+                <LocalTime date={b.Started} format="HH:mm:ss" parse="X" />
               </span>
               <span>&nbsp;</span>
             </Link>
           ))}
       </div>
+      {loading && <Loading />}
     </div>
   );
 };
