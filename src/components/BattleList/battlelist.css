@@ -23,6 +23,7 @@
   padding: 10px;
   border-bottom: 1px solid #eaeaea;
   display: table-cell;
+  vertical-align: middle;
 }
 
 .levelFileName {
@@ -54,4 +55,14 @@
   display: table;
   table-layout: fixed;
   min-width: 100%;
+}
+
+.popularity {
+  max-width: 150px;
+  overflow: hidden;
+}
+
+.popularity .popularityBar {
+  height: 5px;
+  background: #219653;
 }

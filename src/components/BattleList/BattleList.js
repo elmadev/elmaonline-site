@@ -21,7 +21,7 @@ const BattleList = props => {
           <span className={s.winnerKuski}>Winner</span>
           <span className={s.winnerTime}>Time</span>
           <span className={s.battleStarted}>Started</span>
-          <span>&nbsp;</span>
+          <span>Players</span>
         </div>
         {!loading &&
           getBattlesBetween.map(b => (
@@ -41,7 +41,18 @@ const BattleList = props => {
               <span className={s.battleStarted}>
                 <LocalTime date={b.Started} format="HH:mm:ss" parse="X" />
               </span>
-              <span>&nbsp;</span>
+              <span>
+                <div className={s.popularity}>
+                  <div
+                    title={b.Results.length}
+                    className={s.popularityBar}
+                    style={{
+                      width: `${b.Results.length / 20 * 100}%`,
+                      opacity: b.Results.length / 20 + 0.1,
+                    }}
+                  />
+                </div>
+              </span>
             </Link>
           ))}
       </div>

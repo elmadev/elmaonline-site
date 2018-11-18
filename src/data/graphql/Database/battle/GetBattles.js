@@ -92,7 +92,6 @@ export const resolvers = {
           {
             model: Battletime,
             as: 'Results',
-            limit: 1,
             include: [
               {
                 model: Kuski,
