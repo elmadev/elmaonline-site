@@ -49,6 +49,12 @@ exports[`Layout renders children correctly 1`] = `
           Battles
         </a>
         <a
+          href="/kuskis"
+          onClick={[Function]}
+        >
+          Kuskis
+        </a>
+        <a
           href="/editor"
           onClick={[Function]}
         >

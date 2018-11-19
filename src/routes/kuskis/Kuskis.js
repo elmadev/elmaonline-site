@@ -42,8 +42,21 @@ class Kuskis extends React.Component {
 
     this.state = {
       filter: '',
+      expanded: [],
     };
   }
+  toggleGroup = c => {
+    this.setState(prevState => {
+      const { expanded } = prevState;
+
+      const i = expanded.findIndex(item => item === c);
+      if (i < 0) expanded.push(c);
+      else expanded.splice(i, 1);
+      return {
+        expanded,
+      };
+    });
+  };
   render() {
     const { data: { loading, getKuskis } } = this.props;
 
@@ -78,18 +91,32 @@ class Kuskis extends React.Component {
             if (kuskis.length < 1) return null;
             return (
               <div key={g}>
-                <div className={s.groupTitle}>{g}</div>
-                <div className={s.groupContent}>
-                  {kuskis.map(k => (
-                    <Link
-                      to={`/kuskis/${k.Kuski}`}
-                      className={s.kuskiRow}
-                      key={k.KuskiIndex}
-                    >
-                      <span className={s.country}>{k.Country}</span> {k.Kuski}
-                    </Link>
-                  ))}
+                <div
+                  className={s.groupTitle}
+                  onClick={() => this.toggleGroup(g)}
+                  onKeyDown={() => this.toggleGroup(g)}
+                  role="button"
+                  tabIndex="0"
+                >
+                  <span className={s.groupChar}>
+                    {Array.isArray(g) ? '…' : g}
+                  </span>
+                  <span className={s.groupItemCount}>{kuskis.length}</span>
                 </div>
+                {(this.state.filter.length > 0 ||
+                  this.state.expanded.includes(g)) && (
+                  <div className={s.groupContent}>
+                    {kuskis.map(k => (
+                      <Link
+                        to={`/kuskis/${k.Kuski}`}
+                        className={s.kuskiRow}
+                        key={k.KuskiIndex}
+                      >
+                        <span className={s.country}>{k.Country}</span> {k.Kuski}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
