@@ -57,6 +57,10 @@ const routes = {
       path: '/editor',
       load: () => import(/* webpackChunkName: 'editor' */ './editor'),
     },
+    {
+      path: '/kuskis',
+      load: () => import(/* webpackChunkName: 'kuskis' */ './kuskis'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

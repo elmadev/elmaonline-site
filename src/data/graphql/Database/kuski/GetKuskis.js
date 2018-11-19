@@ -71,8 +71,7 @@ export const resolvers = {
     async getKuskis() {
       const kuskis = await Kuski.findAll({
         attributes,
-        limit: 100,
-        order: [['KuskiIndex', 'ASC']],
+        order: [['Kuski', 'ASC']],
       });
       return kuskis;
     },
