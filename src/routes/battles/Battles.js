@@ -26,33 +26,15 @@ class Battles extends React.Component {
       ? moment(props.context.query.date, 'YYYY-MM-DD').startOf('day')
       : moment().startOf('day');
   next = () => {
-    this.setState(
-      state => {
-        const date = state.start.clone();
-        date.add(1, 'days');
-        return {
-          start: date,
-          end: date.clone().add(1, 'days'),
-        };
-      },
-      () => {
-        history.push(`/battles?date=${this.state.start.format('YYYY-MM-DD')}`);
-      },
+    history.push(
+      `/battles?date=${this.state.start.add(1, 'days').format('YYYY-MM-DD')}`,
     );
   };
   previous = () => {
-    this.setState(
-      state => {
-        const date = state.start.clone();
-        date.subtract(1, 'days');
-        return {
-          start: date,
-          end: date.clone().add(1, 'days'),
-        };
-      },
-      () => {
-        history.push(`/battles?date=${this.state.start.format('YYYY-MM-DD')}`);
-      },
+    history.push(
+      `/battles?date=${this.state.start
+        .subtract(1, 'days')
+        .format('YYYY-MM-DD')}`,
     );
   };
   render() {
@@ -61,7 +43,7 @@ class Battles extends React.Component {
         <div className={s.datepicker}>
           <button onClick={this.previous}>&lt;</button>
           <span className={s.selectedDate}>
-            {this.state.start.format('YYYY-MM-DD')}
+            {this.state.start.format('ddd DD.MM.YYYY')}
           </span>
           <button onClick={this.next}>&gt;</button>
         </div>
