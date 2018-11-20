@@ -1,16 +1,9 @@
 import React from 'react';
-import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
+import { toLocalTime } from 'utils';
 
-const formatDate = (date, format, parse) => {
-  const fixedDate = moment.tz(
-    moment(date, parse)
-      .utc()
-      .toObject(),
-    'America/Los_Angeles',
-  );
-  return fixedDate.tz(moment.tz.guess()).format(format);
-};
+const formatDate = (date, format, parse) =>
+  toLocalTime(date, parse).format(format);
 
 const LocalTime = props => {
   const { date, format, parse } = props;

@@ -26,10 +26,19 @@ describe('Layout', () => {
   test('renders children correctly', () => {
     const store = mockStore(initialState);
     const client = createApolloClient();
+    const pathname = '/';
 
     const wrapper = renderer
       .create(
-        <App context={{ insertCss: () => {}, fetch: () => {}, store, client }}>
+        <App
+          context={{
+            insertCss: () => {},
+            fetch: () => {},
+            store,
+            client,
+            pathname,
+          }}
+        >
           <Layout>
             <div className="child" />
           </Layout>

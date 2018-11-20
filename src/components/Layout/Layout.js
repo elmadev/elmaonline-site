@@ -50,7 +50,16 @@ class Layout extends React.Component {
           expanded={this.state.sideBarExpanded}
           onToggle={() => this.toggleSideBar()}
         />
-        {this.props.children}
+        <div
+          style={{
+            height: '100%',
+            marginTop: -50,
+            paddingTop: 50,
+            boxSizing: 'border-box',
+          }}
+        >
+          {this.props.children}
+        </div>
       </div>
     );
   }

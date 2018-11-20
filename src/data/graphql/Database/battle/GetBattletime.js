@@ -1,4 +1,4 @@
-import { Battletime } from 'data/models'; // import the data model
+import { Battletime, Kuski } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -11,6 +11,7 @@ export const schema = [
     TimeIndex: Int
     Time: Int
     Apples: Int
+    KuskiData: DatabaseKuski
   }
 `,
 ];
@@ -21,7 +22,7 @@ export const queries = [
   getBattletime(
     # The battle's id
     BattleIndex: Int!
-  ): DatabaseBattletime
+  ): [DatabaseBattletime]
 `,
 ];
 
@@ -30,6 +31,12 @@ export const resolvers = {
     async getBattletime(parent, { BattleIndex }) {
       const battletime = await Battletime.findAll({
         where: { BattleIndex },
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
       });
       return battletime;
     },

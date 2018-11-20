@@ -1,0 +1,8 @@
+query Kuskis {
+  getKuskis {
+    KuskiIndex
+    Kuski
+    TeamIndex
+    Country
+  }
+}

@@ -2,12 +2,13 @@ import React from 'react';
 import Editor from './Editor';
 import Layout from '../../components/Layout';
 
-function action() {
+async function action(context) {
   return {
-    title: 'Elma Online',
+    title: 'editor',
+    chunks: ['editor'],
     component: (
       <Layout>
-        <Editor />
+        <Editor context={context} />
       </Layout>
     ),
   };
