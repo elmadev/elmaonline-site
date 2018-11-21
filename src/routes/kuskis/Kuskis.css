@@ -37,6 +37,7 @@
   color: #000;
   border-bottom: 1px solid #eaeaea;
   font-size: 14px;
+  display: block;
 }
 
 .kuskis a:hover {

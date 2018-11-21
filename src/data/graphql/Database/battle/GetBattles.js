@@ -40,6 +40,8 @@ export const queries = [
     # The battle's id
     BattleIndex: Int!
   ): DatabaseBattle
+
+  getBattlesByKuski(KuskiIndex: Int!): [DatabaseBattle]
 `,
 ];
 
@@ -75,6 +77,52 @@ export const resolvers = {
         ],
         order: [['BattleIndex', 'DESC']],
       });
+      return battles;
+    },
+    async getBattlesByKuski(parent, { KuskiIndex }) {
+      const battles = await Battle.findAll({
+        limit: 20,
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+          {
+            model: Level,
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            where: {
+              KuskiIndex,
+            },
+            include: [
+              {
+                model: Kuski,
+                as: 'KuskiData',
+              },
+            ],
+          },
+        ],
+        order: [['Started', 'DESC']],
+      }).then(qb =>
+        qb.map(b => {
+          // eslint-disable-next-line no-param-reassign
+          b.Results = Battletime.findAll({
+            where: {
+              BattleIndex: b.BattleIndex,
+            },
+            include: [
+              {
+                model: Kuski,
+                as: 'KuskiData',
+              },
+            ],
+          });
+          return b;
+        }),
+      );
       return battles;
     },
     async getBattlesBetween(parent, { start, end }) {

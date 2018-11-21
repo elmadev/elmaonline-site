@@ -1,5 +1,5 @@
-query Level($KuskiIndex: Int!) {
-  getKuski(KuskiIndex: $KuskiIndex) {
+query Kuski($KuskiIndex: Int!) {
+  getKuskiById(KuskiIndex: $KuskiIndex) {
     Kuski
     Country
     TeamIndex

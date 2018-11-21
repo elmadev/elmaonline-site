@@ -97,8 +97,8 @@ class Upload extends React.Component {
     this.props.client
       .query({
         query: gql`
-          query kuskiFromId($Name: String!) {
-            getKuskiId(Name: $Name) {
+          query kuskiByName($Name: String!) {
+            getKuskiByName(Name: $Name) {
               Kuski
               KuskiIndex
             }
@@ -107,8 +107,8 @@ class Upload extends React.Component {
         variables: { Name: event.target.value },
       })
       .then(({ data }) => {
-        if (data.getKuskiId) {
-          newFileInfo[name].kuskiIndex = data.getKuskiId.KuskiIndex;
+        if (data.getKuskiByName) {
+          newFileInfo[name].kuskiIndex = data.getKuskiByName.KuskiIndex;
           newFileInfo[name].error = '';
         } else {
           newFileInfo[name].kuskiIndex = 0;

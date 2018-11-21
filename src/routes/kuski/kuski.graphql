@@ -1,0 +1,8 @@
+query Kuski($Name: String!) {
+  getKuskiByName(Name: $Name) {
+    KuskiIndex
+    Kuski
+    Country
+    TeamIndex
+  }
+}

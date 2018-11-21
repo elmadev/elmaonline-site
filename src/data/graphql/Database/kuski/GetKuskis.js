@@ -34,13 +34,13 @@ export const queries = [
   getKuskis: [DatabaseKuski]
 
   # Retrieves a single kuski from the database from id
-  getKuski(
+  getKuskiById(
     # The level's id
     KuskiIndex: Int!
   ): DatabaseKuski
 
   # Retrieves a single kuski ud from the database from name
-  getKuskiId(
+  getKuskiByName(
     # The kuski's name
     Name: String!
   ): DatabaseKuski
@@ -75,14 +75,14 @@ export const resolvers = {
       });
       return kuskis;
     },
-    async getKuski(parent, { KuskiIndex }) {
+    async getKuskiById(parent, { KuskiIndex }) {
       const kuski = await Kuski.findOne({
         attributes,
         where: { KuskiIndex },
       });
       return kuski;
     },
-    async getKuskiId(parent, { Name }) {
+    async getKuskiByName(parent, { Name }) {
       const kuski = await Kuski.findOne({
         attributes,
         where: { Kuski: Name },
