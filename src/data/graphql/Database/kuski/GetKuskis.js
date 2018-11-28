@@ -1,4 +1,4 @@
-import { Kuski } from 'data/models'; // import the data model
+import { Kuski, Team } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -24,6 +24,13 @@ export const schema = [
     RMod: Int
     RAdmin: Int
     Confirmed: Int
+    TeamData: DatabaseTeam
+  }
+
+  type DatabaseTeam {
+    TeamIndex: Int
+    Team: String
+    Locked: Int
   }
 `,
 ];
@@ -33,13 +40,13 @@ export const queries = [
   # Retrieves all kuskis stored in the database
   getKuskis: [DatabaseKuski]
 
-  # Retrieves a single kuski from the database from id
+  # Retrieves a single kuski from the database by id
   getKuskiById(
-    # The level's id
+    # The kuski's id
     KuskiIndex: Int!
   ): DatabaseKuski
 
-  # Retrieves a single kuski ud from the database from name
+  # Retrieves a single kuski from the database by name
   getKuskiByName(
     # The kuski's name
     Name: String!
@@ -86,6 +93,7 @@ export const resolvers = {
       const kuski = await Kuski.findOne({
         attributes,
         where: { Kuski: Name },
+        include: [{ model: Team, as: 'TeamData' }],
       });
       return kuski;
     },

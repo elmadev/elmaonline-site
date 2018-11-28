@@ -61,7 +61,8 @@ class Kuski extends React.Component {
           <div className={s.profile}>
             <div className={s.name}>{getKuskiByName.Kuski}</div>
             <div className={s.teamNat}>
-              Team: {getKuskiByName.TeamIndex}, Nat: {getKuskiByName.Country}
+              Team: {getKuskiByName.TeamData.Team}, Nat:{' '}
+              {getKuskiByName.Country}
             </div>
           </div>
           <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>

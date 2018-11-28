@@ -3,6 +3,8 @@ query Kuski($Name: String!) {
     KuskiIndex
     Kuski
     Country
-    TeamIndex
+    TeamData {
+      Team
+    }
   }
 }
