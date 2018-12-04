@@ -61,6 +61,10 @@ const routes = {
       path: '/kuskis',
       load: () => import(/* webpackChunkName: 'kuskis' */ './kuskis'),
     },
+    {
+      path: '/kuskis/:name',
+      load: () => import(/* webpackChunkName: 'kuski' */ './kuski'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

@@ -59,13 +59,13 @@
   cursor: pointer;
 }
 
-a {
+.content a {
   color: #c3c3c3;
   display: block;
   padding: 15px;
   text-decoration: none;
 }
 
-a:hover {
+.content a:hover {
   background: rgba(0, 0, 0, 0.1);
 }

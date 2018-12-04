@@ -9,6 +9,7 @@ import Level from './Level';
 import Kuski from './Kuski';
 import Battletime from './Battletime';
 import Chat from './Chat';
+import Team from './Team';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -57,6 +58,11 @@ Chat.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Kuski.belongsTo(Team, {
+  foreignKey: 'TeamIndex',
+  as: 'TeamData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -73,4 +79,5 @@ export {
   Kuski,
   Battletime,
   Chat,
+  Team,
 }; // add the data model here as well so it exports
