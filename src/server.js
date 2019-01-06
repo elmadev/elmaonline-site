@@ -36,7 +36,7 @@ import Html from './components/Html';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
-import { uploadReplay } from './upload';
+import { uploadReplayS3 } from './upload';
 import router from './router';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
@@ -163,19 +163,15 @@ app.post('/upload/:type', async (req, res) => {
       uuid,
       time,
       finished,
-      crc,
-      levelName,
       LevelIndex,
       error,
-    } = await uploadReplay(replayFile, folder, req.body.filename);
+    } = await uploadReplayS3(replayFile, folder, req.body.filename);
     if (!error) {
       res.json({
         file,
         uuid,
         time,
         finished,
-        crc,
-        levelName,
         LevelIndex,
       });
     } else {

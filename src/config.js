@@ -41,6 +41,10 @@ module.exports = {
   // files
   publicFolder: '/public',
 
+  // s3
+  accessKeyId: 'BK6SGSL7RYGCASA3PUSV',
+  secretAccessKey: '+7AvMTUk6QoPyqjud9Bz+Ai0M+A13eGgLRjrWw0nlrA',
+
   // Web analytics
   analytics: {
     // https://analytics.google.com/
