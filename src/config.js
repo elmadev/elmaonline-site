@@ -40,6 +40,7 @@ module.exports = {
 
   // files
   publicFolder: '/public',
+  s3SubFolder: 'test/',
 
   // s3
   accessKeyId: 'BK6SGSL7RYGCASA3PUSV',

@@ -25,7 +25,7 @@ export function uploadReplayS3(replayFile, folder, filename) {
   return new Promise(resolve => {
     const bucketName = 'eol';
     const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
-    const key = `${folder}/${uuid}/${filename}`;
+    const key = `${config.s3SubFolder}${folder}/${uuid}/${filename}`;
     const params = {
       Bucket: bucketName,
       Key: key,
