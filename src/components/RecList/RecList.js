@@ -66,13 +66,20 @@ class RecList extends React.Component {
           TransitionComponent={Transition}
         >
           {this.state.open && (
-            <div style={{ width: '711px', height: '400px', margin: 'auto' }}>
-              <Recplayer
-                rec={`/replays/${replay.UUID}/${replay.RecFileName}`}
-                lev={`/dl/level/${replay.LevelIndex}`}
-                controls
-              />
-            </div>
+            <React.Fragment>
+              <div style={{ width: '711px', height: '400px', margin: 'auto' }}>
+                <Recplayer
+                  rec={`https://eol.ams3.digitaloceanspaces.com/replays/${
+                    replay.UUID
+                  }/${replay.RecFileName}`}
+                  lev={`/dl/level/${replay.LevelIndex}`}
+                  controls
+                />
+              </div>
+              <div style={{ width: '711px', height: '50px', margin: 'auto' }}>
+                Press ESC to close
+              </div>
+            </React.Fragment>
           )}
         </Dialog>
       </TableRow>

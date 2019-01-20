@@ -1,17 +1,14 @@
 import React from 'react';
-import Home from './Home'; // import the secondary .js file here
-import homeQuery from './home.graphql';
+import Home from './Home';
 import Layout from '../../components/Layout';
 
-async function action({ client }) {
-  const data = await client.query({
-    query: homeQuery,
-  });
+async function action(context) {
   return {
-    title: 'Elma Online',
+    title: 'home',
+    chunks: ['home'],
     component: (
       <Layout>
-        <Home news={data} />
+        <Home context={context} />
       </Layout>
     ),
   };

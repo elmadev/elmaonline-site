@@ -1,14 +1,14 @@
 import React from 'react';
-import Battle from './Battle';
 import Layout from '../../components/Layout';
+import Kuskis from './Kuskis';
 
 async function action(context) {
   return {
-    title: `battles/${context.params.id}`,
-    chunks: ['battle'],
+    title: 'kuskis',
+    chunks: ['kuskis'],
     component: (
       <Layout>
-        <Battle BattleIndex={parseInt(context.params.id, 10)} />
+        <Kuskis context={context} />
       </Layout>
     ),
   };

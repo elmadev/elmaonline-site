@@ -33,12 +33,10 @@ import {
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
-import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
-import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
-import { uploadReplay } from './upload';
+import { uploadReplayS3 } from './upload';
 import router from './router';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
@@ -126,8 +124,11 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
   }
 });
 
@@ -141,8 +142,11 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
   }
 });
 
@@ -159,19 +163,15 @@ app.post('/upload/:type', async (req, res) => {
       uuid,
       time,
       finished,
-      crc,
-      levelName,
       LevelIndex,
       error,
-    } = await uploadReplay(replayFile, folder, req.body.filename);
+    } = await uploadReplayS3(replayFile, folder, req.body.filename);
     if (!error) {
       res.json({
         file,
         uuid,
         time,
         finished,
-        crc,
-        levelName,
         LevelIndex,
       });
     } else {
@@ -281,7 +281,10 @@ app.get('*', async (req, res, next) => {
     await Promise.delay(0);
     data.children = await ReactDOMServer.renderToString(rootComponent);
     const materialUICss = sheetsRegistry.toString();
-    data.styles = [{ id: 'css', cssText: [...css].join(materialUICss) }];
+    data.styles = [
+      { id: 'css', cssText: [...css].join('') },
+      { id: 'materialUI', cssText: materialUICss },
+    ];
 
     data.scripts = [assets.vendor.js];
     if (route.chunks) {
@@ -318,17 +321,8 @@ pe.skipPackage('express');
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(pe.render(err));
-  const html = ReactDOMServer.renderToStaticMarkup(
-    <Html
-      title="Internal Server Error"
-      description={err.message}
-      styles={[{ id: 'css', cssText: errorPageStyle._getCss() }]} // eslint-disable-line no-underscore-dangle
-    >
-      {ReactDOMServer.renderToString(<ErrorPageWithoutStyle error={err} />)}
-    </Html>,
-  );
   res.status(err.status || 500);
-  res.send(`<!doctype html>${html}`);
+  res.send(err.msg);
 });
 
 //
