@@ -37,6 +37,7 @@ import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
 import { uploadReplayS3 } from './upload';
+import { updateRanking } from './ranking';
 import router from './router';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
@@ -148,6 +149,14 @@ app.get('/dl/level/:id', async (req, res, next) => {
       msg: e.message,
     });
   }
+});
+
+//
+// ranking
+//--------------------------------------------
+app.get('/ranking', async (req, res) => {
+  const data = await updateRanking();
+  res.json(data);
 });
 
 //

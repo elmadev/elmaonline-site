@@ -10,6 +10,7 @@ import Kuski from './Kuski';
 import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
+import Kinglist from './Kinglist';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -80,4 +81,5 @@ export {
   Battletime,
   Chat,
   Team,
+  Kinglist,
 }; // add the data model here as well so it exports
