@@ -7,6 +7,7 @@ import battlesQuery from './battles.graphql';
 import Link from '../../components/Link';
 import Time from '../../components/Time';
 import Loading from '../../components/Loading';
+import Flag from '../../components/Flag';
 import LocalTime from '../../components/LocalTime';
 import s from './Kuski.css';
 
@@ -59,11 +60,13 @@ class Kuski extends React.Component {
             />
           </div>
           <div className={s.profile}>
-            <div className={s.name}>{getKuskiByName.Kuski}</div>
+            <div className={s.name}>
+              <Flag nationality={getKuskiByName.Country} />
+              {getKuskiByName.Kuski}
+            </div>
             <div className={s.teamNat}>
               {getKuskiByName.TeamData &&
-                `Team: ${getKuskiByName.TeamData.Team},`}{' '}
-              Nat: {getKuskiByName.Country}
+                `Team: ${getKuskiByName.TeamData.Team}`}
             </div>
           </div>
           <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
