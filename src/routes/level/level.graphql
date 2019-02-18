@@ -1,0 +1,29 @@
+query Level($LevelIndex: Int!) {
+  getTimes(LevelIndex: $LevelIndex) {
+    AllFinishedIndex
+    TimeIndex
+    KuskiIndex
+    LevelIndex
+    Time
+    Apples
+    Driven
+    BattleIndex
+    MaxSpeed
+    ThrottleTime
+    BrakeTime
+    LeftVolt
+    RightVolt
+    SuperVolt
+    OneWheel
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+  }
+  getLevel(LevelIndex: $LevelIndex) {
+    LevelName
+    LongName
+  }
+}

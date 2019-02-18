@@ -6,7 +6,7 @@ const RecPlayer =
 
 class Recplayer extends React.Component {
   static propTypes = {
-    rec: PropTypes.string.isRequired,
+    rec: PropTypes.string,
     lev: PropTypes.string.isRequired,
     width: PropTypes.string,
     height: PropTypes.string,
@@ -17,6 +17,7 @@ class Recplayer extends React.Component {
   };
 
   static defaultProps = {
+    rec: null,
     width: 'auto',
     height: 'auto',
     zoom: 0.7,

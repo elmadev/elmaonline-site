@@ -12,8 +12,6 @@ export const schema = [
     ReplayTime: Int
     Finished: Int
     Uploaded: Int
-    ShareDesigner: Int
-    ShareTeam: Int
     Unlisted: Int
     UUID: String
     RecFileName: String
@@ -43,8 +41,6 @@ const attributes = [
   'ReplayTime',
   'Finished',
   'Uploaded',
-  'ShareDesigner',
-  'ShareTeam',
   'Unlisted',
   'UUID',
   'RecFileName',

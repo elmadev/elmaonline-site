@@ -45,16 +45,6 @@ const Replay = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    ShareDesigner: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    ShareTeam: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     Unlisted: {
       type: DataType.INTEGER,
       allowNull: false,
