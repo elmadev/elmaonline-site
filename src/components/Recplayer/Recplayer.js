@@ -41,7 +41,7 @@ class Recplayer extends React.Component {
       <React.Fragment>
         {RecPlayer && lev ? (
           <RecPlayer
-            recUrl={rec || ''}
+            recUrl={rec}
             levUrl={lev}
             width={width}
             height={height}
