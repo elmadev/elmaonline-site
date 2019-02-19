@@ -10,11 +10,69 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import query from './level.graphql';
+import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
 import Recplayer from '../../components/Recplayer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
 import Kuski from '../../components/Names/Kuski';
+
+const TimeTable = withStyles(s)(({ data }) => (
+  <div className={s.tableContainer}>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell
+            style={{
+              width: '1px',
+            }}
+          >
+            #
+          </TableCell>
+          <TableCell
+            style={{
+              width: '6rem',
+            }}
+          >
+            Kuski
+          </TableCell>
+          <TableCell>Time</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {data.map((t, i) => (
+          <TableRow key={t.TimeIndex}>
+            <TableCell>{i + 1}.</TableCell>
+            <TableCell>
+              <Kuski index={t.KuskiIndex} />
+            </TableCell>
+            <TableCell>
+              <Time time={t.Time} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+));
+
+TimeTable.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+};
+
+const AllTimes = compose(
+  withStyles(s),
+  graphql(allTimesQuery, {
+    options: ownProps => ({
+      variables: {
+        LevelIndex: ownProps.LevelIndex,
+      },
+    }),
+  }),
+)(props => {
+  const { data: { getTimes, loading } } = props;
+  return loading ? <Loading /> : <TimeTable data={getTimes} />;
+});
 
 class Level extends React.Component {
   constructor(props) {
@@ -29,7 +87,7 @@ class Level extends React.Component {
     });
   };
   render() {
-    const { data: { getTimes, getLevel, loading } } = this.props;
+    const { data: { getBestTimes, getLevel, loading } } = this.props;
     return (
       <div className={s.level}>
         <Recplayer
@@ -44,52 +102,10 @@ class Level extends React.Component {
               <Tab label="Best individual times" />
               <Tab label="All times" />
             </Tabs>
-            <div className={s.tableContainer}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      style={{
-                        width: '1px',
-                      }}
-                    >
-                      #
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: '6rem',
-                      }}
-                    >
-                      Kuski
-                    </TableCell>
-                    <TableCell>Time</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getTimes
-                    .reduce((acc, cur) => {
-                      if (
-                        this.state.tab === 1 ||
-                        !acc.find(t => t.KuskiIndex === cur.KuskiIndex)
-                      ) {
-                        acc.push(cur);
-                      }
-                      return acc;
-                    }, [])
-                    .map((t, i) => (
-                      <TableRow key={t.TimeIndex}>
-                        <TableCell>{i + 1}.</TableCell>
-                        <TableCell>
-                          <Kuski index={t.KuskiIndex} />
-                        </TableCell>
-                        <TableCell>
-                          <Time time={t.Time} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </div>
+            {this.state.tab === 0 && <TimeTable data={getBestTimes} />}
+            {this.state.tab === 1 && (
+              <AllTimes LevelIndex={this.props.LevelIndex} />
+            )}
           </React.Fragment>
         )}
       </div>
