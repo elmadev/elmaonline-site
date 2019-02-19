@@ -15,7 +15,6 @@ import s from './Level.css';
 import Recplayer from '../../components/Recplayer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
-import Kuski from '../../components/Names/Kuski';
 
 const TimeTable = withStyles(s)(({ data }) => (
   <div className={s.tableContainer}>
@@ -44,7 +43,8 @@ const TimeTable = withStyles(s)(({ data }) => (
           <TableRow key={t.TimeIndex}>
             <TableCell>{i + 1}.</TableCell>
             <TableCell>
-              <Kuski index={t.KuskiIndex} />
+              {t.KuskiData.Kuski}{' '}
+              {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
             </TableCell>
             <TableCell>
               <Time time={t.Time} />
@@ -97,7 +97,7 @@ class Level extends React.Component {
         {loading && <Loading />}
         {!loading && (
           <React.Fragment>
-            <h2>{`${getLevel.LevelName}.lev ${getLevel.LongName}`}</h2>
+            <h3>{`${getLevel.LevelName}.lev ${getLevel.LongName}`}</h3>
             <Tabs value={this.state.tab} onChange={this.onTabClick}>
               <Tab label="Best individual times" />
               <Tab label="All times" />

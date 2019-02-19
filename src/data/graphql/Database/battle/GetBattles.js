@@ -239,6 +239,11 @@ export const resolvers = {
             ],
           },
           {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
             model: Battletime,
             as: 'Results',
             include: [

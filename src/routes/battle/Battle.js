@@ -16,8 +16,9 @@ import Paper from '@material-ui/core/Paper';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
-import { Level, BattleType } from '../../components/Names';
+import { BattleType } from '../../components/Names';
 import Time from '../../components/Time';
+import Link from '../../components/Link';
 import Chat from '../../components/Chat';
 import LocalTime from '../../components/LocalTime';
 
@@ -53,12 +54,7 @@ class Battle extends React.Component {
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">
-                  <React.Fragment>
-                    <Level index={getBattle.LevelIndex} />.lev by{' '}
-                    {getBattle.KuskiData.Kuski}
-                  </React.Fragment>
-                </Typography>
+                <Typography variant="body2">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div className={s.battleDescription}>
@@ -66,14 +62,20 @@ class Battle extends React.Component {
                   <span className={s.battleType}>
                     <BattleType type={getBattle.BattleType} />
                   </span>{' '}
-                  battle
+                  battle in {getBattle.LevelData.LevelName}.lev by{' '}
+                  {getBattle.KuskiData.Kuski}
                   <div className={s.battleTimestamp}>
+                    Started{' '}
                     <LocalTime
                       date={getBattle.Started}
                       format="DD.MM.YYYY HH:mm:ss"
                       parse="X"
                     />
                   </div>
+                  <br />
+                  <Link to={`/levels/${getBattle.LevelIndex}`}>
+                    Go to level page
+                  </Link>
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
