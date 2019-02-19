@@ -11,6 +11,7 @@ import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
 import AllFinished from './AllFinished';
+import BestTime from './BestTime';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -45,11 +46,15 @@ Battle.belongsTo(Level, {
 
 Battletime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
-  targetKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
 AllFinished.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+BestTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -87,4 +92,5 @@ export {
   Chat,
   Team,
   AllFinished,
+  BestTime,
 }; // add the data model here as well so it exports

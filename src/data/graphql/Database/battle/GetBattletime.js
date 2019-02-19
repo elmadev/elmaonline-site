@@ -1,4 +1,4 @@
-import { Battletime, Kuski } from 'data/models'; // import the data model
+import { Battletime, Kuski, Team } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -34,7 +34,14 @@ export const resolvers = {
         include: [
           {
             model: Kuski,
+            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
           },
         ],
       });

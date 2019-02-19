@@ -26,8 +26,16 @@ const RecentBattles = compose(
   return props.data.getBattlesByKuski.map(b => (
     <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
       <span>{b.LevelData && b.LevelData.LevelName}</span>
-      <span>{b.KuskiData.Kuski}</span>
-      <span>{b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}</span>
+      <span>
+        {b.KuskiData.Kuski}{' '}
+        {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
+      </span>
+      <span>
+        {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}{' '}
+        {b.Results.length > 0 &&
+          b.Results[0].KuskiData.TeamData &&
+          `[${b.Results[0].KuskiData.TeamData.Team}]`}
+      </span>
       <span>
         {b.Results.length > 0 ? <Time time={b.Results[0].Time} /> : null}
       </span>

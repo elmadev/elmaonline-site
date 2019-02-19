@@ -17,6 +17,12 @@ query Battletime($BattleIndex: Int!) {
     Results {
       Time
       KuskiIndex
+      KuskiData {
+        Kuski
+        TeamData {
+          Team
+        }
+      }
     }
   }
 }

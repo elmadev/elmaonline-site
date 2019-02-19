@@ -12,6 +12,9 @@ query getBattlesByKuski($KuskiIndex: Int!) {
     KuskiData {
       KuskiIndex
       Kuski
+      TeamData {
+        Team
+      }
     }
     LevelData {
       LevelName
@@ -24,6 +27,9 @@ query getBattlesByKuski($KuskiIndex: Int!) {
       Time
       KuskiData {
         Kuski
+        TeamData {
+          Team
+        }
       }
     }
   }

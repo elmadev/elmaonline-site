@@ -4,5 +4,8 @@ query Kuskis {
     Kuski
     TeamIndex
     Country
+    TeamData {
+      Team
+    }
   }
 }

@@ -114,7 +114,7 @@ class Kuskis extends React.Component {
                         key={k.KuskiIndex}
                       >
                         <Flag nationality={k.Country} />
-                        {k.Kuski}
+                        {k.Kuski} {k.TeamData && `[${k.TeamData.Team}]`}
                       </Link>
                     ))}
                   </div>

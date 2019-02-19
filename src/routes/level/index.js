@@ -8,7 +8,7 @@ async function action(context) {
     chunks: ['level'],
     component: (
       <Layout>
-        <Level context={context} LevelIndex={parseInt(context.params.id, 10)} />
+        <Level LevelIndex={parseInt(context.params.id, 10)} />
       </Layout>
     ),
   };
