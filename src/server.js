@@ -301,6 +301,7 @@ app.get('*', async (req, res, next) => {
       apiUrl: config.api.clientUrl,
       state: context.store.getState(),
       apolloState: context.client.extract(),
+      s3SubFolder: config.s3SubFolder,
     };
 
     const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
