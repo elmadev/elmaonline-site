@@ -41,6 +41,12 @@ import {
 } from './battle/GetBattletime';
 
 import {
+  schema as GetBesttime,
+  queries as GetBesttimeQueries,
+  resolvers as GetBesttimeResolver,
+} from './time/GetBesttime';
+
+import {
   queries as GetLoggedInUserQueries,
   resolvers as GetLoggedInUserResolver,
 } from './users/GetLoggedInUser';
@@ -72,6 +78,7 @@ export const schema = [
   ...GetLevels,
   ...GetKuskis,
   ...GetBattletime,
+  ...GetBesttime,
   ...GetChatLines,
   ...InsertReplay,
 ];
@@ -84,6 +91,7 @@ export const queries = [
   ...GetLevelsQueries,
   ...GetKuskisQueries,
   ...GetBattletimeQueries,
+  ...GetBesttimeQueries,
   ...GetChatLinesQueries,
 ];
 
@@ -98,6 +106,7 @@ export const resolvers = merge(
   GetLevelsResolver,
   GetKuskisResolver,
   GetBattletimeResolver,
+  GetBesttimeResolver,
   GetChatLinesResolver,
   InsertReplayResolver,
 );

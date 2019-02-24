@@ -10,6 +10,7 @@ import Kuski from './Kuski';
 import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
+import Besttime from './Besttime';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -30,6 +31,16 @@ User.hasOne(UserProfile, {
   as: 'profile',
   onUpdate: 'cascade',
   onDelete: 'cascade',
+});
+
+Replay.belongsTo(Kuski, {
+  foreignKey: 'DrivenBy',
+  as: 'DrivenByData',
+});
+
+Replay.belongsTo(Kuski, {
+  foreignKey: 'UploadedBy',
+  as: 'UploadedByData',
 });
 
 Battle.belongsTo(Kuski, {
@@ -78,6 +89,7 @@ export {
   Level,
   Kuski,
   Battletime,
+  Besttime,
   Chat,
   Team,
 }; // add the data model here as well so it exports
