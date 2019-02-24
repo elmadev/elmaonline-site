@@ -8,6 +8,8 @@ mutation insertReplay(
   $LevelIndex: Int!
   $Unlisted: Int!
   $DrivenBy: Int!
+  $TAS: Int!
+  $Comment: String!
 ) {
   insertReplay(
     UploadedBy: $UploadedBy
@@ -19,6 +21,8 @@ mutation insertReplay(
     LevelIndex: $LevelIndex
     Unlisted: $Unlisted
     DrivenBy: $DrivenBy
+    TAS: $TAS
+    Comment: $Comment
   ) {
     ReplayIndex
   }
