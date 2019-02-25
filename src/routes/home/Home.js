@@ -17,7 +17,7 @@ import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
 import Upload from '../../components/Upload';
-import RecList from '../../components/RecList';
+import RecListItem from '../../components/RecListItem';
 
 class Home extends React.Component {
   static propTypes = {
@@ -143,7 +143,7 @@ class Home extends React.Component {
                   {loading
                     ? 'Loading...'
                     : getReplays.map(i => (
-                        <RecList key={i.ReplayIndex} replay={i} />
+                        <RecListItem key={i.ReplayIndex} replay={i} />
                       ))}
                 </TableBody>
               </Table>

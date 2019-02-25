@@ -38,10 +38,12 @@ class Upload extends React.Component {
       fileInfo[file.name] = {
         name: file.name,
         unlisted: false,
+        tas: false,
         drivenBy: '',
         error: 'Kuski not found',
         index,
         kuskiIndex: 0,
+        comment: '',
       };
     });
     this.setState({ fileInfo });
@@ -57,6 +59,8 @@ class Upload extends React.Component {
     LevelIndex,
     Unlisted,
     DrivenBy,
+    TAS,
+    Comment,
   ) => {
     this.props
       .insertReplay({
@@ -70,6 +74,8 @@ class Upload extends React.Component {
           LevelIndex,
           Unlisted,
           DrivenBy,
+          TAS,
+          Comment,
         },
       })
       .then(() => {
@@ -87,6 +93,18 @@ class Upload extends React.Component {
   handleUnlisted = name => event => {
     const newFileInfo = this.state.fileInfo;
     newFileInfo[name].unlisted = event.target.checked;
+    this.setState({ fileInfo: newFileInfo });
+  };
+
+  handleTas = name => event => {
+    const newFileInfo = this.state.fileInfo;
+    newFileInfo[name].tas = event.target.checked;
+    this.setState({ fileInfo: newFileInfo });
+  };
+
+  handleComment = name => event => {
+    const newFileInfo = this.state.fileInfo;
+    newFileInfo[name].comment = event.target.value;
     this.setState({ fileInfo: newFileInfo });
   };
 
@@ -138,6 +156,8 @@ class Upload extends React.Component {
             body.LevelIndex,
             +this.state.fileInfo[body.file].unlisted,
             this.state.fileInfo[body.file].kuskiIndex,
+            +this.state.fileInfo[body.file].tas,
+            this.state.fileInfo[body.file].comment,
           );
         });
       });
@@ -196,29 +216,58 @@ class Upload extends React.Component {
               <Card className={s.uploadCard} key={rec.name}>
                 <CardContent>
                   <Typography color="textSecondary">{rec.name}</Typography>
-                  <div>
-                    <TextField
-                      id="DrivenBy"
-                      label="Driven by"
-                      value={this.state.fileInfo[rec.name].drivenBy}
-                      onChange={this.handleDrivenBy(rec.name)}
-                      margin="normal"
-                      helperText={this.state.fileInfo[rec.name].error}
-                    />
-                  </div>
-                  <div>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.fileInfo[rec.name].unlisted}
-                          onChange={this.handleUnlisted(rec.name)}
-                          value="unlisted"
-                          color="primary"
+                  <Grid container spacing={24}>
+                    <Grid item xs={12} sm={6}>
+                      <div>
+                        <TextField
+                          id="DrivenBy"
+                          label="Driven by"
+                          value={this.state.fileInfo[rec.name].drivenBy}
+                          onChange={this.handleDrivenBy(rec.name)}
+                          margin="normal"
+                          helperText={this.state.fileInfo[rec.name].error}
                         />
-                      }
-                      label="Unlisted"
-                    />
-                  </div>
+                      </div>
+                      <div>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={this.state.fileInfo[rec.name].unlisted}
+                              onChange={this.handleUnlisted(rec.name)}
+                              value="unlisted"
+                              color="primary"
+                            />
+                          }
+                          label="Unlisted"
+                        />
+                      </div>
+                      <div>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={this.state.fileInfo[rec.name].tas}
+                              onChange={this.handleTas(rec.name)}
+                              value="tas"
+                              color="primary"
+                            />
+                          }
+                          label="TAS"
+                        />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <div>
+                        <TextField
+                          id="Comment"
+                          multiline
+                          label="Comment"
+                          value={this.state.fileInfo[rec.name].comment}
+                          onChange={this.handleComment(rec.name)}
+                          margin="normal"
+                        />
+                      </div>
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </Card>
             ))}
