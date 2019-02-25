@@ -1,12 +1,17 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const Besttime = Model.define(
+const BestTime = Model.define(
   'besttime',
   {
     BestTimeIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
+      allowNull: false,
+      primaryKey: true,
+    },
+    TimeIndex: {
+      type: DataType.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
@@ -20,11 +25,6 @@ const Besttime = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    TimeIndex: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     Time: {
       type: DataType.INTEGER,
       allowNull: false,
@@ -32,8 +32,12 @@ const Besttime = Model.define(
     },
   },
   {
-    indexes: [{ fields: ['BestTimeIndex', 'LevelIndex', 'TimeIndex'] }],
+    indexes: [
+      {
+        fields: ['BestTimeIndex'],
+      },
+    ],
   },
 );
 
-export default Besttime;
+export default BestTime;
