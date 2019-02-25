@@ -27,6 +27,10 @@ export const mutation = [
     Unlisted: Int!
     #
     DrivenBy: Int!
+    #
+    TAS: Int!
+    #
+    Comment: String!
   ): DatabaseReplay
 `,
 ];
@@ -44,6 +48,8 @@ export const resolvers = {
         LevelIndex: args.LevelIndex,
         Unlisted: args.Unlisted,
         DrivenBy: args.DrivenBy,
+        TAS: args.TAS,
+        Comment: args.Comment,
       });
       return replay;
     },

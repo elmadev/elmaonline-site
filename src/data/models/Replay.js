@@ -50,6 +50,16 @@ const Replay = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    TAS: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Comment: {
+      type: DataType.STRING(255),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
     UUID: {
       type: DataType.STRING(10),
       allowNull: true,

@@ -69,6 +69,10 @@ const routes = {
       path: '/levels/:id',
       load: () => import(/* webpackChunkName: 'level' */ './level'),
     },
+    }
+      path: '/r/:uuid',
+      load: () => import(/* webpackChunkName: 'replay' */ './replay'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

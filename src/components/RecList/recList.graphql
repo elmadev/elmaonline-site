@@ -1,0 +1,12 @@
+query RecList($LevelIndex: String) {
+  getReplaysByLevelIndex(LevelIndex: $LevelIndex) {
+    ReplayIndex
+    UploadedBy
+    LevelIndex
+    ReplayTime
+    Uploaded
+    RecFileName
+    UUID
+    DrivenBy
+  }
+}

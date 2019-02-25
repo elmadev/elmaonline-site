@@ -34,6 +34,16 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
+Replay.belongsTo(Kuski, {
+  foreignKey: 'DrivenBy',
+  as: 'DrivenByData',
+});
+
+Replay.belongsTo(Kuski, {
+  foreignKey: 'UploadedBy',
+  as: 'UploadedByData',
+});
+
 Battle.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -89,6 +99,7 @@ export {
   Level,
   Kuski,
   Battletime,
+  Besttime,
   Chat,
   Team,
   AllFinished,
