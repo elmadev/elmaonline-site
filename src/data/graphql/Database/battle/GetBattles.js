@@ -1,4 +1,4 @@
-import { Battle, Kuski, Battletime, Level } from 'data/models'; // import the data model
+import { Battle, Kuski, Battletime, Level, Team } from 'data/models'; // import the data model
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -72,7 +72,14 @@ export const resolvers = {
         include: [
           {
             model: Kuski,
+            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
           },
         ],
         order: [['BattleIndex', 'DESC']],
@@ -81,14 +88,29 @@ export const resolvers = {
     },
     async getBattlesByKuski(parent, { KuskiIndex }) {
       const battles = await Battle.findAll({
+        attributes: [
+          'BattleIndex',
+          'KuskiIndex',
+          'LevelIndex',
+          'Started',
+          'Duration',
+        ],
         limit: 20,
         include: [
           {
             model: Kuski,
+            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
           },
           {
             model: Level,
+            attributes: ['LevelName'],
             as: 'LevelData',
           },
           {
@@ -100,7 +122,14 @@ export const resolvers = {
             include: [
               {
                 model: Kuski,
+                attributes: ['Kuski', 'Country'],
                 as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
               },
             ],
           },
@@ -116,7 +145,14 @@ export const resolvers = {
             include: [
               {
                 model: Kuski,
+                attributes: ['Kuski', 'Country'],
                 as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
               },
             ],
           });
@@ -127,14 +163,29 @@ export const resolvers = {
     },
     async getBattlesBetween(parent, { start, end }) {
       const battles = await Battle.findAll({
+        attributes: [
+          'BattleIndex',
+          'KuskiIndex',
+          'LevelIndex',
+          'Started',
+          'Duration',
+        ],
         limit: 100,
         include: [
           {
             model: Kuski,
+            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
           },
           {
             model: Level,
+            attributes: ['LevelName'],
             as: 'LevelData',
           },
           {
@@ -143,7 +194,14 @@ export const resolvers = {
             include: [
               {
                 model: Kuski,
+                attributes: ['Kuski', 'Country'],
                 as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
               },
             ],
           },
@@ -159,15 +217,48 @@ export const resolvers = {
     },
     async getBattle(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
+        attributes: [
+          'BattleIndex',
+          'KuskiIndex',
+          'LevelIndex',
+          'Started',
+          'BattleType',
+          'Duration',
+        ],
         where: { BattleIndex },
         include: [
           {
             model: Kuski,
+            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
           },
           {
             model: Battletime,
             as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });

@@ -11,12 +11,21 @@ query Battletime($BattleIndex: Int!) {
     Duration
     RecFileName
     Started
+    LevelData {
+      LevelName
+    }
     KuskiData {
       Kuski
     }
     Results {
       Time
       KuskiIndex
+      KuskiData {
+        Kuski
+        TeamData {
+          Team
+        }
+      }
     }
   }
 }

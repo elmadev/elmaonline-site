@@ -36,6 +36,11 @@
   font-size: 30px;
 }
 
+.name span {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
 .teamNat {
   font-size: 16px;
 }

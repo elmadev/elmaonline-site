@@ -24,7 +24,7 @@ export const resolvers = {
       const chatLines = await Chat.findAll({
         limit: 200,
         order: [['ChatIndex', 'ASC']],
-        include: [{ model: Kuski, as: 'KuskiData' }],
+        include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
         where: {
           Entered: {
             between: [start, end],

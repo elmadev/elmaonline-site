@@ -1,0 +1,8 @@
+.level {
+  background: #fff;
+}
+
+.tableContainer {
+  max-width: 100%;
+  overflow: auto;
+}
