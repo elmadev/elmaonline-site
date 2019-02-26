@@ -44,10 +44,15 @@
   background: #f9f9f9;
 }
 
+.kuskis a span {
+  margin-right: 10px;
+}
+
 .filter {
   background: #f1f1f1;
   position: fixed;
   width: 100%;
+  z-index: 5;
 }
 
 .filter input {
@@ -60,13 +65,6 @@
   max-width: 500px;
   display: block;
   box-sizing: border-box;
-}
-
-.country {
-  display: inline-block;
-  width: 30px;
-  font-size: 12px;
-  color: #c0c0c0;
 }
 
 .kuskiList {

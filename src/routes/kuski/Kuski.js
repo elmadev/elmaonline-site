@@ -7,6 +7,7 @@ import battlesQuery from './battles.graphql';
 import Link from '../../components/Link';
 import Time from '../../components/Time';
 import Loading from '../../components/Loading';
+import Flag from '../../components/Flag';
 import LocalTime from '../../components/LocalTime';
 import s from './Kuski.css';
 
@@ -25,8 +26,16 @@ const RecentBattles = compose(
   return props.data.getBattlesByKuski.map(b => (
     <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
       <span>{b.LevelData && b.LevelData.LevelName}</span>
-      <span>{b.KuskiData.Kuski}</span>
-      <span>{b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}</span>
+      <span>
+        {b.KuskiData.Kuski}{' '}
+        {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
+      </span>
+      <span>
+        {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}{' '}
+        {b.Results.length > 0 &&
+          b.Results[0].KuskiData.TeamData &&
+          `[${b.Results[0].KuskiData.TeamData.Team}]`}
+      </span>
       <span>
         {b.Results.length > 0 ? <Time time={b.Results[0].Time} /> : null}
       </span>
@@ -59,11 +68,13 @@ class Kuski extends React.Component {
             />
           </div>
           <div className={s.profile}>
-            <div className={s.name}>{getKuskiByName.Kuski}</div>
+            <div className={s.name}>
+              <Flag nationality={getKuskiByName.Country} />
+              {getKuskiByName.Kuski}
+            </div>
             <div className={s.teamNat}>
               {getKuskiByName.TeamData &&
-                `Team: ${getKuskiByName.TeamData.Team},`}{' '}
-              Nat: {getKuskiByName.Country}
+                `Team: ${getKuskiByName.TeamData.Team}`}
             </div>
           </div>
           <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>

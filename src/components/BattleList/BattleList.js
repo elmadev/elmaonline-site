@@ -29,9 +29,15 @@ const BattleList = props => {
               <span className={s.levelFileName}>
                 {b.LevelData && b.LevelData.LevelName}
               </span>
-              <span className={s.designerName}>{b.KuskiData.Kuski}</span>
+              <span className={s.designerName}>
+                {b.KuskiData.Kuski}{' '}
+                {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
+              </span>
               <span className={s.winnerKuski}>
-                {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}
+                {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}{' '}
+                {b.Results.length > 0 &&
+                  b.Results[0].KuskiData.TeamData &&
+                  `[${b.Results[0].KuskiData.TeamData.Team}]`}
               </span>
               <span className={s.winnerTime}>
                 {b.Results.length > 0 ? (

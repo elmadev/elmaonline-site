@@ -1,90 +1,81 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import Slide from '@material-ui/core/Slide';
+import { graphql, compose } from 'react-apollo';
+import { sortBy } from 'lodash';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Kuski, Level, ReplayTime } from '../Names';
-import Recplayer from '../Recplayer';
-
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
+import recListQuery from './recList.graphql';
+import RecListItem from '../RecListItem';
+import history from '../../history';
 
 class RecList extends React.Component {
   static propTypes = {
-    replay: PropTypes.shape({
-      ReplayIndex: PropTypes.number.isRequired,
-      LevelIndex: PropTypes.number.isRequired,
-      UploadedBy: PropTypes.number.isRequired,
-      ReplayTime: PropTypes.number,
+    data: PropTypes.shape({
+      loading: PropTypes.bool.isRequired,
+      getReplaysByLevelIndex: PropTypes.arrayOf(
+        PropTypes.shape({
+          ReplayIndex: PropTypes.number.isRequired,
+          RecFileName: PropTypes.string.isRequired,
+          LevelIndex: PropTypes.number.isRequired,
+          ReplayTime: PropTypes.number.isRequired,
+          DrivenBy: PropTypes.number.isRequired,
+          UUID: PropTypes.string.isRequired,
+        }),
+      ),
     }).isRequired,
+    openReplay: PropTypes.func,
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    openReplay: null,
+  };
 
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
+  handleOpenReplay(uuid) {
+    const { openReplay } = this.props;
+    if (openReplay) {
+      openReplay(uuid);
+    } else {
+      history.push(`/r/${uuid}`);
+    }
   }
 
-  handleClickOpen = () => {
-    if (!this.state.open) {
-      this.setState({ open: true });
-    }
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
   render() {
-    const { replay } = this.props;
+    const { data: { loading, getReplaysByLevelIndex } } = this.props;
     return (
-      <TableRow
-        hover
-        style={{ cursor: 'pointer' }}
-        key={replay.ReplayIndex}
-        onClick={this.handleClickOpen}
-      >
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          {replay.RecFileName}
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Level index={replay.LevelIndex} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <ReplayTime time={replay.ReplayTime} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Kuski index={replay.DrivenBy} />
-        </TableCell>
-        <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.handleClose}
-          TransitionComponent={Transition}
-        >
-          {this.state.open && (
-            <React.Fragment>
-              <div style={{ width: '711px', height: '400px', margin: 'auto' }}>
-                <Recplayer
-                  rec={`https://eol.ams3.digitaloceanspaces.com/replays/${
-                    replay.UUID
-                  }/${replay.RecFileName}`}
-                  lev={`/dl/level/${replay.LevelIndex}`}
-                  controls
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Replay</TableCell>
+            <TableCell>Level</TableCell>
+            <TableCell>Time</TableCell>
+            <TableCell>By</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {loading
+            ? 'Loading...'
+            : sortBy(getReplaysByLevelIndex, ['ReplayTime']).map(i => (
+                <RecListItem
+                  key={i.ReplayIndex}
+                  replay={i}
+                  openReplay={uuid => this.handleOpenReplay(uuid)}
                 />
-              </div>
-              <div style={{ width: '711px', height: '50px', margin: 'auto' }}>
-                Press ESC to close
-              </div>
-            </React.Fragment>
-          )}
-        </Dialog>
-      </TableRow>
+              ))}
+        </TableBody>
+      </Table>
     );
   }
 }
 
-export default RecList;
+export default compose(
+  graphql(recListQuery, {
+    options: ownProps => ({
+      variables: {
+        LevelIndex: ownProps.LevelIndex,
+      },
+    }),
+  }),
+)(RecList);

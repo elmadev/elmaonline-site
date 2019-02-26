@@ -1,0 +1,17 @@
+query Level($LevelIndex: Int!) {
+  getBestTimes(LevelIndex: $LevelIndex) {
+    TimeIndex
+    KuskiIndex
+    Time
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+  }
+  getLevel(LevelIndex: $LevelIndex) {
+    LevelName
+    LongName
+  }
+}
