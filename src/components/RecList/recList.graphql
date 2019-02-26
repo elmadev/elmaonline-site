@@ -1,4 +1,4 @@
-query RecList($LevelIndex: String) {
+query RecList($LevelIndex: Int!) {
   getReplaysByLevelIndex(LevelIndex: $LevelIndex) {
     ReplayIndex
     UploadedBy

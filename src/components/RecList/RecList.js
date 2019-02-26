@@ -9,23 +9,38 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import recListQuery from './recList.graphql';
 import RecListItem from '../RecListItem';
+import history from '../../history';
 
 class RecList extends React.Component {
   static propTypes = {
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,
-      getReplaysByLevelIndex: PropTypes.shape({
-        ReplayIndex: PropTypes.number.isRequired,
-        RecFileName: PropTypes.string.isRequired,
-        LevelIndex: PropTypes.number.isRequired,
-        ReplayTime: PropTypes.number.isRequired,
-        DrivenBy: PropTypes.number.isRequired,
-        UUID: PropTypes.string.isRequired,
-      }).isRequired,
+      getReplaysByLevelIndex: PropTypes.arrayOf(
+        PropTypes.shape({
+          ReplayIndex: PropTypes.number.isRequired,
+          RecFileName: PropTypes.string.isRequired,
+          LevelIndex: PropTypes.number.isRequired,
+          ReplayTime: PropTypes.number.isRequired,
+          DrivenBy: PropTypes.number.isRequired,
+          UUID: PropTypes.string.isRequired,
+        }),
+      ),
     }).isRequired,
+    openReplay: PropTypes.func,
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    openReplay: null,
+  };
+
+  handleOpenReplay(uuid) {
+    const { openReplay } = this.props;
+    if (openReplay) {
+      openReplay(uuid);
+    } else {
+      history.push(`/r/${uuid}`);
+    }
+  }
 
   render() {
     const { data: { loading, getReplaysByLevelIndex } } = this.props;
@@ -43,7 +58,11 @@ class RecList extends React.Component {
           {loading
             ? 'Loading...'
             : sortBy(getReplaysByLevelIndex, ['ReplayTime']).map(i => (
-                <RecListItem key={i.ReplayIndex} replay={i} />
+                <RecListItem
+                  key={i.ReplayIndex}
+                  replay={i}
+                  openReplay={uuid => this.handleOpenReplay(uuid)}
+                />
               ))}
         </TableBody>
       </Table>

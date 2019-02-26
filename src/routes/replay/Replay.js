@@ -14,6 +14,7 @@ import replayQuery from './replay.graphql';
 import Recplayer from '../../components/Recplayer';
 import { Level, ReplayTime } from '../../components/Names';
 import RecList from '../../components/RecList';
+import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {
@@ -24,7 +25,7 @@ class Replay extends React.Component {
         UUID: PropTypes.string,
         RecFileName: PropTypes.string,
         ReplayTime: PropTypes.number,
-      }),
+      }).isRequired,
     }).isRequired,
   };
 
@@ -87,7 +88,10 @@ class Replay extends React.Component {
                 <Typography variant="body2">Other replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList LevelIndex={getReplayByUuid.LevelIndex} />
+                <RecList
+                  LevelIndex={getReplayByUuid.LevelIndex}
+                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
+                />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>

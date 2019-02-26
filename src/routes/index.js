@@ -69,7 +69,7 @@ const routes = {
       path: '/levels/:id',
       load: () => import(/* webpackChunkName: 'level' */ './level'),
     },
-    }
+    {
       path: '/r/:uuid',
       load: () => import(/* webpackChunkName: 'replay' */ './replay'),
     },
