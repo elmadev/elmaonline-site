@@ -1,4 +1,4 @@
-import { Besttime, Kuski } from 'data/models'; // import the data model
+import { BestTime, Kuski } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -27,7 +27,7 @@ export const queries = [
 export const resolvers = {
   RootQuery: {
     async getBesttime(parent, { LevelIndex }) {
-      const besttime = await Besttime.findAll({
+      const besttime = await BestTime.findAll({
         where: { LevelIndex },
         include: [
           {

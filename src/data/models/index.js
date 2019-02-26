@@ -99,7 +99,6 @@ export {
   Level,
   Kuski,
   Battletime,
-  Besttime,
   Chat,
   Team,
   AllFinished,
