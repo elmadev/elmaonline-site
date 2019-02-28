@@ -105,14 +105,14 @@ class Battle extends React.Component {
                   <TableRow>
                     <TableCell
                       style={{
-                        width: '.5rem',
+                        width: 1,
                       }}
                     >
                       #
                     </TableCell>
                     <TableCell
                       style={{
-                        width: '10rem',
+                        width: 200,
                       }}
                     >
                       Kuski
