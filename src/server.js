@@ -175,7 +175,9 @@ app.post('/upload/:type', async (req, res) => {
         LevelIndex,
       });
     } else {
-      res.status(500).send(error);
+      res.json({
+        error,
+      });
     }
   }
 });

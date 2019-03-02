@@ -33,41 +33,43 @@ export function uploadReplayS3(replayFile, folder, filename) {
       ACL: 'public-read',
     };
     // upload to s3
-    s3.putObject(params, err => {
-      if (err) {
-        resolve({ error: err });
+    // save in temp folder to be able to read rec data
+    replayFile.mv(`.${config.publicFolder}/temp/${uuid}-${filename}`, mvErr => {
+      if (mvErr) {
+        resolve({ error: mvErr });
       } else {
-        // save in temp folder to be able to read rec data
-        replayFile.mv(
+        // find LevelIndex
+        const replayCRC = readChunk.sync(
           `.${config.publicFolder}/temp/${uuid}-${filename}`,
-          mvErr => {
-            if (mvErr) {
-              resolve({ error: mvErr });
-            } else {
-              // find LevelIndex
-              const replayCRC = readChunk.sync(
-                `.${config.publicFolder}/temp/${uuid}-${filename}`,
-                16,
-                4,
-              );
-              let replayLevel = readChunk.sync(
-                `.${config.publicFolder}/temp/${uuid}-${filename}`,
-                20,
-                12,
-              );
-              replayLevel = replayLevel.toString('utf-8').split('.')[0];
-              getLevelsFromName(replayLevel).then(levels => {
-                let LevelIndex = 0;
-                levels.forEach(level => {
-                  if (level.LevelData && replayCRC) {
-                    if (
-                      level.LevelData.toString('hex').substring(14, 22) ===
-                      replayCRC.toString('hex')
-                    ) {
-                      LevelIndex = level.LevelIndex;
-                    }
-                  }
-                });
+          16,
+          4,
+        );
+        let replayLevel = readChunk.sync(
+          `.${config.publicFolder}/temp/${uuid}-${filename}`,
+          20,
+          12,
+        );
+        replayLevel = replayLevel.toString('utf-8').split('.')[0];
+        getLevelsFromName(replayLevel).then(levels => {
+          let LevelIndex = 0;
+          levels.forEach(level => {
+            if (level.LevelData && replayCRC) {
+              if (
+                level.LevelData.toString('hex').substring(14, 22) ===
+                replayCRC.toString('hex')
+              ) {
+                LevelIndex = level.LevelIndex;
+              }
+            }
+          });
+          if (LevelIndex === 0) {
+            resolve({ error: 'Level not found' });
+            fs.unlink(`.${config.publicFolder}/temp/${uuid}-${filename}`);
+          } else {
+            s3.putObject(params, err => {
+              if (err) {
+                resolve({ error: err });
+              } else {
                 // find replay time and finished state
                 Replay.load(`.${config.publicFolder}/temp/${uuid}-${filename}`)
                   .then(result => {
@@ -88,10 +90,10 @@ export function uploadReplayS3(replayFile, folder, filename) {
                   .catch(error => {
                     resolve({ error });
                   });
-              });
-            }
-          },
-        );
+              }
+            });
+          }
+        });
       }
     });
   });

@@ -17,9 +17,8 @@ class Kuski extends React.Component {
 
   render() {
     const { data: { getKuskiById, variables } } = this.props;
-    return (
-      <span>{getKuskiById ? getKuskiById.Kuski : variables.KuskiIndex}</span>
-    );
+    const id = variables.KuskiIndex === 0 ? 'Unknown' : variables.KuskiIndex;
+    return <span>{getKuskiById ? getKuskiById.Kuski : id}</span>;
   }
 }
 

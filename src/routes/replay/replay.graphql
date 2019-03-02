@@ -7,6 +7,9 @@ query replayQuery($UUID: String!) {
     ReplayTime
     Uploaded
     Comment
+    TAS
+    Unlisted
+    Finished
     UploadedByData {
       Kuski
     }
