@@ -19,5 +19,7 @@ query HomeNews {
     RecFileName
     UUID
     DrivenBy
+    TAS
+    Finished
   }
 }

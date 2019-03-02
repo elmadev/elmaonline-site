@@ -71,13 +71,14 @@ export const resolvers = {
         attributes,
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
+        where: { Unlisted: 0 },
       });
       return replays;
     },
     async getReplaysByLevelIndex(parent, { LevelIndex }) {
       const replays = await Replay.findAll({
         attributes,
-        where: { LevelIndex },
+        where: { LevelIndex, Unlisted: 0 },
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
       });

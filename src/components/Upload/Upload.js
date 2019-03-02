@@ -17,6 +17,7 @@ import s from './Upload.css';
 
 class Upload extends React.Component {
   static propTypes = {
+    onUpload: PropTypes.func,
     filetype: PropTypes.string.isRequired,
     insertReplay: PropTypes.func.isRequired,
     client: PropTypes.shape({
@@ -24,7 +25,9 @@ class Upload extends React.Component {
     }).isRequired,
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    onUpload: null,
+  };
 
   constructor(props) {
     super(props);
@@ -83,6 +86,10 @@ class Upload extends React.Component {
           const newFiles = this.state.files.slice();
           newFiles.splice(this.state.fileInfo[RecFileName].index, 1);
           this.setState({ files: newFiles });
+        }
+        const { onUpload } = this.props;
+        if (onUpload) {
+          onUpload();
         }
       })
       .catch(error => {
@@ -146,19 +153,23 @@ class Upload extends React.Component {
         body: data,
       }).then(response => {
         response.json().then(body => {
-          this.sendMutation(
-            0,
-            body.uuid,
-            body.file,
-            Math.floor(Date.now() / 1000),
-            body.time,
-            body.finished,
-            body.LevelIndex,
-            +this.state.fileInfo[body.file].unlisted,
-            this.state.fileInfo[body.file].kuskiIndex,
-            +this.state.fileInfo[body.file].tas,
-            this.state.fileInfo[body.file].comment,
-          );
+          if (body.error) {
+            this.setState({ error: body.error });
+          } else {
+            this.sendMutation(
+              0,
+              body.uuid,
+              body.file,
+              Math.floor(Date.now() / 1000),
+              body.time,
+              body.finished,
+              body.LevelIndex,
+              +this.state.fileInfo[body.file].unlisted,
+              this.state.fileInfo[body.file].kuskiIndex,
+              +this.state.fileInfo[body.file].tas,
+              this.state.fileInfo[body.file].comment,
+            );
+          }
         });
       });
     });
@@ -183,7 +194,9 @@ class Upload extends React.Component {
               Drop replay files here, or click to select files to upload
             </div>
             {this.state.error && (
-              <div style={{ padding: '8px' }}>{this.state.error}</div>
+              <div style={{ padding: '8px', color: 'red' }}>
+                {this.state.error}
+              </div>
             )}
           </Dropzone>
         </div>

@@ -25,7 +25,10 @@ class Replay extends React.Component {
         UUID: PropTypes.string,
         RecFileName: PropTypes.string,
         ReplayTime: PropTypes.number,
-      }).isRequired,
+        TAS: PropTypes.number,
+        Unlisted: PropTypes.number,
+        Finished: PropTypes.number,
+      }),
     }).isRequired,
   };
 
@@ -63,8 +66,21 @@ class Replay extends React.Component {
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <div>
                   <ReplayTime time={getReplayByUuid.ReplayTime} /> by{' '}
-                  {getReplayByUuid.DrivenByData.Kuski} in{' '}
-                  <Level index={getReplayByUuid.LevelIndex} />
+                  {getReplayByUuid.DrivenByData
+                    ? getReplayByUuid.DrivenByData.Kuski
+                    : 'Unknown'}{' '}
+                  in <Level index={getReplayByUuid.LevelIndex} />
+                </div>
+                <div>
+                  {getReplayByUuid.TAS === 1 && (
+                    <span style={{ color: 'red' }}>(TAS)</span>
+                  )}
+                  {getReplayByUuid.Unlisted === 1 && (
+                    <span style={{ color: 'gray' }}>(Unlisted)</span>
+                  )}
+                  {getReplayByUuid.Finished === 0 && (
+                    <span style={{ color: 'gray' }}>(DNF)</span>
+                  )}
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
