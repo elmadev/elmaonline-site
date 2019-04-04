@@ -26,6 +26,8 @@ class Replay extends React.Component {
         RecFileName: PropTypes.string,
         ReplayTime: PropTypes.number,
         TAS: PropTypes.number,
+        Bug: PropTypes.number,
+        Nitro: PropTypes.number,
         Unlisted: PropTypes.number,
         Finished: PropTypes.number,
       }),
@@ -80,6 +82,12 @@ class Replay extends React.Component {
                   )}
                   {getReplayByUuid.Finished === 0 && (
                     <span style={{ color: 'gray' }}>(DNF)</span>
+                  )}
+                  {getReplayByUuid.Bug === 1 && (
+                    <span style={{ color: 'brown' }}>(Bug)</span>
+                  )}
+                  {getReplayByUuid.Nitro === 1 && (
+                    <span style={{ color: 'blue' }}>(Mod)</span>
                   )}
                 </div>
               </ExpansionPanelDetails>

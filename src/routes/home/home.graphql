@@ -20,6 +20,8 @@ query HomeNews {
     UUID
     DrivenBy
     TAS
+    Bug
+    Nitro
     Finished
   }
 }

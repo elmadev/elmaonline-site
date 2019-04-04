@@ -26,6 +26,8 @@ class RecList extends React.Component {
           DrivenBy: PropTypes.number.isRequired,
           UUID: PropTypes.string.isRequired,
           TAS: PropTypes.number.isRequired,
+          Bug: PropTypes.number.isRequired,
+          Nitro: PropTypes.number.isRequired,
           Finished: PropTypes.number.isRequired,
         }),
       ),
@@ -40,6 +42,8 @@ class RecList extends React.Component {
   state = {
     showTAS: false,
     showDNF: false,
+    showBug: false,
+    showNitro: false,
   };
 
   handleOpenReplay(uuid) {
@@ -53,13 +57,19 @@ class RecList extends React.Component {
 
   render() {
     const { data: { loading, getReplaysByLevelIndex } } = this.props;
-    const { showTAS, showDNF } = this.state;
+    const { showTAS, showDNF, showBug, showNitro } = this.state;
     const filterFunction = o => {
       let show = true;
       if (!showTAS && o.TAS) {
         show = false;
       }
       if (!showDNF && !o.Finished) {
+        show = false;
+      }
+      if (!showBug && o.Bug) {
+        show = false;
+      }
+      if (!showNitro && o.Nitro) {
         show = false;
       }
       return show;
@@ -88,6 +98,30 @@ class RecList extends React.Component {
               />
             }
             label="Show Unfinished"
+          />
+        </div>
+        <div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showBug}
+                onChange={() => this.setState({ showBug: !showBug })}
+                value="showBug"
+                color="primary"
+              />
+            }
+            label="Show Bugged"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showNitro}
+                onChange={() => this.setState({ showNitro: !showNitro })}
+                value="showNitro"
+                color="primary"
+              />
+            }
+            label="Show Modded"
           />
         </div>
         <Table>

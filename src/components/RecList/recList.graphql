@@ -9,6 +9,8 @@ query RecList($LevelIndex: Int!) {
     UUID
     DrivenBy
     TAS
+    Bug
+    Nitro
     Finished
   }
 }
