@@ -30,7 +30,19 @@ export const mutation = [
     #
     TAS: Int!
     #
+    Bug: Int!
+    #
+    Nitro: Int!
+    #
     Comment: String!
+    #
+    MD5: String!
+  ): DatabaseReplay
+
+  # Updates a replay in database
+  updateReplay(
+    #
+    ReplayIndex: Int!
   ): DatabaseReplay
 `,
 ];
@@ -49,8 +61,23 @@ export const resolvers = {
         Unlisted: args.Unlisted,
         DrivenBy: args.DrivenBy,
         TAS: args.TAS,
+        Bug: args.Bug,
+        Nitro: args.Nitro,
         Comment: args.Comment,
+        MD5: args.MD5,
       });
+      return replay;
+    },
+    async updateReplay(parent, { ReplayIndex }) {
+      const replay = await Replay.findOne({
+        where: { ReplayIndex },
+      });
+      if (replay) {
+        await replay.update({
+          Unlisted: 0,
+        });
+        return replay;
+      }
       return replay;
     },
   },

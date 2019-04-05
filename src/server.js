@@ -36,7 +36,7 @@ import Html from './components/Html';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
-import { uploadReplayS3 } from './upload';
+import uploadReplayS3 from './upload';
 import router from './router';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
@@ -165,6 +165,8 @@ app.post('/upload/:type', async (req, res) => {
       finished,
       LevelIndex,
       error,
+      MD5,
+      replayInfo,
     } = await uploadReplayS3(replayFile, folder, req.body.filename);
     if (!error) {
       res.json({
@@ -173,9 +175,14 @@ app.post('/upload/:type', async (req, res) => {
         time,
         finished,
         LevelIndex,
+        MD5,
       });
     } else {
-      res.status(500).send(error);
+      res.json({
+        error,
+        replayInfo,
+        file,
+      });
     }
   }
 });

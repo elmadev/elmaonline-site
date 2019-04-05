@@ -14,6 +14,8 @@ export const schema = [
     Uploaded: Int
     Unlisted: Int
     TAS: Int
+    Bug: Int
+    Nitro: Int
     Comment: String
     UUID: String
     RecFileName: String
@@ -62,6 +64,8 @@ const attributes = [
   'RecFileName',
   'Comment',
   'TAS',
+  'Bug',
+  'Nitro',
 ];
 
 export const resolvers = {
@@ -71,13 +75,14 @@ export const resolvers = {
         attributes,
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
+        where: { Unlisted: 0 },
       });
       return replays;
     },
     async getReplaysByLevelIndex(parent, { LevelIndex }) {
       const replays = await Replay.findAll({
         attributes,
-        where: { LevelIndex },
+        where: { LevelIndex, Unlisted: 0 },
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
       });

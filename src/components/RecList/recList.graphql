@@ -8,5 +8,9 @@ query RecList($LevelIndex: Int!) {
     RecFileName
     UUID
     DrivenBy
+    TAS
+    Bug
+    Nitro
+    Finished
   }
 }

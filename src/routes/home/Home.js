@@ -25,6 +25,7 @@ class Home extends React.Component {
   static propTypes = {
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,
+      refetch: PropTypes.func.isRequired,
       battles: PropTypes.arrayOf(
         PropTypes.shape({
           BattleIndex: PropTypes.number.isRequired,
@@ -51,7 +52,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     const currentBattle = getBattles.filter(i => i.InQueue === 1)[0];
     return (
       <div className={s.root}>
@@ -136,7 +137,7 @@ class Home extends React.Component {
             <Typography variant="display2" gutterBottom>
               Upload Replays
             </Typography>
-            <Upload filetype=".rec" />
+            <Upload onUpload={() => refetch()} filetype=".rec" />
             <Typography variant="display2" gutterBottom>
               Latest Replays
             </Typography>

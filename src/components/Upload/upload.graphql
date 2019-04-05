@@ -9,7 +9,10 @@ mutation insertReplay(
   $Unlisted: Int!
   $DrivenBy: Int!
   $TAS: Int!
+  $Bug: Int!
+  $Nitro: Int!
   $Comment: String!
+  $MD5: String!
 ) {
   insertReplay(
     UploadedBy: $UploadedBy
@@ -22,7 +25,10 @@ mutation insertReplay(
     Unlisted: $Unlisted
     DrivenBy: $DrivenBy
     TAS: $TAS
+    Bug: $Bug
+    Nitro: $Nitro
     Comment: $Comment
+    MD5: $MD5
   ) {
     ReplayIndex
   }

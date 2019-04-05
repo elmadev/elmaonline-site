@@ -19,5 +19,9 @@ query HomeNews {
     RecFileName
     UUID
     DrivenBy
+    TAS
+    Bug
+    Nitro
+    Finished
   }
 }
