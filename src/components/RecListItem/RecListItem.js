@@ -13,6 +13,8 @@ class RecListItem extends React.Component {
       UploadedBy: PropTypes.number.isRequired,
       ReplayTime: PropTypes.number,
       TAS: PropTypes.number,
+      Bug: PropTypes.number,
+      Nitro: PropTypes.number,
       Finished: PropTypes.number,
     }).isRequired,
     openReplay: PropTypes.func,
@@ -51,6 +53,8 @@ class RecListItem extends React.Component {
           {replay.Finished === 0 && (
             <span style={{ color: 'gray' }}>(DNF) </span>
           )}
+          {replay.Bug === 1 && <span style={{ color: 'brown' }}>(Bug) </span>}
+          {replay.Nitro === 1 && <span style={{ color: 'blue' }}>(Mod) </span>}
           <ReplayTime time={replay.ReplayTime} />
         </TableCell>
         <TableCell style={{ padding: '4px 10px 4px 10px' }}>

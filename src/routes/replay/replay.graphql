@@ -8,6 +8,8 @@ query replayQuery($UUID: String!) {
     Uploaded
     Comment
     TAS
+    Bug
+    Nitro
     Unlisted
     Finished
     UploadedByData {

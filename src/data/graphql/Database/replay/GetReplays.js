@@ -14,6 +14,8 @@ export const schema = [
     Uploaded: Int
     Unlisted: Int
     TAS: Int
+    Bug: Int
+    Nitro: Int
     Comment: String
     UUID: String
     RecFileName: String
@@ -62,6 +64,8 @@ const attributes = [
   'RecFileName',
   'Comment',
   'TAS',
+  'Bug',
+  'Nitro',
 ];
 
 export const resolvers = {
