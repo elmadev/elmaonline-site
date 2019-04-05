@@ -18,6 +18,8 @@ import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
 import Upload from '../../components/Upload';
 import RecListItem from '../../components/RecListItem';
+import RecList from '../../components/RecList';
+import BattleCard from '../../components/BattleCard';
 
 class Home extends React.Component {
   static propTypes = {
@@ -51,11 +53,20 @@ class Home extends React.Component {
 
   render() {
     const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const currentBattle = getBattles.filter(i => i.InQueue === 1)[0];
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
-            <Typography variant="display2" gutterBottom>
+            {currentBattle && [
+              <Typography variant="display2" gutterBottom>
+                Current Battle
+              </Typography>,
+              <BattleCard
+                battle={getBattles.filter(i => i.InQueue === 1)[0]}
+              />,
+            ]}
+            <Typography variant="display2" gutterBottom gutterTop>
               Latest Battles
             </Typography>
             <Paper>
