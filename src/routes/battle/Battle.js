@@ -36,6 +36,7 @@ class Battle extends React.Component {
   render() {
     const { BattleIndex } = this.props;
     const { data: { getBattle } } = this.props;
+    const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return null;
 
@@ -43,11 +44,13 @@ class Battle extends React.Component {
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
-            <Recplayer
-              rec={`/dl/battlereplay/${BattleIndex}`}
-              lev={`/dl/level/${getBattle.LevelIndex}`}
-              controls
-            />
+            {isWindow && (
+              <Recplayer
+                rec={`/dl/battlereplay/${BattleIndex}`}
+                lev={`/dl/level/${getBattle.LevelIndex}`}
+                controls
+              />
+            )}
           </div>
         </div>
         <div className={s.rightBarContainer}>
