@@ -53,6 +53,7 @@ class Upload extends React.Component {
       error: '',
       duplicate: false,
       duplicateReplayIndex: 0,
+      uploaded: [],
     });
     const fileInfo = {};
     files.forEach((file, index) => {

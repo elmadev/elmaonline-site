@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { Kuski, Level, ReplayTime } from '../Names';
+import Link from '../Link';
 import history from '../../history';
 
 class RecListItem extends React.Component {
@@ -43,7 +44,7 @@ class RecListItem extends React.Component {
         onClick={() => this.handleOpenReplay(replay.UUID)}
       >
         <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          {replay.RecFileName}
+          <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
         </TableCell>
         <TableCell style={{ padding: '4px 10px 4px 10px' }}>
           <Level index={replay.LevelIndex} />
