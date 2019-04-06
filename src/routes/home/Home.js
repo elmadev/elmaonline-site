@@ -18,8 +18,8 @@ import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
 import Upload from '../../components/Upload';
 import RecListItem from '../../components/RecListItem';
-import RecList from '../../components/RecList';
 import BattleCard from '../../components/BattleCard';
+import Link from '../../components/Link';
 
 class Home extends React.Component {
   static propTypes = {
@@ -92,7 +92,7 @@ class Home extends React.Component {
                             i.Finished === 0
                               ? {
                                   cursor: 'pointer',
-                                  backgroundColor: '#219653',
+                                  backgroundColor: '#2566a7',
                                 }
                               : { cursor: 'pointer' }
                           }
@@ -106,9 +106,11 @@ class Home extends React.Component {
                             {i.InQueue === 1 ? (
                               'Queued'
                             ) : (
-                              <Moment parse="X" format="HH:mm:ss">
-                                {i.StartedUtc}
-                              </Moment>
+                              <Link to={`/battles/${i.BattleIndex}`}>
+                                <Moment parse="X" format="HH:mm:ss">
+                                  {i.StartedUtc}
+                                </Moment>
+                              </Link>
                             )}
                           </TableCell>
                           <TableCell>
