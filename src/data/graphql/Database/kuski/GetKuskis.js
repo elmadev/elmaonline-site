@@ -1,4 +1,4 @@
-import { Kuski } from 'data/models'; // import the data model
+import { Kuski, Team } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -24,19 +24,32 @@ export const schema = [
     RMod: Int
     RAdmin: Int
     Confirmed: Int
+    TeamData: DatabaseTeam
+  }
+
+  type DatabaseTeam {
+    TeamIndex: Int
+    Team: String
+    Locked: Int
   }
 `,
 ];
 
 export const queries = [
   `
-  # Retrieves all levels stored in the database
+  # Retrieves all kuskis stored in the database
   getKuskis: [DatabaseKuski]
 
-  # Retrieves a single level from the database
-  getKuski(
-    # The level's id
+  # Retrieves a single kuski from the database by id
+  getKuskiById(
+    # The kuski's id
     KuskiIndex: Int!
+  ): DatabaseKuski
+
+  # Retrieves a single kuski from the database by name
+  getKuskiByName(
+    # The kuski's name
+    Name: String!
   ): DatabaseKuski
 `,
 ];
@@ -64,16 +77,24 @@ export const resolvers = {
   RootQuery: {
     async getKuskis() {
       const kuskis = await Kuski.findAll({
-        attributes,
-        limit: 100,
-        order: [['KuskiIndex', 'ASC']],
+        attributes: ['Kuski', 'Country', 'KuskiIndex', 'TeamIndex'],
+        include: [{ model: Team, as: 'TeamData' }],
+        order: [['Kuski', 'ASC']],
       });
       return kuskis;
     },
-    async getKuski(parent, { KuskiIndex }) {
+    async getKuskiById(parent, { KuskiIndex }) {
       const kuski = await Kuski.findOne({
         attributes,
         where: { KuskiIndex },
+      });
+      return kuski;
+    },
+    async getKuskiByName(parent, { Name }) {
+      const kuski = await Kuski.findOne({
+        attributes: ['Kuski', 'Country', 'KuskiIndex'],
+        where: { Kuski: Name },
+        include: [{ model: Team, as: 'TeamData' }],
       });
       return kuski;
     },

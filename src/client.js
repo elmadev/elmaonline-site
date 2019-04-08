@@ -13,6 +13,7 @@ import ReactDOM from 'react-dom';
 import deepForceUpdate from 'react-deep-force-update';
 import queryString from 'query-string';
 import { createPath } from 'history/PathUtils';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import App from './components/App';
 import createFetch from './createFetch';
 import configureStore from './store/configureStore';
@@ -20,6 +21,7 @@ import { updateMeta } from './DOMUtils';
 import history from './history';
 import createApolloClient from './core/createApolloClient';
 import router from './router';
+import muiTheme from './muiTheme';
 
 // Universal HTTP client
 const fetch = createFetch(window.fetch, {
@@ -87,10 +89,11 @@ async function onLocationChange(location, action) {
       history.replace(route.redirect);
       return;
     }
-
     const renderReactApp = isInitialRender ? ReactDOM.hydrate : ReactDOM.render;
     appInstance = renderReactApp(
-      <App context={context}>{route.component}</App>,
+      <MuiThemeProvider theme={muiTheme}>
+        <App context={context}>{route.component}</App>
+      </MuiThemeProvider>,
       container,
       () => {
         if (isInitialRender) {

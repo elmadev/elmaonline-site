@@ -1,19 +1,26 @@
-import { Replay } from 'data/models';
+import { Replay, Kuski } from 'data/models';
 
 export const schema = [
   `
   # A replay stored in the database
   type DatabaseReplay {
     ReplayIndex: Int
-    KuskiIndex: Int
+    DrivenBy: Int
+    UploadedBy: Int
     LevelIndex: Int
     TimeIndex: Int
     ReplayTime: Int
-    Uploaded: String
-    RecData: String
-    ShareDesigner: Int
-    ShareTeam: Int
-    ShareAll: Int
+    Finished: Int
+    Uploaded: Int
+    Unlisted: Int
+    TAS: Int
+    Bug: Int
+    Nitro: Int
+    Comment: String
+    UUID: String
+    RecFileName: String
+    DrivenByData: DatabaseKuski
+    UploadedByData: DatabaseKuski
   }
 `,
 ];
@@ -23,24 +30,42 @@ export const queries = [
   # Retrieves all replays stored in the database
   getReplays: [DatabaseReplay]
 
+  # Retrieves all replays in a specific level
+  getReplaysByLevelIndex(
+    # The level index
+    LevelIndex: Int!
+  ): [DatabaseReplay]
+
   # Retrieves a single replay from the database
   getReplay(
     # The replay's id
     ReplayIndex: Int!
+  ): DatabaseReplay
+
+  # Retrieves a single replay from the database by UUID
+  getReplayByUuid(
+    # The replay's uuid
+    UUID: String!
   ): DatabaseReplay
 `,
 ];
 
 const attributes = [
   'ReplayIndex',
-  'KuskiIndex',
+  'DrivenBy',
+  'UploadedBy',
   'LevelIndex',
   'TimeIndex',
   'ReplayTime',
+  'Finished',
   'Uploaded',
-  'ShareDesigner',
-  'ShareTeam',
-  'ShareAll',
+  'Unlisted',
+  'UUID',
+  'RecFileName',
+  'Comment',
+  'TAS',
+  'Bug',
+  'Nitro',
 ];
 
 export const resolvers = {
@@ -50,6 +75,16 @@ export const resolvers = {
         attributes,
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
+        where: { Unlisted: 0 },
+      });
+      return replays;
+    },
+    async getReplaysByLevelIndex(parent, { LevelIndex }) {
+      const replays = await Replay.findAll({
+        attributes,
+        where: { LevelIndex, Unlisted: 0 },
+        limit: 100,
+        order: [['ReplayIndex', 'DESC']],
       });
       return replays;
     },
@@ -57,6 +92,23 @@ export const resolvers = {
       const replay = await Replay.findOne({
         attributes,
         where: { ReplayIndex },
+      });
+      return replay;
+    },
+    async getReplayByUuid(parent, { UUID }) {
+      const replay = await Replay.findOne({
+        attributes,
+        where: { UUID },
+        include: [
+          {
+            model: Kuski,
+            as: 'UploadedByData',
+          },
+          {
+            model: Kuski,
+            as: 'DrivenByData',
+          },
+        ],
       });
       return replay;
     },

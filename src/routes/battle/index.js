@@ -4,7 +4,8 @@ import Layout from '../../components/Layout';
 
 async function action(context) {
   return {
-    title: 'Elma Online',
+    title: `battles/${context.params.id}`,
+    chunks: ['battle'],
     component: (
       <Layout>
         <Battle BattleIndex={parseInt(context.params.id, 10)} />

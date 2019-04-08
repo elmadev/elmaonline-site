@@ -1,0 +1,36 @@
+query getBattlesByKuski($KuskiIndex: Int!) {
+  getBattlesByKuski(KuskiIndex: $KuskiIndex) {
+    BattleIndex
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Started
+    Duration
+    InQueue
+    Aborted
+    Finished
+    KuskiData {
+      KuskiIndex
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+    LevelData {
+      LevelName
+    }
+    Results {
+      BattleTimeIndex
+      BattleIndex
+      KuskiIndex
+      KuskiIndex2
+      Time
+      KuskiData {
+        Kuski
+        TeamData {
+          Team
+        }
+      }
+    }
+  }
+}

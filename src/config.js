@@ -30,14 +30,21 @@ module.exports = {
   },
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
   mysql: {
-    host: 'eol1test.cyn0krffkpzu.us-east-2.rds.amazonaws.com',
+    host: 'sql.elma.online',
     port: 3306,
-    user: 'balls',
-    pass: 'poppetmaster',
+    user: 'sandbox',
+    pass: 'Icommandthesun',
     database: 'eol1',
   },
+
+  // files
+  publicFolder: '/public',
+  s3SubFolder: 'test/',
+
+  // s3
+  accessKeyId: 'BK6SGSL7RYGCASA3PUSV',
+  secretAccessKey: '+7AvMTUk6QoPyqjud9Bz+Ai0M+A13eGgLRjrWw0nlrA',
 
   // Web analytics
   analytics: {

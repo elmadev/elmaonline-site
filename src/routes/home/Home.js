@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
+import m from 'moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Table from '@material-ui/core/Table';
@@ -15,11 +16,16 @@ import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';
 import history from '../../history';
+import Upload from '../../components/Upload';
+import RecListItem from '../../components/RecListItem';
+import BattleCard from '../../components/BattleCard';
+import Link from '../../components/Link';
 
 class Home extends React.Component {
   static propTypes = {
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,
+      refetch: PropTypes.func.isRequired,
       battles: PropTypes.arrayOf(
         PropTypes.shape({
           BattleIndex: PropTypes.number.isRequired,
@@ -35,16 +41,31 @@ class Home extends React.Component {
 
   gotoBattle = battleIndex => {
     if (!Number.isNaN(battleIndex)) {
-      history.push(`/battle/${battleIndex}`);
+      history.push(`/battles/${battleIndex}`);
     }
   };
 
+  remaining = started => {
+    const now = m().format('X');
+    const diff = now - started;
+    return Math.round(diff / 60, 0);
+  };
+
   render() {
-    const { data: { loading, getBattles, getReplays } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const currentBattle = getBattles.filter(i => i.InQueue === 1)[0];
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
+            {currentBattle && [
+              <Typography variant="display2" gutterBottom>
+                Current Battle
+              </Typography>,
+              <BattleCard
+                battle={getBattles.filter(i => i.InQueue === 1)[0]}
+              />,
+            ]}
             <Typography variant="display2" gutterBottom>
               Latest Battles
             </Typography>
@@ -65,7 +86,16 @@ class Home extends React.Component {
                     ? 'Loading...'
                     : getBattles.map(i => (
                         <TableRow
-                          style={{ cursor: 'pointer' }}
+                          style={
+                            i.InQueue === 0 &&
+                            i.Aborted === 0 &&
+                            i.Finished === 0
+                              ? {
+                                  cursor: 'pointer',
+                                  backgroundColor: '#2566a7',
+                                }
+                              : { cursor: 'pointer' }
+                          }
                           hover
                           key={i.BattleIndex}
                           onClick={() => {
@@ -76,9 +106,11 @@ class Home extends React.Component {
                             {i.InQueue === 1 ? (
                               'Queued'
                             ) : (
-                              <Moment parse="X" format="HH:mm:ss">
-                                {i.Started}
-                              </Moment>
+                              <Link to={`/battles/${i.BattleIndex}`}>
+                                <Moment parse="X" format="HH:mm:ss">
+                                  {i.StartedUtc}
+                                </Moment>
+                              </Link>
                             )}
                           </TableCell>
                           <TableCell>
@@ -90,7 +122,13 @@ class Home extends React.Component {
                           <TableCell>
                             <BattleType type={i.BattleType} />
                           </TableCell>
-                          <TableCell>{i.Duration}</TableCell>
+                          <TableCell>
+                            {i.InQueue === 0 &&
+                            i.Aborted === 0 &&
+                            i.Finished === 0
+                              ? `${this.remaining(i.StartedUtc)}/${i.Duration}`
+                              : i.Duration}
+                          </TableCell>
                         </TableRow>
                       ))}
                 </TableBody>
@@ -99,18 +137,31 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Typography variant="display2" gutterBottom>
+              Upload Replays
+            </Typography>
+            <Upload onUpload={() => refetch()} filetype=".rec" />
+            <Typography variant="display2" gutterBottom>
               Latest Replays
             </Typography>
-            {loading
-              ? 'Loading...'
-              : getReplays.map(i => (
-                  <div key={i.ReplayIndex}>
-                    <h2>
-                      {i.ReplayTime} in {i.LevelIndex} by {i.KuskiIndex}
-                    </h2>
-                    <div>Uploaded: {i.Uploaded}</div>
-                  </div>
-                ))}
+            <Paper>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Replay</TableCell>
+                    <TableCell>Level</TableCell>
+                    <TableCell>Time</TableCell>
+                    <TableCell>By</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading
+                    ? 'Loading...'
+                    : getReplays.map(i => (
+                        <RecListItem key={i.ReplayIndex} replay={i} />
+                      ))}
+                </TableBody>
+              </Table>
+            </Paper>
           </Grid>
         </Grid>
       </div>

@@ -1,0 +1,13 @@
+query AllTimes($LevelIndex: Int!) {
+  getTimes(LevelIndex: $LevelIndex) {
+    TimeIndex
+    KuskiIndex
+    Time
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+  }
+}

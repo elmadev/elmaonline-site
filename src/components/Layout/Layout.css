@@ -31,10 +31,6 @@ body {
   margin: 0;
 }
 
-a {
-  color: #0074c2;
-}
-
 /*
  * Remove text-shadow in selection highlight:
  * https://twitter.com/miketaylr/status/12228805301
@@ -190,4 +186,35 @@ textarea {
   .sideBarExpanded {
     margin-left: var(--side-bar-width);
   }
+}
+
+.layout,
+.sideBarExpanded {
+  height: 100%;
+}
+
+html,
+body,
+#app {
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: #219653;
+  text-decoration: none;
+}
+
+h2,
+h3 {
+  margin: 10px;
+  font-size: 20px;
+  font-weight: normal;
+  color: #8c8c8c;
+  letter-spacing: 1px;
+}
+
+h2 {
+  text-transform: uppercase;
 }

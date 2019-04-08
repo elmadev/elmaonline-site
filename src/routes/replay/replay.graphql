@@ -1,0 +1,22 @@
+query replayQuery($UUID: String!) {
+  getReplayByUuid(UUID: $UUID) {
+    DrivenBy
+    LevelIndex
+    RecFileName
+    UUID
+    ReplayTime
+    Uploaded
+    Comment
+    TAS
+    Bug
+    Nitro
+    Unlisted
+    Finished
+    UploadedByData {
+      Kuski
+    }
+    DrivenByData {
+      Kuski
+    }
+  }
+}

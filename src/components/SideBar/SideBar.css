@@ -9,8 +9,26 @@
   z-index: 11;
 }
 
+@media (max-width: 768px) {
+  .root {
+    width: 50px;
+  }
+
+  .expanded {
+    width: var(--side-bar-width);
+  }
+
+  .text {
+    display: none;
+  }
+}
+
 .expanded {
   height: 100%;
+}
+
+.expanded .text {
+  display: inline;
 }
 
 .container {
@@ -24,7 +42,7 @@
   max-height: 100%;
   overflow-y: auto;
   display: none;
-  background: #f7f7f7;
+  background: #1f1f1f;
 }
 
 .expanded .content {
@@ -36,6 +54,18 @@
   line-height: var(--top-bar-height);
   color: #fff;
   text-transform: uppercase;
-  padding: 0 14px;
+  padding: 0 17px;
+  outline: 0;
   cursor: pointer;
+}
+
+.content a {
+  color: #c3c3c3;
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+}
+
+.content a:hover {
+  background: rgba(0, 0, 0, 0.1);
 }

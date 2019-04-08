@@ -1,24 +1,27 @@
 query HomeNews {
-  reactjsGetAllNews {
-    title
-    link
-    author
-    pubDate
-    content
-  }
   getBattles {
     BattleIndex
     KuskiIndex
     LevelIndex
     BattleType
-    Started
+    StartedUtc
     Duration
+    InQueue
+    Aborted
+    Finished
   }
   getReplays {
     ReplayIndex
-    KuskiIndex
+    UploadedBy
     LevelIndex
     ReplayTime
     Uploaded
+    RecFileName
+    UUID
+    DrivenBy
+    TAS
+    Bug
+    Nitro
+    Finished
   }
 }

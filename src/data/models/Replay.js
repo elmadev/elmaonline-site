@@ -10,7 +10,12 @@ const Replay = Model.define(
       allowNull: false,
       primaryKey: true,
     },
-    KuskiIndex: {
+    DrivenBy: {
+      type: DataType.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
+    UploadedBy: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -30,30 +35,55 @@ const Replay = Model.define(
       allowNull: true,
       defaultValue: DataType.NULL,
     },
-    Uploaded: {
-      type: DataType.STRING(19),
-      allowNull: false,
-      defaultValue: '0000-00-00 00:00:00',
-    },
-    RecData: {
-      type: DataType.BLOB,
-      allowNull: false,
+    Finished: {
+      type: DataType.INTEGER,
+      allowNull: true,
       defaultValue: DataType.NULL,
     },
-    ShareDesigner: {
+    Uploaded: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
-    ShareTeam: {
+    Unlisted: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
-    ShareAll: {
+    TAS: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    Bug: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Nitro: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Comment: {
+      type: DataType.STRING(255),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
+    UUID: {
+      type: DataType.STRING(10),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
+    RecFileName: {
+      type: DataType.STRING(19),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
+    MD5: {
+      type: DataType.STRING(32),
+      allowNull: true,
+      defaultValue: DataType.NULL,
     },
   },
   {

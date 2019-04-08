@@ -7,7 +7,7 @@ class Kuski extends React.Component {
   static propTypes = {
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,
-      getKuski: PropTypes.shape({
+      getKuskiById: PropTypes.shape({
         Kuski: PropTypes.string,
         Country: PropTypes.string,
         TeamIndex: PropTypes.integer,
@@ -16,8 +16,9 @@ class Kuski extends React.Component {
   };
 
   render() {
-    const { data: { getKuski, variables } } = this.props;
-    return <span>{getKuski ? getKuski.Kuski : variables.KuskiIndex}</span>;
+    const { data: { getKuskiById, variables } } = this.props;
+    const id = variables.KuskiIndex === 0 ? 'Unknown' : variables.KuskiIndex;
+    return <span>{getKuskiById ? getKuskiById.Kuski : id}</span>;
   }
 }
 

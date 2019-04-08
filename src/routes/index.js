@@ -19,7 +19,7 @@ const routes = {
     // added to client.js as well and not repeated in individual each route chunk.
     {
       path: '',
-      load: () => import(/* webpackMode: 'eager' */ './home'),
+      load: () => import(/* webpackChunkName: 'home' */ './home'),
     },
     {
       path: '/contact',
@@ -46,12 +46,32 @@ const routes = {
       load: () => import(/* webpackChunkName: 'admin' */ './admin'),
     },
     {
-      path: '/battle/:id',
+      path: '/battles/:id',
       load: () => import(/* webpackChunkName: 'battle' */ './battle'),
     },
     {
-      path: '/battle',
-      load: () => import(/* webpackChunkName: 'battle' */ './home'),
+      path: '/battles',
+      load: () => import(/* webpackChunkName: 'battles' */ './battles'),
+    },
+    {
+      path: '/editor',
+      load: () => import(/* webpackChunkName: 'editor' */ './editor'),
+    },
+    {
+      path: '/kuskis',
+      load: () => import(/* webpackChunkName: 'kuskis' */ './kuskis'),
+    },
+    {
+      path: '/kuskis/:name',
+      load: () => import(/* webpackChunkName: 'kuski' */ './kuski'),
+    },
+    {
+      path: '/levels/:id',
+      load: () => import(/* webpackChunkName: 'level' */ './level'),
+    },
+    {
+      path: '/r/:uuid',
+      load: () => import(/* webpackChunkName: 'replay' */ './replay'),
     },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
@@ -65,7 +85,7 @@ const routes = {
     const route = await next();
 
     // Provide default values for title, description etc.
-    route.title = `${route.title || 'Untitled Page'} - www.reactstarterkit.com`;
+    route.title = `${route.title || 'Untitled Page'}`;
     route.description = route.description || '';
 
     return route;

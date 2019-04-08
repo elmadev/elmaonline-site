@@ -18,25 +18,32 @@ import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import nodeFetch from 'node-fetch';
 import React from 'react';
-import ReactDOM from 'react-dom/server';
+import ReactDOMServer from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
+import cors from 'cors';
+import fileUpload from 'express-fileupload';
+import { SheetsRegistry } from 'react-jss/lib/jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {
+  MuiThemeProvider,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 import createApolloClient from './core/createApolloClient';
 import App from './components/App';
 import Html from './components/Html';
-import { ErrorPageWithoutStyle } from './routes/error/ErrorPage';
-import errorPageStyle from './routes/error/ErrorPage.css';
 import createFetch from './createFetch';
 import passport from './passport';
 import { getReplayByBattleId, getLevel } from './download';
+import uploadReplayS3 from './upload';
 import router from './router';
-import models from './data/models';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
+import muiTheme from './muiTheme';
 
 const app = express();
 
@@ -54,6 +61,8 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use(fileUpload());
 
 //
 // Authentication
@@ -115,9 +124,11 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
   }
 });
 
@@ -131,9 +142,48 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
-    next();
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+//
+// Uploading files
+//--------------------------------------------
+app.post('/upload/:type', async (req, res) => {
+  const replayFile = req.files.file;
+  let folder = 'misc';
+  if (req.params.type === 'replay') {
+    folder = 'replays';
+    const {
+      file,
+      uuid,
+      time,
+      finished,
+      LevelIndex,
+      error,
+      MD5,
+      replayInfo,
+    } = await uploadReplayS3(replayFile, folder, req.body.filename);
+    if (!error) {
+      res.json({
+        file,
+        uuid,
+        time,
+        finished,
+        LevelIndex,
+        MD5,
+      });
+    } else {
+      res.json({
+        error,
+        replayInfo,
+        file,
+      });
+    }
   }
 });
 
@@ -219,12 +269,29 @@ app.get('*', async (req, res, next) => {
     }
 
     const data = { ...route };
-    const rootComponent = <App context={context}>{route.component}</App>;
+    const sheetsRegistry = new SheetsRegistry();
+    const sheetsManager = new Map();
+    const generateClassName = createGenerateClassName();
+
+    const rootComponent = (
+      <JssProvider
+        registry={sheetsRegistry}
+        generateClassName={generateClassName}
+      >
+        <MuiThemeProvider theme={muiTheme} sheetsManager={sheetsManager}>
+          <App context={context}>{route.component}</App>
+        </MuiThemeProvider>
+      </JssProvider>
+    );
     await getDataFromTree(rootComponent);
     // this is here because of Apollo redux APOLLO_QUERY_STOP action
     await Promise.delay(0);
-    data.children = await ReactDOM.renderToString(rootComponent);
-    data.styles = [{ id: 'css', cssText: [...css].join('') }];
+    data.children = await ReactDOMServer.renderToString(rootComponent);
+    const materialUICss = sheetsRegistry.toString();
+    data.styles = [
+      { id: 'css', cssText: [...css].join('') },
+      { id: 'materialUI', cssText: materialUICss },
+    ];
 
     data.scripts = [assets.vendor.js];
     if (route.chunks) {
@@ -241,9 +308,10 @@ app.get('*', async (req, res, next) => {
       apiUrl: config.api.clientUrl,
       state: context.store.getState(),
       apolloState: context.client.extract(),
+      s3SubFolder: config.s3SubFolder,
     };
 
-    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {
@@ -261,28 +329,16 @@ pe.skipPackage('express');
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(pe.render(err));
-  const html = ReactDOM.renderToStaticMarkup(
-    <Html
-      title="Internal Server Error"
-      description={err.message}
-      styles={[{ id: 'css', cssText: errorPageStyle._getCss() }]} // eslint-disable-line no-underscore-dangle
-    >
-      {ReactDOM.renderToString(<ErrorPageWithoutStyle error={err} />)}
-    </Html>,
-  );
   res.status(err.status || 500);
-  res.send(`<!doctype html>${html}`);
+  res.send(err.msg);
 });
 
 //
 // Launch the server
 // -----------------------------------------------------------------------------
-const promise = models.sync().catch(err => console.error(err.stack));
 if (!module.hot) {
-  promise.then(() => {
-    app.listen(config.port, () => {
-      console.info(`The server is running at http://localhost:${config.port}/`);
-    });
+  app.listen(config.port, () => {
+    console.info(`The server is running at http://localhost:${config.port}/`);
   });
 }
 

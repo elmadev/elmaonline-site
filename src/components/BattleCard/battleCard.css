@@ -1,0 +1,15 @@
+.card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.cover {
+  height: 210px;
+  max-width: 500px;
+}
+
+.info {
+  padding-top: 10px;
+}

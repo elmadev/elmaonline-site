@@ -27,3 +27,6 @@ yarn-error.log*
 
 # Misc
 .DS_Store
+
+# User uploaded files
+public/replays/

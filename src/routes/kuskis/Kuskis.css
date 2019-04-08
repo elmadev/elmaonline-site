@@ -1,0 +1,72 @@
+.kuskis {
+  min-height: 100%;
+  background: #fff;
+}
+
+.groupTitle {
+  padding: 10px;
+  padding-top: 20px;
+  font-weight: 500;
+  border-bottom: 1px solid #eaeaea;
+  outline: 0;
+  cursor: pointer;
+}
+
+.groupItemCount {
+  font-size: 12px;
+  color: #909090;
+  font-weight: normal;
+}
+
+.groupChar {
+  display: inline-block;
+  min-width: 20px;
+  margin-right: 10px;
+  text-transform: uppercase;
+}
+
+.groupContent {
+  display: block;
+}
+
+.kuskiRow {
+  padding: 10px;
+}
+
+.kuskis a {
+  color: #000;
+  border-bottom: 1px solid #eaeaea;
+  font-size: 14px;
+  display: block;
+}
+
+.kuskis a:hover {
+  background: #f9f9f9;
+}
+
+.kuskis a span {
+  margin-right: 10px;
+}
+
+.filter {
+  background: #f1f1f1;
+  position: fixed;
+  width: 100%;
+  z-index: 5;
+}
+
+.filter input {
+  padding: 15px 10px;
+  font-size: 14px;
+  border: 0;
+  background: transparent;
+  outline: 0;
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  box-sizing: border-box;
+}
+
+.kuskiList {
+  padding-top: 46px;
+}

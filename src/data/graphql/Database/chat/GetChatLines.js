@@ -23,8 +23,8 @@ export const resolvers = {
     async getChatLines(parent, { start, end }) {
       const chatLines = await Chat.findAll({
         limit: 200,
-        order: [['ChatIndex', 'DESC']],
-        include: [{ model: Kuski, as: 'KuskiData' }],
+        order: [['ChatIndex', 'ASC']],
+        include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
         where: {
           Entered: {
             between: [start, end],

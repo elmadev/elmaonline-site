@@ -1,0 +1,35 @@
+mutation insertReplay(
+  $UploadedBy: Int!
+  $UUID: String!
+  $RecFileName: String!
+  $Uploaded: Int!
+  $ReplayTime: Int!
+  $Finished: Int!
+  $LevelIndex: Int!
+  $Unlisted: Int!
+  $DrivenBy: Int!
+  $TAS: Int!
+  $Bug: Int!
+  $Nitro: Int!
+  $Comment: String!
+  $MD5: String!
+) {
+  insertReplay(
+    UploadedBy: $UploadedBy
+    UUID: $UUID
+    RecFileName: $RecFileName
+    Uploaded: $Uploaded
+    ReplayTime: $ReplayTime
+    Finished: $Finished
+    LevelIndex: $LevelIndex
+    Unlisted: $Unlisted
+    DrivenBy: $DrivenBy
+    TAS: $TAS
+    Bug: $Bug
+    Nitro: $Nitro
+    Comment: $Comment
+    MD5: $MD5
+  ) {
+    ReplayIndex
+  }
+}

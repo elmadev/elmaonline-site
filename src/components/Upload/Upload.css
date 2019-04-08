@@ -1,0 +1,10 @@
+@import '../variables.css';
+
+.uploadCard {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.uploadButtonContainer {
+  margin-top: 8px;
+}
