@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import { Kuski, Level, ReplayTime } from '../Names';
+import { Kuski, Level } from '../Names';
+import Time from '../Time';
 import Link from '../Link';
 import history from '../../history';
 
@@ -56,7 +57,7 @@ class RecListItem extends React.Component {
           )}
           {replay.Bug === 1 && <span style={{ color: 'brown' }}>(Bug) </span>}
           {replay.Nitro === 1 && <span style={{ color: 'blue' }}>(Mod) </span>}
-          <ReplayTime time={replay.ReplayTime} />
+          <Time thousands time={replay.ReplayTime} />
         </TableCell>
         <TableCell style={{ padding: '4px 10px 4px 10px' }}>
           <Kuski index={replay.DrivenBy} />

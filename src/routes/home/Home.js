@@ -66,7 +66,7 @@ class Home extends React.Component {
                 battle={getBattles.filter(i => i.InQueue === 1)[0]}
               />,
             ]}
-            <Typography variant="display2" gutterBottom gutterTop>
+            <Typography variant="display2" gutterBottom>
               Latest Battles
             </Typography>
             <Paper>
