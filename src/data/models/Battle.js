@@ -34,7 +34,7 @@ const Battle = Model.define(
       defaultValue: '0000-00-00 00:00:00',
       get() {
         const ts = this.getDataValue('Started')
-          ? this.getDataValue('Started').format('X')
+          ? moment(this.getDataValue('Started')).format('X')
           : 0;
         return ts;
       },
