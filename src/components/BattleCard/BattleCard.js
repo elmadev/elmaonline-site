@@ -49,7 +49,7 @@ const BattleCard = props => {
       {/* TODO: replace with proper solution for level images */}
       <img
         className={s.cover}
-        src={`http://elmaonline.net/images/map/${battle.LevelIndex}/150/150`}
+        src={`https://elmaonline.net/images/map/${battle.LevelIndex}/150/150`}
         alt="Elmaonline battle"
       />
     </Card>
