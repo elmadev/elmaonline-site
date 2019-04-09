@@ -38,7 +38,7 @@ class Battle extends React.Component {
     const { data: { getBattle } } = this.props;
     const isWindow = typeof window !== 'undefined';
 
-    if (!getBattle) return null;
+    if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
 
     return (
       <div className={s.root}>
