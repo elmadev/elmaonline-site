@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const thousandsValues = [1000, 59999, 60000];
-const hundredsValues = [100, 5999, 6000];
+const thousandsValues = [1000, 59999, 60000, 3];
+const hundredsValues = [100, 5999, 6000, 2];
 
 class Time extends React.Component {
   static propTypes = {
@@ -21,7 +21,7 @@ class Time extends React.Component {
       .toString()
       .padStart(time > 999 ? 2 : 1, 0)},${(time % values[0])
       .toString()
-      .padStart(3, 0)}`;
+      .padStart(values[3], 0)}`;
 
     if (time > values[1]) {
       return `${Math.floor(time / values[2])}:${string}`;

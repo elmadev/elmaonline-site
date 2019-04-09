@@ -59,11 +59,12 @@ class Home extends React.Component {
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
             {currentBattle && [
-              <Typography variant="display2" gutterBottom>
-                Current Battle
-              </Typography>,
               <BattleCard
-                battle={getBattles.filter(i => i.InQueue === 1)[0]}
+                battle={
+                  getBattles.filter(
+                    i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
+                  )[0]
+                }
               />,
             ]}
             <Typography variant="display2" gutterBottom>

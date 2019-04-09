@@ -225,7 +225,7 @@ export const resolvers = {
           'BattleType',
           'Duration',
         ],
-        where: { BattleIndex },
+        where: { BattleIndex, Finished: 1 },
         include: [
           {
             model: Kuski,
