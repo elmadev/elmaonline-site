@@ -53,10 +53,14 @@ class Home extends React.Component {
 
   render() {
     const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
-    const battleList = getBattles.filter(b => b.Aborted === 0).slice(0, 25);
-    const currentBattle = getBattles.filter(
-      i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
-    )[0];
+    const battleList = loading
+      ? null
+      : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
+    const currentBattle = loading
+      ? null
+      : getBattles.filter(
+          i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
+        )[0];
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
