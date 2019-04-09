@@ -23,6 +23,12 @@ export const schema = [
     Results: [DatabaseBattletime]
     LevelData: DatabaseLevel
   }
+
+  type Pagination {
+    rows: [DatabaseBattle]
+    page: Int
+    total: Int
+  }
 `,
 ];
 
@@ -41,7 +47,7 @@ export const queries = [
     BattleIndex: Int!
   ): DatabaseBattle
 
-  getBattlesByKuski(KuskiIndex: Int!): [DatabaseBattle]
+  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
 `,
 ];
 
@@ -86,8 +92,8 @@ export const resolvers = {
       });
       return battles;
     },
-    async getBattlesByKuski(parent, { KuskiIndex }) {
-      const battles = await Battle.findAll({
+    async getBattlesByKuski(parent, { KuskiIndex, Page }) {
+      const battles = await Battle.findAndCountAll({
         attributes: [
           'BattleIndex',
           'KuskiIndex',
@@ -95,7 +101,8 @@ export const resolvers = {
           'Started',
           'Duration',
         ],
-        limit: 20,
+        limit: 25,
+        offset: Page * 25,
         include: [
           {
             model: Kuski,
@@ -135,8 +142,10 @@ export const resolvers = {
           },
         ],
         order: [['Started', 'DESC']],
-      }).then(qb =>
-        qb.map(b => {
+      }).then(qb => ({
+        total: qb.count,
+        page: Page,
+        rows: qb.rows.map(b => {
           // eslint-disable-next-line no-param-reassign
           b.Results = Battletime.findAll({
             where: {
@@ -158,7 +167,7 @@ export const resolvers = {
           });
           return b;
         }),
-      );
+      }));
       return battles;
     },
     async getBattlesBetween(parent, { start, end }) {

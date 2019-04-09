@@ -23,14 +23,14 @@ const TimeTable = withStyles(s)(({ data }) => (
         <TableRow>
           <TableCell
             style={{
-              width: '1px',
+              width: 1,
             }}
           >
             #
           </TableCell>
           <TableCell
             style={{
-              width: '6rem',
+              width: 200,
             }}
           >
             Kuski

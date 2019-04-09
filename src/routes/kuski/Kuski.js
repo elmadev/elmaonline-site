@@ -3,51 +3,9 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
 import kuskiQuery from './kuski.graphql';
-import battlesQuery from './battles.graphql';
-import Link from '../../components/Link';
-import Time from '../../components/Time';
-import Loading from '../../components/Loading';
 import Flag from '../../components/Flag';
-import LocalTime from '../../components/LocalTime';
+import PlayedBattles from './PlayedBattles';
 import s from './Kuski.css';
-
-const RecentBattles = compose(
-  withStyles(s),
-  graphql(battlesQuery, {
-    options: ownProps => ({
-      variables: {
-        KuskiIndex: ownProps.KuskiIndex,
-      },
-    }),
-  }),
-)(props => {
-  if (!props.data.getBattlesByKuski) return <Loading />;
-
-  return props.data.getBattlesByKuski.map(b => (
-    <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
-      <span>{b.LevelData && b.LevelData.LevelName}</span>
-      <span>
-        {b.KuskiData.Kuski}{' '}
-        {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
-      </span>
-      <span>
-        {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}{' '}
-        {b.Results.length > 0 &&
-          b.Results[0].KuskiData.TeamData &&
-          `[${b.Results[0].KuskiData.TeamData.Team}]`}
-      </span>
-      <span>
-        {b.Results.length > 0 ? <Time time={b.Results[0].Time} /> : null}
-      </span>
-      <span>
-        {b.Results.findIndex(r => r.KuskiIndex === props.KuskiIndex) + 1}
-      </span>
-      <span>
-        <LocalTime date={b.Started} format="DD.MM.YYYY HH:mm:ss" parse="X" />
-      </span>
-    </Link>
-  ));
-});
 
 class Kuski extends React.Component {
   render() {
@@ -92,7 +50,7 @@ class Kuski extends React.Component {
             </div>
           </div>
         </div>
-        <h2>Latest battles</h2>
+        <h2>Played battles</h2>
         <div style={{ maxWidth: '100%', overflow: 'auto' }}>
           <div className={s.recentBattles}>
             <div className={s.recentBattlesHead}>
@@ -103,7 +61,7 @@ class Kuski extends React.Component {
               <span>Placement</span>
               <span>Started</span>
             </div>
-            <RecentBattles KuskiIndex={getKuskiByName.KuskiIndex} />
+            <PlayedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
           </div>
         </div>
       </div>
