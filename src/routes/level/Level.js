@@ -88,6 +88,7 @@ class Level extends React.Component {
   };
   render() {
     const { data: { getBestTimes, getLevel, loading } } = this.props;
+    if (!getLevel) return null;
     return (
       <div className={s.level}>
         <Recplayer
