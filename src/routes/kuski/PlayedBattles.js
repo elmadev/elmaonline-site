@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import TablePagination from '@material-ui/core/TablePagination';
 import PropTypes from 'prop-types';
+import { sortResults } from 'utils';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import LocalTime from '../../components/LocalTime';
@@ -12,36 +13,42 @@ class PlayedBattles extends React.Component {
     if (!this.props.data.getBattlesByKuski) return null;
     return (
       <React.Fragment>
-        {this.props.data.getBattlesByKuski.rows.map(b => (
-          <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
-            <span>{b.LevelData && b.LevelData.LevelName}</span>
-            <span>
-              {b.KuskiData.Kuski}{' '}
-              {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
-            </span>
-            <span>
-              {b.Results.length > 0 ? b.Results[0].KuskiData.Kuski : null}{' '}
-              {b.Results.length > 0 &&
-                b.Results[0].KuskiData.TeamData &&
-                `[${b.Results[0].KuskiData.TeamData.Team}]`}
-            </span>
-            <span>
-              {b.Results.length > 0 ? <Time time={b.Results[0].Time} /> : null}
-            </span>
-            <span>
-              {b.Results.findIndex(
-                r => r.KuskiIndex === this.props.KuskiIndex,
-              ) + 1}
-            </span>
-            <span>
-              <LocalTime
-                date={b.Started}
-                format="DD.MM.YYYY HH:mm:ss"
-                parse="X"
-              />
-            </span>
-          </Link>
-        ))}
+        {this.props.data.getBattlesByKuski.rows.map(b => {
+          const sorted = [...b.Results].sort(sortResults(b.BattleType));
+
+          return (
+            <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
+              <span>{b.LevelData && b.LevelData.LevelName}</span>
+              <span>
+                {b.KuskiData.Kuski}{' '}
+                {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
+              </span>
+              <span>
+                {b.Results.length > 0 ? sorted[0].KuskiData.Kuski : null}{' '}
+                {b.Results.length > 0 &&
+                  sorted[0].KuskiData.TeamData &&
+                  `[${sorted[0].KuskiData.TeamData.Team}]`}
+              </span>
+              <span>
+                {b.Results.length > 0 ? (
+                  <Time time={sorted[0].Time} apples={sorted[0].Apples} />
+                ) : null}
+              </span>
+              <span>
+                {b.Results.findIndex(
+                  r => r.KuskiIndex === this.props.KuskiIndex,
+                ) + 1}
+              </span>
+              <span>
+                <LocalTime
+                  date={b.Started}
+                  format="DD.MM.YYYY HH:mm:ss"
+                  parse="X"
+                />
+              </span>
+            </Link>
+          );
+        })}
         <TablePagination
           component="div"
           count={this.props.data.getBattlesByKuski.total}
@@ -79,7 +86,14 @@ class PlayedBattles extends React.Component {
 }
 
 PlayedBattles.propTypes = {
-  data: PropTypes.shape.isRequired,
+  data: PropTypes.shape({
+    getBattlesByKuski: PropTypes.shape({
+      rows: PropTypes.array,
+      total: PropTypes.number,
+      page: PropTypes.number,
+    }),
+    fetchMore: PropTypes.func,
+  }).isRequired,
   KuskiIndex: PropTypes.number.isRequired,
 };
 

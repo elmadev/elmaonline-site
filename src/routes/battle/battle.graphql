@@ -19,7 +19,9 @@ query Battletime($BattleIndex: Int!) {
     }
     Results {
       Time
+      TimeIndex
       KuskiIndex
+      Apples
       KuskiData {
         Kuski
         TeamData {

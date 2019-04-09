@@ -24,10 +24,12 @@ query getBattlesByKuski($KuskiIndex: Int!, $Page: Int!) {
       }
       Results {
         BattleTimeIndex
+        TimeIndex
         BattleIndex
         KuskiIndex
         KuskiIndex2
         Time
+        Apples
         KuskiData {
           Kuski
           TeamData {

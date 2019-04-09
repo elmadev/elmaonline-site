@@ -25,6 +25,8 @@ query Battles($start: String, $end: String) {
       KuskiIndex
       KuskiIndex2
       Time
+      Apples
+      TimeIndex
       KuskiData {
         Kuski
         TeamData {
