@@ -55,15 +55,12 @@ export const resolvers = {
       });
       return levels;
     },
-    async getLevel() {
-      return null; // returning null for live build, need some filtering for secret times
-    },
-    /* async getLevel(parent, { LevelIndex }) {
+    async getLevel(parent, { LevelIndex }) {
       const level = await Level.findOne({
         attributes,
         where: { LevelIndex },
       });
-      return null;
-    }, */
+      return level;
+    },
   },
 };

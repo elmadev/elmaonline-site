@@ -45,28 +45,27 @@ class Home extends React.Component {
     }
   };
 
-  remaining = started => {
+  remaining = (started, duration) => {
     const now = m().format('X');
-    const diff = now - started;
-    return Math.round(diff / 60, 0);
+    const remain = Math.round((now - started) / 60, 0);
+    return `${Math.min(remain, duration)}/${duration}`;
   };
 
   render() {
     const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
-    const currentBattle = getBattles.filter(i => i.InQueue === 1)[0];
+    const battleList = loading
+      ? null
+      : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
+    const currentBattle = loading
+      ? null
+      : getBattles.filter(
+          i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
+        )[0];
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
-            {currentBattle && [
-              <BattleCard
-                battle={
-                  getBattles.filter(
-                    i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
-                  )[0]
-                }
-              />,
-            ]}
+            {currentBattle && <BattleCard battle={currentBattle} />}
             <Typography variant="display2" gutterBottom>
               Latest Battles
             </Typography>
@@ -85,7 +84,7 @@ class Home extends React.Component {
                   {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
                   {loading
                     ? 'Loading...'
-                    : getBattles.map(i => (
+                    : battleList.map(i => (
                         <TableRow
                           style={
                             i.InQueue === 0 &&
@@ -127,7 +126,7 @@ class Home extends React.Component {
                             {i.InQueue === 0 &&
                             i.Aborted === 0 &&
                             i.Finished === 0
-                              ? `${this.remaining(i.StartedUtc)}/${i.Duration}`
+                              ? this.remaining(i.StartedUtc, i.Duration)
                               : i.Duration}
                           </TableCell>
                         </TableRow>

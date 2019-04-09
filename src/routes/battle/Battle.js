@@ -13,6 +13,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
+import { sortResults } from 'utils';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
@@ -105,14 +106,14 @@ class Battle extends React.Component {
                   <TableRow>
                     <TableCell
                       style={{
-                        width: '.5rem',
+                        width: 1,
                       }}
                     >
                       #
                     </TableCell>
                     <TableCell
                       style={{
-                        width: '10rem',
+                        width: 200,
                       }}
                     >
                       Kuski
@@ -121,19 +122,21 @@ class Battle extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {getBattle.Results.map((r, i) => (
-                    <TableRow key={r.KuskiIndex}>
-                      <TableCell>{i + 1}.</TableCell>
-                      <TableCell>
-                        {r.KuskiData.Kuski}{' '}
-                        {r.KuskiData.TeamData &&
-                          `[${r.KuskiData.TeamData.Team}]`}
-                      </TableCell>
-                      <TableCell>
-                        <Time time={r.Time} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {[...getBattle.Results]
+                    .sort(sortResults(getBattle.BattleType))
+                    .map((r, i) => (
+                      <TableRow key={r.KuskiIndex}>
+                        <TableCell>{i + 1}.</TableCell>
+                        <TableCell>
+                          {r.KuskiData.Kuski}{' '}
+                          {r.KuskiData.TeamData &&
+                            `[${r.KuskiData.TeamData.Team}]`}
+                        </TableCell>
+                        <TableCell>
+                          <Time time={r.Time} apples={r.Apples} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             )}
