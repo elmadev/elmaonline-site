@@ -5,19 +5,26 @@ import levelQuery from './level.graphql';
 
 class Level extends React.Component {
   static propTypes = {
+    long: PropTypes.bool,
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,
       getLevel: PropTypes.shape({
         LevelName: PropTypes.string,
+        LongName: PropTypes.string,
       }),
     }).isRequired,
   };
 
+  static defaultProps = {
+    long: false,
+  };
+
   render() {
-    const { data: { getLevel, variables } } = this.props;
+    const { data: { getLevel, variables }, long } = this.props;
     return (
       <React.Fragment>
-        {getLevel ? getLevel.LevelName : variables.LevelIndex}
+        {long && getLevel && getLevel.LongName}
+        {!long && getLevel ? getLevel.LevelName : variables.LevelIndex}
       </React.Fragment>
     );
   }

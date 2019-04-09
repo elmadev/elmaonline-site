@@ -39,18 +39,19 @@ const TimeTable = withStyles(s)(({ data }) => (
         </TableRow>
       </TableHead>
       <TableBody>
-        {data.map((t, i) => (
-          <TableRow key={t.TimeIndex}>
-            <TableCell>{i + 1}.</TableCell>
-            <TableCell>
-              {t.KuskiData.Kuski}{' '}
-              {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
-            </TableCell>
-            <TableCell>
-              <Time time={t.Time} />
-            </TableCell>
-          </TableRow>
-        ))}
+        {data &&
+          data.map((t, i) => (
+            <TableRow key={t.TimeIndex}>
+              <TableCell>{i + 1}.</TableCell>
+              <TableCell>
+                {t.KuskiData.Kuski}{' '}
+                {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
+              </TableCell>
+              <TableCell>
+                <Time time={t.Time} />
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   </div>
@@ -88,7 +89,6 @@ class Level extends React.Component {
   };
   render() {
     const { data: { getBestTimes, getLevel, loading } } = this.props;
-    if (!getLevel) return null;
     return (
       <div className={s.level}>
         <Recplayer

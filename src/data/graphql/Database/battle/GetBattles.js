@@ -74,7 +74,7 @@ export const resolvers = {
     async getBattles() {
       const battles = await Battle.findAll({
         attributes,
-        limit: 25,
+        limit: 100,
         include: [
           {
             model: Kuski,

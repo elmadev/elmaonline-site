@@ -1,4 +1,5 @@
 import React from 'react';
+import Moment from 'react-moment';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
@@ -23,7 +24,7 @@ const BattleCard = props => {
             <Level index={battle.LevelIndex} />
           </Typography>
           <Typography variant="subheading" color="textSecondary">
-            Battle title
+            <Level long index={battle.LevelIndex} />
           </Typography>
           <Typography
             className={s.info}
@@ -48,7 +49,11 @@ const BattleCard = props => {
             </div>
             <div>
               <span>Started: </span>
-              <strong>December 24 2018 01:09:22</strong>
+              <strong>
+                <Moment parse="X" format="HH:mm:ss">
+                  {battle.StartedUtc}
+                </Moment>
+              </strong>
             </div>
           </Typography>
         </CardContent>
