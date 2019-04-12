@@ -16,18 +16,17 @@ const toLocalTime = (date, parse) =>
     )
     .tz(moment.tz.guess());
 const sortResults = battleType => (a, b) => {
-  if (a.Time === 0) {
-    if (b.Time !== 0) return 1;
-
-    const d = b.Apples - a.Apples;
-    return d === 0 ? a.TimeIndex - b.TimeIndex : d;
+  if (a.Time && b.Time) {
+    const c =
+      battleType === 'SL' || battleType === 'SR'
+        ? b.Time - a.Time
+        : a.Time - b.Time;
+    return c === 0 ? a.TimeIndex - b.TimeIndex : c;
   }
-  const c =
-    battleType === 'SL' || battleType === 'SR'
-      ? b.Time - a.Time
-      : a.Time - b.Time;
-
-  return c === 0 ? a.TimeIndex - c.TimeIndex : c;
+  if (a.Time === 0 && b.Time !== 0) return 1;
+  if (b.Time === 0 && a.Time !== 0) return -1;
+  const d = b.Apples - a.Apples;
+  return d === 0 ? a.TimeIndex - b.TimeIndex : d;
 };
 
 export { toServerTime, toLocalTime, sortResults };
