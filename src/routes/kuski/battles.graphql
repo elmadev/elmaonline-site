@@ -13,7 +13,6 @@ query getBattlesByKuski($KuskiIndex: Int!, $Page: Int!) {
       Aborted
       Finished
       KuskiData {
-        KuskiIndex
         Kuski
         TeamData {
           Team

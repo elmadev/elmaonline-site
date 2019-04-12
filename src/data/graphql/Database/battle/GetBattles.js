@@ -1,4 +1,5 @@
 import { Battle, Kuski, Battletime, Level, Team } from 'data/models'; // import the data model
+import sequelize from 'sequelize';
 
 // table schema documentation used by graphql,
 // basically simplified version of what's in the data model,
@@ -93,14 +94,8 @@ export const resolvers = {
       return battles;
     },
     async getBattlesByKuski(parent, { KuskiIndex, Page }) {
-      const battles = await Battle.findAndCountAll({
-        attributes: [
-          'BattleIndex',
-          'KuskiIndex',
-          'LevelIndex',
-          'Started',
-          'Duration',
-        ],
+      const battles = await Battletime.findAndCountAll({
+        attributes: ['BattleIndex'],
         limit: 25,
         offset: Page * 25,
         include: [
@@ -115,59 +110,75 @@ export const resolvers = {
               },
             ],
           },
-          {
-            model: Level,
-            attributes: ['LevelName'],
-            as: 'LevelData',
-          },
-          {
-            model: Battletime,
-            as: 'Results',
-            where: {
-              KuskiIndex,
-            },
-            include: [
-              {
-                model: Kuski,
-                attributes: ['Kuski', 'Country'],
-                as: 'KuskiData',
-                include: [
-                  {
-                    model: Team,
-                    as: 'TeamData',
-                  },
-                ],
-              },
-            ],
-          },
         ],
-        order: [['Started', 'DESC']],
-      }).then(qb => ({
-        total: qb.count,
-        page: Page,
-        rows: qb.rows.map(b => {
-          // eslint-disable-next-line no-param-reassign
-          b.Results = Battletime.findAll({
-            where: {
-              BattleIndex: b.BattleIndex,
+        where: {
+          KuskiIndex,
+        },
+        order: [['BattleIndex', 'DESC']],
+      }).then(async qb => {
+        const results = await Battletime.findAll({
+          where: {
+            BattleIndex: {
+              [sequelize.Op.in]: qb.rows.map(r => r.BattleIndex),
             },
-            include: [
-              {
-                model: Kuski,
-                attributes: ['Kuski', 'Country'],
-                as: 'KuskiData',
-                include: [
-                  {
-                    model: Team,
-                    as: 'TeamData',
-                  },
-                ],
-              },
-            ],
-          });
-          return b;
-        }),
-      }));
+          },
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'KuskiData',
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+          ],
+        });
+        const battleData = await Battle.findAll({
+          attributes: [
+            'BattleIndex',
+            'KuskiIndex',
+            'LevelIndex',
+            'Started',
+            'Duration',
+          ],
+          where: {
+            BattleIndex: {
+              [sequelize.Op.in]: qb.rows.map(r => r.BattleIndex),
+            },
+          },
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'KuskiData',
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+            {
+              model: Level,
+              attributes: ['LevelName'],
+              as: 'LevelData',
+            },
+          ],
+          order: [['BattleIndex', 'DESC']],
+        });
+        return {
+          total: qb.count,
+          page: Page,
+          rows: battleData.map(b => {
+            // eslint-disable-next-line
+            b.Results = results.filter(r => r.BattleIndex === b.BattleIndex);
+            return b;
+          }),
+        };
+      });
       return battles;
     },
     async getBattlesBetween(parent, { start, end }) {
