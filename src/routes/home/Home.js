@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'react-moment';
 import m from 'moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
@@ -12,6 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import { toLocalTime } from 'utils';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
 import { Kuski, Level, BattleType } from '../../components/Names';
@@ -20,6 +20,7 @@ import Upload from '../../components/Upload';
 import RecListItem from '../../components/RecListItem';
 import BattleCard from '../../components/BattleCard';
 import Link from '../../components/Link';
+import LocalTime from '../../components/LocalTime';
 
 class Home extends React.Component {
   static propTypes = {
@@ -45,28 +46,31 @@ class Home extends React.Component {
     }
   };
 
-  remaining = started => {
+  remaining = (started, duration) => {
     const now = m().format('X');
-    const diff = now - started;
-    return Math.round(diff / 60, 0);
+    const remain = Math.round(
+      (now - toLocalTime(started, 'X').format('X')) / 60,
+      0,
+    );
+    return `${Math.min(remain, duration)}/${duration}`;
   };
 
   render() {
     const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
-    const currentBattle = getBattles.filter(i => i.InQueue === 1)[0];
+    const battleList = loading
+      ? null
+      : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
+    const currentBattle = loading
+      ? null
+      : getBattles.filter(
+          i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
+        )[0];
     return (
       <div className={s.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
-            {currentBattle && [
-              <Typography variant="display2" gutterBottom>
-                Current Battle
-              </Typography>,
-              <BattleCard
-                battle={getBattles.filter(i => i.InQueue === 1)[0]}
-              />,
-            ]}
-            <Typography variant="display2" gutterBottom gutterTop>
+            {currentBattle && <BattleCard battle={currentBattle} />}
+            <Typography variant="display2" gutterBottom>
               Latest Battles
             </Typography>
             <Paper>
@@ -84,7 +88,7 @@ class Home extends React.Component {
                   {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
                   {loading
                     ? 'Loading...'
-                    : getBattles.map(i => (
+                    : battleList.map(i => (
                         <TableRow
                           style={
                             i.InQueue === 0 &&
@@ -107,9 +111,11 @@ class Home extends React.Component {
                               'Queued'
                             ) : (
                               <Link to={`/battles/${i.BattleIndex}`}>
-                                <Moment parse="X" format="HH:mm:ss">
-                                  {i.StartedUtc}
-                                </Moment>
+                                <LocalTime
+                                  date={i.Started}
+                                  format="HH:mm:ss"
+                                  parse="X"
+                                />
                               </Link>
                             )}
                           </TableCell>
@@ -126,7 +132,7 @@ class Home extends React.Component {
                             {i.InQueue === 0 &&
                             i.Aborted === 0 &&
                             i.Finished === 0
-                              ? `${this.remaining(i.StartedUtc)}/${i.Duration}`
+                              ? this.remaining(i.Started, i.Duration)
                               : i.Duration}
                           </TableCell>
                         </TableRow>

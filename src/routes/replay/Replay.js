@@ -12,7 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import s from './Replay.css';
 import replayQuery from './replay.graphql';
 import Recplayer from '../../components/Recplayer';
-import { Level, ReplayTime } from '../../components/Names';
+import { Level } from '../../components/Names';
+import Time from '../../components/Time';
 import RecList from '../../components/RecList';
 import historyRefresh from '../../historyRefresh';
 
@@ -67,7 +68,7 @@ class Replay extends React.Component {
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <div>
-                  <ReplayTime time={getReplayByUuid.ReplayTime} /> by{' '}
+                  <Time thousands time={getReplayByUuid.ReplayTime} /> by{' '}
                   {getReplayByUuid.DrivenByData
                     ? getReplayByUuid.DrivenByData.Kuski
                     : 'Unknown'}{' '}

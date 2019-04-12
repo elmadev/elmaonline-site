@@ -33,7 +33,10 @@ const Battle = Model.define(
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
       get() {
-        return moment(this.getDataValue('Started')).format('X');
+        const ts = this.getDataValue('Started')
+          ? moment(this.getDataValue('Started')).format('X')
+          : 0;
+        return ts;
       },
     },
     StartedUtc: {
@@ -41,9 +44,12 @@ const Battle = Model.define(
       allowNull: true,
       defaultValue: '0000-00-00 00:00:00',
       get() {
-        return moment(this.getDataValue('Started'))
-          .add(8, 'hours')
-          .format('X');
+        const ts = this.getDataValue('Started')
+          ? moment(this.getDataValue('Started'))
+              .add(8, 'hours')
+              .format('X')
+          : 0;
+        return ts;
       },
     },
     Duration: {

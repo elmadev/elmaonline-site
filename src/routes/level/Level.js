@@ -23,14 +23,14 @@ const TimeTable = withStyles(s)(({ data }) => (
         <TableRow>
           <TableCell
             style={{
-              width: '1px',
+              width: 1,
             }}
           >
             #
           </TableCell>
           <TableCell
             style={{
-              width: '6rem',
+              width: 200,
             }}
           >
             Kuski
@@ -39,18 +39,19 @@ const TimeTable = withStyles(s)(({ data }) => (
         </TableRow>
       </TableHead>
       <TableBody>
-        {data.map((t, i) => (
-          <TableRow key={t.TimeIndex}>
-            <TableCell>{i + 1}.</TableCell>
-            <TableCell>
-              {t.KuskiData.Kuski}{' '}
-              {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
-            </TableCell>
-            <TableCell>
-              <Time time={t.Time} />
-            </TableCell>
-          </TableRow>
-        ))}
+        {data &&
+          data.map((t, i) => (
+            <TableRow key={t.TimeIndex}>
+              <TableCell>{i + 1}.</TableCell>
+              <TableCell>
+                {t.KuskiData.Kuski}{' '}
+                {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
+              </TableCell>
+              <TableCell>
+                <Time time={t.Time} />
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   </div>

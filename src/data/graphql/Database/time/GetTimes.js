@@ -1,4 +1,4 @@
-import { AllFinished, Kuski, Team, BestTime } from 'data/models';
+// import { AllFinished, Kuski, Team, BestTime } from 'data/models';
 
 export const schema = [
   `
@@ -41,7 +41,10 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
-    async getTimes(parent, { LevelIndex }) {
+    async getTimes() {
+      return null;
+    },
+    /* async getTimes(parent, { LevelIndex }) {
       const times = await AllFinished.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
@@ -60,8 +63,11 @@ export const resolvers = {
         ],
       });
       return times;
+    }, */
+    async getBestTimes() {
+      return null;
     },
-    async getBestTimes(parent, { LevelIndex }) {
+    /* async getBestTimes(parent, { LevelIndex }) {
       const times = await BestTime.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
@@ -80,6 +86,6 @@ export const resolvers = {
         ],
       });
       return times;
-    },
+    }, */
   },
 };

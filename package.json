@@ -53,7 +53,7 @@
     "query-string": "^5.0.1",
     "react": "16.4.1",
     "react-apollo": "^2.0.4",
-    "react-dom": "16.4.1",
+    "react-dom": "16.4.2",
     "react-dropzone": "^4.2.13",
     "react-jss": "^8.6.1",
     "react-moment": "^0.7.0",
