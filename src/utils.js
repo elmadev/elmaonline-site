@@ -26,7 +26,7 @@ const sortResults = battleType => (a, b) => {
   if (a.Time === 0 && b.Time !== 0) return 1;
   if (b.Time === 0 && a.Time !== 0) return -1;
   const d = b.Apples - a.Apples;
-  return d === 0 ? a.TimeIndex - b.TimeIndex : d;
+  return d === 0 ? a.BattleTimeIndex - b.BattleTimeIndex : d;
 };
 
 export { toServerTime, toLocalTime, sortResults };

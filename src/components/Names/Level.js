@@ -24,7 +24,8 @@ class Level extends React.Component {
     return (
       <React.Fragment>
         {long && getLevel && getLevel.LongName}
-        {!long && getLevel ? getLevel.LevelName : variables.LevelIndex}
+        {!long && getLevel && getLevel.LevelName}
+        {!long && !getLevel && variables.LevelIndex}
       </React.Fragment>
     );
   }

@@ -4,7 +4,7 @@ query HomeNews {
     KuskiIndex
     LevelIndex
     BattleType
-    StartedUtc
+    Started
     Duration
     InQueue
     Aborted
