@@ -102,14 +102,15 @@ class Battle extends React.Component {
                       .map((b, i, a) => (
                         <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
                           <span className={s.timeDiff}>
-                            {!a[i + 1] && 'Winner'}
+                            {a.length > 1 && !a[i + 1] && 'Winner'}
                             {a[i - 1] && (
                               <span>
                                 {' '}
                                 -<Time time={a[i - 1].Time - b.Time} />
                               </span>
                             )}
-                            {!a[i - 1] && 'First finish'}
+                            {a.length > 1 && !a[i - 1] && 'First finish'}
+                            {a.length === 1 && 'Only finish'}
                           </span>
                           <span className={s.timelineCell}>
                             <span className={s.timelineMarker} />

@@ -139,3 +139,7 @@
 .timeDevelopmentRow:last-child .timelineLine {
   top: -50%;
 }
+
+.timeDevelopmentRow:first-child:last-child .timelineLine {
+  display: none;
+}
