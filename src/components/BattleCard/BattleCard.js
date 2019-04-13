@@ -1,11 +1,11 @@
 import React from 'react';
-import Moment from 'react-moment';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import { Kuski, Level, BattleType } from '../../components/Names';
+import { Kuski, Level, BattleType } from '../Names';
+import LocalTime from '../LocalTime';
 import s from './battleCard.css';
 
 const BattleCard = props => {
@@ -50,9 +50,7 @@ const BattleCard = props => {
             <div>
               <span>Started: </span>
               <strong>
-                <Moment parse="X" format="HH:mm:ss">
-                  {battle.StartedUtc}
-                </Moment>
+                <LocalTime date={battle.Started} format="HH:mm:ss" parse="X" />
               </strong>
             </div>
           </Typography>
