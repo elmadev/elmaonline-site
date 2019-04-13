@@ -229,7 +229,7 @@ export const resolvers = {
         order: [['Started', 'DESC']],
         where: {
           Started: {
-            between: [start, end],
+            [sequelize.Op.between]: [start, end],
           },
         },
       });
