@@ -8,12 +8,11 @@ import Link from '../../components/Link';
 import Time from '../../components/Time';
 import Kuski from '../../components/Kuski';
 import { BattleType } from '../../components/Names';
-import Loading from '../../components/Loading';
 import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 
 const BattleList = props => {
-  const { data: { loading, getBattlesBetween } } = props;
+  const { data: { getBattlesBetween } } = props;
   return (
     <div className={s.battleList}>
       <div className={s.battles}>
@@ -26,7 +25,7 @@ const BattleList = props => {
           <span className={s.battleStarted}>Started</span>
           <span>Players</span>
         </div>
-        {!loading &&
+        {getBattlesBetween &&
           getBattlesBetween.map(b => {
             const sorted = [...b.Results].sort(sortResults);
             return (
@@ -69,7 +68,6 @@ const BattleList = props => {
             );
           })}
       </div>
-      {loading && <Loading />}
     </div>
   );
 };
