@@ -21,6 +21,7 @@ import { BattleType } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import Chat from '../../components/Chat';
+import Kuski from '../../components/Kuski';
 import LocalTime from '../../components/LocalTime';
 
 class Battle extends React.Component {
@@ -173,9 +174,7 @@ class Battle extends React.Component {
                       <TableRow key={r.KuskiIndex}>
                         <TableCell>{i + 1}.</TableCell>
                         <TableCell>
-                          {r.KuskiData.Kuski}{' '}
-                          {r.KuskiData.TeamData &&
-                            `[${r.KuskiData.TeamData.Team}]`}
+                          <Kuski kuskiData={r.KuskiData} flag team />
                         </TableCell>
                         <TableCell>
                           <Time time={r.Time} apples={r.Apples} />

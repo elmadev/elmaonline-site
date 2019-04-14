@@ -20,6 +20,7 @@ query Battletime($BattleIndex: Int!) {
       Apples
       KuskiData {
         Kuski
+        Country
         TeamData {
           Team
         }

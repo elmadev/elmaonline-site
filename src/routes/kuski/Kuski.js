@@ -53,14 +53,6 @@ class Kuski extends React.Component {
         <h2>Played battles</h2>
         <div style={{ maxWidth: '100%', overflow: 'auto' }}>
           <div className={s.recentBattles}>
-            <div className={s.recentBattlesHead}>
-              <span>Level</span>
-              <span>Designer</span>
-              <span>Winner</span>
-              <span>Time</span>
-              <span>Placement</span>
-              <span>Started</span>
-            </div>
             <PlayedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
           </div>
         </div>

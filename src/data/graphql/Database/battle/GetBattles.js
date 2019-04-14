@@ -139,6 +139,7 @@ export const resolvers = {
         const battleData = await Battle.findAll({
           attributes: [
             'BattleIndex',
+            'BattleType',
             'KuskiIndex',
             'LevelIndex',
             'Started',
@@ -189,6 +190,9 @@ export const resolvers = {
           'LevelIndex',
           'Started',
           'Duration',
+          'BattleType',
+          'InQueue',
+          'Finished',
         ],
         limit: 100,
         include: [
