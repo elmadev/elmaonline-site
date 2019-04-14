@@ -44,7 +44,7 @@ const BattleList = props => {
                     <Kuski kuskiData={sorted[0].KuskiData} team flag />
                   )}
                 </span>
-                <span>
+                <span className={s.winnerTime}>
                   {b.Results.length > 0 && (
                     <Time time={sorted[0].Time} apples={sorted[0].Apples} />
                   )}
