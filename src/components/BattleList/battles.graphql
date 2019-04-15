@@ -12,6 +12,7 @@ query Battles($start: String, $end: String) {
     KuskiData {
       KuskiIndex
       Kuski
+      Country
       TeamData {
         Team
       }
@@ -29,6 +30,7 @@ query Battles($start: String, $end: String) {
       TimeIndex
       KuskiData {
         Kuski
+        Country
         TeamData {
           Team
         }

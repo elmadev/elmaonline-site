@@ -1,5 +1,8 @@
 .chat {
   margin: 0;
+  max-height: 400px;
+  width: 100%;
+  overflow: auto;
 }
 
 .chatLine {
