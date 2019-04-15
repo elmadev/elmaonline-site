@@ -112,33 +112,34 @@ class Level extends React.Component {
         </div>
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
-            <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Level info</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <div className={s.levelDescription}>
-                  {getLevel.LevelName}.lev
-                  <div className={s.levelFullName}>{getLevel.LongName}</div>
-                  <br />
-                  {'Level index: '}
-                  {`${this.props.LevelIndex}`}
-                </div>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <Paper>
+            {loading && <Loading />}
+            {!loading && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Replays in level</Typography>
+                  <Typography variant="body2">Level info</Typography>
                 </ExpansionPanelSummary>
-                <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                  <RecList
-                    LevelIndex={this.props.LevelIndex}
-                    openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
-                  />
+                <ExpansionPanelDetails>
+                  <div className={s.levelDescription}>
+                    {getLevel.LevelName}.lev
+                    <div className={s.levelFullName}>{getLevel.LongName}</div>
+                    <br />
+                    {'Level index: '}
+                    {`${this.props.LevelIndex}`}
+                  </div>
                 </ExpansionPanelDetails>
               </ExpansionPanel>
-            </Paper>
+            )}
+            <ExpansionPanel defaultExpanded>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="body2">Replays in level</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
+                <RecList
+                  LevelIndex={this.props.LevelIndex}
+                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
+                />
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
           </div>
         </div>
         <div className={s.resultsContainer}>
