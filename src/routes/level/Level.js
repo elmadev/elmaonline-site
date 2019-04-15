@@ -6,6 +6,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
@@ -13,11 +19,13 @@ import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
 import Recplayer from '../../components/Recplayer';
+import RecList from '../../components/RecList';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
+import historyRefresh from '../../historyRefresh';
 
 const TimeTable = withStyles(s)(({ data }) => (
-  <div className={s.tableContainer}>
+  <div>
     <Table>
       <TableHead>
         <TableRow>
@@ -89,26 +97,72 @@ class Level extends React.Component {
   };
   render() {
     const { data: { getBestTimes, getLevel, loading } } = this.props;
+    const isWindow = typeof window !== 'undefined';
     return (
-      <div className={s.level}>
-        <Recplayer
-          lev={`/dl/level/${this.props.LevelIndex}`}
-          controls={false}
-        />
-        {loading && <Loading />}
-        {!loading && (
-          <React.Fragment>
-            <h3>{`${getLevel.LevelName}.lev ${getLevel.LongName}`}</h3>
-            <Tabs value={this.state.tab} onChange={this.onTabClick}>
-              <Tab label="Best individual times" />
-              <Tab label="All times" />
-            </Tabs>
-            {this.state.tab === 0 && <TimeTable data={getBestTimes} />}
-            {this.state.tab === 1 && (
-              <AllTimes LevelIndex={this.props.LevelIndex} />
+      <div className={s.root}>
+        <div className={s.playerContainer}>
+          <div className={s.player}>
+            {isWindow && (
+              <Recplayer
+                lev={`/dl/level/${this.props.LevelIndex}`}
+                controls={false}
+              />
             )}
-          </React.Fragment>
-        )}
+          </div>
+        </div>
+        <div className={s.rightBarContainer}>
+          <div className={s.chatContainer}>
+            {loading && <Loading />}
+            {!loading && (
+              <ExpansionPanel defaultExpanded>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="body2">Level info</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <div className={s.levelDescription}>
+                    {getLevel.LevelName}.lev
+                    <div className={s.levelFullName}>{getLevel.LongName}</div>
+                    <br />
+                    {'Level index: '}
+                    {`${this.props.LevelIndex}`}
+                  </div>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            )}
+            <ExpansionPanel defaultExpanded>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="body2">Replays in level</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
+                <RecList
+                  LevelIndex={this.props.LevelIndex}
+                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
+                />
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          </div>
+        </div>
+        <div className={s.resultsContainer}>
+          <Paper>
+            {loading && <Loading />}
+            {!loading && (
+              <React.Fragment>
+                <Tabs value={this.state.tab} onChange={this.onTabClick}>
+                  <Tab label="Best times" />
+                  <Tab label="All times" />
+                  <Tab label="Best multi times" />
+                  <Tab label="All multi times" />
+                </Tabs>
+                {this.state.tab === 0 && <TimeTable data={getBestTimes} />}
+                {this.state.tab === 1 && <TimeTable data={getBestTimes} />}
+                {this.state.tab === 2 && <TimeTable data={getBestTimes} />}
+                {this.state.tab === 3 && (
+                  <AllTimes LevelIndex={this.props.LevelIndex} />
+                )}
+              </React.Fragment>
+            )}
+          </Paper>
+        </div>
       </div>
     );
   }
