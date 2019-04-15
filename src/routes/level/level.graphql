@@ -14,4 +14,18 @@ query Level($LevelIndex: Int!) {
     LevelName
     LongName
   }
+  getBattlesForLevel(LevelIndex: $LevelIndex) {
+    BattleIndex
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Started
+    StartedUtc
+    Duration
+    Aborted
+    Finished
+    InQueue
+    Countdown
+    RecFileName
+  }
 }

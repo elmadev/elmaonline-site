@@ -18,10 +18,14 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
+import { Kuski, BattleType } from '../../components/Names';
+import history from '../../history';
 import Recplayer from '../../components/Recplayer';
 import RecList from '../../components/RecList';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
+import Link from '../../components/Link';
+import LocalTime from '../../components/LocalTime';
 import historyRefresh from '../../historyRefresh';
 
 const TimeTable = withStyles(s)(({ data }) => (
@@ -95,8 +99,17 @@ class Level extends React.Component {
       tab: value,
     });
   };
+
+  gotoBattle = battleIndex => {
+    if (!Number.isNaN(battleIndex)) {
+      history.push(`/battles/${battleIndex}`);
+    }
+  };
+
   render() {
-    const { data: { getBestTimes, getLevel, loading } } = this.props;
+    const {
+      data: { getBestTimes, getLevel, getBattlesForLevel, loading },
+    } = this.props;
     const isWindow = typeof window !== 'undefined';
     return (
       <div className={s.root}>
@@ -123,12 +136,77 @@ class Level extends React.Component {
                     {getLevel.LevelName}.lev
                     <div className={s.levelFullName}>{getLevel.LongName}</div>
                     <br />
-                    {'Level index: '}
+                    {'Level ID: '}
                     {`${this.props.LevelIndex}`}
                   </div>
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}
+            <ExpansionPanel defaultExpanded>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="body2">Battles in level</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <div>
+                  <Table style={{ overflowX: 'auto' }}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Started</TableCell>
+                        <TableCell>Started by</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Duration</TableCell>
+                        <TableCell>Battle ID</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {loading
+                        ? 'Loading...'
+                        : getBattlesForLevel.map(i => (
+                            <TableRow
+                              style={
+                                i.InQueue === 0 &&
+                                i.Aborted === 0 &&
+                                i.Finished === 0
+                                  ? {
+                                      cursor: 'pointer',
+                                      backgroundColor: '#2566a7',
+                                    }
+                                  : { cursor: 'pointer' }
+                              }
+                              hover
+                              key={i.BattleIndex}
+                              onClick={() => {
+                                this.gotoBattle(i.BattleIndex);
+                              }}
+                            >
+                              <TableCell>
+                                {i.InQueue === 1 ? (
+                                  'Queued'
+                                ) : (
+                                  <Link to={`/battles/${i.BattleIndex}`}>
+                                    <LocalTime
+                                      date={i.Started}
+                                      format="DD MMM YYYY HH:mm:ss"
+                                      parse="X"
+                                    />
+                                  </Link>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Kuski index={i.KuskiIndex} />
+                              </TableCell>
+                              <TableCell>
+                                <BattleType type={i.BattleType} />
+                              </TableCell>
+                              <TableCell>{i.Duration}</TableCell>
+                              <TableCell>{i.BattleIndex}</TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body2">Replays in level</Typography>

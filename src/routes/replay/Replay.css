@@ -38,6 +38,10 @@
   padding: 7px;
 }
 
+.replayDescription {
+  font-size: 14px;
+}
+
 .battleTimestamp {
   color: #7d7d7d;
 }
