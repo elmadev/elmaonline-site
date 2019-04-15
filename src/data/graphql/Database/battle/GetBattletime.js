@@ -1,4 +1,4 @@
-import { Battletime, Kuski, Team } from 'data/models'; // import the data model
+import { Battletime, Kuski, Team, AllFinished } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -23,6 +23,7 @@ export const queries = [
     # The battle's id
     BattleIndex: Int!
   ): [DatabaseBattletime]
+  getAllBattleTimes(BattleIndex: Int!): [DatabaseTime]
 `,
 ];
 
@@ -46,6 +47,26 @@ export const resolvers = {
         ],
       });
       return battletime;
+    },
+    async getAllBattleTimes(parent, { BattleIndex }) {
+      const times = await AllFinished.findAll({
+        where: { BattleIndex },
+        order: [['TimeIndex', 'ASC']],
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+            attributes: ['Kuski', 'Country'],
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      });
+      return times;
     },
   },
 };
