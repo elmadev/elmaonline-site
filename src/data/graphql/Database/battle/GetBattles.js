@@ -292,13 +292,7 @@ export const resolvers = {
     },
     async getBattlesForLevel(parent, { LevelIndex }) {
       const battles = await Battle.findAll({
-        attributes: [
-          'BattleIndex',
-          'KuskiIndex',
-          'LevelIndex',
-          'Started',
-          'Duration',
-        ],
+        attributes,
         where: { LevelIndex },
         limit: 100,
         include: [
