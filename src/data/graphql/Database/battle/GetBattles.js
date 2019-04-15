@@ -48,6 +48,12 @@ export const queries = [
     BattleIndex: Int!
   ): DatabaseBattle
 
+  # Retrieves all battles in a specific level
+  getBattlesForLevel(
+    # The level id
+    LevelIndex: Int!
+  ): [DatabaseBattle]
+
   getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
 `,
 ];
@@ -283,6 +289,39 @@ export const resolvers = {
         ],
       });
       return battle;
+    },
+    async getBattlesForLevel(parent, { LevelIndex }) {
+      const battles = await Battle.findAll({
+        attributes: [
+          'BattleIndex',
+          'KuskiIndex',
+          'LevelIndex',
+          'Started',
+          'Duration',
+        ],
+        where: { LevelIndex },
+        limit: 100,
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+        ],
+        order: [['BattleIndex', 'DESC']],
+      });
+      return battles;
     },
   },
 };
