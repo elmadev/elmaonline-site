@@ -33,10 +33,12 @@ class RecList extends React.Component {
       ),
     }).isRequired,
     openReplay: PropTypes.func,
+    currentUUID: PropTypes.string,
   };
 
   static defaultProps = {
     openReplay: null,
+    currentUUID: null,
   };
 
   state = {
@@ -54,6 +56,8 @@ class RecList extends React.Component {
       history.push(`/r/${uuid}`);
     }
   }
+
+  isSelected = uuid => this.props.currentUUID === uuid;
 
   render() {
     const { data: { loading, getReplaysByLevelIndex } } = this.props;
@@ -146,6 +150,7 @@ class RecList extends React.Component {
                   key={i.ReplayIndex}
                   replay={i}
                   openReplay={uuid => this.handleOpenReplay(uuid)}
+                  selected={this.isSelected(i.UUID)}
                 />
               ))
             )}

@@ -20,10 +20,12 @@ class RecListItem extends React.Component {
       Finished: PropTypes.number,
     }).isRequired,
     openReplay: PropTypes.func,
+    selected: PropTypes.bool,
   };
 
   static defaultProps = {
     openReplay: null,
+    selected: false,
   };
 
   handleOpenReplay(uuid) {
@@ -36,13 +38,14 @@ class RecListItem extends React.Component {
   }
 
   render() {
-    const { replay } = this.props;
+    const { replay, selected } = this.props;
     return (
       <TableRow
         hover
         style={{ cursor: 'pointer' }}
         key={replay.ReplayIndex}
         onClick={() => this.handleOpenReplay(replay.UUID)}
+        selected={selected}
       >
         <TableCell style={{ padding: '4px 10px 4px 10px' }}>
           <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
