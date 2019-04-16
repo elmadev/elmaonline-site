@@ -2,6 +2,7 @@
   display: block;
   max-width: 100%;
   overflow: auto;
+  padding-bottom: 200px;
 }
 
 .battleList a {
@@ -32,18 +33,30 @@
 
 .designerName {
   width: 150px;
+  white-space: nowrap;
 }
 
 .winnerTime {
-  width: 150px;
+  width: 60px;
+  white-space: nowrap;
 }
 
 .winnerKuski {
   width: 150px;
+  white-space: nowrap;
 }
 
 .battleStarted {
-  width: 150px;
+  width: 80px;
+}
+
+.type {
+  width: 100px;
+  white-space: nowrap;
+}
+
+a .type {
+  text-transform: lowercase;
 }
 
 .listHeader {

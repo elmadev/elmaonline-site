@@ -145,6 +145,7 @@ export const resolvers = {
         const battleData = await Battle.findAll({
           attributes: [
             'BattleIndex',
+            'BattleType',
             'KuskiIndex',
             'LevelIndex',
             'Started',
@@ -195,6 +196,7 @@ export const resolvers = {
           'LevelIndex',
           'Started',
           'Duration',
+          'BattleType',
           'Aborted',
           'InQueue',
           'Finished',
@@ -238,7 +240,7 @@ export const resolvers = {
         order: [['Started', 'DESC']],
         where: {
           Started: {
-            between: [start, end],
+            [sequelize.Op.between]: [start, end],
           },
         },
       });

@@ -1,4 +1,5 @@
 import { Chat, Kuski } from 'data/models';
+import sequelize from 'sequelize';
 
 export const schema = [
   `
@@ -27,7 +28,7 @@ export const resolvers = {
         include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
         where: {
           Entered: {
-            between: [start, end],
+            [sequelize.Op.between]: [start, end],
           },
         },
       });

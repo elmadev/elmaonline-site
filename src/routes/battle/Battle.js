@@ -21,6 +21,7 @@ import { BattleType } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import Chat from '../../components/Chat';
+import Kuski from '../../components/Kuski';
 import LocalTime from '../../components/LocalTime';
 
 class Battle extends React.Component {
@@ -36,7 +37,7 @@ class Battle extends React.Component {
 
   render() {
     const { BattleIndex } = this.props;
-    const { data: { getBattle } } = this.props;
+    const { data: { getBattle, getAllBattleTimes } } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
@@ -83,6 +84,51 @@ class Battle extends React.Component {
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
+            {getBattle.BattleType === 'NM' && (
+              <ExpansionPanel defaultExpanded>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="body2">Leader history</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <div className={s.timeDevelopment}>
+                    {[...getAllBattleTimes]
+                      .reduce((acc, cur) => {
+                        if (
+                          acc.length < 1 ||
+                          acc[acc.length - 1].Time > cur.Time
+                        )
+                          acc.push(cur);
+                        return acc;
+                      }, [])
+                      .map((b, i, a) => (
+                        <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
+                          <span className={s.timeDiff}>
+                            {a.length > 1 && !a[i + 1] && 'Winner'}
+                            {a[i - 1] && (
+                              <span>
+                                {' '}
+                                -<Time time={a[i - 1].Time - b.Time} />
+                              </span>
+                            )}
+                            {a.length > 1 && !a[i - 1] && 'First finish'}
+                            {a.length === 1 && 'Only finish'}
+                          </span>
+                          <span className={s.timelineCell}>
+                            <span className={s.timelineMarker} />
+                            <span className={s.timelineLine} />
+                          </span>
+                          <span className={s.timeDevelopmentTime}>
+                            <Time time={b.Time} />
+                          </span>
+                          <span className={s.timeDevelopmentKuski}>
+                            {b.KuskiData.Kuski}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            )}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body2">Chat</Typography>
@@ -128,9 +174,7 @@ class Battle extends React.Component {
                       <TableRow key={r.KuskiIndex}>
                         <TableCell>{i + 1}.</TableCell>
                         <TableCell>
-                          {r.KuskiData.Kuski}{' '}
-                          {r.KuskiData.TeamData &&
-                            `[${r.KuskiData.TeamData.Team}]`}
+                          <Kuski kuskiData={r.KuskiData} flag team />
                         </TableCell>
                         <TableCell>
                           <Time time={r.Time} apples={r.Apples} />
