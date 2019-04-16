@@ -57,9 +57,7 @@ class Home extends React.Component {
 
   render() {
     const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
-    const battleList = loading
-      ? null
-      : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
+    const battleList = loading ? null : getBattles.slice(0, 25); // : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
     const currentBattle = loading
       ? null
       : getBattles.filter(
@@ -107,16 +105,26 @@ class Home extends React.Component {
                           }}
                         >
                           <TableCell>
-                            {i.InQueue === 1 ? (
-                              'Queued'
-                            ) : (
+                            {i.Aborted === 1 ? (
                               <Link to={`/battles/${i.BattleIndex}`}>
-                                <LocalTime
-                                  date={i.Started}
-                                  format="HH:mm:ss"
-                                  parse="X"
-                                />
+                                Aborted
                               </Link>
+                            ) : (
+                              [
+                                i.InQueue === 1 ? (
+                                  <Link to={`/battles/${i.BattleIndex}`}>
+                                    Queued
+                                  </Link>
+                                ) : (
+                                  <Link to={`/battles/${i.BattleIndex}`}>
+                                    <LocalTime
+                                      date={i.Started}
+                                      format="HH:mm:ss"
+                                      parse="X"
+                                    />
+                                  </Link>
+                                ),
+                              ]
                             )}
                           </TableCell>
                           <TableCell>

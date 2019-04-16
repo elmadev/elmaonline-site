@@ -197,6 +197,7 @@ export const resolvers = {
           'Started',
           'Duration',
           'BattleType',
+          'Aborted',
           'InQueue',
           'Finished',
         ],

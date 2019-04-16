@@ -40,9 +40,19 @@ const BattleList = props => {
                   {b.LevelData && b.LevelData.LevelName}
                 </span>
                 <span className={s.winnerKuski}>
-                  {b.Results.length > 0 && (
-                    <Kuski kuskiData={sorted[0].KuskiData} team flag />
-                  )}
+                  {b.InQueue === 0 && b.Aborted === 0 && b.Finished === 0
+                    ? 'Ongoing'
+                    : b.Aborted === 1 ? 'Aborted'
+                    : b.InQueue === 1 ? 'Queued'
+                    : <div>{b.Results.length > 0 ? sorted[0].KuskiData.Kuski : null}{' '}
+                      {b.Results.length > 0 &&
+                        sorted[0].KuskiData.TeamData &&
+                        `[${sorted[0].KuskiData.TeamData.Team}]`}
+                      {b.Results.length > 0 && (
+                        <Kuski kuskiData={sorted[0].KuskiData} team flag />
+                      )}
+                    </div>
+                  }
                 </span>
                 <span className={s.winnerTime}>
                   {b.Results.length > 0 && (
