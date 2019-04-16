@@ -36,10 +36,15 @@ const BattleList = props => {
                   {b.KuskiData.TeamData && `[${b.KuskiData.TeamData.Team}]`}
                 </span>
                 <span className={s.winnerKuski}>
-                  {b.Results.length > 0 ? sorted[0].KuskiData.Kuski : null}{' '}
-                  {b.Results.length > 0 &&
-                    sorted[0].KuskiData.TeamData &&
-                    `[${sorted[0].KuskiData.TeamData.Team}]`}
+                  {b.InQueue === 0 && b.Aborted === 0 && b.Finished === 0
+                    ? 'Ongoing'
+                    : b.Aborted === 1 ? 'Aborted'
+                    : b.InQueue === 1 ? 'Queued'
+                    : <div>{b.Results.length > 0 ? sorted[0].KuskiData.Kuski : null}{' '}
+                      {b.Results.length > 0 &&
+                        sorted[0].KuskiData.TeamData &&
+                        `[${sorted[0].KuskiData.TeamData.Team}]`}</div>
+                  }
                 </span>
                 <span className={s.winnerTime}>
                   {b.Results.length > 0 && (

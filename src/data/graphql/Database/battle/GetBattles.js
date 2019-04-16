@@ -195,6 +195,9 @@ export const resolvers = {
           'LevelIndex',
           'Started',
           'Duration',
+          'Aborted',
+          'InQueue',
+          'Finished',
         ],
         limit: 100,
         include: [
