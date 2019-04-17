@@ -8,10 +8,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
+import querystring from 'querystring';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import recListQuery from './recList.graphql';
 import RecListItem from '../RecListItem';
 import history from '../../history';
+import historyRefresh from '../../historyRefresh';
 
 class RecList extends React.Component {
   static propTypes = {
@@ -32,27 +34,47 @@ class RecList extends React.Component {
         }),
       ),
     }).isRequired,
-    openReplay: PropTypes.func,
   };
 
-  static defaultProps = {
-    openReplay: null,
-  };
+  constructor(props) {
+    super(props);
 
-  state = {
-    showTAS: false,
-    showDNF: false,
-    showBug: false,
-    showNitro: false,
-  };
+    this.state = {
+      showTAS: false,
+      showDNF: false,
+      showBug: false,
+      showNitro: false,
+    };
+  }
+
+  componentDidMount() {
+    const queryParams = querystring.parse(window.location.search.substring(1));
+    this.setState({
+      showTAS: queryParams.showTAS === 'true',
+      showDNF: queryParams.showDNF === 'true',
+      showBug: queryParams.showBug === 'true',
+      showNitro: queryParams.showNitro === 'true',
+    });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState !== this.state;
+  }
+
+  onFilterChange(id) {
+    const newState = { ...this.state };
+    newState[id] = !newState[id];
+    this.setState(() => newState);
+    history.replace({
+      search: `?${querystring.stringify(newState)}`,
+    });
+  }
 
   handleOpenReplay(uuid) {
-    const { openReplay } = this.props;
-    if (openReplay) {
-      openReplay(uuid);
-    } else {
-      history.push(`/r/${uuid}`);
-    }
+    historyRefresh.push({
+      pathname: `/r/${uuid}`,
+      search: `?${querystring.stringify(this.state)}`,
+    });
   }
 
   render() {
@@ -81,7 +103,7 @@ class RecList extends React.Component {
             control={
               <Checkbox
                 checked={this.state.showTAS}
-                onChange={() => this.setState({ showTAS: !showTAS })}
+                onChange={() => this.onFilterChange('showTAS')}
                 value="ShowTAS"
                 color="primary"
               />
@@ -92,7 +114,7 @@ class RecList extends React.Component {
             control={
               <Checkbox
                 checked={this.state.showDNF}
-                onChange={() => this.setState({ showDNF: !showDNF })}
+                onChange={() => this.onFilterChange('showDNF')}
                 value="ShowDNF"
                 color="primary"
               />
@@ -105,7 +127,7 @@ class RecList extends React.Component {
             control={
               <Checkbox
                 checked={this.state.showBug}
-                onChange={() => this.setState({ showBug: !showBug })}
+                onChange={() => this.onFilterChange('showBug')}
                 value="showBug"
                 color="primary"
               />
@@ -116,7 +138,7 @@ class RecList extends React.Component {
             control={
               <Checkbox
                 checked={this.state.showNitro}
-                onChange={() => this.setState({ showNitro: !showNitro })}
+                onChange={() => this.onFilterChange('showNitro')}
                 value="showNitro"
                 color="primary"
               />

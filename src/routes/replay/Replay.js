@@ -16,7 +16,6 @@ import { Level } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import RecList from '../../components/RecList';
-import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {
@@ -120,10 +119,7 @@ class Replay extends React.Component {
                 <Typography variant="body2">Other replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList
-                  LevelIndex={getReplayByUuid.LevelIndex}
-                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
-                />
+                <RecList LevelIndex={getReplayByUuid.LevelIndex} />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>
