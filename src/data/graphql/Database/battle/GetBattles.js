@@ -94,6 +94,28 @@ export const resolvers = {
               },
             ],
           },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
+              },
+            ],
+          },
         ],
         order: [['BattleIndex', 'DESC']],
       });
@@ -255,8 +277,11 @@ export const resolvers = {
           'Started',
           'BattleType',
           'Duration',
+          'Aborted',
+          'InQueue',
+          'Finished',
         ],
-        where: { BattleIndex, Finished: 1 },
+        where: { BattleIndex /* Finished: 1 */ },
         include: [
           {
             model: Kuski,
@@ -316,6 +341,23 @@ export const resolvers = {
             model: Level,
             attributes: ['LevelName'],
             as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
+              },
+            ],
           },
         ],
         order: [['BattleIndex', 'DESC']],

@@ -14,11 +14,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { battleStatus, battleStatusBgColor } from 'utils';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
-import { Kuski, BattleType } from '../../components/Names';
+import { Kuski } from '../../components/Names';
 import history from '../../history';
 import Recplayer from '../../components/Recplayer';
 import RecList from '../../components/RecList';
@@ -28,7 +29,7 @@ import Link from '../../components/Link';
 import LocalTime from '../../components/LocalTime';
 import historyRefresh from '../../historyRefresh';
 
-const TimeTable = withStyles(s)(({ data }) => (
+const TimeTable = withStyles(s)(({ data, latestBattle }) => (
   <div>
     <Table>
       <TableHead>
@@ -52,6 +53,7 @@ const TimeTable = withStyles(s)(({ data }) => (
       </TableHead>
       <TableBody>
         {data &&
+          (latestBattle.Finished === 1 || latestBattle.Aborted === 1) &&
           data.map((t, i) => (
             <TableRow key={t.TimeIndex}>
               <TableCell>{i + 1}.</TableCell>
@@ -114,14 +116,18 @@ class Level extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
-          <div className={s.player}>
-            {isWindow && (
-              <Recplayer
-                lev={`/dl/level/${this.props.LevelIndex}`}
-                controls={false}
-              />
-            )}
-          </div>
+          {loading && <Loading />}
+          {!loading && (
+            <div className={s.player}>
+              {isWindow &&
+                !(battleStatus(getBattlesForLevel[0]) === 'Queued') && (
+                  <Recplayer
+                    lev={`/dl/level/${this.props.LevelIndex}`}
+                    controls={false}
+                  />
+                )}
+            </div>
+          )}
         </div>
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
@@ -152,9 +158,8 @@ class Level extends React.Component {
                     <TableHead>
                       <TableRow>
                         <TableCell>Started</TableCell>
-                        <TableCell>Started by</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Duration</TableCell>
+                        <TableCell>Designer</TableCell>
+                        <TableCell>Winner</TableCell>
                         <TableCell>Battle ID</TableCell>
                       </TableRow>
                     </TableHead>
@@ -162,17 +167,12 @@ class Level extends React.Component {
                       {loading
                         ? 'Loading...'
                         : getBattlesForLevel.map(i => (
+                            // const sorted = [...i.Results].sort(sortResults);
                             <TableRow
-                              style={
-                                i.InQueue === 0 &&
-                                i.Aborted === 0 &&
-                                i.Finished === 0
-                                  ? {
-                                      cursor: 'pointer',
-                                      backgroundColor: '#2566a7',
-                                    }
-                                  : { cursor: 'pointer' }
-                              }
+                              style={{
+                                cursor: 'pointer',
+                                backgroundColor: battleStatusBgColor(i),
+                              }}
                               hover
                               key={i.BattleIndex}
                               onClick={() => {
@@ -180,25 +180,20 @@ class Level extends React.Component {
                               }}
                             >
                               <TableCell>
-                                {i.InQueue === 1 ? (
-                                  'Queued'
-                                ) : (
-                                  <Link to={`/battles/${i.BattleIndex}`}>
-                                    <LocalTime
-                                      date={i.Started}
-                                      format="DD MMM YYYY HH:mm:ss"
-                                      parse="X"
-                                    />
-                                  </Link>
-                                )}
+                                <Link to={`/battles/${i.BattleIndex}`}>
+                                  <LocalTime
+                                    date={i.Started}
+                                    format="DD MMM YYYY HH:mm:ss"
+                                    parse="X"
+                                  />
+                                </Link>
                               </TableCell>
                               <TableCell>
                                 <Kuski index={i.KuskiIndex} />
                               </TableCell>
                               <TableCell>
-                                <BattleType type={i.BattleType} />
+                                {i.Finished === 1 ? 'Winner' : battleStatus(i)}
                               </TableCell>
-                              <TableCell>{i.Duration}</TableCell>
                               <TableCell>{i.BattleIndex}</TableCell>
                             </TableRow>
                           ))}
@@ -231,7 +226,12 @@ class Level extends React.Component {
                   <Tab label="Best multi times" />
                   <Tab label="All multi times" />
                 </Tabs>
-                {this.state.tab === 0 && <TimeTable data={getBestTimes} />}
+                {this.state.tab === 0 && (
+                  <TimeTable
+                    data={getBestTimes}
+                    latestBattle={getBattlesForLevel[0]}
+                  />
+                )}
                 {this.state.tab === 1 && <TimeTable data={getBestTimes} />}
                 {this.state.tab === 2 && <TimeTable data={getBestTimes} />}
                 {this.state.tab === 3 && (
