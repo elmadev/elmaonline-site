@@ -11,10 +11,16 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import { toLocalTime, battleStatus, battleStatusBgColor } from 'utils';
+import {
+  sortResults,
+  toLocalTime,
+  battleStatus,
+  battleStatusBgColor,
+} from 'utils';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
-import { Kuski, Level, BattleType } from '../../components/Names';
+import { Level, BattleType } from '../../components/Names';
+import Kuski from '../../components/Kuski';
 import history from '../../history';
 import Upload from '../../components/Upload';
 import RecListItem from '../../components/RecListItem';
@@ -87,49 +93,59 @@ class Home extends React.Component {
                   {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
                   {loading
                     ? 'Loading...'
-                    : battleList.map(i => (
-                        // const sorted = [...i.Results].sort(sortResults);
-                        <TableRow
-                          style={{
-                            cursor: 'pointer',
-                            backgroundColor: battleStatusBgColor(i),
-                          }}
-                          hover
-                          key={i.BattleIndex}
-                          onClick={() => {
-                            this.gotoBattle(i.BattleIndex);
-                          }}
-                        >
-                          <TableCell>
-                            <Link to={`/battles/${i.BattleIndex}`}>
-                              <LocalTime
-                                date={i.Started}
-                                format="HH:mm:ss"
-                                parse="X"
-                              />
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                            <Kuski index={i.KuskiIndex} />
-                          </TableCell>
-                          <TableCell>
-                            <Link to={`/dl/level/${i.LevelIndex}`}>
-                              <Level index={i.LevelIndex} />
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                            {i.Finished === 1 ? 'Winner' : battleStatus(i)}
-                          </TableCell>
-                          <TableCell>
-                            <BattleType type={i.BattleType} />
-                          </TableCell>
-                          <TableCell>
-                            {battleStatus(i) === 'Ongoing'
-                              ? this.remaining(i.Started, i.Duration)
-                              : i.Duration}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                    : battleList.map(i => {
+                        const sorted = [...i.Results].sort(sortResults);
+                        return (
+                          <TableRow
+                            style={{
+                              cursor: 'pointer',
+                              backgroundColor: battleStatusBgColor(i),
+                            }}
+                            hover
+                            key={i.BattleIndex}
+                            onClick={() => {
+                              this.gotoBattle(i.BattleIndex);
+                            }}
+                          >
+                            <TableCell>
+                              <Link to={`/battles/${i.BattleIndex}`}>
+                                <LocalTime
+                                  date={i.Started}
+                                  format="HH:mm:ss"
+                                  parse="X"
+                                />
+                              </Link>
+                            </TableCell>
+                            <TableCell>
+                              <Kuski kuskiData={i.KuskiData} team flag />
+                            </TableCell>
+                            <TableCell>
+                              <Link to={`/dl/level/${i.LevelIndex}`}>
+                                <Level index={i.LevelIndex} />
+                              </Link>
+                            </TableCell>
+                            <TableCell>
+                              {i.Finished === 1 ? (
+                                <Kuski
+                                  kuskiData={sorted[0].KuskiData}
+                                  team
+                                  flag
+                                />
+                              ) : (
+                                battleStatus(i)
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <BattleType type={i.BattleType} />
+                            </TableCell>
+                            <TableCell>
+                              {battleStatus(i) === 'Ongoing'
+                                ? this.remaining(i.Started, i.Duration)
+                                : i.Duration}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                 </TableBody>
               </Table>
             </Paper>

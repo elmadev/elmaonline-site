@@ -14,12 +14,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { battleStatus, battleStatusBgColor } from 'utils';
+import { sortResults, battleStatus, battleStatusBgColor } from 'utils';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
-import { Kuski } from '../../components/Names';
+import Kuski from '../../components/Kuski';
 import history from '../../history';
 import Recplayer from '../../components/Recplayer';
 import RecList from '../../components/RecList';
@@ -154,7 +154,7 @@ class Level extends React.Component {
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div>
-                  <Table style={{ overflowX: 'auto' }}>
+                  <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Started</TableCell>
@@ -166,37 +166,47 @@ class Level extends React.Component {
                     <TableBody>
                       {loading
                         ? 'Loading...'
-                        : getBattlesForLevel.map(i => (
-                            // const sorted = [...i.Results].sort(sortResults);
-                            <TableRow
-                              style={{
-                                cursor: 'pointer',
-                                backgroundColor: battleStatusBgColor(i),
-                              }}
-                              hover
-                              key={i.BattleIndex}
-                              onClick={() => {
-                                this.gotoBattle(i.BattleIndex);
-                              }}
-                            >
-                              <TableCell>
-                                <Link to={`/battles/${i.BattleIndex}`}>
-                                  <LocalTime
-                                    date={i.Started}
-                                    format="DD MMM YYYY HH:mm:ss"
-                                    parse="X"
-                                  />
-                                </Link>
-                              </TableCell>
-                              <TableCell>
-                                <Kuski index={i.KuskiIndex} />
-                              </TableCell>
-                              <TableCell>
-                                {i.Finished === 1 ? 'Winner' : battleStatus(i)}
-                              </TableCell>
-                              <TableCell>{i.BattleIndex}</TableCell>
-                            </TableRow>
-                          ))}
+                        : getBattlesForLevel.map(i => {
+                            const sorted = [...i.Results].sort(sortResults);
+                            return (
+                              <TableRow
+                                style={{
+                                  cursor: 'pointer',
+                                  backgroundColor: battleStatusBgColor(i),
+                                }}
+                                hover
+                                key={i.BattleIndex}
+                                onClick={() => {
+                                  this.gotoBattle(i.BattleIndex);
+                                }}
+                              >
+                                <TableCell>
+                                  <Link to={`/battles/${i.BattleIndex}`}>
+                                    <LocalTime
+                                      date={i.Started}
+                                      format="DD MMM YYYY HH:mm:ss"
+                                      parse="X"
+                                    />
+                                  </Link>
+                                </TableCell>
+                                <TableCell>
+                                  <Kuski kuskiData={i.KuskiData} team flag />
+                                </TableCell>
+                                <TableCell>
+                                  {i.Finished === 1 ? (
+                                    <Kuski
+                                      kuskiData={sorted[0].KuskiData}
+                                      team
+                                      flag
+                                    />
+                                  ) : (
+                                    battleStatus(i)
+                                  )}
+                                </TableCell>
+                                <TableCell>{i.BattleIndex}</TableCell>
+                              </TableRow>
+                            );
+                          })}
                     </TableBody>
                   </Table>
                 </div>

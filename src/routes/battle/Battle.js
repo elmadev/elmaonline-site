@@ -13,7 +13,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
-import { sortResults } from 'utils';
+import { sortResults, battleStatus } from 'utils';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
@@ -48,8 +48,7 @@ class Battle extends React.Component {
           <div className={s.playerContainer}>
             <div className={s.player}>
               {isWindow &&
-                (getBattle.InQueue === 0 ||
-                  (getBattle.Aborted === 1 && getBattle.InQueue === 1)) && (
+                !(battleStatus(getBattle) === 'Queued') && (
                   <Recplayer
                     rec={`/dl/battlereplay/${BattleIndex}`}
                     lev={`/dl/level/${getBattle.LevelIndex}`}
@@ -88,53 +87,56 @@ class Battle extends React.Component {
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            {getBattle.BattleType === 'NM' && (
-              <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Leader history</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                  <div className={s.timeDevelopment}>
-                    {[...getAllBattleTimes]
-                      .reduce((acc, cur) => {
-                        if (
-                          acc.length < 1 ||
-                          acc[acc.length - 1].Time > cur.Time
-                        )
-                          acc.push(cur);
-                        return acc;
-                      }, [])
-                      .map((b, i, a) => (
-                        <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
-                          <span className={s.timeDiff}>
-                            {a.length > 1 && !a[i + 1] && 'Winner'}
-                            {a[i - 1] && (
-                              <span>
-                                {' '}
-                                -<Time time={a[i - 1].Time - b.Time} />
-                              </span>
-                            )}
-                            {a.length > 1 && !a[i - 1] && 'First finish'}
-                            {a.length === 1 && 'Only finish'}
-                          </span>
-                          <span className={s.timelineCell}>
-                            <span className={s.timelineMarker} />
-                            <span className={s.timelineLine} />
-                          </span>
-                          <span className={s.timeDevelopmentTime}>
-                            <Time time={b.Time} />
-                          </span>
-                          <span className={s.timeDevelopmentKuski}>
-                            {b.KuskiData.Kuski}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
-            )}
-            {(getBattle.InQueue === 0 ||
-              (getBattle.Aborted === 1 && getBattle.InQueue === 1)) && (
+            {getBattle.Finished === 1 &&
+              getBattle.BattleType === 'NM' && (
+                <ExpansionPanel defaultExpanded>
+                  <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="body2">Leader history</Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <div className={s.timeDevelopment}>
+                      {[...getAllBattleTimes]
+                        .reduce((acc, cur) => {
+                          if (
+                            acc.length < 1 ||
+                            acc[acc.length - 1].Time > cur.Time
+                          )
+                            acc.push(cur);
+                          return acc;
+                        }, [])
+                        .map((b, i, a) => (
+                          <div
+                            className={s.timeDevelopmentRow}
+                            key={b.TimeIndex}
+                          >
+                            <span className={s.timeDiff}>
+                              {a.length > 1 && !a[i + 1] && 'Winner'}
+                              {a[i - 1] && (
+                                <span>
+                                  {' '}
+                                  -<Time time={a[i - 1].Time - b.Time} />
+                                </span>
+                              )}
+                              {a.length > 1 && !a[i - 1] && 'First finish'}
+                              {a.length === 1 && 'Only finish'}
+                            </span>
+                            <span className={s.timelineCell}>
+                              <span className={s.timelineMarker} />
+                              <span className={s.timelineLine} />
+                            </span>
+                            <span className={s.timeDevelopmentTime}>
+                              <Time time={b.Time} />
+                            </span>
+                            <span className={s.timeDevelopmentKuski}>
+                              {b.KuskiData.Kuski}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              )}
+            {!(battleStatus(getBattle) === 'Queued') && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography variant="body2">Chat</Typography>
@@ -176,7 +178,7 @@ class Battle extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {getBattle.Finished === 1 &&
+                  {battleStatus(getBattle) === 'Finished' &&
                     [...getBattle.Results]
                       .sort(sortResults(getBattle.BattleType))
                       .map((r, i) => (
