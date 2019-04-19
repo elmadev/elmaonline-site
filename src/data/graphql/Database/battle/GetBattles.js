@@ -38,23 +38,18 @@ export const queries = [
   `
   # Retrieves all battles stored in the database
   getBattles: [DatabaseBattle]
-
+  
+  # Retrieves paginated battles for a particular kuski
+  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  
   # Retrieves all battles between two dates
   getBattlesBetween(start: String, end: String): [DatabaseBattle]
-
+  
   # Retrieves a single battle from the database
-  getBattle(
-    # The battle's id
-    BattleIndex: Int!
-  ): DatabaseBattle
-
+  getBattle(BattleIndex: Int!): DatabaseBattle
+  
   # Retrieves all battles in a specific level
-  getBattlesForLevel(
-    # The level id
-    LevelIndex: Int!
-  ): [DatabaseBattle]
-
-  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  getBattlesForLevel(LevelIndex: Int!): [DatabaseBattle]
 `,
 ];
 

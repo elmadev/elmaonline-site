@@ -39,6 +39,9 @@ const battleStatus = data => {
   if (data.Aborted === 0 && data.InQueue === 0 && data.Finished === 0) {
     status = 'Ongoing';
   }
+  if (data.Finished === 1) {
+    status = 'Finished';
+  }
   return status;
 };
 const battleStatusBgColor = data => {
