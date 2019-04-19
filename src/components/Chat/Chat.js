@@ -1,9 +1,9 @@
 import React from 'react';
 import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import LocalTime from '../../components/LocalTime';
+import LocalTime from '../LocalTime';
 import chatQuery from './chat.graphql';
 import s from './Chat.css';
 
@@ -14,8 +14,11 @@ class Chat extends React.Component {
       getChatLines: PropTypes.array,
     }).isRequired,
   };
+
   render() {
-    const { data: { getChatLines, loading } } = this.props;
+    const {
+      data: { getChatLines, loading },
+    } = this.props;
 
     if (loading) return <span>Loading chat</span>;
 

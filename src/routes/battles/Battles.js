@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import moment from 'moment';
 import history from '../../history';
 import BattleList from '../../components/BattleList';
@@ -14,6 +14,7 @@ class Battles extends React.Component {
       end: date.clone().add(1, 'days'),
     };
   }
+
   componentWillReceiveProps(props) {
     const date = this.parseDate(props);
     this.setState({
@@ -21,15 +22,18 @@ class Battles extends React.Component {
       end: date.clone().add(1, 'days'),
     });
   }
+
   parseDate = props =>
     props.context.query.date
       ? moment(props.context.query.date, 'YYYY-MM-DD').startOf('day')
       : moment().startOf('day');
+
   next = () => {
     history.push(
       `/battles?date=${this.state.start.add(1, 'days').format('YYYY-MM-DD')}`,
     );
   };
+
   previous = () => {
     history.push(
       `/battles?date=${this.state.start
@@ -37,15 +41,20 @@ class Battles extends React.Component {
         .format('YYYY-MM-DD')}`,
     );
   };
+
   render() {
     return (
       <div className={s.battles}>
         <div className={s.datepicker}>
-          <button onClick={this.previous}>&lt;</button>
+          <button onClick={this.previous} type="button">
+            &lt;
+          </button>
           <span className={s.selectedDate}>
             {this.state.start.format('ddd DD.MM.YYYY')}
           </span>
-          <button onClick={this.next}>&gt;</button>
+          <button onClick={this.next} type="button">
+            &gt;
+          </button>
         </div>
         <BattleList
           start={this.state.start.clone()}

@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
@@ -83,7 +83,9 @@ const AllTimes = compose(
     }),
   }),
 )(props => {
-  const { data: { getTimes, loading } } = props;
+  const {
+    data: { getTimes, loading },
+  } = props;
   return loading ? <Loading /> : <TimeTable data={getTimes} />;
 });
 
@@ -94,6 +96,7 @@ class Level extends React.Component {
       tab: 0,
     };
   }
+
   onTabClick = (e, value) => {
     this.setState({
       tab: value,

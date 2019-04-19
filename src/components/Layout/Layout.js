@@ -9,7 +9,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 
 // external-global styles must be imported in your JS.
 import normalizeCss from 'normalize.css';
@@ -28,6 +28,7 @@ class Layout extends React.Component {
       sideBarExpanded: true,
     };
   }
+
   toggleSideBar() {
     this.setState(
       prevState => ({
@@ -39,6 +40,7 @@ class Layout extends React.Component {
       },
     );
   }
+
   render() {
     const className = this.state.sideBarExpanded
       ? `${s.sideBarExpanded}`

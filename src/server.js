@@ -26,6 +26,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import { SheetsRegistry } from 'react-jss/lib/jss';
 import JssProvider from 'react-jss/lib/JssProvider';
+import StyleContext from 'isomorphic-style-loader/StyleContext';
 import {
   MuiThemeProvider,
   createGenerateClassName,
@@ -279,7 +280,9 @@ app.get('*', async (req, res, next) => {
         generateClassName={generateClassName}
       >
         <MuiThemeProvider theme={muiTheme} sheetsManager={sheetsManager}>
-          <App context={context}>{route.component}</App>
+          <StyleContext.Provider value={{ insertCss }}>
+            <App context={context}>{route.component}</App>
+          </StyleContext.Provider>
         </MuiThemeProvider>
       </JssProvider>
     );

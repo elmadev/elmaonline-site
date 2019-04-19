@@ -1,18 +1,20 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
 import { toServerTime, sortResults } from 'utils';
-import LocalTime from '../../components/LocalTime';
-import Link from '../../components/Link';
-import Time from '../../components/Time';
-import Kuski from '../../components/Kuski';
-import { BattleType } from '../../components/Names';
+import LocalTime from '../LocalTime';
+import Link from '../Link';
+import Time from '../Time';
+import Kuski from '../Kuski';
+import { BattleType } from '../Names';
 import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 
 const BattleList = props => {
-  const { data: { getBattlesBetween } } = props;
+  const {
+    data: { getBattlesBetween },
+  } = props;
   return (
     <div className={s.battleList}>
       <div className={s.battles}>
@@ -67,7 +69,7 @@ const BattleList = props => {
                       title={b.Results.length}
                       className={s.popularityBar}
                       style={{
-                        width: `${b.Results.length / 20 * 100}%`,
+                        width: `${(b.Results.length / 20) * 100}%`,
                         opacity: b.Results.length / 20 + 0.1,
                       }}
                     />

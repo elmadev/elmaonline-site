@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import Moment from 'react-moment';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -37,7 +37,9 @@ class Replay extends React.Component {
   };
 
   render() {
-    const { data: { getReplayByUuid } } = this.props;
+    const {
+      data: { getReplayByUuid },
+    } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getReplayByUuid) return null;

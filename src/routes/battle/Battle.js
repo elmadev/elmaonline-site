@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -37,7 +37,9 @@ class Battle extends React.Component {
 
   render() {
     const { BattleIndex } = this.props;
-    const { data: { getBattle, getAllBattleTimes } } = this.props;
+    const {
+      data: { getBattle, getAllBattleTimes },
+    } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import kuskiQuery from './kuski.graphql';
 import Flag from '../../components/Flag';
@@ -9,7 +9,9 @@ import s from './Kuski.css';
 
 class Kuski extends React.Component {
   render() {
-    const { data: { getKuskiByName, loading } } = this.props;
+    const {
+      data: { getKuskiByName, loading },
+    } = this.props;
 
     if (loading) return null;
     if (!getKuskiByName) return <div>not found</div>;

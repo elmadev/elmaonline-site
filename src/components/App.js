@@ -6,7 +6,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
-
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -19,6 +19,8 @@ const ContextType = {
   // Universal HTTP client
   fetch: PropTypes.func.isRequired,
   pathname: PropTypes.string.isRequired,
+  store: PropTypes.object,
+  storeSubscription: PropTypes.object,
   query: PropTypes.object,
   // Integrate Redux
   // http://redux.js.org/docs/basics/UsageWithReact.html
