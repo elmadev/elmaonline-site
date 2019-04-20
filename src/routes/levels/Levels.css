@@ -1,0 +1,101 @@
+.root {
+  min-height: 100%;
+}
+
+.levelPackContainer {
+  float: left;
+  width: 20%;
+  height: 100px;
+  padding-left: 3px;
+  padding-top: 3px;
+  box-sizing: border-box;
+}
+
+.internals {
+  height: 200px;
+  width: 40%;
+}
+
+.internalsTitle {
+  color: #219653;
+  font-weight: 500;
+  font-size: 25px;
+}
+
+.shortName {
+  font-weight: 500;
+  color: #219653;
+}
+
+.longName {
+  font-size: 13px;
+}
+
+.internals .shortName,
+.internals .longName {
+  display: none;
+}
+
+.levelCount {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  text-align: right;
+  padding: 10px;
+  color: #909090;
+  font-size: 13px;
+}
+
+@media all and (max-width: 1350px) {
+  .levelPackContainer {
+    width: 25%;
+  }
+
+  .internals {
+    width: 50%;
+  }
+}
+
+@media all and (max-width: 1160px) {
+  .levelPackContainer,
+  .internals {
+    width: calc(100% / 3);
+  }
+}
+
+@media all and (max-width: 730px) {
+  .levelPackContainer {
+    width: 50%;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .levelPackContainer {
+    width: 100%;
+    height: unset;
+  }
+
+  .levelCount {
+    position: relative;
+    padding: 0;
+  }
+
+  .internalsTitle {
+    font-size: inherit;
+  }
+}
+
+.levelPackContainer > a {
+  display: block;
+  background: #fff;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  color: inherit;
+  overflow: hidden;
+  position: relative;
+}
+
+.levelPackContainer > a:hover {
+  background: #f9f9f9;
+}

@@ -76,6 +76,12 @@ import {
   resolvers as GetTimesResolver,
 } from './time/GetTimes';
 
+import {
+  schema as GetLevelPacks,
+  queries as GetLevelPacksQueries,
+  resolvers as GetLevelPacksResolver,
+} from './levelpack/LevelPack';
+
 export const schema = [
   ...GetAllUsers,
   ...CreateUserInput,
@@ -88,6 +94,7 @@ export const schema = [
   ...GetChatLines,
   ...InsertReplay,
   ...GetTimes,
+  ...GetLevelPacks,
 ];
 
 export const queries = [
@@ -101,6 +108,7 @@ export const queries = [
   ...GetBesttimeQueries,
   ...GetChatLinesQueries,
   ...GetTimesQueries,
+  ...GetLevelPacksQueries,
 ];
 
 export const mutations = [...CreateUser, ...InsertReplayMutation];
@@ -118,4 +126,5 @@ export const resolvers = merge(
   GetChatLinesResolver,
   InsertReplayResolver,
   GetTimesResolver,
+  GetLevelPacksResolver,
 );

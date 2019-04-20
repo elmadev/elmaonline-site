@@ -11,7 +11,9 @@ import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
 import AllFinished from './AllFinished';
-import BestTime from './BestTime';
+import Besttime from './Besttime';
+import LevelPack from './LevelPack';
+import LevelPackLevel from './LevelPackLevel';
 
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
@@ -64,7 +66,7 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
-BestTime.belongsTo(Kuski, {
+Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -82,6 +84,16 @@ Chat.belongsTo(Kuski, {
 Kuski.belongsTo(Team, {
   foreignKey: 'TeamIndex',
   as: 'TeamData',
+});
+
+LevelPack.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LevelPack.hasMany(LevelPackLevel, {
+  foreignKey: 'LevelPackIndex',
+  as: 'Levels',
 });
 
 function sync(...args) {
@@ -102,5 +114,7 @@ export {
   Chat,
   Team,
   AllFinished,
-  BestTime,
+  Besttime,
+  LevelPack,
+  LevelPackLevel,
 }; // add the data model here as well so it exports
