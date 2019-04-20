@@ -61,7 +61,7 @@ class Battle extends React.Component {
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Battle info</Typography>
+                <Typography variant="body1">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div className={s.battleDescription}>
@@ -89,7 +89,7 @@ class Battle extends React.Component {
             {getBattle.BattleType === 'NM' && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Leader history</Typography>
+                  <Typography variant="body1">Leader history</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div className={s.timeDevelopment}>
@@ -133,7 +133,7 @@ class Battle extends React.Component {
             )}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Chat</Typography>
+                <Typography variant="body1">Chat</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Chat

@@ -19,7 +19,7 @@ const ContextType = {
   // Universal HTTP client
   fetch: PropTypes.func.isRequired,
   pathname: PropTypes.string.isRequired,
-  store: PropTypes.object,
+  store: PropTypes.object.isRequired,
   storeSubscription: PropTypes.object,
   query: PropTypes.object,
   // Integrate Redux
@@ -65,11 +65,13 @@ class App extends React.PureComponent {
 
   render() {
     // Here, we are at universe level, sure? ;-)
-    const { client } = this.props.context;
+    const { client, store } = this.props.context;
     // NOTE: If you need to add or modify header, footer etc. of the app,
     // please do that inside the Layout component.
     return (
-      <ApolloProvider client={client}>{this.props.children}</ApolloProvider>
+      <ApolloProvider client={client}>
+        <ReduxProvider store={store}>{this.props.children}</ReduxProvider>
+      </ApolloProvider>
     );
   }
 }

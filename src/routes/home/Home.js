@@ -70,7 +70,7 @@ class Home extends React.Component {
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
             {currentBattle && <BattleCard battle={currentBattle} />}
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Latest Battles
             </Typography>
             <Paper>
@@ -152,11 +152,11 @@ class Home extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Upload Replays
             </Typography>
             <Upload onUpload={() => refetch()} filetype=".rec" />
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Latest Replays
             </Typography>
             <Paper>

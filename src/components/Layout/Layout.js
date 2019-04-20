@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 
@@ -16,40 +17,31 @@ import normalizeCss from 'normalize.css';
 import s from './Layout.css';
 import TopBar from '../TopBar';
 import SideBar from '../SideBar';
+import { toggleSidebar } from '../../actions/ui';
 
 class Layout extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
+    sidebarVisible: PropTypes.bool.isRequired,
+    toggleSidebar: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      sideBarExpanded: true,
-    };
-  }
-
   toggleSideBar() {
-    this.setState(
-      prevState => ({
-        sideBarExpanded: !prevState.sideBarExpanded,
-      }),
-      () => {
-        // trigger window resize event so that recplayer knows to resize itself
-        window.dispatchEvent(new Event('resize'));
-      },
-    );
+    this.props.toggleSidebar();
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 10);
   }
 
   render() {
-    const className = this.state.sideBarExpanded
+    const className = this.props.sidebarVisible
       ? `${s.sideBarExpanded}`
       : `${s.layout}`;
     return (
       <div className={className}>
         <TopBar />
         <SideBar
-          expanded={this.state.sideBarExpanded}
+          expanded={this.props.sidebarVisible}
           onToggle={() => this.toggleSideBar()}
         />
         <div
@@ -67,4 +59,14 @@ class Layout extends React.Component {
   }
 }
 
-export default withStyles(normalizeCss, s)(Layout);
+const mapStateToProps = state => {
+  const { sidebarVisible } = state.ui;
+  return { sidebarVisible };
+};
+
+export default withStyles(normalizeCss, s)(
+  connect(
+    mapStateToProps,
+    { toggleSidebar },
+  )(Layout),
+);

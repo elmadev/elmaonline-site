@@ -70,7 +70,7 @@ const TimeTable = withStyles(s)(({ data }) => (
 ));
 
 TimeTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 const AllTimes = compose(
@@ -132,7 +132,7 @@ class Level extends React.Component {
             {!loading && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Level info</Typography>
+                  <Typography variant="body1">Level info</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div className={s.levelDescription}>
@@ -147,7 +147,7 @@ class Level extends React.Component {
             )}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Battles in level</Typography>
+                <Typography variant="body1">Battles in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div>
@@ -212,7 +212,7 @@ class Level extends React.Component {
             </ExpansionPanel>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Replays in level</Typography>
+                <Typography variant="body1">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList

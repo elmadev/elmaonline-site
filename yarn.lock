@@ -7025,8 +7025,8 @@ left-pad@^1.3.0:
   integrity sha512-XI5MPzVNApjAyhQzphX8BkmKsKUxD4LdyK24iZeQGinBN9yTQT3bFlCBy/aVx2HrNcqQGsdot8ghrjyrvMCoEA==
 
 "level-editor-gui@https://github.com/ville-j/level-editor-gui.git":
-  version "1.0.0"
-  resolved "https://github.com/ville-j/level-editor-gui.git#321c692ef25d8cf1860ab8e9616e10142b048f69"
+  version "1.0.1"
+  resolved "https://github.com/ville-j/level-editor-gui.git#cf921d8db79561a6a0929137e1f5b1d3bb6ba8a9"
   dependencies:
     "@babel/polyfill" "^7.0.0"
     file-saver "^1.3.8"

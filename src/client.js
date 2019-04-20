@@ -12,7 +12,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import deepForceUpdate from 'react-deep-force-update';
 import queryString from 'query-string';
-import { createPath } from 'history/PathUtils';
+import { createPath } from 'history';
 import StyleContext from 'isomorphic-style-loader/StyleContext';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import App from './components/App';
@@ -102,6 +102,10 @@ async function onLocationChange(location, action) {
       container,
       () => {
         if (isInitialRender) {
+          if (typeof window !== 'undefined' && window.innerWidth < 1000) {
+            context.store.dispatch({ type: 'TOGGLE_SIDEBAR' });
+          }
+
           // Switch off the native scroll restoration behavior and handle it manually
           // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
           if (window.history && 'scrollRestoration' in window.history) {

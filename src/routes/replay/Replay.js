@@ -65,7 +65,7 @@ class Replay extends React.Component {
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">
+                <Typography variant="body1">
                   <React.Fragment>{getReplayByUuid.RecFileName}</React.Fragment>
                 </Typography>
               </ExpansionPanelSummary>
@@ -119,7 +119,7 @@ class Replay extends React.Component {
             </ExpansionPanel> */}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Other replays in level</Typography>
+                <Typography variant="body1">Other replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList
