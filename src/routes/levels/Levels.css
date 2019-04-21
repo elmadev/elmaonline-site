@@ -1,25 +1,20 @@
 .root {
-  min-height: 100%;
+  padding-bottom: 50px;
+  overflow: hidden;
 }
 
 .levelPackContainer {
   float: left;
   width: 20%;
   height: 100px;
-  padding-left: 3px;
-  padding-top: 3px;
+  padding-left: 1px;
+  padding-top: 1px;
   box-sizing: border-box;
 }
 
-.internals {
+.promote {
   height: 200px;
   width: 40%;
-}
-
-.internalsTitle {
-  color: #219653;
-  font-weight: 500;
-  font-size: 25px;
 }
 
 .shortName {
@@ -29,11 +24,6 @@
 
 .longName {
   font-size: 13px;
-}
-
-.internals .shortName,
-.internals .longName {
-  display: none;
 }
 
 .levelCount {
@@ -51,14 +41,14 @@
     width: 25%;
   }
 
-  .internals {
+  .promote {
     width: 50%;
   }
 }
 
 @media all and (max-width: 1160px) {
   .levelPackContainer,
-  .internals {
+  .promote {
     width: calc(100% / 3);
   }
 }
@@ -78,10 +68,6 @@
   .levelCount {
     position: relative;
     padding: 0;
-  }
-
-  .internalsTitle {
-    font-size: inherit;
   }
 }
 

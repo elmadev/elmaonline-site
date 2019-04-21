@@ -96,6 +96,11 @@ LevelPack.hasMany(LevelPackLevel, {
   as: 'Levels',
 });
 
+LevelPackLevel.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'Level',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

@@ -74,6 +74,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'level' */ './level'),
     },
     {
+      path: '/levels/packs/:name',
+      load: () => import(/* webpackChunkName: 'levelpack' */ './levelpack'),
+    },
+    {
       path: '/r/:uuid',
       load: () => import(/* webpackChunkName: 'replay' */ './replay'),
     },

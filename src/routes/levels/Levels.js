@@ -19,6 +19,8 @@ const GET_LEVELPACKS = gql`
   }
 `;
 
+const promote = 'Int';
+
 const Levels = () => {
   return (
     <div className={s.root}>
@@ -30,21 +32,20 @@ const Levels = () => {
           return [...data.getLevelPacks]
             .filter(p => p.Levels.length > 0)
             .sort((a, b) => {
-              if (a.LevelPackName === 'Int') return -1;
-              if (b.LevelPackName === 'Int') return 1;
+              if (a.LevelPackName === promote) return -1;
+              if (b.LevelPackName === promote) return 1;
               return a.LevelPackName.toLowerCase().localeCompare(
                 b.LevelPackName.toLowerCase(),
               );
             })
-            .map((p, i) => (
+            .map(p => (
               <div
                 key={p.LevelPackIndex}
                 className={`${s.levelPackContainer} ${
-                  i === 0 ? s.internals : ''
+                  p.LevelPackName === promote ? s.promote : ''
                 }`}
               >
                 <Link to={`/levels/packs/${p.LevelPackName}`}>
-                  {i === 0 && <div className={s.internalsTitle}>Internals</div>}
                   <div className={s.shortName}>{p.LevelPackName}</div>
                   <div className={s.longName}>{p.LevelPackLongName}</div>
                   <div className={s.levelCount}>

@@ -1,4 +1,4 @@
-import { LevelPack, Kuski, LevelPackLevel } from 'data/models';
+import { LevelPack, Kuski, Level, LevelPackLevel } from 'data/models';
 
 export const schema = [
   `
@@ -33,6 +33,7 @@ export const schema = [
       LevelPackLevelIndex: Int
       LevelPackIndex: Int
       LevelIndex: Int
+      Level: DatabaseLevel
     }
   `,
 ];
@@ -40,6 +41,7 @@ export const schema = [
 export const queries = [
   `
   getLevelPacks: [DatabaseLevelPack]
+  getLevelPack(LevelPackName: String!): DatabaseLevelPack
 `,
 ];
 
@@ -49,10 +51,45 @@ export const resolvers = {
       const data = await LevelPack.findAll({
         include: [
           { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-          { model: LevelPackLevel, as: 'Levels' },
+          {
+            model: LevelPackLevel,
+            as: 'Levels',
+          },
         ],
         order: [['LevelPackName', 'ASC']],
       });
+      return data;
+    },
+    async getLevelPack(parent, { LevelPackName }) {
+      const data = await LevelPack.findOne({
+        where: { LevelPackName },
+        include: [
+          { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+          {
+            model: LevelPackLevel,
+            group: 'Levels.LevelIndex',
+            as: 'Levels',
+            include: [
+              {
+                model: Level,
+                as: 'Level',
+                attributes: ['LevelName', 'LongName'],
+              },
+            ],
+          },
+        ],
+        order: [
+          [
+            { model: LevelPackLevel, as: 'Levels' },
+            'LevelPackLevelIndex',
+            'ASC',
+          ],
+        ],
+      });
+      data.Levels = data.Levels.reduce((acc, cur) => {
+        if (!acc.find(a => a.LevelIndex === cur.LevelIndex)) acc.push(cur);
+        return acc;
+      }, []);
       return data;
     },
   },
