@@ -11,10 +11,16 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import { toLocalTime } from 'utils';
+import {
+  sortResults,
+  toLocalTime,
+  battleStatus,
+  battleStatusBgColor,
+} from 'utils';
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
-import { Kuski, Level, BattleType } from '../../components/Names';
+import { Level, BattleType } from '../../components/Names';
+import Kuski from '../../components/Kuski';
 import history from '../../history';
 import Upload from '../../components/Upload';
 import RecListItem from '../../components/RecListItem';
@@ -75,9 +81,10 @@ class Home extends React.Component {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Time</TableCell>
-                    <TableCell>Level</TableCell>
+                    <TableCell>Started</TableCell>
                     <TableCell>Designer</TableCell>
+                    <TableCell>Level</TableCell>
+                    <TableCell>Winner</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Duration</TableCell>
                   </TableRow>
@@ -86,65 +93,59 @@ class Home extends React.Component {
                   {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
                   {loading
                     ? 'Loading...'
-                    : battleList.map(i => (
-                        <TableRow
-                          style={
-                            i.InQueue === 0 &&
-                            i.Aborted === 0 &&
-                            i.Finished === 0
-                              ? {
-                                  cursor: 'pointer',
-                                  backgroundColor: '#2566a7',
-                                }
-                              : { cursor: 'pointer' }
-                          }
-                          hover
-                          key={i.BattleIndex}
-                          onClick={() => {
-                            this.gotoBattle(i.BattleIndex);
-                          }}
-                        >
-                          <TableCell>
-                            {i.Aborted === 1 ? (
+                    : battleList.map(i => {
+                        const sorted = [...i.Results].sort(sortResults);
+                        return (
+                          <TableRow
+                            style={{
+                              cursor: 'pointer',
+                              backgroundColor: battleStatusBgColor(i),
+                            }}
+                            hover
+                            key={i.BattleIndex}
+                            onClick={() => {
+                              this.gotoBattle(i.BattleIndex);
+                            }}
+                          >
+                            <TableCell>
                               <Link to={`/battles/${i.BattleIndex}`}>
-                                Aborted
+                                <LocalTime
+                                  date={i.Started}
+                                  format="HH:mm:ss"
+                                  parse="X"
+                                />
                               </Link>
-                            ) : (
-                              [
-                                i.InQueue === 1 ? (
-                                  <Link to={`/battles/${i.BattleIndex}`}>
-                                    Queued
-                                  </Link>
-                                ) : (
-                                  <Link to={`/battles/${i.BattleIndex}`}>
-                                    <LocalTime
-                                      date={i.Started}
-                                      format="HH:mm:ss"
-                                      parse="X"
-                                    />
-                                  </Link>
-                                ),
-                              ]
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Level index={i.LevelIndex} />
-                          </TableCell>
-                          <TableCell>
-                            <Kuski index={i.KuskiIndex} />
-                          </TableCell>
-                          <TableCell>
-                            <BattleType type={i.BattleType} />
-                          </TableCell>
-                          <TableCell>
-                            {i.InQueue === 0 &&
-                            i.Aborted === 0 &&
-                            i.Finished === 0
-                              ? this.remaining(i.Started, i.Duration)
-                              : i.Duration}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>
+                              <Kuski kuskiData={i.KuskiData} team flag />
+                            </TableCell>
+                            <TableCell>
+                              <Link to={`/dl/level/${i.LevelIndex}`}>
+                                <Level index={i.LevelIndex} />
+                              </Link>
+                            </TableCell>
+                            <TableCell>
+                              {i.Finished === 1 ? (
+                                <Kuski
+                                  kuskiData={sorted[0].KuskiData}
+                                  team
+                                  flag
+                                />
+                              ) : (
+                                battleStatus(i)
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <BattleType type={i.BattleType} />
+                            </TableCell>
+                            <TableCell>
+                              {battleStatus(i) === 'Ongoing'
+                                ? this.remaining(i.Started, i.Duration)
+                                : i.Duration}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                 </TableBody>
               </Table>
             </Paper>

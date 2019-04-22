@@ -2,7 +2,12 @@ import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import { toServerTime, sortResults } from 'utils';
+import {
+  toServerTime,
+  sortResults,
+  battleStatus,
+  battleStatusBgColor,
+} from 'utils';
 import LocalTime from '../../components/LocalTime';
 import Link from '../../components/Link';
 import Time from '../../components/Time';
@@ -28,21 +33,12 @@ const BattleList = props => {
         {getBattlesBetween &&
           getBattlesBetween.map(b => {
             const sorted = [...b.Results].sort(sortResults);
-            let winnerKuski;
-            if (b.InQueue === 0 && b.Aborted === 0 && b.Finished === 0) {
-              winnerKuski = 'Ongoing';
-            }
-            if (b.Aborted === 1) {
-              winnerKuski = 'Aborted';
-            }
-            if (b.Aborted === 0 && b.InQueue === 1) {
-              winnerKuski = 'Queued';
-            }
-            if (b.Finished === 1 && b.Results.length > 0) {
-              winnerKuski = <Kuski kuskiData={sorted[0].KuskiData} team flag />;
-            }
             return (
-              <Link key={b.BattleIndex} to={`battles/${b.BattleIndex}`}>
+              <Link
+                key={b.BattleIndex}
+                to={`battles/${b.BattleIndex}`}
+                style={{ backgroundColor: battleStatusBgColor(b) }}
+              >
                 <span className={s.type}>
                   {b.Duration} min <BattleType type={b.BattleType} />
                 </span>
@@ -52,7 +48,13 @@ const BattleList = props => {
                 <span className={s.levelFileName}>
                   {b.LevelData && b.LevelData.LevelName}
                 </span>
-                <span className={s.winnerKuski}> {winnerKuski} </span>
+                <span className={s.winnerKuski}>
+                  {b.Finished === 1 && b.Results.length > 0 ? (
+                    <Kuski kuskiData={sorted[0].KuskiData} team flag />
+                  ) : (
+                    battleStatus(b)
+                  )}
+                </span>
                 <span className={s.winnerTime}>
                   {b.Results.length > 0 && (
                     <Time time={sorted[0].Time} apples={sorted[0].Apples} />
