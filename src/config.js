@@ -53,7 +53,12 @@ module.exports = {
   },
 
   // Authentication
-  auth: {
-    TODO: 'Grant config',
+  grant: {
+    defaults: {
+      protocol: 'https',
+      host: process.env.API_CLIENT_URL || '',
+      transport: 'session',
+      state: true,
+    },
   },
 };
