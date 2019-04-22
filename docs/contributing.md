@@ -16,6 +16,8 @@ Please check your code by using eslint in your editor or using "yarn run lint" i
 
 ### Commit Message Format
 
+Use `yarn commit` instead of `git commit` to use a handy commit message wizard that abides by convention.
+
 Each commit message should include a **type**, a **scope** and a **subject**:
 
 ```

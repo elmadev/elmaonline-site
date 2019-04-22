@@ -7,6 +7,11 @@
     "npm": ">=3.10"
   },
   "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "dependencies": {
     "@babel/polyfill": "7.0.0-beta.36",
     "@material-ui/core": "^1.2.3",
@@ -89,6 +94,7 @@
     "browser-sync": "^2.21.0",
     "chokidar": "^1.7.0",
     "css-loader": "^0.28.7",
+    "cz-conventional-changelog": "2.1.0",
     "enzyme": "^3.2.0",
     "eslint": "^4.14.0",
     "eslint-config-airbnb": "^16.1.0",
@@ -105,7 +111,7 @@
     "flow-bin": "^0.61.0",
     "front-matter": "^2.3.0",
     "glob": "^7.1.2",
-    "husky": "^0.14.3",
+    "husky": "1.3.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.0.4",
     "jest-codemods": "^0.13.9",
@@ -151,6 +157,12 @@
     "webpack-hot-middleware": "^2.21.0",
     "webpack-node-externals": "^1.6.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test"
+    }
+  },
   "lint-staged": {
     "*.{js,jsx}": ["eslint --no-ignore --fix", "git add --force"],
     "*.{json,md,graphql}": ["prettier --write", "git add --force"],
@@ -177,6 +189,7 @@
     "deploy": "babel-node tools/run deploy",
     "render": "babel-node tools/run render",
     "serve": "babel-node tools/run runServer",
-    "start": "babel-node tools/run start"
+    "start": "babel-node tools/run start",
+    "commit": "npx git-cz"
   }
 }
