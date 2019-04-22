@@ -2,7 +2,12 @@ import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import { toServerTime, sortResults } from 'utils';
+import {
+  toServerTime,
+  sortResults,
+  battleStatus,
+  battleStatusBgColor,
+} from 'utils';
 import LocalTime from '../../components/LocalTime';
 import Link from '../../components/Link';
 import Time from '../../components/Time';
@@ -29,7 +34,11 @@ const BattleList = props => {
           getBattlesBetween.map(b => {
             const sorted = [...b.Results].sort(sortResults);
             return (
-              <Link key={b.BattleIndex} to={`battles/${b.BattleIndex}`}>
+              <Link
+                key={b.BattleIndex}
+                to={`battles/${b.BattleIndex}`}
+                style={{ backgroundColor: battleStatusBgColor(b) }}
+              >
                 <span className={s.type}>
                   {b.Duration} min <BattleType type={b.BattleType} />
                 </span>
@@ -40,8 +49,10 @@ const BattleList = props => {
                   {b.LevelData && b.LevelData.LevelName}
                 </span>
                 <span className={s.winnerKuski}>
-                  {b.Results.length > 0 && (
+                  {b.Finished === 1 && b.Results.length > 0 ? (
                     <Kuski kuskiData={sorted[0].KuskiData} team flag />
+                  ) : (
+                    battleStatus(b)
                   )}
                 </span>
                 <span className={s.winnerTime}>

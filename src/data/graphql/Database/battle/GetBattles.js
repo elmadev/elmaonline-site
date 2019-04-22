@@ -38,23 +38,18 @@ export const queries = [
   `
   # Retrieves all battles stored in the database
   getBattles: [DatabaseBattle]
-
+  
+  # Retrieves paginated battles for a particular kuski
+  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  
   # Retrieves all battles between two dates
   getBattlesBetween(start: String, end: String): [DatabaseBattle]
-
+  
   # Retrieves a single battle from the database
-  getBattle(
-    # The battle's id
-    BattleIndex: Int!
-  ): DatabaseBattle
-
+  getBattle(BattleIndex: Int!): DatabaseBattle
+  
   # Retrieves all battles in a specific level
-  getBattlesForLevel(
-    # The level id
-    LevelIndex: Int!
-  ): [DatabaseBattle]
-
-  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  getBattlesForLevel(LevelIndex: Int!): [DatabaseBattle]
 `,
 ];
 
@@ -91,6 +86,28 @@ export const resolvers = {
               {
                 model: Team,
                 as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
               },
             ],
           },
@@ -197,6 +214,7 @@ export const resolvers = {
           'Started',
           'Duration',
           'BattleType',
+          'Aborted',
           'InQueue',
           'Finished',
         ],
@@ -254,8 +272,11 @@ export const resolvers = {
           'Started',
           'BattleType',
           'Duration',
+          'Aborted',
+          'InQueue',
+          'Finished',
         ],
-        where: { BattleIndex, Finished: 1 },
+        where: { BattleIndex /* Finished: 1 */ },
         include: [
           {
             model: Kuski,
@@ -315,6 +336,23 @@ export const resolvers = {
             model: Level,
             attributes: ['LevelName'],
             as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
+              },
+            ],
           },
         ],
         order: [['BattleIndex', 'DESC']],
