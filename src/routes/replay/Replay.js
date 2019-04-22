@@ -122,6 +122,7 @@ class Replay extends React.Component {
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList
                   LevelIndex={getReplayByUuid.LevelIndex}
+                  currentUUID={getReplayByUuid.UUID}
                   openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
                 />
               </ExpansionPanelDetails>
