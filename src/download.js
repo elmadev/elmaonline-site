@@ -25,19 +25,31 @@ export function getReplayByBattleId(battleId) {
 
 const getLevelData = async id => {
   const levelData = await Level.findOne({
-    attributes: ['LevelName', 'LevelData'],
+    attributes: ['LevelName', 'LevelData', 'Locked'],
     where: { LevelIndex: id },
   });
-  return levelData;
+  const battleData = await Battle.findOne({
+    attributes: ['Finished', 'Aborted', 'InQueue'],
+    where: { LevelIndex: id },
+  });
+  return { level: levelData, battle: battleData };
 };
 
 export function getLevel(id) {
   return new Promise((resolve, reject) => {
     getLevelData(id).then(data => {
-      if (data !== null) {
+      const { Locked, LevelName, LevelData } = data.level.dataValues;
+      const { Finished, Aborted, InQueue } = data.battle.dataValues;
+      if (
+        data !== null &&
+        Locked === 0 &&
+        (Finished === 1 ||
+          Aborted === 1 ||
+          (Finished === 0 && InQueue === 0 && Aborted === 0)) // meaning ongoing
+      ) {
         resolve({
-          file: data.dataValues.LevelData,
-          filename: `${data.dataValues.LevelName}.lev`,
+          file: LevelData,
+          filename: `${LevelName}.lev`,
         });
       } else {
         reject(new Error('level not found'));

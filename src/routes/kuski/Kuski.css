@@ -1,6 +1,7 @@
 .kuski {
   min-height: 100%;
   background: #fff;
+  padding-bottom: 200px;
 }
 /* stylelint-disable */
 .head > .picture {
@@ -56,23 +57,17 @@
 
 .recentBattles {
   display: table;
+  table-layout: fixed;
   width: 100%;
   font-size: 14px;
 }
 
-.recentBattlesHead {
-  font-weight: 500;
-}
-
-.recentBattles > a,
-.recentBattles > .recentBattlesHead {
+.recentBattles > a {
   display: table-row;
 }
 
-.recentBattles > a > *,
-.recentBattles > .recentBattlesHead > * {
+.recentBattles > a > * {
   display: table-cell;
-  width: 150px;
   padding: 10px;
   color: #000;
   border-bottom: 1px solid #eaeaea;

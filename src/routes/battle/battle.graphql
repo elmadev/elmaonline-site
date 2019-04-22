@@ -1,9 +1,4 @@
 query Battletime($BattleIndex: Int!) {
-  getBattletime(BattleIndex: $BattleIndex) {
-    KuskiIndex
-    Time
-    Apples
-  }
   getBattle(BattleIndex: $BattleIndex) {
     KuskiIndex
     LevelIndex
@@ -11,6 +6,9 @@ query Battletime($BattleIndex: Int!) {
     Duration
     RecFileName
     Started
+    Aborted
+    InQueue
+    Finished
     LevelData {
       LevelName
     }
@@ -25,9 +23,21 @@ query Battletime($BattleIndex: Int!) {
       Apples
       KuskiData {
         Kuski
+        Country
         TeamData {
           Team
         }
+      }
+    }
+  }
+  getAllBattleTimes(BattleIndex: $BattleIndex) {
+    TimeIndex
+    Time
+    Apples
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
       }
     }
   }

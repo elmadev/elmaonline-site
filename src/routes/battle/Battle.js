@@ -13,7 +13,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
-import { sortResults } from 'utils';
+import { sortResults, battleStatus } from 'utils';
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
 import Recplayer from '../../components/Recplayer';
@@ -21,6 +21,7 @@ import { BattleType } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import Chat from '../../components/Chat';
+import Kuski from '../../components/Kuski';
 import LocalTime from '../../components/LocalTime';
 
 class Battle extends React.Component {
@@ -36,24 +37,27 @@ class Battle extends React.Component {
 
   render() {
     const { BattleIndex } = this.props;
-    const { data: { getBattle } } = this.props;
+    const { data: { getBattle, getAllBattleTimes } } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
 
     return (
       <div className={s.root}>
-        <div className={s.playerContainer}>
-          <div className={s.player}>
-            {isWindow && (
-              <Recplayer
-                rec={`/dl/battlereplay/${BattleIndex}`}
-                lev={`/dl/level/${getBattle.LevelIndex}`}
-                controls
-              />
-            )}
+        {
+          <div className={s.playerContainer}>
+            <div className={s.player}>
+              {isWindow &&
+                !(battleStatus(getBattle) === 'Queued') && (
+                  <Recplayer
+                    rec={`/dl/battlereplay/${BattleIndex}`}
+                    lev={`/dl/level/${getBattle.LevelIndex}`}
+                    controls
+                  />
+                )}
+            </div>
           </div>
-        </div>
+        }
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
@@ -83,19 +87,71 @@ class Battle extends React.Component {
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Chat</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <Chat
-                  start={getBattle.Started}
-                  end={
-                    Number(getBattle.Started) + Number(getBattle.Duration * 60)
-                  }
-                />
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
+            {getBattle.Finished === 1 &&
+              getBattle.BattleType === 'NM' && (
+                <ExpansionPanel defaultExpanded>
+                  <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="body2">Leader history</Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <div className={s.timeDevelopment}>
+                      {[...getAllBattleTimes]
+                        .reduce((acc, cur) => {
+                          if (
+                            acc.length < 1 ||
+                            acc[acc.length - 1].Time > cur.Time
+                          )
+                            acc.push(cur);
+                          return acc;
+                        }, [])
+                        .map((b, i, a) => (
+                          <div
+                            className={s.timeDevelopmentRow}
+                            key={b.TimeIndex}
+                          >
+                            <span className={s.timeDiff}>
+                              {a.length > 1 && !a[i + 1] && 'Winner'}
+                              {a[i - 1] && (
+                                <span>
+                                  {' '}
+                                  -<Time time={a[i - 1].Time - b.Time} />
+                                </span>
+                              )}
+                              {a.length > 1 && !a[i - 1] && 'First finish'}
+                              {a.length === 1 && 'Only finish'}
+                            </span>
+                            <span className={s.timelineCell}>
+                              <span className={s.timelineMarker} />
+                              <span className={s.timelineLine} />
+                            </span>
+                            <span className={s.timeDevelopmentTime}>
+                              <Time time={b.Time} />
+                            </span>
+                            <span className={s.timeDevelopmentKuski}>
+                              {b.KuskiData.Kuski}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              )}
+            {!(battleStatus(getBattle) === 'Queued') && (
+              <ExpansionPanel defaultExpanded>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="body2">Chat</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <Chat
+                    start={getBattle.Started}
+                    end={
+                      Number(getBattle.Started) +
+                      Number(getBattle.Duration * 60)
+                    }
+                  />
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            )}
           </div>
         </div>
         <div className={s.levelStatsContainer}>
@@ -122,21 +178,20 @@ class Battle extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {[...getBattle.Results]
-                    .sort(sortResults(getBattle.BattleType))
-                    .map((r, i) => (
-                      <TableRow key={r.KuskiIndex}>
-                        <TableCell>{i + 1}.</TableCell>
-                        <TableCell>
-                          {r.KuskiData.Kuski}{' '}
-                          {r.KuskiData.TeamData &&
-                            `[${r.KuskiData.TeamData.Team}]`}
-                        </TableCell>
-                        <TableCell>
-                          <Time time={r.Time} apples={r.Apples} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                  {battleStatus(getBattle) === 'Finished' &&
+                    [...getBattle.Results]
+                      .sort(sortResults(getBattle.BattleType))
+                      .map((r, i) => (
+                        <TableRow key={r.KuskiIndex}>
+                          <TableCell>{i + 1}.</TableCell>
+                          <TableCell>
+                            <Kuski kuskiData={r.KuskiData} flag team />
+                          </TableCell>
+                          <TableCell>
+                            <Time time={r.Time} apples={r.Apples} />
+                          </TableCell>
+                        </TableRow>
+                      ))}
                 </TableBody>
               </Table>
             )}

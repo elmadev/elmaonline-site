@@ -38,17 +38,18 @@ export const queries = [
   `
   # Retrieves all battles stored in the database
   getBattles: [DatabaseBattle]
-
+  
+  # Retrieves paginated battles for a particular kuski
+  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  
   # Retrieves all battles between two dates
   getBattlesBetween(start: String, end: String): [DatabaseBattle]
-
+  
   # Retrieves a single battle from the database
-  getBattle(
-    # The battle's id
-    BattleIndex: Int!
-  ): DatabaseBattle
-
-  getBattlesByKuski(KuskiIndex: Int!, Page: Int!): Pagination
+  getBattle(BattleIndex: Int!): DatabaseBattle
+  
+  # Retrieves all battles in a specific level
+  getBattlesForLevel(LevelIndex: Int!): [DatabaseBattle]
 `,
 ];
 
@@ -85,6 +86,28 @@ export const resolvers = {
               {
                 model: Team,
                 as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
               },
             ],
           },
@@ -139,6 +162,7 @@ export const resolvers = {
         const battleData = await Battle.findAll({
           attributes: [
             'BattleIndex',
+            'BattleType',
             'KuskiIndex',
             'LevelIndex',
             'Started',
@@ -189,6 +213,10 @@ export const resolvers = {
           'LevelIndex',
           'Started',
           'Duration',
+          'BattleType',
+          'Aborted',
+          'InQueue',
+          'Finished',
         ],
         limit: 100,
         include: [
@@ -229,7 +257,7 @@ export const resolvers = {
         order: [['Started', 'DESC']],
         where: {
           Started: {
-            between: [start, end],
+            [sequelize.Op.between]: [start, end],
           },
         },
       });
@@ -244,8 +272,11 @@ export const resolvers = {
           'Started',
           'BattleType',
           'Duration',
+          'Aborted',
+          'InQueue',
+          'Finished',
         ],
-        where: { BattleIndex, Finished: 1 },
+        where: { BattleIndex /* Finished: 1 */ },
         include: [
           {
             model: Kuski,
@@ -283,6 +314,50 @@ export const resolvers = {
         ],
       });
       return battle;
+    },
+    async getBattlesForLevel(parent, { LevelIndex }) {
+      const battles = await Battle.findAll({
+        attributes,
+        where: { LevelIndex },
+        limit: 100,
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
+            model: Battletime,
+            as: 'Results',
+            include: [
+              {
+                model: Kuski,
+                attributes: ['Kuski', 'Country'],
+                as: 'KuskiData',
+                include: [
+                  {
+                    model: Team,
+                    as: 'TeamData',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        order: [['BattleIndex', 'DESC']],
+      });
+      return battles;
     },
   },
 };

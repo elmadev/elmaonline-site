@@ -1,4 +1,4 @@
-import { Battletime, Kuski, Team } from 'data/models'; // import the data model
+import { Battle, Battletime, Kuski, Team, AllFinished } from 'data/models'; // import the data model
 
 export const schema = [
   `
@@ -23,29 +23,68 @@ export const queries = [
     # The battle's id
     BattleIndex: Int!
   ): [DatabaseBattletime]
+  getAllBattleTimes(BattleIndex: Int!): [DatabaseTime]
 `,
 ];
 
 export const resolvers = {
   RootQuery: {
     async getBattletime(parent, { BattleIndex }) {
-      const battletime = await Battletime.findAll({
+      const battleStatus = await Battle.findAll({
+        attributes: ['Finished'],
         where: { BattleIndex },
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'Country'],
-            as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
-          },
-        ],
       });
+      let battletime;
+      if (battleStatus[0].dataValues.Finished === 1) {
+        battletime = await Battletime.findAll({
+          where: { BattleIndex },
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'KuskiData',
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+          ],
+        });
+      } else {
+        battletime = [];
+      }
       return battletime;
+    },
+    async getAllBattleTimes(parent, { BattleIndex }) {
+      const battleStatus = await Battle.findAll({
+        attributes: ['Finished'],
+        where: { BattleIndex },
+      });
+      let times;
+      if (battleStatus[0].dataValues.Finished === 1) {
+        times = await AllFinished.findAll({
+          where: { BattleIndex },
+          order: [['TimeIndex', 'ASC']],
+          include: [
+            {
+              model: Kuski,
+              as: 'KuskiData',
+              attributes: ['Kuski', 'Country'],
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+          ],
+        });
+      } else {
+        times = [];
+      }
+      return times;
     },
   },
 };

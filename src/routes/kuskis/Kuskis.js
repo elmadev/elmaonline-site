@@ -3,7 +3,7 @@ import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Link from '../../components/Link';
-import Flag from '../../components/Flag';
+import Kuski from '../../components/Kuski';
 import s from './Kuskis.css';
 import kuskiQuery from './kuskis.graphql';
 
@@ -113,8 +113,7 @@ class Kuskis extends React.Component {
                         className={s.kuskiRow}
                         key={k.KuskiIndex}
                       >
-                        <Flag nationality={k.Country} />
-                        {k.Kuski} {k.TeamData && `[${k.TeamData.Team}]`}
+                        <Kuski kuskiData={k} flag team />
                       </Link>
                     ))}
                   </div>

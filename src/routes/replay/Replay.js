@@ -14,8 +14,8 @@ import replayQuery from './replay.graphql';
 import Recplayer from '../../components/Recplayer';
 import { Level } from '../../components/Names';
 import Time from '../../components/Time';
+import Link from '../../components/Link';
 import RecList from '../../components/RecList';
-import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {
@@ -67,12 +67,18 @@ class Replay extends React.Component {
                 </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <div>
-                  <Time thousands time={getReplayByUuid.ReplayTime} /> by{' '}
-                  {getReplayByUuid.DrivenByData
-                    ? getReplayByUuid.DrivenByData.Kuski
-                    : 'Unknown'}{' '}
-                  in <Level index={getReplayByUuid.LevelIndex} />
+                <div className={s.replayDescription}>
+                  <div>
+                    <Time thousands time={getReplayByUuid.ReplayTime} /> by{' '}
+                    {getReplayByUuid.DrivenByData
+                      ? getReplayByUuid.DrivenByData.Kuski
+                      : 'Unknown'}{' '}
+                    in <Level index={getReplayByUuid.LevelIndex} />
+                  </div>
+                  <br />
+                  <Link to={`/levels/${getReplayByUuid.LevelIndex}`}>
+                    Go to level page
+                  </Link>
                 </div>
                 <div>
                   {getReplayByUuid.TAS === 1 && (
@@ -115,6 +121,7 @@ class Replay extends React.Component {
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList
                   LevelIndex={getReplayByUuid.LevelIndex}
+                  currentUUID={getReplayByUuid.UUID}
                   openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
                 />
               </ExpansionPanelDetails>
