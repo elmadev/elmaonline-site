@@ -26,7 +26,6 @@ import Loading from '../../components/Loading';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import LocalTime from '../../components/LocalTime';
-import historyRefresh from '../../historyRefresh';
 
 const TimeTable = withStyles(s)(({ data }) => (
   <div>
@@ -212,10 +211,7 @@ class Level extends React.Component {
                 <Typography variant="body2">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList
-                  LevelIndex={this.props.LevelIndex}
-                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
-                />
+                <RecList LevelIndex={this.props.LevelIndex} />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>
