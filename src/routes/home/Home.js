@@ -107,7 +107,7 @@ class Home extends React.Component {
                               this.gotoBattle(i.BattleIndex);
                             }}
                           >
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               <Link to={`/battles/${i.BattleIndex}`}>
                                 <LocalTime
                                   date={i.Started}
@@ -116,15 +116,15 @@ class Home extends React.Component {
                                 />
                               </Link>
                             </TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               <Kuski kuskiData={i.KuskiData} team flag />
                             </TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               <Link to={`/dl/level/${i.LevelIndex}`}>
                                 <Level index={i.LevelIndex} />
                               </Link>
                             </TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               {i.Finished === 1 ? (
                                 <Kuski
                                   kuskiData={sorted[0].KuskiData}
@@ -135,10 +135,10 @@ class Home extends React.Component {
                                 battleStatus(i)
                               )}
                             </TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               <BattleType type={i.BattleType} />
                             </TableCell>
-                            <TableCell>
+                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               {battleStatus(i) === 'Ongoing'
                                 ? this.remaining(i.Started, i.Duration)
                                 : i.Duration}
