@@ -1,11 +1,10 @@
 
-
 .root {
   padding: 7px;
 }
 
 .playerContainer {
-  width: 70%;
+  width: 60%;
   float: left;
   padding: 7px;
   box-sizing: border-box;
@@ -21,13 +20,13 @@
 
 .rightBarContainer {
   float: right;
-  width: 30%;
+  width: 40%;
   padding: 7px;
   box-sizing: border-box;
 }
 
 .resultsContainer {
-  width: 70%;
+  width: 60%;
   float: left;
   padding: 7px;
   box-sizing: border-box;

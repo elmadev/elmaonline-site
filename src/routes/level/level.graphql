@@ -20,12 +20,36 @@ query Level($LevelIndex: Int!) {
     LevelIndex
     BattleType
     Started
-    StartedUtc
     Duration
+    InQueue
     Aborted
     Finished
-    InQueue
-    Countdown
-    RecFileName
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+    LevelData {
+      LevelName
+    }
+    Results {
+      BattleTimeIndex
+      BattleIndex
+      KuskiIndex
+      KuskiIndex2
+      Time
+      Apples
+      TimeIndex
+      KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+    }
   }
 }

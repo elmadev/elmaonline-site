@@ -15,10 +15,11 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import withStyles from 'isomorphic-style-loader/withStyles';
+import { sortResults, battleStatus, battleStatusBgColor } from 'utils';
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
-import { Kuski, BattleType } from '../../components/Names';
+import Kuski from '../../components/Kuski';
 import history from '../../history';
 import Recplayer from '../../components/Recplayer';
 import RecList from '../../components/RecList';
@@ -26,9 +27,8 @@ import Loading from '../../components/Loading';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import LocalTime from '../../components/LocalTime';
-import historyRefresh from '../../historyRefresh';
 
-const TimeTable = withStyles(s)(({ data }) => (
+const TimeTable = withStyles(s)(({ data, latestBattle }) => (
   <div>
     <Table>
       <TableHead>
@@ -52,6 +52,7 @@ const TimeTable = withStyles(s)(({ data }) => (
       </TableHead>
       <TableBody>
         {data &&
+          (latestBattle.Finished === 1 || latestBattle.Aborted === 1) &&
           data.map((t, i) => (
             <TableRow key={t.TimeIndex}>
               <TableCell>{i + 1}.</TableCell>
@@ -117,14 +118,18 @@ class Level extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.playerContainer}>
-          <div className={s.player}>
-            {isWindow && (
-              <Recplayer
-                lev={`/dl/level/${this.props.LevelIndex}`}
-                controls={false}
-              />
-            )}
-          </div>
+          {loading && <Loading />}
+          {!loading && (
+            <div className={s.player}>
+              {isWindow &&
+                !(battleStatus(getBattlesForLevel[0]) === 'Queued') && (
+                  <Recplayer
+                    lev={`/dl/level/${this.props.LevelIndex}`}
+                    controls={false}
+                  />
+                )}
+            </div>
+          )}
         </div>
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
@@ -151,41 +156,33 @@ class Level extends React.Component {
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div>
-                  <Table style={{ overflowX: 'auto' }}>
+                  <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Started</TableCell>
-                        <TableCell>Started by</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Duration</TableCell>
+                        <TableCell>Designer</TableCell>
+                        <TableCell>Winner</TableCell>
                         <TableCell>Battle ID</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {loading
                         ? 'Loading...'
-                        : getBattlesForLevel.map(i => (
-                            <TableRow
-                              style={
-                                i.InQueue === 0 &&
-                                i.Aborted === 0 &&
-                                i.Finished === 0
-                                  ? {
-                                      cursor: 'pointer',
-                                      backgroundColor: '#2566a7',
-                                    }
-                                  : { cursor: 'pointer' }
-                              }
-                              hover
-                              key={i.BattleIndex}
-                              onClick={() => {
-                                this.gotoBattle(i.BattleIndex);
-                              }}
-                            >
-                              <TableCell>
-                                {i.InQueue === 1 ? (
-                                  'Queued'
-                                ) : (
+                        : getBattlesForLevel.map(i => {
+                            const sorted = [...i.Results].sort(sortResults);
+                            return (
+                              <TableRow
+                                style={{
+                                  cursor: 'pointer',
+                                  backgroundColor: battleStatusBgColor(i),
+                                }}
+                                hover
+                                key={i.BattleIndex}
+                                onClick={() => {
+                                  this.gotoBattle(i.BattleIndex);
+                                }}
+                              >
+                                <TableCell>
                                   <Link to={`/battles/${i.BattleIndex}`}>
                                     <LocalTime
                                       date={i.Started}
@@ -193,18 +190,25 @@ class Level extends React.Component {
                                       parse="X"
                                     />
                                   </Link>
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <Kuski index={i.KuskiIndex} />
-                              </TableCell>
-                              <TableCell>
-                                <BattleType type={i.BattleType} />
-                              </TableCell>
-                              <TableCell>{i.Duration}</TableCell>
-                              <TableCell>{i.BattleIndex}</TableCell>
-                            </TableRow>
-                          ))}
+                                </TableCell>
+                                <TableCell>
+                                  <Kuski kuskiData={i.KuskiData} team flag />
+                                </TableCell>
+                                <TableCell>
+                                  {i.Finished === 1 ? (
+                                    <Kuski
+                                      kuskiData={sorted[0].KuskiData}
+                                      team
+                                      flag
+                                    />
+                                  ) : (
+                                    battleStatus(i)
+                                  )}
+                                </TableCell>
+                                <TableCell>{i.BattleIndex}</TableCell>
+                              </TableRow>
+                            );
+                          })}
                     </TableBody>
                   </Table>
                 </div>
@@ -215,10 +219,7 @@ class Level extends React.Component {
                 <Typography variant="body1">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList
-                  LevelIndex={this.props.LevelIndex}
-                  openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
-                />
+                <RecList LevelIndex={this.props.LevelIndex} />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>
@@ -234,7 +235,12 @@ class Level extends React.Component {
                   <Tab label="Best multi times" />
                   <Tab label="All multi times" />
                 </Tabs>
-                {this.state.tab === 0 && <TimeTable data={getBestTimes} />}
+                {this.state.tab === 0 && (
+                  <TimeTable
+                    data={getBestTimes}
+                    latestBattle={getBattlesForLevel[0]}
+                  />
+                )}
                 {this.state.tab === 1 && <TimeTable data={getBestTimes} />}
                 {this.state.tab === 2 && <TimeTable data={getBestTimes} />}
                 {this.state.tab === 3 && (

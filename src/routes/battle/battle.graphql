@@ -6,6 +6,9 @@ query Battletime($BattleIndex: Int!) {
     Duration
     RecFileName
     Started
+    Aborted
+    InQueue
+    Finished
     LevelData {
       LevelName
     }
