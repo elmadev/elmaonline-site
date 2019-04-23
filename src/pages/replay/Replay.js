@@ -9,14 +9,16 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
+
+import Recplayer from 'components/Recplayer';
+import { Level } from 'components/Names';
+import Time from 'components/Time';
+import Link from 'components/Link';
+import RecList from 'components/RecList';
+import historyRefresh from 'utils/historyRefresh';
+
 import s from './Replay.css';
 import replayQuery from './replay.graphql';
-import Recplayer from '../../components/Recplayer';
-import { Level } from '../../components/Names';
-import Time from '../../components/Time';
-import Link from '../../components/Link';
-import RecList from '../../components/RecList';
-import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {

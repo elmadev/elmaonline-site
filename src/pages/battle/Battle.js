@@ -13,16 +13,18 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
-import { sortResults, battleStatus } from 'utils';
+
+import Recplayer from 'components/Recplayer';
+import { BattleType } from 'components/Names';
+import Time from 'components/Time';
+import Link from 'components/Link';
+import Chat from 'components/Chat';
+import Kuski from 'components/Kuski';
+import LocalTime from 'components/LocalTime';
+import { sortResults, battleStatus } from 'utils/battle';
+
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
-import Recplayer from '../../components/Recplayer';
-import { BattleType } from '../../components/Names';
-import Time from '../../components/Time';
-import Link from '../../components/Link';
-import Chat from '../../components/Chat';
-import Kuski from '../../components/Kuski';
-import LocalTime from '../../components/LocalTime';
 
 class Battle extends React.Component {
   static propTypes = {

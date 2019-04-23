@@ -14,12 +14,14 @@ import deepForceUpdate from 'react-deep-force-update';
 import queryString from 'query-string';
 import { createPath } from 'history/PathUtils';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import App from './components/App';
-import createFetch from './createFetch';
-import configureStore from './store/configureStore';
-import { updateMeta } from './DOMUtils';
-import history from './history';
-import createApolloClient from './core/createApolloClient';
+
+import App from 'components/App';
+import createApolloClient from 'core/createApolloClient';
+import configureStore from 'store/configureStore';
+import createFetch from 'utils/createFetch';
+import { updateMeta } from 'utils/DOMUtils';
+import history from 'utils/history';
+
 import router from './router';
 import muiTheme from './muiTheme';
 

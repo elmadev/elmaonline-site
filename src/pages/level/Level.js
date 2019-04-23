@@ -14,19 +14,21 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { sortResults, battleStatus, battleStatusBgColor } from 'utils';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+
+import Kuski from 'components/Kuski';
+import Recplayer from 'components/Recplayer';
+import RecList from 'components/RecList';
+import Loading from 'components/Loading';
+import Time from 'components/Time';
+import Link from 'components/Link';
+import LocalTime from 'components/LocalTime';
+import history from 'utils/history';
+import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
+
 import query from './level.graphql';
 import allTimesQuery from './allTimes.graphql';
 import s from './Level.css';
-import Kuski from '../../components/Kuski';
-import history from '../../history';
-import Recplayer from '../../components/Recplayer';
-import RecList from '../../components/RecList';
-import Loading from '../../components/Loading';
-import Time from '../../components/Time';
-import Link from '../../components/Link';
-import LocalTime from '../../components/LocalTime';
 
 const TimeTable = withStyles(s)(({ data, latestBattle }) => (
   <div>

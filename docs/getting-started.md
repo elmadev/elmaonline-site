@@ -22,11 +22,12 @@ Before you start, take a moment to see how the project structure looks like:
 │   ├── /components/            # React components
 │   ├── /data/                  # GraphQL server schema and data models
 │   ├── /pages/                 # Page/screen components
+│   ├── /utils/                 # Shared utility functions
 │   ├── /client.js              # Client-side startup script
 │   ├── /config.js              # Global application settings
+│   ├── /muiTheme.js            # Overrides for base Material UI theme
 │   ├── /server.js              # Server-side startup script
 │   ├── /router.js              # Routing information
-│   └── ...                     # Other core framework modules
 ├── /tools/                     # Build automation scripts and utilities
 │   ├── /lib/                   # Library for utility snippets
 │   ├── /build.js               # Builds the project from source to output (build) folder

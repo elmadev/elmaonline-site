@@ -7,7 +7,7 @@ browser does support Fetch).
 
 **React Starter Kit** is pre-configured with [`whatwg-fetch`][wfetch] polyfill
 for the browser environment and [`node-fetch`][nfetch] module for the
-server-side environment (see [`src/createFetch.js`](../src/createFetch.js)),
+server-side environment (see [`src/utils/createFetch.js`](../src/utils/createFetch.js)),
 allowing you to use the `fetch(url, options)` method universally in both the
 client-side and server-side code bases.
 

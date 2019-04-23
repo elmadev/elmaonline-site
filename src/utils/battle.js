@@ -1,20 +1,3 @@
-import moment from 'moment-timezone';
-
-const toServerTime = (date, parse) =>
-  moment(
-    moment(date, parse)
-      .tz('America/Los_Angeles')
-      .toObject(),
-  );
-const toLocalTime = (date, parse) =>
-  moment
-    .tz(
-      moment(date, parse)
-        .utc()
-        .toObject(),
-      'America/Los_Angeles',
-    )
-    .tz(moment.tz.guess());
 const sortResults = battleType => (a, b) => {
   if (a.Time && b.Time) {
     const c =
@@ -28,6 +11,7 @@ const sortResults = battleType => (a, b) => {
   const d = b.Apples - a.Apples;
   return d === 0 ? a.BattleTimeIndex - b.BattleTimeIndex : d;
 };
+
 const battleStatus = data => {
   let status;
   if (data.Aborted === 1) {
@@ -44,6 +28,7 @@ const battleStatus = data => {
   }
   return status;
 };
+
 const battleStatusBgColor = data => {
   let bgColor;
   if (data.Aborted === 1) {
@@ -58,10 +43,4 @@ const battleStatusBgColor = data => {
   return bgColor;
 };
 
-export {
-  toServerTime,
-  toLocalTime,
-  sortResults,
-  battleStatus,
-  battleStatusBgColor,
-};
+export { sortResults, battleStatus, battleStatusBgColor };

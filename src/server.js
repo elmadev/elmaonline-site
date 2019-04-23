@@ -30,17 +30,19 @@ import {
   MuiThemeProvider,
   createGenerateClassName,
 } from '@material-ui/core/styles';
-import createApolloClient from './core/createApolloClient';
-import App from './components/App';
-import Html from './components/Html';
-import createFetch from './createFetch';
-import { getReplayByBattleId, getLevel } from './download';
-import uploadReplayS3 from './upload';
-import router from './router';
-import schema from './data/schema';
+
+import { setRuntimeVariable } from 'actions/runtime';
+import App from 'components/App';
+import Html from 'components/Html';
+import createApolloClient from 'core/createApolloClient';
+import schema from 'data/schema';
+import configureStore from 'store/configureStore';
+import { getReplayByBattleId, getLevel } from 'utils/download';
+import uploadReplayS3 from 'utils/upload';
+import createFetch from 'utils/createFetch';
+
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
-import configureStore from './store/configureStore';
-import { setRuntimeVariable } from './actions/runtime';
+import router from './router';
 import config from './config';
 import muiTheme from './muiTheme';
 

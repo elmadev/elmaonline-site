@@ -1,8 +1,10 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import moment from 'moment';
-import history from '../../history';
-import BattleList from '../../components/BattleList';
+
+import BattleList from 'components/BattleList';
+import history from 'utils/history';
+
 import s from './battles.css';
 
 class Battles extends React.Component {

@@ -11,22 +11,20 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import {
-  sortResults,
-  toLocalTime,
-  battleStatus,
-  battleStatusBgColor,
-} from 'utils';
+
+import { Level, BattleType } from 'components/Names';
+import Kuski from 'components/Kuski';
+import Upload from 'components/Upload';
+import RecListItem from 'components/RecListItem';
+import BattleCard from 'components/BattleCard';
+import Link from 'components/Link';
+import LocalTime from 'components/LocalTime';
+import history from 'utils/history';
+import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
+import { toLocalTime } from 'utils/time';
+
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
-import { Level, BattleType } from '../../components/Names';
-import Kuski from '../../components/Kuski';
-import history from '../../history';
-import Upload from '../../components/Upload';
-import RecListItem from '../../components/RecListItem';
-import BattleCard from '../../components/BattleCard';
-import Link from '../../components/Link';
-import LocalTime from '../../components/LocalTime';
 
 class Home extends React.Component {
   static propTypes = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { toLocalTime } from 'utils';
+import { toLocalTime } from 'utils/time';
 
 const formatDate = (date, format, parse) =>
   toLocalTime(date, parse).format(format);
