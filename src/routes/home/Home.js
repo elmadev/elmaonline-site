@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import m from 'moment';
 import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -62,7 +62,9 @@ class Home extends React.Component {
   };
 
   render() {
-    const { data: { loading, getBattles, getReplays, refetch } } = this.props; // deconstruct this.props here to get some nicer sounding variable names
+    const {
+      data: { loading, getBattles, getReplays, refetch },
+    } = this.props; // deconstruct this.props here to get some nicer sounding variable names
     const battleList = loading ? null : getBattles.slice(0, 25); // : getBattles.filter(b => b.Aborted === 0).slice(0, 25);
     const currentBattle = loading
       ? null
@@ -74,7 +76,7 @@ class Home extends React.Component {
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
             {currentBattle && <BattleCard battle={currentBattle} />}
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Latest Battles
             </Typography>
             <Paper>
@@ -151,11 +153,11 @@ class Home extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Upload Replays
             </Typography>
             <Upload onUpload={() => refetch()} filetype=".rec" />
-            <Typography variant="display2" gutterBottom>
+            <Typography variant="h3" gutterBottom>
               Latest Replays
             </Typography>
             <Paper>
@@ -184,4 +186,7 @@ class Home extends React.Component {
   }
 }
 
-export default compose(withStyles(s), graphql(homeQuery))(Home); // place the query object in the graphql decorator here so it's available in the this.props object
+export default compose(
+  withStyles(s),
+  graphql(homeQuery),
+)(Home); // place the query object in the graphql decorator here so it's available in the this.props object

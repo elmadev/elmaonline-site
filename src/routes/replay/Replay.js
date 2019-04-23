@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import Moment from 'react-moment';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -16,6 +16,7 @@ import { Level } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import RecList from '../../components/RecList';
+import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {
@@ -36,7 +37,9 @@ class Replay extends React.Component {
   };
 
   render() {
-    const { data: { getReplayByUuid } } = this.props;
+    const {
+      data: { getReplayByUuid },
+    } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getReplayByUuid) return null;
@@ -62,7 +65,7 @@ class Replay extends React.Component {
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">
+                <Typography variant="body1">
                   <React.Fragment>{getReplayByUuid.RecFileName}</React.Fragment>
                 </Typography>
               </ExpansionPanelSummary>
@@ -116,7 +119,7 @@ class Replay extends React.Component {
             </ExpansionPanel> */}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Other replays in level</Typography>
+                <Typography variant="body1">Other replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList

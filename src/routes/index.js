@@ -66,8 +66,16 @@ const routes = {
       load: () => import(/* webpackChunkName: 'kuski' */ './kuski'),
     },
     {
+      path: '/levels',
+      load: () => import(/* webpackChunkName: 'levels' */ './levels'),
+    },
+    {
       path: '/levels/:id',
       load: () => import(/* webpackChunkName: 'level' */ './level'),
+    },
+    {
+      path: '/levels/packs/:name',
+      load: () => import(/* webpackChunkName: 'levelpack' */ './levelpack'),
     },
     {
       path: '/r/:uuid',

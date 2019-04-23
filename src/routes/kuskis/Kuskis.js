@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Link from '../../components/Link';
 import Kuski from '../../components/Kuski';
 import s from './Kuskis.css';
@@ -46,6 +46,7 @@ class Kuskis extends React.Component {
       expanded: [],
     };
   }
+
   toggleGroup = c => {
     this.setState(prevState => {
       const { expanded } = prevState;
@@ -58,8 +59,11 @@ class Kuskis extends React.Component {
       };
     });
   };
+
   render() {
-    const { data: { loading, getKuskis } } = this.props;
+    const {
+      data: { loading, getKuskis },
+    } = this.props;
 
     if (loading) return null;
     const filteredKuskis = getKuskis.filter(
@@ -83,11 +87,10 @@ class Kuskis extends React.Component {
         </div>
         <div className={s.kuskiList}>
           {groups.map(g => {
-            const kuskis = filteredKuskis.filter(
-              k =>
-                Array.isArray(g)
-                  ? g.includes(k.Kuski[0].toLowerCase())
-                  : g === k.Kuski[0].toLowerCase(),
+            const kuskis = filteredKuskis.filter(k =>
+              Array.isArray(g)
+                ? g.includes(k.Kuski[0].toLowerCase())
+                : g === k.Kuski[0].toLowerCase(),
             );
             if (kuskis.length < 1) return null;
             return (
@@ -134,4 +137,7 @@ Kuskis.propTypes = {
   }).isRequired,
 };
 
-export default compose(withStyles(s), graphql(kuskiQuery))(Kuskis);
+export default compose(
+  withStyles(s),
+  graphql(kuskiQuery),
+)(Kuskis);
