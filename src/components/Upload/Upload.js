@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Dropzone from 'react-dropzone';
 import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -118,7 +119,9 @@ class Upload extends React.Component {
         }
         const newUploaded = this.state.uploaded.slice();
         // eslint-disable-next-line
-        const fullUrl = `${location.protocol}//${location.hostname}${(location.port ? `:${location.port}` : '')}/r/${UUID}`;
+        const fullUrl = `${location.protocol}//${location.hostname}${
+          location.port ? `:${location.port}` : ''
+        }/r/${UUID}`;
         newUploaded.push({ RecFileName, UUID, url: fullUrl });
         this.setState({ uploaded: newUploaded });
         const { onUpload } = this.props;

@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -17,20 +17,20 @@ const BattleCard = props => {
 
   return (
     <React.Fragment>
-      <Typography variant="display2" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Current Battle
       </Typography>
       <Card className={s.card}>
         <CardContent>
-          <Typography variant="display1">
+          <Typography variant="h4">
             <Level index={battle.LevelIndex} />
           </Typography>
-          <Typography variant="subheading" color="textSecondary">
+          <Typography variant="subtitle1" color="textSecondary">
             <Level long index={battle.LevelIndex} />
           </Typography>
           <Typography
             className={s.info}
-            variant="subheading"
+            variant="subtitle1"
             color="textSecondary"
           >
             <div>

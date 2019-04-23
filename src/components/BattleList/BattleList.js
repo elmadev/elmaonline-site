@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
 
@@ -15,7 +15,9 @@ import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 
 const BattleList = props => {
-  const { data: { getBattlesBetween } } = props;
+  const {
+    data: { getBattlesBetween },
+  } = props;
   return (
     <div className={s.battleList}>
       <div className={s.battles}>
@@ -67,7 +69,7 @@ const BattleList = props => {
                       title={b.Results.length}
                       className={s.popularityBar}
                       style={{
-                        width: `${b.Results.length / 20 * 100}%`,
+                        width: `${(b.Results.length / 20) * 100}%`,
                         opacity: b.Results.length / 20 + 0.1,
                       }}
                     />

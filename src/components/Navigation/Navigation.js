@@ -9,7 +9,7 @@
 
 import React from 'react';
 import cx from 'classnames';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 
 import Link from 'components/Link';
 

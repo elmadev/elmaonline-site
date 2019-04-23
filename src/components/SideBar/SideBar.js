@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 
 import Link from 'components/Link';
@@ -29,6 +29,7 @@ class SideBar extends React.Component {
           <div className={s.content}>
             <Link to="/">Home</Link>
             <Link to="/battles">Battles</Link>
+            <Link to="/levels">Levels</Link>
             <Link to="/kuskis">Kuskis</Link>
             <Link to="/editor">Editor</Link>
           </div>

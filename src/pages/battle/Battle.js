@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -39,7 +39,9 @@ class Battle extends React.Component {
 
   render() {
     const { BattleIndex } = this.props;
-    const { data: { getBattle, getAllBattleTimes } } = this.props;
+    const {
+      data: { getBattle, getAllBattleTimes },
+    } = this.props;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
@@ -49,14 +51,13 @@ class Battle extends React.Component {
         {
           <div className={s.playerContainer}>
             <div className={s.player}>
-              {isWindow &&
-                !(battleStatus(getBattle) === 'Queued') && (
-                  <Recplayer
-                    rec={`/dl/battlereplay/${BattleIndex}`}
-                    lev={`/dl/level/${getBattle.LevelIndex}`}
-                    controls
-                  />
-                )}
+              {isWindow && !(battleStatus(getBattle) === 'Queued') && (
+                <Recplayer
+                  rec={`/dl/battlereplay/${BattleIndex}`}
+                  lev={`/dl/level/${getBattle.LevelIndex}`}
+                  controls
+                />
+              )}
             </div>
           </div>
         }
@@ -64,7 +65,7 @@ class Battle extends React.Component {
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Battle info</Typography>
+                <Typography variant="body1">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div className={s.battleDescription}>
@@ -89,55 +90,51 @@ class Battle extends React.Component {
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            {getBattle.Finished === 1 &&
-              getBattle.BattleType === 'NM' && (
-                <ExpansionPanel defaultExpanded>
-                  <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="body2">Leader history</Typography>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails>
-                    <div className={s.timeDevelopment}>
-                      {[...getAllBattleTimes]
-                        .reduce((acc, cur) => {
-                          if (
-                            acc.length < 1 ||
-                            acc[acc.length - 1].Time > cur.Time
-                          )
-                            acc.push(cur);
-                          return acc;
-                        }, [])
-                        .map((b, i, a) => (
-                          <div
-                            className={s.timeDevelopmentRow}
-                            key={b.TimeIndex}
-                          >
-                            <span className={s.timeDiff}>
-                              {a.length > 1 && !a[i + 1] && 'Winner'}
-                              {a[i - 1] && (
-                                <span>
-                                  {' '}
-                                  -<Time time={a[i - 1].Time - b.Time} />
-                                </span>
-                              )}
-                              {a.length > 1 && !a[i - 1] && 'First finish'}
-                              {a.length === 1 && 'Only finish'}
-                            </span>
-                            <span className={s.timelineCell}>
-                              <span className={s.timelineMarker} />
-                              <span className={s.timelineLine} />
-                            </span>
-                            <span className={s.timeDevelopmentTime}>
-                              <Time time={b.Time} />
-                            </span>
-                            <span className={s.timeDevelopmentKuski}>
-                              {b.KuskiData.Kuski}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
-              )}
+            {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
+              <ExpansionPanel defaultExpanded>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="body2">Leader history</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <div className={s.timeDevelopment}>
+                    {[...getAllBattleTimes]
+                      .reduce((acc, cur) => {
+                        if (
+                          acc.length < 1 ||
+                          acc[acc.length - 1].Time > cur.Time
+                        )
+                          acc.push(cur);
+                        return acc;
+                      }, [])
+                      .map((b, i, a) => (
+                        <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
+                          <span className={s.timeDiff}>
+                            {a.length > 1 && !a[i + 1] && 'Winner'}
+                            {a[i - 1] && (
+                              <span>
+                                {' '}
+                                -<Time time={a[i - 1].Time - b.Time} />
+                              </span>
+                            )}
+                            {a.length > 1 && !a[i - 1] && 'First finish'}
+                            {a.length === 1 && 'Only finish'}
+                          </span>
+                          <span className={s.timelineCell}>
+                            <span className={s.timelineMarker} />
+                            <span className={s.timelineLine} />
+                          </span>
+                          <span className={s.timeDevelopmentTime}>
+                            <Time time={b.Time} />
+                          </span>
+                          <span className={s.timeDevelopmentKuski}>
+                            {b.KuskiData.Kuski}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            )}
             {!(battleStatus(getBattle) === 'Queued') && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>

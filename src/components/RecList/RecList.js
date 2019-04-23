@@ -76,6 +76,8 @@ class RecList extends React.Component {
     });
   }
 
+  isSelected = uuid => this.props.currentUUID === uuid;
+
   handleOpenReplay(uuid) {
     historyRefresh.push({
       pathname: `/r/${uuid}`,
@@ -83,10 +85,10 @@ class RecList extends React.Component {
     });
   }
 
-  isSelected = uuid => this.props.currentUUID === uuid;
-
   render() {
-    const { data: { loading, getReplaysByLevelIndex } } = this.props;
+    const {
+      data: { loading, getReplaysByLevelIndex },
+    } = this.props;
     const { showTAS, showDNF, showBug, showNitro } = this.state;
     const filterFunction = o => {
       let show = true;

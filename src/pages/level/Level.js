@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 
 import Kuski from 'components/Kuski';
 import Recplayer from 'components/Recplayer';
@@ -73,7 +73,7 @@ const TimeTable = withStyles(s)(({ data, latestBattle }) => (
 ));
 
 TimeTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 const AllTimes = compose(
@@ -86,7 +86,9 @@ const AllTimes = compose(
     }),
   }),
 )(props => {
-  const { data: { getTimes, loading } } = props;
+  const {
+    data: { getTimes, loading },
+  } = props;
   return loading ? <Loading /> : <TimeTable data={getTimes} />;
 });
 
@@ -97,6 +99,7 @@ class Level extends React.Component {
       tab: 0,
     };
   }
+
   onTabClick = (e, value) => {
     this.setState({
       tab: value,
@@ -136,7 +139,7 @@ class Level extends React.Component {
             {!loading && (
               <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Level info</Typography>
+                  <Typography variant="body1">Level info</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div className={s.levelDescription}>
@@ -151,7 +154,7 @@ class Level extends React.Component {
             )}
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Battles in level</Typography>
+                <Typography variant="body1">Battles in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div>
@@ -215,7 +218,7 @@ class Level extends React.Component {
             </ExpansionPanel>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">Replays in level</Typography>
+                <Typography variant="body1">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList LevelIndex={this.props.LevelIndex} />

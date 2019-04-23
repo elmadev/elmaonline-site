@@ -7,7 +7,9 @@ import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
 import AllFinished from './AllFinished';
-import BestTime from './BestTime';
+import Besttime from './Besttime';
+import LevelPack from './LevelPack';
+import LevelPackLevel from './LevelPackLevel';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -39,7 +41,7 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
-BestTime.belongsTo(Kuski, {
+Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -59,6 +61,21 @@ Kuski.belongsTo(Team, {
   as: 'TeamData',
 });
 
+LevelPack.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LevelPack.hasMany(LevelPackLevel, {
+  foreignKey: 'LevelPackIndex',
+  as: 'Levels',
+});
+
+LevelPackLevel.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'Level',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -73,5 +90,7 @@ export {
   Chat,
   Team,
   AllFinished,
-  BestTime,
+  Besttime,
+  LevelPack,
+  LevelPackLevel,
 }; // add the data model here as well so it exports
