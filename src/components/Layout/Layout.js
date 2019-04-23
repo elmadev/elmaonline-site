@@ -11,13 +11,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-
-// external-global styles must be imported in your JS.
 import normalizeCss from 'normalize.css';
+
+import { toggleSidebar } from 'actions/ui';
+import TopBar from 'components/TopBar';
+import SideBar from 'components/SideBar';
+
 import s from './Layout.css';
-import TopBar from '../TopBar';
-import SideBar from '../SideBar';
-import { toggleSidebar } from '../../actions/ui';
 
 class Layout extends React.Component {
   static propTypes = {

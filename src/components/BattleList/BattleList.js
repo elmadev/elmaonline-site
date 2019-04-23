@@ -2,17 +2,15 @@ import React from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import {
-  toServerTime,
-  sortResults,
-  battleStatus,
-  battleStatusBgColor,
-} from 'utils';
-import LocalTime from '../LocalTime';
-import Link from '../Link';
-import Time from '../Time';
-import Kuski from '../Kuski';
-import { BattleType } from '../Names';
+
+import LocalTime from 'components/LocalTime';
+import Link from 'components/Link';
+import Time from 'components/Time';
+import Kuski from 'components/Kuski';
+import { BattleType } from 'components/Names';
+import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
+import { toServerTime } from 'utils/time';
+
 import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 

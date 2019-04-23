@@ -10,10 +10,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import querystring from 'querystring';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import RecListItem from 'components/RecListItem';
+import history from 'utils/history';
+import historyRefresh from 'utils/historyRefresh';
+
 import recListQuery from './recList.graphql';
-import RecListItem from '../RecListItem';
-import history from '../../history';
-import historyRefresh from '../../historyRefresh';
 
 class RecList extends React.Component {
   static propTypes = {

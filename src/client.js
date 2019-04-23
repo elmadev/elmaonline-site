@@ -15,12 +15,14 @@ import queryString from 'query-string';
 import { createPath } from 'history';
 import StyleContext from 'isomorphic-style-loader/StyleContext';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import App from './components/App';
-import createFetch from './createFetch';
-import configureStore from './store/configureStore';
-import { updateMeta } from './DOMUtils';
-import history from './history';
-import createApolloClient from './core/createApolloClient';
+
+import App from 'components/App';
+import createApolloClient from 'core/createApolloClient';
+import configureStore from 'store/configureStore';
+import createFetch from 'utils/createFetch';
+import { updateMeta } from 'utils/DOMUtils';
+import history from 'utils/history';
+
 import router from './router';
 import muiTheme from './muiTheme';
 

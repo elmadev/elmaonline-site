@@ -3,7 +3,9 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import LocalTime from '../LocalTime';
+
+import LocalTime from 'components/LocalTime';
+
 import chatQuery from './chat.graphql';
 import s from './Chat.css';
 
