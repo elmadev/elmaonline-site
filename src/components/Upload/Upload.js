@@ -12,10 +12,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+
+import Alert from 'components/Alert';
+import Link from 'components/Link';
+
 import insertReplay from './upload.graphql';
 import updateReplay from './update.graphql';
-import Alert from '../Alert';
-import Link from '../Link';
 import s from './Upload.css';
 
 class Upload extends React.Component {

@@ -1,4 +1,4 @@
-import { Battle, Level } from '../data/models';
+import { Battle, Level } from 'data/models';
 
 const getReplayDataByBattleId = async battleId => {
   const replayData = await Battle.findOne({

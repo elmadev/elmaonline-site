@@ -1,7 +1,9 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
-import Link from '../Link';
+
+import Link from 'components/Link';
+
 import s from './SideBar.css';
 
 class SideBar extends React.Component {

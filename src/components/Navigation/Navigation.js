@@ -10,8 +10,10 @@
 import React from 'react';
 import cx from 'classnames';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+
+import Link from 'components/Link';
+
 import s from './Navigation.css';
-import Link from '../Link';
 
 class Navigation extends React.Component {
   render() {

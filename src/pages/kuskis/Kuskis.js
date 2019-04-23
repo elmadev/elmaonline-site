@@ -2,8 +2,10 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Link from '../../components/Link';
-import Kuski from '../../components/Kuski';
+
+import Link from 'components/Link';
+import Kuski from 'components/Kuski';
+
 import s from './Kuskis.css';
 import kuskiQuery from './kuskis.graphql';
 

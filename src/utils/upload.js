@@ -4,7 +4,8 @@ import fs from 'fs';
 import crypto from 'crypto';
 import generate from 'nanoid/generate';
 import AWS from 'aws-sdk';
-import { Level, Replay as ReplayDB } from '../data/models';
+
+import { Level, Replay as ReplayDB } from 'data/models';
 import config from '../config';
 
 const getLevelsFromName = async LevelName => {

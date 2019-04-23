@@ -1,6 +1,8 @@
 import React from 'react';
+
+import Layout from 'components/Layout';
+
 import Battles from './Battles';
-import Layout from '../../components/Layout';
 
 async function action(context) {
   return {
