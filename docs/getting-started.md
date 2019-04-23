@@ -21,12 +21,12 @@ Before you start, take a moment to see how the project structure looks like:
 ├── /src/                       # The source code of the application
 │   ├── /components/            # React components
 │   ├── /data/                  # GraphQL server schema and data models
-│   ├── /routes/                # Page/screen components along with the routing information
+│   ├── /pages/                 # Page/screen components
 │   ├── /client.js              # Client-side startup script
 │   ├── /config.js              # Global application settings
 │   ├── /server.js              # Server-side startup script
+│   ├── /router.js              # Routing information
 │   └── ...                     # Other core framework modules
-├── /test/                      # Unit and end-to-end tests
 ├── /tools/                     # Build automation scripts and utilities
 │   ├── /lib/                   # Library for utility snippets
 │   ├── /build.js               # Builds the project from source to output (build) folder

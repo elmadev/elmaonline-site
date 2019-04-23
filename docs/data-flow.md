@@ -46,11 +46,11 @@ Click the play icon on the top left and you will see the result in the right sid
 
 ## 6. Use the data in the frontend react
 
-If you're making a new route (page) create a folder in /src/routes/ which will have a .css, a .graphql, an index.js and another .js file.
+If you're making a new route (page) create a folder in /src/pages/ which will have a .css, (most likely) a .graphql, an index.js and a Component .js file.
 
-* In the [.graphql](../src/routes/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
-* In the [index.js](../src/routes/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
-* In the [secondary .js file](../src/routes/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the this.props object that you can use in the render. Deconstruct the this.props object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
+* In the [.graphql](../src/pages/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
+* In the [index.js](../src/pages/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
+* In the [Component.js file](../src/pages/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the `this.props` object that you can use in the render. Deconstruct the `this.props` object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
 
 ```js
 {

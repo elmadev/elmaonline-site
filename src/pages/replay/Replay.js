@@ -16,6 +16,7 @@ import { Level } from '../../components/Names';
 import Time from '../../components/Time';
 import Link from '../../components/Link';
 import RecList from '../../components/RecList';
+import historyRefresh from '../../historyRefresh';
 
 class Replay extends React.Component {
   static propTypes = {
