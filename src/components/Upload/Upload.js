@@ -51,13 +51,6 @@ class Upload extends React.Component {
   }
 
   onDrop(files) {
-    this.setState({
-      files,
-      error: '',
-      duplicate: false,
-      duplicateReplayIndex: 0,
-      uploaded: [],
-    });
     const fileInfo = {};
     files.forEach((file, index) => {
       fileInfo[file.name] = {
@@ -73,7 +66,14 @@ class Upload extends React.Component {
         comment: '',
       };
     });
-    this.setState({ fileInfo });
+    this.setState({
+      fileInfo,
+      files,
+      error: '',
+      duplicate: false,
+      duplicateReplayIndex: 0,
+      uploaded: [],
+    });
   }
 
   sendMutation = (
