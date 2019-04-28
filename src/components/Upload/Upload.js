@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import Dropzone from 'react-dropzone';
 import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -12,10 +13,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+
+import Alert from 'components/Alert';
+import Link from 'components/Link';
+
 import insertReplay from './upload.graphql';
 import updateReplay from './update.graphql';
-import Alert from '../Alert';
-import Link from '../Link';
 import s from './Upload.css';
 
 class Upload extends React.Component {
@@ -48,13 +51,6 @@ class Upload extends React.Component {
   }
 
   onDrop(files) {
-    this.setState({
-      files,
-      error: '',
-      duplicate: false,
-      duplicateReplayIndex: 0,
-      uploaded: [],
-    });
     const fileInfo = {};
     files.forEach((file, index) => {
       fileInfo[file.name] = {
@@ -70,7 +66,14 @@ class Upload extends React.Component {
         comment: '',
       };
     });
-    this.setState({ fileInfo });
+    this.setState({
+      fileInfo,
+      files,
+      error: '',
+      duplicate: false,
+      duplicateReplayIndex: 0,
+      uploaded: [],
+    });
   }
 
   sendMutation = (
@@ -116,7 +119,9 @@ class Upload extends React.Component {
         }
         const newUploaded = this.state.uploaded.slice();
         // eslint-disable-next-line
-        const fullUrl = `${location.protocol}//${location.hostname}${(location.port ? `:${location.port}` : '')}/r/${UUID}`;
+        const fullUrl = `${location.protocol}//${location.hostname}${
+          location.port ? `:${location.port}` : ''
+        }/r/${UUID}`;
         newUploaded.push({ RecFileName, UUID, url: fullUrl });
         this.setState({ uploaded: newUploaded });
         const { onUpload } = this.props;

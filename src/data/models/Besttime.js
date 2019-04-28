@@ -1,7 +1,7 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const BestTime = Model.define(
+const Besttime = Model.define(
   'besttime',
   {
     BestTimeIndex: {
@@ -40,4 +40,4 @@ const BestTime = Model.define(
   },
 );
 
-export default BestTime;
+export default Besttime;

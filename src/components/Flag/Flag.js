@@ -1,6 +1,6 @@
 import React from 'react';
 import f from 'flag-icon-css/css/flag-icon.css';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 
 const Flag = ({ nationality }) => (
