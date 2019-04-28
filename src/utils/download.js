@@ -39,20 +39,31 @@ export function getLevel(id) {
   return new Promise((resolve, reject) => {
     getLevelData(id).then(data => {
       const { Locked, LevelName, LevelData } = data.level.dataValues;
-      const { Finished, Aborted, InQueue } = data.battle.dataValues;
-      if (
-        data !== null &&
-        Locked === 0 &&
-        (Finished === 1 ||
-          Aborted === 1 ||
-          (Finished === 0 && InQueue === 0 && Aborted === 0)) // meaning ongoing
-      ) {
-        resolve({
-          file: LevelData,
-          filename: `${LevelName}.lev`,
-        });
+      if (!data.battle) {
+        if (data.level !== null && Locked === 0) {
+          resolve({
+            file: LevelData,
+            filename: `${LevelName}.lev`,
+          });
+        } else {
+          reject(new Error('level not found'));
+        }
       } else {
-        reject(new Error('level not found'));
+        const { Finished, Aborted, InQueue } = data.battle.dataValues;
+        if (
+          data.level !== null &&
+          Locked === 0 &&
+          (Finished === 1 ||
+            Aborted === 1 ||
+            (Finished === 0 && InQueue === 0 && Aborted === 0)) // meaning ongoing
+        ) {
+          resolve({
+            file: LevelData,
+            filename: `${LevelName}.lev`,
+          });
+        } else {
+          reject(new Error('level not found'));
+        }
       }
     });
   });
