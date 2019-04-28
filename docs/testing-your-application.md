@@ -43,7 +43,7 @@ you can use as a starting point:
 import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import App from '../App';
+import App from 'components/App';
 import Layout from './Layout';
 
 describe('Layout', () => {
@@ -72,7 +72,7 @@ The example below example is a drop-in test for the RSK `Header` component:
 import React from 'react';
 import Header from './Header';
 import IntlProvider from 'react-intl';
-import Navigation from '../../components/Navigation';
+import Navigation from 'components/Navigation';
 
 describe('A test suite for <Header />', () => {
   it('should contain a <Navigation/> component', () => {

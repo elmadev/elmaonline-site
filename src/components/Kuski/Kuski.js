@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Flag from '../Flag';
+
+import Flag from 'components/Flag';
 
 const Kuski = ({ kuskiData, team, flag }) => (
   <span>

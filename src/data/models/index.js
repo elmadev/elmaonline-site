@@ -1,8 +1,4 @@
 import sequelize from '../sequelize';
-import User from './User';
-import UserLogin from './UserLogin';
-import UserClaim from './UserClaim';
-import UserProfile from './UserProfile';
 import Battle from './Battle'; // add the data model here to import
 import Replay from './Replay';
 import Level from './Level';
@@ -11,28 +7,9 @@ import Battletime from './Battletime';
 import Chat from './Chat';
 import Team from './Team';
 import AllFinished from './AllFinished';
-import BestTime from './BestTime';
-
-User.hasMany(UserLogin, {
-  foreignKey: 'userId',
-  as: 'logins',
-  onUpdate: 'cascade',
-  onDelete: 'cascade',
-});
-
-User.hasMany(UserClaim, {
-  foreignKey: 'userId',
-  as: 'claims',
-  onUpdate: 'cascade',
-  onDelete: 'cascade',
-});
-
-User.hasOne(UserProfile, {
-  foreignKey: 'userId',
-  as: 'profile',
-  onUpdate: 'cascade',
-  onDelete: 'cascade',
-});
+import Besttime from './Besttime';
+import LevelPack from './LevelPack';
+import LevelPackLevel from './LevelPackLevel';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -64,7 +41,7 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
-BestTime.belongsTo(Kuski, {
+Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -84,16 +61,27 @@ Kuski.belongsTo(Team, {
   as: 'TeamData',
 });
 
+LevelPack.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LevelPack.hasMany(LevelPackLevel, {
+  foreignKey: 'LevelPackIndex',
+  as: 'Levels',
+});
+
+LevelPackLevel.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'Level',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
 
 export default { sync };
 export {
-  User,
-  UserLogin,
-  UserClaim,
-  UserProfile,
   Battle,
   Replay,
   Level,
@@ -102,5 +90,7 @@ export {
   Chat,
   Team,
   AllFinished,
-  BestTime,
+  Besttime,
+  LevelPack,
+  LevelPackLevel,
 }; // add the data model here as well so it exports

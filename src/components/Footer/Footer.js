@@ -8,9 +8,11 @@
  */
 
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
+
+import Link from 'components/Link';
+
 import s from './Footer.css';
-import Link from '../Link';
 
 class Footer extends React.Component {
   render() {
@@ -21,14 +23,6 @@ class Footer extends React.Component {
           <span className={s.spacer}>·</span>
           <Link className={s.link} to="/">
             Home
-          </Link>
-          <span className={s.spacer}>·</span>
-          <Link className={s.link} to="/admin">
-            Admin
-          </Link>
-          <span className={s.spacer}>·</span>
-          <Link className={s.link} to="/privacy">
-            Privacy
           </Link>
           <span className={s.spacer}>·</span>
           <Link className={s.link} to="/not-found">

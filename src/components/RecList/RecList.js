@@ -10,10 +10,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import querystring from 'querystring';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import RecListItem from 'components/RecListItem';
+import history from 'utils/history';
+import historyRefresh from 'utils/historyRefresh';
+
 import recListQuery from './recList.graphql';
-import RecListItem from '../RecListItem';
-import history from '../../history';
-import historyRefresh from '../../historyRefresh';
 
 class RecList extends React.Component {
   static propTypes = {
@@ -34,12 +36,10 @@ class RecList extends React.Component {
         }),
       ),
     }).isRequired,
-    openReplay: PropTypes.func,
     currentUUID: PropTypes.string,
   };
 
   static defaultProps = {
-    openReplay: null,
     currentUUID: null,
   };
 
@@ -76,6 +76,8 @@ class RecList extends React.Component {
     });
   }
 
+  isSelected = uuid => this.props.currentUUID === uuid;
+
   handleOpenReplay(uuid) {
     historyRefresh.push({
       pathname: `/r/${uuid}`,
@@ -83,10 +85,10 @@ class RecList extends React.Component {
     });
   }
 
-  isSelected = uuid => this.props.currentUUID === uuid;
-
   render() {
-    const { data: { loading, getReplaysByLevelIndex } } = this.props;
+    const {
+      data: { loading, getReplaysByLevelIndex },
+    } = this.props;
     const { showTAS, showDNF, showBug, showNitro } = this.state;
     const filterFunction = o => {
       let show = true;

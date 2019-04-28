@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import { Kuski, Level } from '../Names';
-import Time from '../Time';
-import Link from '../Link';
-import history from '../../history';
+
+import { Kuski, Level } from 'components/Names';
+import Time from 'components/Time';
+import Link from 'components/Link';
+import history from 'utils/history';
 
 class RecListItem extends React.Component {
   static propTypes = {

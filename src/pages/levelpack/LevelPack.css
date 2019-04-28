@@ -1,0 +1,55 @@
+.root {
+  background: #fff;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.levelPackName {
+  font-size: 20px;
+  padding: 10px;
+}
+
+.description {
+  margin: 0 10px;
+  margin-bottom: 40px;
+  font-size: 14px;
+}
+
+.shortName {
+  font-weight: 500;
+}
+
+.longName {
+  color: #8c8c8c;
+}
+
+.levels {
+  padding-bottom: 200px;
+  display: table;
+  width: 100%;
+}
+
+.tableHead {
+  font-weight: 500;
+}
+
+.levels > * {
+  display: table-row;
+  color: inherit;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.levels > * > span {
+  display: table-cell;
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.levels > * > span:nth-child(1) {
+  width: 100px;
+}
+
+.levels a:hover {
+  background: #f9f9f9;
+}

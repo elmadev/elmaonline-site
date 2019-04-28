@@ -1,12 +1,6 @@
 import { merge } from 'lodash';
 
 /** * Queries ** */
-import {
-  schema as GetAllUsers,
-  queries as GetAllUsersQueries,
-  resolvers as GetAllUsersResolver,
-} from './users/GetAllUsers';
-
 // imports from the queries we built,
 // 3 or 4 depending on wether you have queries, mutations or both
 // use as and a unique variable name, as there will be many of those in this file
@@ -47,22 +41,12 @@ import {
 } from './time/GetBesttime';
 
 import {
-  queries as GetLoggedInUserQueries,
-  resolvers as GetLoggedInUserResolver,
-} from './users/GetLoggedInUser';
-
-import {
   schema as GetChatLines,
   queries as GetChatLinesQueries,
   resolvers as GetChatLinesResolver,
 } from './chat/GetChatLines';
 
 /** * Mutations ** */
-import {
-  schema as CreateUserInput,
-  mutation as CreateUser,
-  resolvers as CreateUserResolver,
-} from './users/CreateUser';
 
 import {
   schema as InsertReplay,
@@ -76,9 +60,13 @@ import {
   resolvers as GetTimesResolver,
 } from './time/GetTimes';
 
+import {
+  schema as GetLevelPacks,
+  queries as GetLevelPacksQueries,
+  resolvers as GetLevelPacksResolver,
+} from './levelpack/LevelPack';
+
 export const schema = [
-  ...GetAllUsers,
-  ...CreateUserInput,
   ...GetBattles, // export the schema object here
   ...GetReplays,
   ...GetLevels,
@@ -88,11 +76,10 @@ export const schema = [
   ...GetChatLines,
   ...InsertReplay,
   ...GetTimes,
+  ...GetLevelPacks,
 ];
 
 export const queries = [
-  ...GetAllUsersQueries,
-  ...GetLoggedInUserQueries,
   ...GetBattlesQueries, // export the query object here
   ...GetReplaysQueries,
   ...GetLevelsQueries,
@@ -101,14 +88,12 @@ export const queries = [
   ...GetBesttimeQueries,
   ...GetChatLinesQueries,
   ...GetTimesQueries,
+  ...GetLevelPacksQueries,
 ];
 
-export const mutations = [...CreateUser, ...InsertReplayMutation];
+export const mutations = [...InsertReplayMutation];
 
 export const resolvers = merge(
-  GetAllUsersResolver,
-  GetLoggedInUserResolver,
-  CreateUserResolver,
   GetBattlesResolver, // export the resolver object here
   GetReplaysResolver,
   GetLevelsResolver,
@@ -118,4 +103,5 @@ export const resolvers = merge(
   GetChatLinesResolver,
   InsertReplayResolver,
   GetTimesResolver,
+  GetLevelPacksResolver,
 );

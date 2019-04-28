@@ -14,8 +14,10 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import createApolloClient from '../../core/createApolloClient';
-import App from '../App';
+
+import App from 'components/App';
+import createApolloClient from 'core/createApolloClient';
+
 import Layout from './Layout';
 
 const middlewares = [thunk];
