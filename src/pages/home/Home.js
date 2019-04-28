@@ -94,7 +94,7 @@ class Home extends React.Component {
                   {loading
                     ? 'Loading...'
                     : battleList.map(i => {
-                        const sorted = [...i.Results].sort(sortResults);
+                        const sortedResults = [...i.Results].sort(sortResults);
                         return (
                           <TableRow
                             style={{
@@ -125,9 +125,9 @@ class Home extends React.Component {
                               </Link>
                             </TableCell>
                             <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              {i.Finished === 1 ? (
+                              {i.Finished === 1 && sortedResults ? (
                                 <Kuski
-                                  kuskiData={sorted[0].KuskiData}
+                                  kuskiData={sortedResults[0].KuskiData}
                                   team
                                   flag
                                 />
