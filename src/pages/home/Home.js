@@ -125,7 +125,7 @@ class Home extends React.Component {
                               </Link>
                             </TableCell>
                             <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              {i.Finished === 1 && sortedResults ? (
+                              {i.Finished === 1 && sortedResults.length > 0 ? (
                                 <Kuski
                                   kuskiData={sortedResults[0].KuskiData}
                                   team
