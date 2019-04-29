@@ -1,0 +1,50 @@
+{
+  "event": "API_battlequeue",
+  "queueCount": 2,
+  "queue": [
+    {
+      "queuePosition": 1,
+      "designerIndex": 38,
+      "designer": "Markku",
+      "battleType": "apple",
+      "durationMinutes": 60,
+      "countdownSeconds": 0,
+      "seeOthers": true,
+      "seeTimes": true,
+      "allowStarter": false,
+      "acceptBugs": false,
+      "noVolt": false,
+      "noTurn": false,
+      "oneTurn": false,
+      "noBrake": false,
+      "noThrottle": false,
+      "alwaysThrottle": false,
+      "drunk": false,
+      "oneWheel": false,
+      "multi": false
+    },
+    {
+      "queuePosition": 2,
+      "designerIndex": 38,
+      "designer": "Markku",
+      "battleType": "apple",
+      "durationMinutes": 60,
+      "countdownSeconds": 0,
+      "seeOthers": true,
+      "seeTimes": true,
+      "allowStarter": false,
+      "acceptBugs": false,
+      "noVolt": false,
+      "noTurn": false,
+      "oneTurn": false,
+      "noBrake": false,
+      "noThrottle": false,
+      "alwaysThrottle": false,
+      "drunk": false,
+      "oneWheel": false,
+      "multi": false
+    }
+  ],
+  "unixtime": 1555526044,
+  "timestamp": "2019-04-17 18:34:04 UTC"
+}

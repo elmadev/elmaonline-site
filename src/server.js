@@ -41,6 +41,15 @@ import configureStore from 'store/configureStore';
 import { getReplayByBattleId, getLevel } from 'utils/download';
 import uploadReplayS3 from 'utils/upload';
 import createFetch from 'utils/createFetch';
+import {
+  chatline,
+  besttime,
+  bestmultitime,
+  battlestart,
+  battlequeue,
+  battleend,
+  battleresults,
+} from 'utils/events';
 
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -80,6 +89,31 @@ app.use(
 if (__DEV__) {
   app.enable('trust proxy');
 }
+
+//
+// Events API
+//--------------------------------------------
+app.post('/events/chatline', (req, res) => {
+  chatline(req, res);
+});
+app.post('/events/besttime', (req, res) => {
+  besttime(req, res);
+});
+app.post('/events/bestmultitime', (req, res) => {
+  bestmultitime(req, res);
+});
+app.post('/events/battlestart', (req, res) => {
+  battlestart(req, res);
+});
+app.post('/events/battlequeue', (req, res) => {
+  battlequeue(req, res);
+});
+app.post('/events/battleend', (req, res) => {
+  battleend(req, res);
+});
+app.post('/events/battleresults', (req, res) => {
+  battleresults(req, res);
+});
 
 //
 // Downloading files
