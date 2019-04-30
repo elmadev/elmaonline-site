@@ -124,10 +124,11 @@ class Level extends React.Component {
           {!loading && (
             <div className={s.player}>
               {isWindow &&
-                !(battleStatus(getBattlesForLevel[0]) === 'Queued') && (
+                (getBattlesForLevel.length < 1 ||
+                  !battleStatus(getBattlesForLevel[0]) === 'Queued') && (
                   <Recplayer
                     lev={`/dl/level/${this.props.LevelIndex}`}
-                    controls={false}
+                    controls
                   />
                 )}
             </div>
@@ -168,49 +169,48 @@ class Level extends React.Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {loading
-                        ? 'Loading...'
-                        : getBattlesForLevel.map(i => {
-                            const sorted = [...i.Results].sort(sortResults);
-                            return (
-                              <TableRow
-                                style={{
-                                  cursor: 'pointer',
-                                  backgroundColor: battleStatusBgColor(i),
-                                }}
-                                hover
-                                key={i.BattleIndex}
-                                onClick={() => {
-                                  this.gotoBattle(i.BattleIndex);
-                                }}
-                              >
-                                <TableCell>
-                                  <Link to={`/battles/${i.BattleIndex}`}>
-                                    <LocalTime
-                                      date={i.Started}
-                                      format="DD MMM YYYY HH:mm:ss"
-                                      parse="X"
-                                    />
-                                  </Link>
-                                </TableCell>
-                                <TableCell>
-                                  <Kuski kuskiData={i.KuskiData} team flag />
-                                </TableCell>
-                                <TableCell>
-                                  {i.Finished === 1 ? (
-                                    <Kuski
-                                      kuskiData={sorted[0].KuskiData}
-                                      team
-                                      flag
-                                    />
-                                  ) : (
-                                    battleStatus(i)
-                                  )}
-                                </TableCell>
-                                <TableCell>{i.BattleIndex}</TableCell>
-                              </TableRow>
-                            );
-                          })}
+                      {!loading &&
+                        getBattlesForLevel.map(i => {
+                          const sorted = [...i.Results].sort(sortResults);
+                          return (
+                            <TableRow
+                              style={{
+                                cursor: 'pointer',
+                                backgroundColor: battleStatusBgColor(i),
+                              }}
+                              hover
+                              key={i.BattleIndex}
+                              onClick={() => {
+                                this.gotoBattle(i.BattleIndex);
+                              }}
+                            >
+                              <TableCell>
+                                <Link to={`/battles/${i.BattleIndex}`}>
+                                  <LocalTime
+                                    date={i.Started}
+                                    format="DD MMM YYYY HH:mm:ss"
+                                    parse="X"
+                                  />
+                                </Link>
+                              </TableCell>
+                              <TableCell>
+                                <Kuski kuskiData={i.KuskiData} team flag />
+                              </TableCell>
+                              <TableCell>
+                                {i.Finished === 1 ? (
+                                  <Kuski
+                                    kuskiData={sorted[0].KuskiData}
+                                    team
+                                    flag
+                                  />
+                                ) : (
+                                  battleStatus(i)
+                                )}
+                              </TableCell>
+                              <TableCell>{i.BattleIndex}</TableCell>
+                            </TableRow>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </div>
