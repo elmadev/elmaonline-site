@@ -26,6 +26,7 @@
   font-size: 13px;
 }
 
+/*
 .levelCount {
   position: absolute;
   right: 0;
@@ -35,7 +36,7 @@
   color: #909090;
   font-size: 13px;
 }
-
+*/
 @media all and (max-width: 1350px) {
   .levelPackContainer {
     width: 25%;
@@ -65,10 +66,12 @@
     height: unset;
   }
 
+  /*
   .levelCount {
     position: relative;
     padding: 0;
   }
+  */
 }
 
 .levelPackContainer > a {
