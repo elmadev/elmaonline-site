@@ -125,7 +125,7 @@ class Level extends React.Component {
             <div className={s.player}>
               {isWindow &&
                 (getBattlesForLevel.length < 1 ||
-                  !battleStatus(getBattlesForLevel[0]) === 'Queued') && (
+                  battleStatus(getBattlesForLevel[0]) !== 'Queued') && (
                   <Recplayer
                     lev={`/dl/level/${this.props.LevelIndex}`}
                     controls
