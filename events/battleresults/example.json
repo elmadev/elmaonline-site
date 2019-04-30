@@ -1,0 +1,32 @@
+{
+  "event": "API_battleresults",
+  "designerIndex": 38,
+  "designer": "Markku",
+  "battleIndex": 132694,
+  "level": "pawqb002",
+  "battleType": "normal",
+  "durationMinutes": 10,
+  "countdownSeconds": 0,
+  "aborted": false,
+  "stopped": true,
+  "seeOthers": false,
+  "seeTimes": true,
+  "allowStarter": true,
+  "acceptBugs": false,
+  "noVolt": false,
+  "noTurn": false,
+  "oneTurn": false,
+  "noBrake": false,
+  "noThrottle": false,
+  "alwaysThrottle": false,
+  "drunk": false,
+  "oneWheel": true,
+  "multi": false,
+  "playerCount": 2,
+  "results": [
+    { "position": 1, "kuskiIndex": 38, "kuski": "Markku", "time": "9:38" },
+    { "position": 2, "kuskiIndex": 625, "kuski": "someone", "time": "9:52" }
+  ],
+  "unixtime": 1555526302,
+  "timestamp": "2019-04-17 18:38:22 UTC"
+}
