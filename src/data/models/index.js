@@ -11,6 +11,8 @@ import Besttime from './Besttime';
 import LevelPack from './LevelPack';
 import LevelPackLevel from './LevelPackLevel';
 import Time from './Time';
+import WeeklyWRs from './WeeklyWRs';
+import WeeklyBest from './WeeklyBest';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -43,6 +45,11 @@ AllFinished.belongsTo(Kuski, {
 });
 
 Besttime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -82,6 +89,18 @@ LevelPackLevel.belongsTo(Level, {
   as: 'Level',
 });
 
+Besttime.belongsTo(WeeklyWRs, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'WeeklyWR',
+});
+
+WeeklyBest.belongsTo(WeeklyWRs, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'WeeklyWR',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -100,4 +119,6 @@ export {
   LevelPack,
   LevelPackLevel,
   Time,
+  WeeklyWRs,
+  WeeklyBest,
 }; // add the data model here as well so it exports

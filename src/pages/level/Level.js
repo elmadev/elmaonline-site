@@ -54,7 +54,9 @@ const TimeTable = withStyles(s)(({ data, latestBattle }) => (
       </TableHead>
       <TableBody>
         {data &&
-          (latestBattle.Finished === 1 || latestBattle.Aborted === 1) &&
+          (!latestBattle ||
+            latestBattle.Finished === 1 ||
+            latestBattle.Aborted === 1) &&
           data.map((t, i) => (
             <TableRow key={t.TimeIndex}>
               <TableCell>{i + 1}.</TableCell>
