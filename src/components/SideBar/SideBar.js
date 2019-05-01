@@ -10,8 +10,7 @@ import s from './SideBar.css';
 
 class SideBar extends React.Component {
   static propTypes = {
-    expanded: PropTypes.bool.isRequired,
-    onToggle: PropTypes.func.isRequired,
+    sidebarVisible: PropTypes.bool.isRequired,
     toggleSidebar: PropTypes.func.isRequired,
   };
 
@@ -21,8 +20,15 @@ class SideBar extends React.Component {
     }
   };
 
+  onToggle = () => {
+    this.props.toggleSidebar();
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 10);
+  };
+
   render() {
-    const className = this.props.expanded ? ` ${s.expanded}` : '';
+    const className = this.props.sidebarVisible ? ` ${s.expanded}` : '';
     return (
       <div className={s.root + className}>
         <div className={s.container}>
@@ -30,8 +36,10 @@ class SideBar extends React.Component {
             role="button"
             tabIndex="0"
             className={s.title}
-            onKeyUp={() => this.props.onToggle()}
-            onClick={() => this.props.onToggle()}
+            onKeyUp={e => {
+              if (e.keyCode === 13) this.onToggle();
+            }}
+            onClick={this.onToggle}
           >
             &#9776; <span className={s.text}>Sidebar</span>
           </div>
