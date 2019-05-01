@@ -67,6 +67,16 @@ const Battle = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    SeeTimes: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    AcceptBugs: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     InQueue: {
       type: DataType.INTEGER,
       allowNull: false,

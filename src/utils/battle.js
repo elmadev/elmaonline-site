@@ -1,9 +1,10 @@
+const reversedBattleTypes = ['SL', 'SR', 'FT'];
+
 const sortResults = battleType => (a, b) => {
   if (a.Time && b.Time) {
-    const c =
-      battleType === 'SL' || battleType === 'SR'
-        ? b.Time - a.Time
-        : a.Time - b.Time;
+    const c = reversedBattleTypes.find(t => t === battleType)
+      ? b.Time - a.Time
+      : a.Time - b.Time;
     return c === 0 ? a.TimeIndex - b.TimeIndex : c;
   }
   if (a.Time === 0 && b.Time !== 0) return 1;

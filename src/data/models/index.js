@@ -10,6 +10,7 @@ import AllFinished from './AllFinished';
 import Besttime from './Besttime';
 import LevelPack from './LevelPack';
 import LevelPackLevel from './LevelPackLevel';
+import Time from './Time';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -42,6 +43,11 @@ AllFinished.belongsTo(Kuski, {
 });
 
 Besttime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Time.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -93,4 +99,5 @@ export {
   Besttime,
   LevelPack,
   LevelPackLevel,
+  Time,
 }; // add the data model here as well so it exports
