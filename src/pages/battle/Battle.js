@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql, compose } from 'react-apollo';
+import { graphql, compose, Query } from 'react-apollo';
+import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -25,6 +26,22 @@ import { sortResults, battleStatus } from 'utils/battle';
 
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
+
+const GET_BATTLE_TIMES = gql`
+  query($id: Int!) {
+    getBattleTimes(BattleIndex: $id) {
+      Time
+      KuskiIndex
+      KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+    }
+  }
+`;
 
 class Battle extends React.Component {
   static propTypes = {
@@ -177,20 +194,27 @@ class Battle extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {battleStatus(getBattle) === 'Finished' &&
-                    [...getBattle.Results]
-                      .sort(sortResults(getBattle.BattleType))
-                      .map((r, i) => (
-                        <TableRow key={r.KuskiIndex}>
-                          <TableCell>{i + 1}.</TableCell>
-                          <TableCell>
-                            <Kuski kuskiData={r.KuskiData} flag team />
-                          </TableCell>
-                          <TableCell>
-                            <Time time={r.Time} apples={r.Apples} />
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                  <Query
+                    query={GET_BATTLE_TIMES}
+                    variables={{ id: this.props.BattleIndex }}
+                  >
+                    {({ data: { getBattleTimes }, loading }) => {
+                      if (loading) return null;
+                      return [...getBattleTimes]
+                        .sort(sortResults(getBattle.BattleType))
+                        .map((r, i) => (
+                          <TableRow key={r.KuskiIndex}>
+                            <TableCell>{i + 1}.</TableCell>
+                            <TableCell>
+                              <Kuski kuskiData={r.KuskiData} flag team />
+                            </TableCell>
+                            <TableCell>
+                              <Time time={r.Time} apples={r.Apples} />
+                            </TableCell>
+                          </TableRow>
+                        ));
+                    }}
+                  </Query>
                 </TableBody>
               </Table>
             )}

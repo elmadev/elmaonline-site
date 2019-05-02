@@ -28,7 +28,7 @@ export const schema = [
 export const queries = [
   `
   # Retrieves results from a battle
-  getBattletime(
+  getBattleTimes(
     # The battle's id
     BattleIndex: Int!
   ): [DatabaseBattletime]
@@ -38,7 +38,7 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
-    async getBattletime(parent, { BattleIndex }) {
+    async getBattleTimes(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
         attributes: ['Finished', 'SeeTimes', 'AcceptBugs', 'BattleType'],
         where: { BattleIndex },
