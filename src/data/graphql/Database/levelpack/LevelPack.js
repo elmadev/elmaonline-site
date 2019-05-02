@@ -42,6 +42,7 @@ export const queries = [
   `
   getLevelPacks: [DatabaseLevelPack]
   getLevelPack(LevelPackName: String!): DatabaseLevelPack
+  getLevelPackLevels(LevelPackIndex: Int!): [DatabaseLevelPackLevel]
 `,
 ];
 
@@ -49,14 +50,15 @@ export const resolvers = {
   RootQuery: {
     async getLevelPacks() {
       const data = await LevelPack.findAll({
-        include: [
-          { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-          {
-            model: LevelPackLevel,
-            as: 'Levels',
-          },
-        ],
+        include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
         order: [['LevelPackName', 'ASC']],
+      });
+      return data;
+    },
+    async getLevelPackLevels(parent, { LevelPackIndex }) {
+      const data = await LevelPackLevel.findAll({
+        where: { LevelPackIndex },
+        order: [['LevelPackLevelIndex', 'ASC']],
       });
       return data;
     },

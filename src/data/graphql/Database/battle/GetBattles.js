@@ -17,6 +17,8 @@ export const schema = [
     Duration: Int
     Aborted: Int
     Finished: Int
+    SeeTimes: Int
+    AcceptBugs: Int
     InQueue: Int
     Countdown: Int
     RecFileName: String

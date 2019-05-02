@@ -13,7 +13,6 @@ import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import normalizeCss from 'normalize.css';
 
-import { toggleSidebar } from 'actions/ui';
 import TopBar from 'components/TopBar';
 import SideBar from 'components/SideBar';
 
@@ -23,15 +22,7 @@ class Layout extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     sidebarVisible: PropTypes.bool.isRequired,
-    toggleSidebar: PropTypes.func.isRequired,
   };
-
-  toggleSideBar() {
-    this.props.toggleSidebar();
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 10);
-  }
 
   render() {
     const className = this.props.sidebarVisible
@@ -40,10 +31,7 @@ class Layout extends React.Component {
     return (
       <div className={className}>
         <TopBar />
-        <SideBar
-          expanded={this.props.sidebarVisible}
-          onToggle={() => this.toggleSideBar()}
-        />
+        <SideBar />
         <div
           style={{
             height: '100%',
@@ -64,9 +52,4 @@ const mapStateToProps = state => {
   return { sidebarVisible };
 };
 
-export default withStyles(normalizeCss, s)(
-  connect(
-    mapStateToProps,
-    { toggleSidebar },
-  )(Layout),
-);
+export default withStyles(normalizeCss, s)(connect(mapStateToProps)(Layout));

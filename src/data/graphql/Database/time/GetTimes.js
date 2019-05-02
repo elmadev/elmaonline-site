@@ -1,4 +1,11 @@
-// import { AllFinished, Kuski, Team, BestTime } from 'data/models';
+import {
+  /* AllFinished, */ Kuski,
+  Team,
+  Besttime,
+  Level,
+  WeeklyBest,
+  WeeklyWRs,
+} from 'data/models';
 
 export const schema = [
   `
@@ -21,6 +28,11 @@ export const schema = [
     KuskiData: DatabaseKuski
   }
 
+  type DatabaseWeeklyWRs {
+    WeeklyWRsIndex: Int
+    TimeIndex: Int
+  }
+
   type DatabaseBestTime {
     BestTimeIndex: Int
     TimeIndex: Int
@@ -28,6 +40,7 @@ export const schema = [
     LevelIndex: Int
     Time: Int
     KuskiData: DatabaseKuski
+    WeeklyWR: DatabaseWeeklyWRs
   }
 `,
 ];
@@ -64,11 +77,17 @@ export const resolvers = {
       });
       return times;
     }, */
-    async getBestTimes() {
-      return null;
-    },
-    /* async getBestTimes(parent, { LevelIndex }) {
-      const times = await BestTime.findAll({
+    async getBestTimes(parent, { LevelIndex }) {
+      const level = await Level.findOne({
+        attributes: ['Hidden', 'Locked'],
+        where: { LevelIndex },
+      });
+
+      if (level.Locked) return [];
+
+      const sourceModel = level.Hidden ? WeeklyBest : Besttime;
+
+      const times = await sourceModel.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
         include: [
@@ -83,9 +102,13 @@ export const resolvers = {
               },
             ],
           },
+          {
+            model: WeeklyWRs,
+            as: 'WeeklyWR',
+          },
         ],
       });
-      return times;
-    }, */
+      return times.filter(t => !t.WeeklyWR);
+    },
   },
 };
