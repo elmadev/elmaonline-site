@@ -47,9 +47,94 @@
 }
 
 .levels > * > span:nth-child(1) {
-  width: 100px;
+  width: 70px;
 }
 
 .levels a:hover {
   background: #f9f9f9;
+}
+
+.levels a.selected {
+  background: #219653;
+  color: #fff;
+}
+
+.levelPopup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 800px;
+  height: 100vh;
+  background: #fff;
+  box-sizing: border-box;
+  padding-top: var(--top-bar-height);
+  border-left: 1px solid #eaeaea;
+}
+
+@media all and (max-width: 1150px) {
+  .levelPopup {
+    left: 650px;
+  }
+}
+
+@media all and (max-width: 999px) {
+  .levelPopup {
+    left: 50%;
+  }
+}
+
+@media all and (max-width: 600px) {
+  .levelPopup {
+    left: 0;
+  }
+}
+
+.title {
+  font-weight: 500;
+  padding: 10px;
+  position: relative;
+}
+
+.levelTimes {
+  display: table;
+  width: 100%;
+  font-size: 14px;
+}
+
+.levelTimes > * {
+  display: table-row;
+}
+
+.levelTimes > * > * {
+  display: table-cell;
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.levelTimes > * > span:nth-child(1) {
+  width: 20px;
+}
+
+.levelTimes > * > span:nth-child(2) {
+  width: 200px;
+}
+
+.closePopup {
+  position: absolute;
+  right: 0;
+  font-size: 25px;
+  top: 0;
+  padding: 10px;
+  padding-top: 0;
+  cursor: pointer;
+}
+
+.levelTimesContainer {
+  max-height: 100%;
+  overflow: auto;
+}
+
+.showMore {
+  padding: 10px;
+  font-size: 14px;
 }
