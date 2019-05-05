@@ -50,6 +50,7 @@ import {
   battleend,
   battleresults,
 } from 'utils/events';
+import { discord } from 'utils/discord';
 
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -114,6 +115,11 @@ app.post('/events/battleend', (req, res) => {
 app.post('/events/battleresults', (req, res) => {
   battleresults(req, res);
 });
+
+//
+// Discord bot
+//--------------------------------------------
+discord();
 
 //
 // Downloading files
