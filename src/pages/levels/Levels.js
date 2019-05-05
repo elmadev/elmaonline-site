@@ -2,9 +2,7 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
-
 import Link from 'components/Link';
-
 import s from './Levels.css';
 
 const GET_LEVELPACKS = gql`
@@ -20,7 +18,15 @@ const GET_LEVELPACKS = gql`
     }
   }
 `;
-
+/*
+const GET_LEVELPACK_LEVELS = gql`
+  query($id: Int!) {
+    getLevelPackLevels(LevelPackIndex: $id) {
+      LevelPackLevelIndex
+    }
+  }
+`;
+*/
 const promote = 'Int';
 
 const Levels = () => {
@@ -32,7 +38,6 @@ const Levels = () => {
           if (error) return <div>something went wrong</div>;
 
           return [...data.getLevelPacks]
-            .filter(p => p.Levels.length > 0)
             .sort((a, b) => {
               if (a.LevelPackName === promote) return -1;
               if (b.LevelPackName === promote) return 1;
@@ -50,9 +55,19 @@ const Levels = () => {
                 <Link to={`/levels/packs/${p.LevelPackName}`}>
                   <div className={s.shortName}>{p.LevelPackName}</div>
                   <div className={s.longName}>{p.LevelPackLongName}</div>
+                  {/* disabled until can make it faster
                   <div className={s.levelCount}>
-                    {p.Levels.length} <span>levels</span>
-                  </div>
+                    <Query
+                      query={GET_LEVELPACK_LEVELS}
+                      variables={{ id: p.LevelPackIndex }}
+                    >
+                      {({ data, loading }) => {
+                        if (loading) return null;
+                        return data.getLevelPackLevels.length;
+                      }}
+                    </Query>{' '}
+                    <span>levels</span>
+                  </div> */}
                 </Link>
               </div>
             ));

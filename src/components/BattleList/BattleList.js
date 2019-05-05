@@ -1,8 +1,8 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { graphql, compose } from 'react-apollo';
+import { Query } from 'react-apollo';
 import PropTypes from 'prop-types';
-
+import moment from 'moment';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Time from 'components/Time';
@@ -14,10 +14,7 @@ import { toServerTime } from 'utils/time';
 import battlesQuery from './battles.graphql';
 import s from './battlelist.css';
 
-const BattleList = props => {
-  const {
-    data: { getBattlesBetween },
-  } = props;
+const BattleList = ({ start, end }) => {
   return (
     <div className={s.battleList}>
       <div className={s.battles}>
@@ -30,74 +27,75 @@ const BattleList = props => {
           <span className={s.battleStarted}>Started</span>
           <span>Players</span>
         </div>
-        {getBattlesBetween &&
-          getBattlesBetween.map(b => {
-            const sorted = [...b.Results].sort(sortResults);
-            return (
-              <Link
-                key={b.BattleIndex}
-                to={`battles/${b.BattleIndex}`}
-                style={{ backgroundColor: battleStatusBgColor(b) }}
-              >
-                <span className={s.type}>
-                  {b.Duration} min <BattleType type={b.BattleType} />
-                </span>
-                <span className={s.designerName}>
-                  <Kuski kuskiData={b.KuskiData} team flag />
-                </span>
-                <span className={s.levelFileName}>
-                  {b.LevelData && b.LevelData.LevelName}
-                </span>
-                <span className={s.winnerKuski}>
-                  {b.Finished === 1 && b.Results.length > 0 ? (
-                    <Kuski kuskiData={sorted[0].KuskiData} team flag />
-                  ) : (
-                    battleStatus(b)
-                  )}
-                </span>
-                <span className={s.winnerTime}>
-                  {b.Results.length > 0 && (
-                    <Time time={sorted[0].Time} apples={sorted[0].Apples} />
-                  )}
-                </span>
-                <span className={s.battleStarted}>
-                  <LocalTime date={b.Started} format="HH:mm" parse="X" />
-                </span>
-                <span>
-                  <div className={s.popularity}>
-                    <div
-                      title={b.Results.length}
-                      className={s.popularityBar}
-                      style={{
-                        width: `${(b.Results.length / 20) * 100}%`,
-                        opacity: b.Results.length / 20 + 0.1,
-                      }}
-                    />
-                  </div>
-                </span>
-              </Link>
-            );
-          })}
+        <Query
+          query={battlesQuery}
+          variables={{
+            start: toServerTime(start).format(),
+            end: toServerTime(end).format(),
+          }}
+          fetchPolicy={end.isBefore(moment()) ? 'cache-first' : 'no-cache'}
+          ssr={false}
+        >
+          {({ data: { getBattlesBetween } }) => {
+            if (!getBattlesBetween) return null;
+
+            return getBattlesBetween.map(b => {
+              const sorted = [...b.Results].sort(sortResults);
+              return (
+                <Link
+                  key={b.BattleIndex}
+                  to={`battles/${b.BattleIndex}`}
+                  style={{ backgroundColor: battleStatusBgColor(b) }}
+                >
+                  <span className={s.type}>
+                    {b.Duration} min <BattleType type={b.BattleType} />
+                  </span>
+                  <span className={s.designerName}>
+                    <Kuski kuskiData={b.KuskiData} team flag />
+                  </span>
+                  <span className={s.levelFileName}>
+                    {b.LevelData && b.LevelData.LevelName}
+                  </span>
+                  <span className={s.winnerKuski}>
+                    {b.Finished === 1 && b.Results.length > 0 ? (
+                      <Kuski kuskiData={sorted[0].KuskiData} team flag />
+                    ) : (
+                      battleStatus(b)
+                    )}
+                  </span>
+                  <span className={s.winnerTime}>
+                    {b.Results.length > 0 && (
+                      <Time time={sorted[0].Time} apples={sorted[0].Apples} />
+                    )}
+                  </span>
+                  <span className={s.battleStarted}>
+                    <LocalTime date={b.Started} format="HH:mm" parse="X" />
+                  </span>
+                  <span>
+                    <div className={s.popularity}>
+                      <div
+                        title={b.Results.length}
+                        className={s.popularityBar}
+                        style={{
+                          width: `${(b.Results.length / 20) * 100}%`,
+                          opacity: b.Results.length / 20 + 0.1,
+                        }}
+                      />
+                    </div>
+                  </span>
+                </Link>
+              );
+            });
+          }}
+        </Query>
       </div>
     </div>
   );
 };
 
 BattleList.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    getBattlesBetween: PropTypes.array,
-  }).isRequired,
+  start: PropTypes.shape({}).isRequired,
+  end: PropTypes.shape({}).isRequired,
 };
 
-export default compose(
-  withStyles(s),
-  graphql(battlesQuery, {
-    options: ownProps => ({
-      variables: {
-        start: toServerTime(ownProps.start).format(),
-        end: toServerTime(ownProps.end).format(),
-      },
-    }),
-  }),
-)(BattleList);
+export default withStyles(s)(BattleList);
