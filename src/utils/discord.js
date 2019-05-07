@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import moment from 'moment';
 import config from '../config';
 
 const client = new Discord.Client();
@@ -32,9 +33,15 @@ const alignPlacement = no => {
   return no;
 };
 
-const alignKuski = kuski => {
+const alignKuski = (kuski, kuski2) => {
   let trailingSpaces = 16 - kuski.length;
+  if (kuski2) {
+    trailingSpaces = 32 - kuski.length - kuski2.length;
+  }
   let alignedKuski = kuski;
+  if (kuski2) {
+    alignedKuski = `${kuski} & ${kuski2}`;
+  }
   while (trailingSpaces > 0) {
     alignedKuski += ' ';
     trailingSpaces -= 1;
@@ -53,9 +60,12 @@ const alignTime = time => {
 };
 
 export function discordChatline(content) {
+  const ts = moment(content.timestamp, 'YYYY-MM-DD HH:mm:ss UTC').format(
+    'HH:mm:ss',
+  );
   sendMessage(
     config.discord.channels.battle,
-    `(${content.kuski}): ${content.chatline}`,
+    `[${ts}] (${content.kuski}): ${content.chatline}`,
   );
 }
 
@@ -96,14 +106,16 @@ export function discordBattlestart(content) {
 }
 
 export function discordBattlequeue(content) {
-  let text = `${config.discord.icons.queue} **Queue:`;
-  content.queue.map(q => {
-    text += ` ${q.durationMinutes} mins ${q.battleType} by ${q.designer},`;
-    return q;
-  });
-  text = text.substring(0, text.length - 1);
-  text += '**';
-  sendMessage(config.discord.channels.battle, text);
+  if (content.queue.length > 0) {
+    let text = `${config.discord.icons.queue} **Queue:`;
+    content.queue.map(q => {
+      text += ` ${q.durationMinutes} mins ${q.battleType} by ${q.designer},`;
+      return q;
+    });
+    text = text.substring(0, text.length - 1);
+    text += '**';
+    sendMessage(config.discord.channels.battle, text);
+  }
 }
 
 export function discordBattleEnd(content) {
@@ -134,7 +146,11 @@ export function discordBattleresults(content) {
   text += '```\n';
   content.results.map(r => {
     text += `${alignPlacement(r.position)}. `;
-    text += `${alignKuski(r.kuski)} ${alignTime(r.time)}\n`;
+    if (content.multi) {
+      text += `${alignKuski(r.kuski1, r.kuski2)} ${alignTime(r.time)}\n`;
+    } else {
+      text += `${alignKuski(r.kuski)} ${alignTime(r.time)}\n`;
+    }
     return r;
   });
   text += '```\n';
