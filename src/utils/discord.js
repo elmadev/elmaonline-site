@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import moment from 'moment';
+import { forEach } from 'lodash';
 import config from '../config';
 
 const client = new Discord.Client();
@@ -59,6 +60,52 @@ const alignTime = time => {
   return alignedTime;
 };
 
+const formatLevel = level => {
+  if (level.substring(0, 6) === 'QWQUU0') {
+    return `Internal ${level.substring(6, 2)}`;
+  }
+  return `${level}.lev`;
+};
+
+const battleIn = (type, level) => {
+  let battletype = '';
+  if (type !== 'normal') {
+    battletype = `${type
+      .toLowerCase()
+      .replace(/(^| )(\w)/g, s => s.toUpperCase())} `;
+  }
+  if (type === '1 hour tt') {
+    return `1 Hour TT Battle`;
+  }
+  return `${battletype}Battle in ${formatLevel(level)}`;
+};
+
+const cripple = content => {
+  let text = ' (';
+  const cripples = {
+    noVolt: 'no-volt',
+    noTurn: 'no-turn',
+    oneTurn: 'one-turn',
+    noBrake: 'no-brake',
+    noThrottle: 'no-throttle',
+    alwaysThrottle: 'always throttle',
+    oneWheel: 'one-wheel',
+    drunk: 'drunk',
+    multi: 'multi',
+  };
+  forEach(cripples, (typeText, type) => {
+    if (content[type]) {
+      text += `${typeText}, `;
+    }
+  });
+  if (text.length > 2) {
+    text = text.substring(0, text.length - 2);
+    text += ')';
+    return text;
+  }
+  return '';
+};
+
 export function discordChatline(content) {
   const ts = moment(content.timestamp, 'YYYY-MM-DD HH:mm:ss UTC').format(
     'HH:mm:ss',
@@ -73,7 +120,7 @@ export function discordBesttime(content) {
   if (!content.battleIndex) {
     sendMessage(
       config.discord.channels.times,
-      `${content.level}.lev: ${content.time} by ${content.kuski} (${
+      `${formatLevel(content.level)}: ${content.time} by ${content.kuski} (${
         content.position
       }.)`,
     );
@@ -84,22 +131,17 @@ export function discordBestmultitime(content) {
   if (!content.battleIndex) {
     sendMessage(
       config.discord.channels.times,
-      `${content.level}.lev: ${content.time} (M) by ${content.kuski1} & ${
-        content.kuski2
-      } (${content.position}.)`,
+      `${formatLevel(content.level)}: ${content.time} (M) by ${
+        content.kuski1
+      } & ${content.kuski2} (${content.position}.)`,
     );
   }
 }
 
 export function discordBattlestart(content) {
-  let battletype = '';
-  if (content.battleType !== 'normal') {
-    battletype = `${content.battleType
-      .toLowerCase()
-      .replace(/(^| )(\w)/g, s => s.toUpperCase())} `;
-  }
-  let text = `${config.discord.icons.started} **${battletype}Battle in`;
-  text += ` ${content.level}.lev started by ${content.designer},`;
+  let text = `${config.discord.icons.started} **`;
+  text += battleIn(content.battleType, content.level);
+  text += `${cripple(content)} started by ${content.designer},`;
   text += ` ${content.durationMinutes} mins**\n`;
   text += `More info <${config.discord.url}battles/${content.battleIndex}>`;
   sendMessage(config.discord.channels.battle, text);
@@ -120,28 +162,18 @@ export function discordBattlequeue(content) {
 
 export function discordBattleEnd(content) {
   if (content.aborted) {
-    let battletype = '';
-    if (content.battleType !== 'normal') {
-      battletype = `${content.battleType
-        .toLowerCase()
-        .replace(/(^| )(\w)/g, s => s.toUpperCase())} `;
-    }
     let text = `${config.discord.icons.ended} **`;
-    text += `${battletype}Battle in ${content.level}.lev aborted**`;
+    text += `${battleIn(content.battleType, content.level)}${cripple(
+      content,
+    )} aborted**`;
     sendMessage(config.discord.channels.battle, text);
   }
 }
 
 export function discordBattleresults(content) {
-  let battletype = '';
-  if (content.battleType !== 'normal') {
-    battletype = `${content.battleType
-      .toLowerCase()
-      .replace(/(^| )(\w)/g, s => s.toUpperCase())} `;
-  }
   let text = `${config.discord.icons.results} **`;
-  text += `${battletype}Battle in ${content.level}.lev`;
-  text += ` by ${content.designer} over**\n`;
+  text += battleIn(content.battleType, content.level);
+  text += `${cripple(content)} by ${content.designer} over**\n`;
   text += `More info: <${config.discord.url}/battles/${content.battleIndex}>`;
   text += '```\n';
   content.results.map(r => {
