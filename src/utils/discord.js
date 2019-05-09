@@ -61,8 +61,11 @@ const alignTime = time => {
 };
 
 const formatLevel = level => {
-  if (level.substring(0, 6) === 'QWQUU0') {
-    return `Internal ${level.substring(6, 2)}`;
+  if (
+    level.substring(0, 6) === 'QWQUU0' &&
+    parseInt(level.substring(6, 8), 10) <= 55
+  ) {
+    return `Internal ${level.substring(6, 8)}`;
   }
   return `${level}.lev`;
 };
