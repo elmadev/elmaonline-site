@@ -163,7 +163,7 @@ export function discordBattlequeue(content) {
   } else if (content.updateReason === 'aborted from queue') {
     sendMessage(
       config.discord.channels.battle,
-      `${config.discord.icons.queue} **Queued is now empty**`,
+      `${config.discord.icons.queue} **Queue is now empty**`,
     );
   }
 }
