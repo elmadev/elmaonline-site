@@ -51,7 +51,7 @@ const alignKuski = (kuski, kuski2) => {
 };
 
 const alignTime = time => {
-  let leadingSpaces = 8 - time.length;
+  let leadingSpaces = 10 - time.length;
   let alignedTime = time;
   while (leadingSpaces > 0) {
     alignedTime = ` ${alignedTime}`;
@@ -121,12 +121,12 @@ export function discordChatline(content) {
 
 export function discordBesttime(content) {
   if (!content.battleIndex) {
-    sendMessage(
-      config.discord.channels.times,
-      `${formatLevel(content.level)}: ${content.time} by ${content.kuski} (${
-        content.position
-      }.)`,
-    );
+    let text = `${formatLevel(content.level)}:`;
+    text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
+    if (content.position === 1) {
+      text += ' :first_place:';
+    }
+    sendMessage(config.discord.channels.times, text);
   }
 }
 
@@ -160,6 +160,11 @@ export function discordBattlequeue(content) {
     text = text.substring(0, text.length - 1);
     text += '**';
     sendMessage(config.discord.channels.battle, text);
+  } else if (content.updateReason === 'aborted from queue') {
+    sendMessage(
+      config.discord.channels.battle,
+      `${config.discord.icons.queue} **Queued is now empty**`,
+    );
   }
 }
 
