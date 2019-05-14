@@ -21,7 +21,6 @@ const checkAuth = (req, res, callback) => {
 
 export function chatline(req, res) {
   checkAuth(req, res, () => {
-    discordChatline(req.body);
     fs.writeFile(
       `./events/chatline/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -33,12 +32,12 @@ export function chatline(req, res) {
         }
       },
     );
+    discordChatline(req.body);
   });
 }
 
 export function besttime(req, res) {
   checkAuth(req, res, () => {
-    discordBesttime(req.body);
     fs.writeFile(
       `./events/besttime/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -50,12 +49,12 @@ export function besttime(req, res) {
         }
       },
     );
+    discordBesttime(req.body);
   });
 }
 
 export function bestmultitime(req, res) {
   checkAuth(req, res, () => {
-    discordBestmultitime(req.body);
     fs.writeFile(
       `./events/bestmultitime/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -67,12 +66,12 @@ export function bestmultitime(req, res) {
         }
       },
     );
+    discordBestmultitime(req.body);
   });
 }
 
 export function battlestart(req, res) {
   checkAuth(req, res, () => {
-    discordBattlestart(req.body);
     fs.writeFile(
       `./events/battlestart/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -84,12 +83,12 @@ export function battlestart(req, res) {
         }
       },
     );
+    discordBattlestart(req.body);
   });
 }
 
 export function battlequeue(req, res) {
   checkAuth(req, res, () => {
-    discordBattlequeue(req.body);
     fs.writeFile(
       `./events/battlequeue/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -101,12 +100,12 @@ export function battlequeue(req, res) {
         }
       },
     );
+    discordBattlequeue(req.body);
   });
 }
 
 export function battleend(req, res) {
   checkAuth(req, res, () => {
-    discordBattleEnd(req.body);
     fs.writeFile(
       `./events/battleend/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -118,12 +117,12 @@ export function battleend(req, res) {
         }
       },
     );
+    discordBattleEnd(req.body);
   });
 }
 
 export function battleresults(req, res) {
   checkAuth(req, res, () => {
-    discordBattleresults(req.body);
     fs.writeFile(
       `./events/battleresults/${moment().format('X')}.json`,
       JSON.stringify(req.body),
@@ -135,5 +134,6 @@ export function battleresults(req, res) {
         }
       },
     );
+    discordBattleresults(req.body);
   });
 }
