@@ -1,0 +1,18 @@
+{
+  "event": "API_besttime",
+  "kuskiIndex": 38,
+  "kuski": "Markku",
+  "levelIndex": 406874,
+  "level": "Ztest12",
+  "time": "30:76",
+  "timeHundredths": 3076,
+  "position": 1,
+  "battleIndex": 0,
+  "noThrottle": false,
+  "noBrake": false,
+  "noVolt": false,
+  "noTurn": false,
+  "oneWheel": false,
+  "unixtime": 1555525893,
+  "timestamp": "2019-04-17 18:31:33 UTC"
+}

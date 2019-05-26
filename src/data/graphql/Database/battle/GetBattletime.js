@@ -1,4 +1,13 @@
-import { Battle, Battletime, Kuski, Team, AllFinished } from 'data/models'; // import the data model
+import sequelize from 'sequelize';
+import {
+  Battle,
+  Battletime,
+  Kuski,
+  Team,
+  AllFinished,
+  Time,
+} from 'data/models'; // import the data model
+import { sortResults } from 'utils/battle';
 
 export const schema = [
   `
@@ -19,7 +28,7 @@ export const schema = [
 export const queries = [
   `
   # Retrieves results from a battle
-  getBattletime(
+  getBattleTimes(
     # The battle's id
     BattleIndex: Int!
   ): [DatabaseBattletime]
@@ -29,14 +38,18 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
-    async getBattletime(parent, { BattleIndex }) {
-      const battleStatus = await Battle.findAll({
-        attributes: ['Finished'],
+    async getBattleTimes(parent, { BattleIndex }) {
+      const battle = await Battle.findOne({
+        attributes: ['Finished', 'SeeTimes', 'AcceptBugs', 'BattleType'],
         where: { BattleIndex },
       });
-      let battletime;
-      if (battleStatus[0].dataValues.Finished === 1) {
-        battletime = await Battletime.findAll({
+
+      if (!battle.SeeTimes && !battle.Finished) {
+        return [];
+      }
+
+      if (battle.Finished) {
+        const times = await Battletime.findAll({
           where: { BattleIndex },
           include: [
             {
@@ -52,10 +65,43 @@ export const resolvers = {
             },
           ],
         });
-      } else {
-        battletime = [];
+        return times;
       }
-      return battletime;
+
+      // live results
+      const allowedTypes = ['F'];
+      if (battle.AcceptBugs) allowedTypes.push('B');
+
+      const times = await Time.findAll({
+        where: {
+          BattleIndex,
+          Finished: {
+            [sequelize.Op.in]: allowedTypes,
+          },
+        },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      });
+      const filtered = times
+        .sort(sortResults(battle.BattleType))
+        .reduce((acc, cur) => {
+          const existing = acc.find(t => t.KuskiIndex === cur.KuskiIndex);
+          if (!existing) acc.push(cur);
+
+          return acc;
+        }, []);
+      return filtered;
     },
     async getAllBattleTimes(parent, { BattleIndex }) {
       const battleStatus = await Battle.findAll({

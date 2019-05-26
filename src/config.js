@@ -61,4 +61,23 @@ module.exports = {
       state: true,
     },
   },
+
+  // Discord, with no token it will not attempt to connect
+  // to test locally create own server and bot
+  // see: https://discordjs.guide/preparations/setting-up-a-bot-application.html
+  discord: {
+    token: '',
+    channels: {
+      battle: '',
+      times: '',
+    },
+    apiAuth: '',
+    url: 'https://test.elma.online/',
+    icons: {
+      started: '',
+      queue: '',
+      results: '',
+      ended: '',
+    },
+  },
 };
