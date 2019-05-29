@@ -12,14 +12,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import deepForceUpdate from 'react-deep-force-update';
 import queryString from 'query-string';
-import { createPath } from 'history/PathUtils';
+import { createPath } from 'history';
+import StyleContext from 'isomorphic-style-loader/StyleContext';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import App from './components/App';
-import createFetch from './createFetch';
-import configureStore from './store/configureStore';
-import { updateMeta } from './DOMUtils';
-import history from './history';
-import createApolloClient from './core/createApolloClient';
+
+import App from 'components/App';
+import createApolloClient from 'core/createApolloClient';
+import configureStore from 'store/configureStore';
+import createFetch from 'utils/createFetch';
+import { updateMeta } from 'utils/DOMUtils';
+import history from 'utils/history';
+
 import router from './router';
 import muiTheme from './muiTheme';
 
@@ -32,16 +35,18 @@ const apolloClient = createApolloClient();
 
 // Global (context) variables that can be easily accessed from any React component
 // https://facebook.github.io/react/docs/context.html
+
+const insertCss = (...styles) => {
+  // eslint-disable-next-line no-underscore-dangle
+  const removeCss = styles.map(x => x._insertCss());
+  return () => {
+    removeCss.forEach(f => f());
+  };
+};
 const context = {
   // Enables critical path CSS rendering
   // https://github.com/kriasoft/isomorphic-style-loader
-  insertCss: (...styles) => {
-    // eslint-disable-next-line no-underscore-dangle
-    const removeCss = styles.map(x => x._insertCss());
-    return () => {
-      removeCss.forEach(f => f());
-    };
-  },
+  insertCss,
   // For react-apollo
   client: apolloClient,
   // Initialize a new Redux store
@@ -92,11 +97,17 @@ async function onLocationChange(location, action) {
     const renderReactApp = isInitialRender ? ReactDOM.hydrate : ReactDOM.render;
     appInstance = renderReactApp(
       <MuiThemeProvider theme={muiTheme}>
-        <App context={context}>{route.component}</App>
+        <StyleContext.Provider value={{ insertCss }}>
+          <App context={context}>{route.component}</App>
+        </StyleContext.Provider>
       </MuiThemeProvider>,
       container,
       () => {
         if (isInitialRender) {
+          if (typeof window !== 'undefined' && window.innerWidth < 1000) {
+            context.store.dispatch({ type: 'TOGGLE_SIDEBAR' });
+          }
+
           // Switch off the native scroll restoration behavior and handle it manually
           // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
           if (window.history && 'scrollRestoration' in window.history) {

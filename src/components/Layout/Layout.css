@@ -199,6 +199,7 @@ body,
   height: 100% !important;
   margin: 0;
   padding: 0;
+  font-weight: 400;
 }
 
 a {
@@ -206,11 +207,19 @@ a {
   text-decoration: none;
 }
 
-h2 {
+h2,
+h3 {
   margin: 10px;
   font-size: 20px;
   font-weight: normal;
-  text-transform: uppercase;
-  color: #c3c3c3;
+  color: #8c8c8c;
   letter-spacing: 1px;
+}
+
+h2 {
+  text-transform: uppercase;
+}
+
+*:focus {
+  outline: 0;
 }

@@ -1,90 +1,200 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import Slide from '@material-ui/core/Slide';
+import { graphql, compose } from 'react-apollo';
+import { sortBy, filter } from 'lodash';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Kuski, Level, ReplayTime } from '../Names';
-import Recplayer from '../Recplayer';
+import Checkbox from '@material-ui/core/Checkbox';
+import querystring from 'querystring';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
+import RecListItem from 'components/RecListItem';
+import history from 'utils/history';
+import historyRefresh from 'utils/historyRefresh';
+
+import recListQuery from './recList.graphql';
 
 class RecList extends React.Component {
   static propTypes = {
-    replay: PropTypes.shape({
-      ReplayIndex: PropTypes.number.isRequired,
-      LevelIndex: PropTypes.number.isRequired,
-      UploadedBy: PropTypes.number.isRequired,
-      ReplayTime: PropTypes.number,
+    data: PropTypes.shape({
+      loading: PropTypes.bool.isRequired,
+      getReplaysByLevelIndex: PropTypes.arrayOf(
+        PropTypes.shape({
+          ReplayIndex: PropTypes.number.isRequired,
+          RecFileName: PropTypes.string.isRequired,
+          LevelIndex: PropTypes.number.isRequired,
+          ReplayTime: PropTypes.number.isRequired,
+          DrivenBy: PropTypes.number.isRequired,
+          UUID: PropTypes.string.isRequired,
+          TAS: PropTypes.number.isRequired,
+          Bug: PropTypes.number.isRequired,
+          Nitro: PropTypes.number.isRequired,
+          Finished: PropTypes.number.isRequired,
+        }),
+      ),
     }).isRequired,
+    currentUUID: PropTypes.string,
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    currentUUID: null,
+  };
 
   constructor(props) {
     super(props);
-    this.state = { open: false };
+    this.state = {
+      showTAS: false,
+      showDNF: false,
+      showBug: false,
+      showNitro: false,
+    };
   }
 
-  handleClickOpen = () => {
-    if (!this.state.open) {
-      this.setState({ open: true });
-    }
-  };
+  componentDidMount() {
+    const queryParams = querystring.parse(window.location.search.substring(1));
+    this.setState({
+      showTAS: queryParams.showTAS === 'true',
+      showDNF: queryParams.showDNF === 'true',
+      showBug: queryParams.showBug === 'true',
+      showNitro: queryParams.showNitro === 'true',
+    });
+  }
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState !== this.state;
+  }
+
+  onFilterChange(id) {
+    const newState = { ...this.state };
+    newState[id] = !newState[id];
+    this.setState(() => newState);
+    history.replace({
+      search: `?${querystring.stringify(newState)}`,
+    });
+  }
+
+  isSelected = uuid => this.props.currentUUID === uuid;
+
+  handleOpenReplay(uuid) {
+    historyRefresh.push({
+      pathname: `/r/${uuid}`,
+      search: `?${querystring.stringify(this.state)}`,
+    });
+  }
 
   render() {
-    const { replay } = this.props;
+    const {
+      data: { loading, getReplaysByLevelIndex },
+    } = this.props;
+    const { showTAS, showDNF, showBug, showNitro } = this.state;
+    const filterFunction = o => {
+      let show = true;
+      if (!showTAS && o.TAS) {
+        show = false;
+      }
+      if (!showDNF && !o.Finished) {
+        show = false;
+      }
+      if (!showBug && o.Bug) {
+        show = false;
+      }
+      if (!showNitro && o.Nitro) {
+        show = false;
+      }
+      return show;
+    };
     return (
-      <TableRow
-        hover
-        style={{ cursor: 'pointer' }}
-        key={replay.ReplayIndex}
-        onClick={this.handleClickOpen}
-      >
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          {replay.RecFileName}
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Level index={replay.LevelIndex} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <ReplayTime time={replay.ReplayTime} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Kuski index={replay.DrivenBy} />
-        </TableCell>
-        <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.handleClose}
-          TransitionComponent={Transition}
-        >
-          {this.state.open && (
-            <React.Fragment>
-              <div style={{ width: '711px', height: '400px', margin: 'auto' }}>
-                <Recplayer
-                  rec={`https://eol.ams3.digitaloceanspaces.com/replays/${
-                    replay.UUID
-                  }/${replay.RecFileName}`}
-                  lev={`/dl/level/${replay.LevelIndex}`}
-                  controls
+      <React.Fragment>
+        <div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showTAS}
+                onChange={() => this.onFilterChange('showTAS')}
+                value="ShowTAS"
+                color="primary"
+              />
+            }
+            label="Show TAS"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showDNF}
+                onChange={() => this.onFilterChange('showDNF')}
+                value="ShowDNF"
+                color="primary"
+              />
+            }
+            label="Show Unfinished"
+          />
+        </div>
+        <div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showBug}
+                onChange={() => this.onFilterChange('showBug')}
+                value="showBug"
+                color="primary"
+              />
+            }
+            label="Show Bugged"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.showNitro}
+                onChange={() => this.onFilterChange('showNitro')}
+                value="showNitro"
+                color="primary"
+              />
+            }
+            label="Show Modded"
+          />
+        </div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Replay</TableCell>
+              <TableCell>Level</TableCell>
+              <TableCell>Time</TableCell>
+              <TableCell>By</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell>Loading...</TableCell>
+              </TableRow>
+            ) : (
+              sortBy(filter(getReplaysByLevelIndex, filterFunction), [
+                'ReplayTime',
+              ]).map(i => (
+                <RecListItem
+                  key={i.ReplayIndex}
+                  replay={i}
+                  openReplay={uuid => this.handleOpenReplay(uuid)}
+                  selected={this.isSelected(i.UUID)}
                 />
-              </div>
-              <div style={{ width: '711px', height: '50px', margin: 'auto' }}>
-                Press ESC to close
-              </div>
-            </React.Fragment>
-          )}
-        </Dialog>
-      </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </React.Fragment>
     );
   }
 }
 
-export default RecList;
+export default compose(
+  graphql(recListQuery, {
+    options: ownProps => ({
+      variables: {
+        LevelIndex: ownProps.LevelIndex,
+      },
+    }),
+  }),
+)(RecList);

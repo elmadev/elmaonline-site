@@ -1,0 +1,54 @@
+query HomeNews {
+  getBattles {
+    BattleIndex
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Started
+    Duration
+    InQueue
+    Aborted
+    Finished
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+    LevelData {
+      LevelName
+    }
+    Results {
+      BattleTimeIndex
+      BattleIndex
+      KuskiIndex
+      KuskiIndex2
+      Time
+      Apples
+      TimeIndex
+      KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+    }
+  }
+  getReplays {
+    ReplayIndex
+    UploadedBy
+    LevelIndex
+    ReplayTime
+    Uploaded
+    RecFileName
+    UUID
+    DrivenBy
+    TAS
+    Bug
+    Nitro
+    Finished
+  }
+}

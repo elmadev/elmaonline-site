@@ -1,0 +1,145 @@
+@import '../../components/variables.css';
+
+.root {
+  padding: 7px;
+}
+
+.playerContainer {
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.player {
+  background: #f1f1f1;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rightBarContainer {
+  float: right;
+  width: 40%;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.levelStatsContainer {
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.battleType {
+  text-transform: lowercase;
+}
+
+.battleDescription {
+  font-size: 14px;
+}
+
+.battleTimestamp {
+  color: #7d7d7d;
+}
+
+@media all and (max-width: 1400px) {
+  .playerContainer {
+    width: 100%;
+  }
+
+  .rightBarContainer {
+    width: 40%;
+  }
+
+  .levelStatsContainer {
+    width: 60%;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .rightBarContainer {
+    width: 100%;
+  }
+
+  .levelStatsContainer {
+    width: 100%;
+  }
+}
+
+.chatContainer {
+  clear: both;
+}
+
+.timeDevelopment {
+  font-size: 14px;
+  display: table;
+}
+
+.timeDevelopmentRow {
+  display: table-row;
+  vertical-align: middle;
+  position: relative;
+}
+
+.timeDevelopmentTime {
+  text-align: right;
+  padding-right: 5px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.timeDevelopmentKuski {
+  vertical-align: middle;
+  display: table-cell;
+  color: #7d7d7d;
+}
+
+.timelineCell {
+  display: table-cell;
+  position: relative;
+}
+
+.timeDiff {
+  vertical-align: middle;
+  display: table-cell;
+  color: #7d7d7d;
+  text-align: right;
+}
+
+.timelineMarker {
+  width: 6px;
+  height: 6px;
+  display: block;
+  background: #fff;
+  border: 2px solid #219653;
+  border-radius: 50%;
+  margin: 6px;
+  z-index: 10;
+  position: relative;
+}
+
+.timelineLine {
+  position: absolute;
+  width: 2px;
+  background: #219653;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  margin-left: -1px;
+  z-index: 9;
+}
+
+.timeDevelopmentRow:first-child .timelineLine {
+  top: 50%;
+}
+
+.timeDevelopmentRow:last-child .timelineLine {
+  top: -50%;
+}
+
+.timeDevelopmentRow:first-child:last-child .timelineLine {
+  display: none;
+}

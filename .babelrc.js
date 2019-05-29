@@ -19,9 +19,16 @@ module.exports = {
         },
       },
     ],
-    '@babel/preset-stage-2',
     '@babel/preset-flow',
     '@babel/preset-react',
+  ],
+  plugins: [
+    ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true }],
+    '@babel/plugin-proposal-function-sent',
+    '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-proposal-numeric-separator',
+    '@babel/plugin-proposal-throw-expressions',
+    '@babel/plugin-proposal-class-properties',
   ],
   ignore: ['node_modules', 'build'],
 };

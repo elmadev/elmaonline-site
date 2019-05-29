@@ -45,20 +45,30 @@ const Replay = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    ShareDesigner: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    ShareTeam: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     Unlisted: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    TAS: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Bug: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Nitro: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Comment: {
+      type: DataType.STRING(255),
+      allowNull: true,
+      defaultValue: DataType.NULL,
     },
     UUID: {
       type: DataType.STRING(10),
@@ -67,6 +77,11 @@ const Replay = Model.define(
     },
     RecFileName: {
       type: DataType.STRING(19),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
+    MD5: {
+      type: DataType.STRING(32),
       allowNull: true,
       defaultValue: DataType.NULL,
     },

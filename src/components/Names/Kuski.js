@@ -10,16 +10,17 @@ class Kuski extends React.Component {
       getKuskiById: PropTypes.shape({
         Kuski: PropTypes.string,
         Country: PropTypes.string,
-        TeamIndex: PropTypes.integer,
+        TeamIndex: PropTypes.number,
       }),
     }).isRequired,
   };
 
   render() {
-    const { data: { getKuskiById, variables } } = this.props;
-    return (
-      <span>{getKuskiById ? getKuskiById.Kuski : variables.KuskiIndex}</span>
-    );
+    const {
+      data: { getKuskiById, variables },
+    } = this.props;
+    const id = variables.KuskiIndex === 0 ? 'Unknown' : variables.KuskiIndex;
+    return <span>{getKuskiById ? getKuskiById.Kuski : id}</span>;
   }
 }
 

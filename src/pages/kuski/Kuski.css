@@ -1,0 +1,120 @@
+.kuski {
+  min-height: 100%;
+  background: #fff;
+  padding-bottom: 200px;
+}
+/* stylelint-disable */
+.head > .picture {
+  height: 150px;
+  width: 150px;
+  flex: 0 0 150px;
+  border-radius: 50%;
+  margin: 20px;
+  background-color: transparent;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      #f1f1f1 0,
+      #f1f1f1 50px
+    );
+}
+/* stylelint-enable */
+.picture img {
+  margin: auto;
+  display: block;
+  padding: 10px;
+}
+
+.profile {
+  flex-direction: column;
+  justify-content: center;
+  flex: 0 0 200px;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 30px;
+}
+
+.name span {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.teamNat {
+  font-size: 16px;
+}
+
+.head {
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+}
+
+.head > * {
+  display: flex;
+}
+
+.recentBattles {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  font-size: 14px;
+}
+
+.recentBattles > a {
+  display: table-row;
+}
+
+.recentBattles > a > * {
+  display: table-cell;
+  padding: 10px;
+  color: #000;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.recentBattles > a:hover {
+  background: #f9f9f9;
+}
+
+.statsContainer {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-size: 30px;
+  font-weight: 500;
+  color: #219653;
+  min-width: 150px;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
+  text-align: center;
+}
+
+.statsTitle {
+  color: #c3c3c3;
+  font-size: 16px;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media all and (max-width: 940px) {
+  .head {
+    flex-direction: column;
+  }
+
+  .head > * {
+    margin-bottom: 20px;
+  }
+
+  .head > .picture {
+    margin: 20px auto;
+  }
+
+  .profile {
+    align-items: center;
+    flex: 1;
+  }
+}

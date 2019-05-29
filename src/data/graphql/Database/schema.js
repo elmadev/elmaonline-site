@@ -1,12 +1,6 @@
 import { merge } from 'lodash';
 
 /** * Queries ** */
-import {
-  schema as GetAllUsers,
-  queries as GetAllUsersQueries,
-  resolvers as GetAllUsersResolver,
-} from './users/GetAllUsers';
-
 // imports from the queries we built,
 // 3 or 4 depending on wether you have queries, mutations or both
 // use as and a unique variable name, as there will be many of those in this file
@@ -47,9 +41,10 @@ import {
 } from './battle/GetBattletime';
 
 import {
-  queries as GetLoggedInUserQueries,
-  resolvers as GetLoggedInUserResolver,
-} from './users/GetLoggedInUser';
+  schema as GetBesttime,
+  queries as GetBesttimeQueries,
+  resolvers as GetBesttimeResolver,
+} from './time/GetBesttime';
 
 import {
   schema as GetChatLines,
@@ -58,11 +53,6 @@ import {
 } from './chat/GetChatLines';
 
 /** * Mutations ** */
-import {
-  schema as CreateUserInput,
-  mutation as CreateUser,
-  resolvers as CreateUserResolver,
-} from './users/CreateUser';
 
 import {
   schema as InsertReplay,
@@ -70,43 +60,57 @@ import {
   resolvers as InsertReplayResolver,
 } from './replay/InsertReplays';
 
+import {
+  schema as GetTimes,
+  queries as GetTimesQueries,
+  resolvers as GetTimesResolver,
+} from './time/GetTimes';
+
+import {
+  schema as GetLevelPacks,
+  queries as GetLevelPacksQueries,
+  resolvers as GetLevelPacksResolver,
+} from './levelpack/LevelPack';
+
 export const schema = [
-  ...GetAllUsers,
-  ...CreateUserInput,
   ...GetBattles, // export the schema object here
   ...GetReplays,
   ...GetLevels,
   ...GetKuskis,
   ...GetBattletime,
+  ...GetBesttime,
   ...GetChatLines,
   ...InsertReplay,
   ...GetKinglist,
+  ...GetTimes,
+  ...GetLevelPacks,
 ];
 
 export const queries = [
-  ...GetAllUsersQueries,
-  ...GetLoggedInUserQueries,
   ...GetBattlesQueries, // export the query object here
   ...GetReplaysQueries,
   ...GetLevelsQueries,
   ...GetKuskisQueries,
   ...GetBattletimeQueries,
+  ...GetBesttimeQueries,
   ...GetChatLinesQueries,
+  ...GetTimesQueries,
+  ...GetLevelPacksQueries,
   ...GetKinglistQueries,
 ];
 
-export const mutations = [...CreateUser, ...InsertReplayMutation];
+export const mutations = [...InsertReplayMutation];
 
 export const resolvers = merge(
-  GetAllUsersResolver,
-  GetLoggedInUserResolver,
-  CreateUserResolver,
   GetBattlesResolver, // export the resolver object here
   GetReplaysResolver,
   GetLevelsResolver,
   GetKuskisResolver,
   GetBattletimeResolver,
+  GetBesttimeResolver,
   GetChatLinesResolver,
   InsertReplayResolver,
   GetKinglistResolver,
+  GetTimesResolver,
+  GetLevelPacksResolver,
 );

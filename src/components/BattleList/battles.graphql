@@ -12,6 +12,10 @@ query Battles($start: String, $end: String) {
     KuskiData {
       KuskiIndex
       Kuski
+      Country
+      TeamData {
+        Team
+      }
     }
     LevelData {
       LevelName
@@ -22,8 +26,14 @@ query Battles($start: String, $end: String) {
       KuskiIndex
       KuskiIndex2
       Time
+      Apples
+      TimeIndex
       KuskiData {
         Kuski
+        Country
+        TeamData {
+          Team
+        }
       }
     }
   }

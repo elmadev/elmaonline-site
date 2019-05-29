@@ -10,12 +10,12 @@
 import path from 'path';
 import Promise from 'bluebird';
 import express from 'express';
+import session from 'express-session';
+import grant from 'grant-express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import expressJwt, { UnauthorizedError as Jwt401Error } from 'express-jwt';
 import { graphql } from 'graphql';
 import expressGraphQL from 'express-graphql';
-import jwt from 'jsonwebtoken';
 import nodeFetch from 'node-fetch';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -26,23 +26,33 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import { SheetsRegistry } from 'react-jss/lib/jss';
 import JssProvider from 'react-jss/lib/JssProvider';
+import StyleContext from 'isomorphic-style-loader/StyleContext';
 import {
   MuiThemeProvider,
   createGenerateClassName,
 } from '@material-ui/core/styles';
-import createApolloClient from './core/createApolloClient';
-import App from './components/App';
-import Html from './components/Html';
-import createFetch from './createFetch';
-import passport from './passport';
-import { getReplayByBattleId, getLevel } from './download';
-import { uploadReplayS3 } from './upload';
+import { setRuntimeVariable } from 'actions/runtime';
+import App from 'components/App';
+import Html from 'components/Html';
+import createApolloClient from 'core/createApolloClient';
+import schema from 'data/schema';
+import configureStore from 'store/configureStore';
+import { getReplayByBattleId, getLevel } from 'utils/download';
+import uploadReplayS3 from 'utils/upload';
+import createFetch from 'utils/createFetch';
+import {
+  chatline,
+  besttime,
+  bestmultitime,
+  battlestart,
+  battlequeue,
+  battleend,
+  battleresults,
+} from 'utils/events';
+import { discord } from 'utils/discord';
 import { updateRanking } from './ranking';
-import router from './router';
-import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
-import configureStore from './store/configureStore';
-import { setRuntimeVariable } from './actions/runtime';
+import router from './router';
 import config from './config';
 import muiTheme from './muiTheme';
 
@@ -68,49 +78,47 @@ app.use(fileUpload());
 //
 // Authentication
 // -----------------------------------------------------------------------------
+
+app.use(session({ secret: 'grant' }));
 app.use(
-  expressJwt({
-    secret: config.auth.jwt.secret,
-    credentialsRequired: false,
-    getToken: req => req.cookies.id_token,
+  grant({
+    ...config.grant,
   }),
 );
-// Error handler for express-jwt
-app.use((err, req, res, next) => {
-  // eslint-disable-line no-unused-vars
-  if (err instanceof Jwt401Error) {
-    console.error('[express-jwt-error]', req.cookies.id_token);
-    // `clearCookie`, otherwise user can't use web-app until cookie expires
-    res.clearCookie('id_token');
-  }
-  next(err);
-});
-
-app.use(passport.initialize());
 
 if (__DEV__) {
   app.enable('trust proxy');
 }
-app.get(
-  '/login/facebook',
-  passport.authenticate('facebook', {
-    scope: ['email', 'user_location'],
-    session: false,
-  }),
-);
-app.get(
-  '/login/facebook/return',
-  passport.authenticate('facebook', {
-    failureRedirect: '/login',
-    session: false,
-  }),
-  (req, res) => {
-    const expiresIn = 60 * 60 * 24 * 180; // 180 days
-    const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
-    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-    res.redirect('/');
-  },
-);
+
+//
+// Events API
+//--------------------------------------------
+app.post('/events/chatline', (req, res) => {
+  chatline(req, res);
+});
+app.post('/events/besttime', (req, res) => {
+  besttime(req, res);
+});
+app.post('/events/bestmultitime', (req, res) => {
+  bestmultitime(req, res);
+});
+app.post('/events/battlestart', (req, res) => {
+  battlestart(req, res);
+});
+app.post('/events/battlequeue', (req, res) => {
+  battlequeue(req, res);
+});
+app.post('/events/battleend', (req, res) => {
+  battleend(req, res);
+});
+app.post('/events/battleresults', (req, res) => {
+  battleresults(req, res);
+});
+
+//
+// Discord bot
+//--------------------------------------------
+discord();
 
 //
 // Downloading files
@@ -174,6 +182,8 @@ app.post('/upload/:type', async (req, res) => {
       finished,
       LevelIndex,
       error,
+      MD5,
+      replayInfo,
     } = await uploadReplayS3(replayFile, folder, req.body.filename);
     if (!error) {
       res.json({
@@ -182,9 +192,14 @@ app.post('/upload/:type', async (req, res) => {
         time,
         finished,
         LevelIndex,
+        MD5,
       });
     } else {
-      res.status(500).send(error);
+      res.json({
+        error,
+        replayInfo,
+        file,
+      });
     }
   }
 });
@@ -281,7 +296,9 @@ app.get('*', async (req, res, next) => {
         generateClassName={generateClassName}
       >
         <MuiThemeProvider theme={muiTheme} sheetsManager={sheetsManager}>
-          <App context={context}>{route.component}</App>
+          <StyleContext.Provider value={{ insertCss }}>
+            <App context={context}>{route.component}</App>
+          </StyleContext.Provider>
         </MuiThemeProvider>
       </JssProvider>
     );
@@ -310,6 +327,7 @@ app.get('*', async (req, res, next) => {
       apiUrl: config.api.clientUrl,
       state: context.store.getState(),
       apolloState: context.client.extract(),
+      s3SubFolder: config.s3SubFolder,
     };
 
     const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);

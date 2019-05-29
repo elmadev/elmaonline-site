@@ -4,7 +4,7 @@ This doc will explain how to fetch data from the database and show it in the UI.
 
 ## 1. Defining data structure
 
-The actual MySQL querying is done using the sequelize library. First thing you need to do is define the data model, in this case how a database table is structured. You can see the database structure by connecting to the test database using the credentials listed in the [sequelize.js](../src/data/sequelize.js) file or the [EOL database schema sheet](https://docs.google.com/spreadsheets/d/15fNKf2ihV4HvmVZwxg2D18ITvcbCE1nva5NTFlYJOgg/edit?usp=sharing). In order to make a new data model create a new file in the /src/data/models/ folder. See [Battle.js](../src/data/models/Battle.js) as an example.
+The actual MySQL querying is done using the sequelize library. First thing you need to do is define the data model, in this case how a database table is structured. You can see the database structure by connecting to the test database by running `./tools/mysql-sandbox-connect.sh` script, or using the credentials listed in the [sequelize.js](../src/data/sequelize.js) file, or the [EOL database schema sheet](https://docs.google.com/spreadsheets/d/15fNKf2ihV4HvmVZwxg2D18ITvcbCE1nva5NTFlYJOgg/edit?usp=sharing). In order to make a new data model create a new file in the /src/data/models/ folder. See [Battle.js](../src/data/models/Battle.js) as an example.
 
 ## 2. Linking the data model
 
@@ -46,25 +46,27 @@ Click the play icon on the top left and you will see the result in the right sid
 
 ## 6. Use the data in the frontend react
 
-If you're making a new route (page) create a folder in /src/routes/ which will have a .css, a .graphql, an index.js and another .js file.
+If you're making a new route (page) create a folder in /src/pages/ which will have a .css, (most likely) a .graphql, an index.js and a Component .js file.
 
-- In the [.graphql](../src/routes/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
-- In the [index.js](../src/routes/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
-- In the [secondary .js file](../src/routes/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the this.props object that you can use in the render. Deconstruct the this.props object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
+- In the [.graphql](../src/pages/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
+- In the [index.js](../src/pages/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
+- In the [Component.js file](../src/pages/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the `this.props` object that you can use in the render. Deconstruct the `this.props` object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
 
 ```js
-{loading
-  ? 'Loading...'
-  : getBattles.map(i => (
-      <div key={i.BattleIndex}>
-        <h2>
-          {i.BattleIndex} - {i.LevelIndex} by {i.KuskiIndex}
-        </h2>
-        <div>Type: {i.BattleType}</div>
-        <div>Started: {i.Started}</div>
-        <div>Duration: {i.Duration}</div>
-      </div>
-    ))}
+{
+  loading
+    ? 'Loading...'
+    : getBattles.map(i => (
+        <div key={i.BattleIndex}>
+          <h2>
+            {i.BattleIndex} - {i.LevelIndex} by {i.KuskiIndex}
+          </h2>
+          <div>Type: {i.BattleType}</div>
+          <div>Started: {i.Started}</div>
+          <div>Duration: {i.Duration}</div>
+        </div>
+      ));
+}
 ```
 
 To do it the proper react way, you'll probably want to create some sub components that you serve some of this data to, so that Home.js will serve as the data component and other sub components will serve as the UI components.

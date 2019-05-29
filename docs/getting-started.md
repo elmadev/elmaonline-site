@@ -2,10 +2,10 @@
 
 ### Requirements
 
-* Mac OS X, Windows, or Linux
-* [Yarn](https://yarnpkg.com/) package + [Node.js](https://nodejs.org/) v6.5 or
+- Mac OS X, Windows, or Linux
+- [Yarn](https://yarnpkg.com/) package + [Node.js](https://nodejs.org/) v6.5 or
   newer
-* Text editor or IDE pre-configured with React/JSX/Flow/ESlint
+- Text editor or IDE pre-configured with React/JSX/Flow/ESlint
   ([learn more](./how-to-configure-text-editors.md))
 
 ### Directory Layout
@@ -21,12 +21,13 @@ Before you start, take a moment to see how the project structure looks like:
 ├── /src/                       # The source code of the application
 │   ├── /components/            # React components
 │   ├── /data/                  # GraphQL server schema and data models
-│   ├── /routes/                # Page/screen components along with the routing information
+│   ├── /pages/                 # Page/screen components
+│   ├── /utils/                 # Shared utility functions
 │   ├── /client.js              # Client-side startup script
 │   ├── /config.js              # Global application settings
+│   ├── /muiTheme.js            # Overrides for base Material UI theme
 │   ├── /server.js              # Server-side startup script
-│   └── ...                     # Other core framework modules
-├── /test/                      # Unit and end-to-end tests
+│   ├── /router.js              # Routing information
 ├── /tools/                     # Build automation scripts and utilities
 │   ├── /lib/                   # Library for utility snippets
 │   ├── /build.js               # Builds the project from source to output (build) folder

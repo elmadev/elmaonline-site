@@ -1,0 +1,75 @@
+@import '../../components/variables.css';
+
+.root {
+  padding: 7px;
+}
+
+.playerContainer {
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.player {
+  background: #f1f1f1;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rightBarContainer {
+  float: right;
+  width: 30%;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.levelStatsContainer {
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.battleDescription {
+  font-size: 14px;
+  padding: 7px;
+}
+
+.replayDescription {
+  font-size: 14px;
+}
+
+.battleTimestamp {
+  color: #7d7d7d;
+}
+
+@media all and (max-width: 1400px) {
+  .playerContainer {
+    width: 100%;
+  }
+
+  .rightBarContainer {
+    width: 40%;
+  }
+
+  .levelStatsContainer {
+    width: 60%;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .rightBarContainer {
+    width: 100%;
+  }
+
+  .levelStatsContainer {
+    width: 100%;
+  }
+}
+
+.chatContainer {
+  clear: both;
+}

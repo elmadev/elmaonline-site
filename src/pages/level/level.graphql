@@ -1,0 +1,55 @@
+query Level($LevelIndex: Int!) {
+  getBestTimes(LevelIndex: $LevelIndex) {
+    TimeIndex
+    KuskiIndex
+    Time
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+  }
+  getLevel(LevelIndex: $LevelIndex) {
+    LevelName
+    LongName
+  }
+  getBattlesForLevel(LevelIndex: $LevelIndex) {
+    BattleIndex
+    KuskiIndex
+    LevelIndex
+    BattleType
+    Started
+    Duration
+    InQueue
+    Aborted
+    Finished
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+    LevelData {
+      LevelName
+    }
+    Results {
+      BattleTimeIndex
+      BattleIndex
+      KuskiIndex
+      KuskiIndex2
+      Time
+      Apples
+      TimeIndex
+      KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+    }
+  }
+}
