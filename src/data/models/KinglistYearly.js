@@ -29,7 +29,7 @@ const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {
-    KinglistIndex: {
+    KinglistYearlyIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -40,22 +40,7 @@ const getFields = () => {
       allowNull: false,
       defaultValue: 0,
     },
-    RowNM: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    BestRowNM: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    BestRowAll: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    RowAll: {
+    Year: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -73,8 +58,8 @@ const getFields = () => {
   return fields;
 };
 
-const Kinglist = Model.define('kinglist', getFields(), {
-  indexes: [{ fields: ['KinglistIndex', 'KuskiIndex'] }],
+const Kinglist = Model.define('kinglist_yearly', getFields(), {
+  indexes: [{ fields: ['KinglistYearlyIndex', 'KuskiIndex', 'Year'] }],
 });
 
 export default Kinglist;
