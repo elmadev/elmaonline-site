@@ -15,6 +15,9 @@ import WeeklyWRs from './WeeklyWRs';
 import WeeklyBest from './WeeklyBest';
 import Kinglist from './Kinglist';
 import KinglistYearly from './KinglistYearly';
+import KinglistMonthly from './KinglistMonthly';
+import KinglistWeekly from './KinglistWeekly';
+import KinglistDaily from './KinglistDaily';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -103,6 +106,31 @@ WeeklyBest.belongsTo(WeeklyWRs, {
   as: 'WeeklyWR',
 });
 
+Kinglist.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+KinglistYearly.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+KinglistMonthly.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+KinglistWeekly.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+KinglistDaily.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -125,4 +153,7 @@ export {
   WeeklyBest,
   Kinglist,
   KinglistYearly,
+  KinglistMonthly,
+  KinglistWeekly,
+  KinglistDaily,
 }; // add the data model here as well so it exports

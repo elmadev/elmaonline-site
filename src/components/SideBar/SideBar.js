@@ -50,6 +50,9 @@ class SideBar extends React.Component {
             <Link to="/battles" onClick={this.onNavigation}>
               Battles
             </Link>
+            <Link to="/battles/ranking" onClick={this.onNavigation}>
+              Ranking
+            </Link>
             <Link to="/levels" onClick={this.onNavigation}>
               Levels
             </Link>

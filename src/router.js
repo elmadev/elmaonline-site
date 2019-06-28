@@ -24,6 +24,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'home' */ './pages/home'),
     },
     {
+      path: '/battles/ranking',
+      load: () => import(/* webpackChunkName: 'battle' */ './pages/ranking'),
+    },
+    {
       path: '/battles/:id',
       load: () => import(/* webpackChunkName: 'battle' */ './pages/battle'),
     },

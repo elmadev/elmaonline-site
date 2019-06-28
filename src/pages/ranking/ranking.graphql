@@ -1,0 +1,114 @@
+query RankingQuery($Year: Int!, $Month: Int!, $Week: Int!, $Day: Int!) {
+  getKinglist {
+    KinglistIndex
+    KuskiIndex
+    PlayedNM
+    PlayedAll
+    WinsNM
+    WinsAll
+    RowNM
+    BestRowNM
+    BestRowAll
+    RowAll
+    PointsNM
+    PointsAll
+    RankingNM
+    RankingAll
+    DesignedNM
+    DesginedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+  getKinglistYearly(Year: $Year) {
+    KinglistYearlyIndex
+    KuskiIndex
+    Year
+    PlayedNM
+    PlayedAll
+    WinsNM
+    WinsAll
+    RowNM
+    BestRowNM
+    BestRowAll
+    RowAll
+    PointsNM
+    PointsAll
+    RankingNM
+    RankingAll
+    DesignedNM
+    DesginedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+  getKinglistMonthly(Month: $Month) {
+    KinglistMonthlyIndex
+    KuskiIndex
+    Month
+    PlayedNM
+    PlayedAll
+    WinsNM
+    WinsAll
+    PointsNM
+    PointsAll
+    RankingNM
+    RankingAll
+    DesignedNM
+    DesginedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+  getKinglistWeekly(Week: $Week) {
+    KinglistWeeklyIndex
+    KuskiIndex
+    Week
+    PlayedAll
+    WinsAll
+    PointsAll
+    RankingAll
+    DesginedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+  getKinglistDaily(Day: $Day) {
+    KinglistDailyIndex
+    KuskiIndex
+    Day
+    PlayedAll
+    WinsAll
+    PointsAll
+    RankingAll
+    DesginedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+}
