@@ -1,0 +1,6 @@
+{
+  "name": "TTBattleResults",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./TTBattleResults.js"
+}

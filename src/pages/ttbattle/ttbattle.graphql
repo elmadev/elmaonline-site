@@ -1,0 +1,10 @@
+query ttbattleQuery($TTBattleIndex: Int!) {
+  getTTBattle(TTBattleIndex: $TTBattleIndex) {
+    TTBattleIndex
+    KuskiIndex
+    TTBattleName
+    Levels
+    StartTime
+    Duration
+  }
+}

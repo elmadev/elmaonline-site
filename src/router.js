@@ -57,6 +57,10 @@ const routes = {
         import(/* webpackChunkName: 'levelpack' */ './pages/levelpack'),
     },
     {
+      path: '/ttbattle/:id',
+      load: () => import(/* webpackChunkName: 'ttbattle' */ './pages/ttbattle'),
+    },
+    {
       path: '/r/:uuid',
       load: () => import(/* webpackChunkName: 'replay' */ './pages/replay'),
     },

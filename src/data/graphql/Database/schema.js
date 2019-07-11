@@ -46,6 +46,12 @@ import {
   resolvers as GetChatLinesResolver,
 } from './chat/GetChatLines';
 
+import {
+  schema as GetTTBattles,
+  queries as GetTTBattlesQueries,
+  resolvers as GetTTBattlesResolver,
+} from './ttbattle/GetTTBattles';
+
 /** * Mutations ** */
 
 import {
@@ -77,6 +83,7 @@ export const schema = [
   ...InsertReplay,
   ...GetTimes,
   ...GetLevelPacks,
+  ...GetTTBattles,
 ];
 
 export const queries = [
@@ -89,6 +96,7 @@ export const queries = [
   ...GetChatLinesQueries,
   ...GetTimesQueries,
   ...GetLevelPacksQueries,
+  ...GetTTBattlesQueries,
 ];
 
 export const mutations = [...InsertReplayMutation];
@@ -104,4 +112,5 @@ export const resolvers = merge(
   InsertReplayResolver,
   GetTimesResolver,
   GetLevelPacksResolver,
+  GetTTBattlesResolver,
 );

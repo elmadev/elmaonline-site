@@ -13,6 +13,7 @@ import LevelPackLevel from './LevelPackLevel';
 import Time from './Time';
 import WeeklyWRs from './WeeklyWRs';
 import WeeklyBest from './WeeklyBest';
+import TTBattle from './TTBattle';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -121,4 +122,5 @@ export {
   Time,
   WeeklyWRs,
   WeeklyBest,
+  TTBattle,
 }; // add the data model here as well so it exports

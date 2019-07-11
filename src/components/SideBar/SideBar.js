@@ -56,6 +56,9 @@ class SideBar extends React.Component {
             <Link to="/kuskis" onClick={this.onNavigation}>
               Kuskis
             </Link>
+            <Link to="/ttbattle/1" onClick={this.onNavigation}>
+              TT Battle
+            </Link>
             <Link to="/editor" onClick={this.onNavigation}>
               Editor
             </Link>

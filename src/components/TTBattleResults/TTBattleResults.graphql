@@ -1,0 +1,13 @@
+query ttbattleQuery($LevelIndices: String!) {
+  getBestTimesIn(LevelIndices: $LevelIndices) {
+    TimeIndex
+    KuskiIndex
+    Time
+    KuskiData {
+      Kuski
+      TeamData {
+        Team
+      }
+    }
+  }
+}

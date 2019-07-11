@@ -6,6 +6,7 @@ import {
   WeeklyBest,
   WeeklyWRs,
 } from 'data/models';
+import { forEach } from 'lodash';
 
 export const schema = [
   `
@@ -49,6 +50,7 @@ export const queries = [
   `
     getTimes(LevelIndex: Int!): [DatabaseTime]
     getBestTimes(LevelIndex: Int!): [DatabaseBestTime]
+    getBestTimesIn(LevelIndices: String!): [DatabaseBestTime]
   `,
 ];
 
@@ -89,6 +91,50 @@ export const resolvers = {
 
       const times = await sourceModel.findAll({
         where: { LevelIndex },
+        order: [['Time', 'ASC']],
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: WeeklyWRs,
+            as: 'WeeklyWR',
+          },
+        ],
+      });
+      return times.filter(t => !t.WeeklyWR);
+    },
+    async getBestTimesIn(parent, { LevelIndices }) {
+      const levels = await Level.findOne({
+        attributes: ['Hidden', 'Locked'],
+        where: { LevelIndex: LevelIndices.split('-') },
+      });
+
+      let hidden = false;
+      let locked = false;
+      forEach(levels, level => {
+        if (level.Locked) {
+          locked = true;
+        }
+        if (level.Hidden) {
+          hidden = true;
+        }
+      });
+
+      if (locked) return [];
+
+      const sourceModel = hidden ? WeeklyBest : Besttime;
+
+      const times = await sourceModel.findAll({
+        where: { LevelIndex: LevelIndices.split('-') },
         order: [['Time', 'ASC']],
         include: [
           {
