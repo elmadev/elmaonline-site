@@ -1,5 +1,5 @@
-import { forEach } from 'lodash';
-import moment from 'moment';
+import { forEach, cloneDeep } from 'lodash';
+// import moment from 'moment';
 import { Op } from 'sequelize';
 import { eachSeries } from 'neo-async';
 import { Battle, Kinglist, KinglistYearly, Battletime } from './data/models';
@@ -21,7 +21,7 @@ const getBattleResults = async (battleId, done) => {
   done();
 };
 
-const getBattles = async last => {
+const getBattles = async (toId, limit) => {
   const data = await Battle.findAll({
     attributes: [
       'BattleIndex',
@@ -43,37 +43,67 @@ const getBattles = async last => {
       'Finished',
       'InQueue',
     ],
-    where: { BattleIndex: { [Op.gt]: last } },
-    limit: 100,
+    where: { BattleIndex: { [Op.lte]: parseInt(toId, 10) } },
+    limit: parseInt(limit, 10),
   });
   return data;
 };
 
 const getBattleType = battle => battle.BattleType;
 
+const ranking = (currentRanking, results, kuski, current, Ranking) => {
+  let updatedRanking = parseFloat(currentRanking);
+  let beated = false;
+  const kValue = 1;
+  const bValue = 800;
+  forEach(results, r => {
+    if (r.KuskiIndex === kuski) {
+      beated = true;
+    } else {
+      let opponentRanking = 1000;
+      if (current[r.KuskiIndex]) {
+        if (current[r.KuskiIndex][Ranking]) {
+          opponentRanking = parseFloat(current[r.KuskiIndex][Ranking]);
+        }
+      }
+      if (beated) {
+        const expectedResult =
+          1 / (1 + 10 ** ((opponentRanking - currentRanking) / bValue));
+        updatedRanking += kValue * (1 - expectedResult);
+      } else {
+        const expectedResult =
+          1 / (1 + 10 ** ((opponentRanking - currentRanking) / bValue));
+        updatedRanking += kValue * (0 - expectedResult);
+      }
+    }
+  });
+  return updatedRanking;
+};
+
 const addRanking = (current, type, results, place, kuski, designer, period) => {
   let newRanking = {};
   if (period) {
-    newRanking = current[`${kuski}-${period}`];
-  } else {
-    newRanking = current[kuski];
+    if (current[`${kuski}-${period}`]) {
+      newRanking = cloneDeep(current[`${kuski}-${period}`]);
+    }
+    if (!newRanking.Year) {
+      newRanking.Year = period;
+    }
+  } else if (current[kuski]) {
+    newRanking = cloneDeep(current[kuski]);
   }
   newRanking.KuskiIndex = kuski;
-
-  const Designed = `Designed${type}`; // battles designed
-  if (kuski === designer) {
-    if (!newRanking[Designed]) {
-      newRanking[Designed] = 1;
-    } else {
-      newRanking[Designed] += 1;
-    }
-  }
 
   const Played = `Played${type}`; // battles played
   if (!newRanking[Played]) {
     newRanking[Played] = 1;
   } else {
     newRanking[Played] += 1;
+  }
+  if (!newRanking.PlayedAll) {
+    newRanking.PlayedAll = 1;
+  } else {
+    newRanking.PlayedAll += 1;
   }
 
   const Points = `Points${type}`; // battle experience points
@@ -82,35 +112,33 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
   } else {
     newRanking[Points] += results.length - place;
   }
+  if (!newRanking.PointsAll) {
+    newRanking.PointsAll = results.length - place;
+  } else {
+    newRanking.PointsAll += results.length - place;
+  }
 
   const Ranking = `Ranking${type}`; // battle ranking
   if (!newRanking[Ranking]) {
     newRanking[Ranking] = 1000;
   }
-  let updatedRanking = newRanking[Ranking];
-  let beated = false;
-  const kk = 0.003;
-  const qk = 0.001;
-  forEach(results, r => {
-    if (r.KuskiIndex === kuski) {
-      beated = true;
-    } else {
-      let opponentRanking = 1000;
-      if (current[r.KuskiIndex]) {
-        if (current[r.KuskiIndex][Ranking]) {
-          opponentRanking = current[r.KuskiIndex][Ranking];
-        }
-      }
-      if (beated) {
-        updatedRanking *=
-          1 + kk * Math.exp(qk * (opponentRanking - newRanking[Ranking]));
-      } else {
-        updatedRanking /=
-          1 + kk * Math.exp(qk * (newRanking[Ranking] - opponentRanking));
-      }
-    }
-  });
-  newRanking[Ranking] = updatedRanking;
+  newRanking[Ranking] = ranking(
+    newRanking[Ranking],
+    results,
+    kuski,
+    current,
+    Ranking,
+  );
+  if (!newRanking.RankingAll) {
+    newRanking.RankingAll = 1000;
+  }
+  newRanking.RankingAll = ranking(
+    newRanking.RankingAll,
+    results,
+    kuski,
+    current,
+    'RankingAll',
+  );
 
   // if won battle
   const Row = `Row${type}`;
@@ -121,9 +149,15 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
     } else {
       newRanking[Wins] += 1;
     }
+    if (newRanking.WinsAll) {
+      newRanking.WinsAll = 1;
+    } else {
+      newRanking.WinsAll += 1;
+    }
     newRanking[Points] += 1; // battle experience points
+    newRanking.PointsAll += 1;
     // battle win row
-    if ((type === 'NM' || type === 'All') && !period) {
+    if (type === 'NM' && !period) {
       const BestRow = `BestRow${type}`;
       if (!newRanking[Row]) {
         newRanking[Row] = 1;
@@ -138,9 +172,28 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
         newRanking[BestRow] = newRanking[Row];
       }
     }
-  } else if ((type === 'NM' || type === 'All') && !period) {
-    // if not won battle
-    newRanking[Row] = 0; // battle win row
+    if (!period) {
+      if (!newRanking.RowAll) {
+        newRanking.RowAll = 1;
+      } else {
+        newRanking.RowAll += 1;
+      }
+      // update best battle win row
+      if (!newRanking.BestRowAll) {
+        newRanking.BestRowAll = 0;
+      }
+      if (newRanking.RowAll > newRanking.BestRowAll) {
+        newRanking.BestRowAll = newRanking.RowAll;
+      }
+    }
+  } else {
+    if (type === 'NM' && !period) {
+      // if not won battle
+      newRanking[Row] = 0; // battle win row
+    }
+    if (!period) {
+      newRanking.RowAll = 0;
+    }
   }
   return newRanking;
 };
@@ -148,47 +201,60 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
 export function calcRankings(getBattleList, battleResults, current) {
   return new Promise(resolve => {
     const newRankings = { all: {}, year: {} };
+    let updatedCurrent = cloneDeep(current);
     // get battle results for selected battles
     eachSeries(getBattleList, battleResults, () => {
       // loop battles
       forEach(Results, result => {
+        if (result.battle.BattleType === 'HT') {
+          return;
+        }
+        if (result.battle.Multi) {
+          return;
+        }
         if (result.result.length > 0) {
           // loop results
           forEach(result.result, (r, place) => {
-            /* if (!has(newRankings.all, r.KuskiIndex)) {
-              newRankings.all[r.KuskiIndex] = {};
-            } */
-            // add ranking for battle type
+            // add ranking for all time
             newRankings.all[r.KuskiIndex] = addRanking(
-              current.all,
+              updatedCurrent.all,
               getBattleType(result.battle),
               result.result,
               place,
               r.KuskiIndex,
               result.battle.KuskiIndex,
             );
-            // add ranking for combined
-            newRankings.all[r.KuskiIndex] = addRanking(
-              current.all,
-              'All',
-              result.result,
-              place,
-              r.KuskiIndex,
-              result.battle.KuskiIndex,
-            );
-            // add ranking for year battle type
-            newRankings.year[
+            // add ranking for year
+            /* newRankings.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
             ] = addRanking(
-              current.year,
+              updatedCurrent.year,
               getBattleType(result.battle),
               result.result,
               place,
               r.KuskiIndex,
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYY'),
-            );
+            ); */
           });
+          const Designed = `Designed${getBattleType(result.battle)}`; // battles designed
+          if (!newRankings.all[result.battle.KuskiIndex]) {
+            newRankings.all[result.battle.KuskiIndex] = {};
+          }
+          if (!newRankings.all[result.battle.KuskiIndex][Designed]) {
+            newRankings.all[result.battle.KuskiIndex][Designed] = 1;
+          } else {
+            newRankings.all[result.battle.KuskiIndex][Designed] += 1;
+          }
+          if (!newRankings.all[result.battle.KuskiIndex]) {
+            newRankings.all[result.battle.KuskiIndex] = {};
+          }
+          if (!newRankings.all[result.battle.KuskiIndex].DesignedAll) {
+            newRankings.all[result.battle.KuskiIndex].DesignedAll = 1;
+          } else {
+            newRankings.all[result.battle.KuskiIndex].DesignedAll += 1;
+          }
+          updatedCurrent = cloneDeep(newRankings);
         }
       });
       resolve(newRankings);
@@ -197,9 +263,12 @@ export function calcRankings(getBattleList, battleResults, current) {
 }
 
 const updateOrCreateKinglist = async (data, done) => {
-  const obj = await Kinglist.findOne({
-    where: { KuskiIndex: data.KuskiIndex },
-  });
+  let obj = false;
+  if (data.KuskiIndex) {
+    obj = await Kinglist.findOne({
+      where: { KuskiIndex: data.KuskiIndex },
+    });
+  }
   if (obj) {
     await obj.update(data);
     done();
@@ -232,9 +301,17 @@ export function updateKinglist(newRankings) {
   });
 }
 
-export const updateRanking = async () => {
+export const deleteRanking = async () => {
+  await Kinglist.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  return true;
+};
+
+export const updateRanking = async (toId, limit) => {
   const current = { all: {}, year: {} };
-  const battle = 0;
   const getCurrent = await getCurrentRankings();
   forEach(getCurrent.all, c => {
     current.all[c.dataValues.KuskiIndex] = c.dataValues;
@@ -243,7 +320,7 @@ export const updateRanking = async () => {
     current.year[`${c.dataValues.KuskiIndex}-${c.dataValues.Year}`] =
       c.dataValues;
   });
-  const getBattleList = await getBattles(battle);
+  const getBattleList = await getBattles(toId, limit);
   Results = [];
   const newRankings = await calcRankings(
     getBattleList,

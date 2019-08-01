@@ -50,7 +50,7 @@ import {
   battleresults,
 } from 'utils/events';
 import { discord } from 'utils/discord';
-import { updateRanking } from './ranking';
+import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
 import config from './config';
@@ -162,9 +162,13 @@ app.get('/dl/level/:id', async (req, res, next) => {
 //
 // ranking
 //--------------------------------------------
-app.get('/ranking', async (req, res) => {
-  const data = await updateRanking();
+app.get('/ranking/:toId/:limit', async (req, res) => {
+  const data = await updateRanking(req.params.toId, req.params.limit);
   res.json(data);
+});
+app.get('/ranking/delete', async (req, res) => {
+  const data = await deleteRanking();
+  res.json({ deleted: data });
 });
 
 //

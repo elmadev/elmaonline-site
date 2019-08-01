@@ -108,6 +108,9 @@ class Ranking extends React.Component {
                     {loading && <CircularProgress />}
                     {!loading &&
                       kinglist
+                        .sort((a, b) => {
+                          return b.RankingNM - a.RankingNM;
+                        })
                         .slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage,
