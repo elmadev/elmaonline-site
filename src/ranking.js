@@ -1,13 +1,31 @@
 import { forEach, cloneDeep } from 'lodash';
-// import moment from 'moment';
+import moment from 'moment';
 import { Op } from 'sequelize';
 import { eachSeries } from 'neo-async';
-import { Battle, Kinglist, KinglistYearly, Battletime } from './data/models';
+import { BATTLETYPES, INTERNALS } from './constants/ranking';
+import {
+  Battle,
+  Kinglist,
+  KinglistYearly,
+  KinglistMonthly,
+  KinglistWeekly,
+  KinglistDaily,
+  Battletime,
+} from './data/models';
 
 const getCurrentRankings = async () => {
   const rankingData = await Kinglist.findAll();
   const rankingDataYearly = await KinglistYearly.findAll();
-  return { all: rankingData, year: rankingDataYearly };
+  const rankingDataMonthly = await KinglistMonthly.findAll();
+  const rankingDataWeekly = await KinglistWeekly.findAll();
+  const rankingDataDaily = await KinglistDaily.findAll();
+  return {
+    all: rankingData,
+    year: rankingDataYearly,
+    month: rankingDataMonthly,
+    week: rankingDataWeekly,
+    day: rankingDataDaily,
+  };
 };
 
 let Results = [];
@@ -51,6 +69,19 @@ const getBattles = async (toId, limit) => {
 
 const getBattleType = battle => battle.BattleType;
 
+const skippedBattles = battle => {
+  if (battle.BattleType === 'HT') {
+    return true;
+  }
+  if (battle.Multi) {
+    return true;
+  }
+  if (INTERNALS.indexOf(battle.LevelIndex) > -1) {
+    return true;
+  }
+  return false;
+};
+
 const ranking = (currentRanking, results, kuski, current, Ranking) => {
   let updatedRanking = parseFloat(currentRanking);
   let beated = false;
@@ -80,25 +111,45 @@ const ranking = (currentRanking, results, kuski, current, Ranking) => {
   return updatedRanking;
 };
 
-const addRanking = (current, type, results, place, kuski, designer, period) => {
+const addRanking = (
+  current,
+  type,
+  results,
+  place,
+  kuski,
+  designer,
+  period,
+  periodType,
+) => {
   let newRanking = {};
   if (period) {
     if (current[`${kuski}-${period}`]) {
       newRanking = cloneDeep(current[`${kuski}-${period}`]);
     }
-    if (!newRanking.Year) {
+    if (periodType === 'year' && !newRanking.Year) {
       newRanking.Year = period;
+    }
+    if (periodType === 'month' && !newRanking.Month) {
+      newRanking.Month = period;
+    }
+    if (periodType === 'week' && !newRanking.Week) {
+      newRanking.Week = period;
+    }
+    if (periodType === 'day' && !newRanking.Day) {
+      newRanking.Day = period;
     }
   } else if (current[kuski]) {
     newRanking = cloneDeep(current[kuski]);
   }
   newRanking.KuskiIndex = kuski;
 
-  const Played = `Played${type}`; // battles played
-  if (!newRanking[Played]) {
-    newRanking[Played] = 1;
-  } else {
-    newRanking[Played] += 1;
+  if (BATTLETYPES[periodType].indexOf(type) > -1) {
+    const Played = `Played${type}`; // battles played
+    if (!newRanking[Played]) {
+      newRanking[Played] = 1;
+    } else {
+      newRanking[Played] += 1;
+    }
   }
   if (!newRanking.PlayedAll) {
     newRanking.PlayedAll = 1;
@@ -107,10 +158,12 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
   }
 
   const Points = `Points${type}`; // battle experience points
-  if (!newRanking[Points]) {
-    newRanking[Points] = results.length - place;
-  } else {
-    newRanking[Points] += results.length - place;
+  if (BATTLETYPES[periodType].indexOf(type) > -1) {
+    if (!newRanking[Points]) {
+      newRanking[Points] = results.length - place;
+    } else {
+      newRanking[Points] += results.length - place;
+    }
   }
   if (!newRanking.PointsAll) {
     newRanking.PointsAll = results.length - place;
@@ -118,17 +171,19 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
     newRanking.PointsAll += results.length - place;
   }
 
-  const Ranking = `Ranking${type}`; // battle ranking
-  if (!newRanking[Ranking]) {
-    newRanking[Ranking] = 1000;
+  if (BATTLETYPES[periodType].indexOf(type) > -1) {
+    const Ranking = `Ranking${type}`; // battle ranking
+    if (!newRanking[Ranking]) {
+      newRanking[Ranking] = 1000;
+    }
+    newRanking[Ranking] = ranking(
+      newRanking[Ranking],
+      results,
+      kuski,
+      current,
+      Ranking,
+    );
   }
-  newRanking[Ranking] = ranking(
-    newRanking[Ranking],
-    results,
-    kuski,
-    current,
-    Ranking,
-  );
   if (!newRanking.RankingAll) {
     newRanking.RankingAll = 1000;
   }
@@ -143,21 +198,29 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
   // if won battle
   const Row = `Row${type}`;
   if (place === 0) {
-    const Wins = `Wins${type}`; // battle wins
-    if (!newRanking[Wins]) {
-      newRanking[Wins] = 1;
-    } else {
-      newRanking[Wins] += 1;
+    if (BATTLETYPES[periodType].indexOf(type) > -1) {
+      const Wins = `Wins${type}`; // battle wins
+      if (!newRanking[Wins]) {
+        newRanking[Wins] = 1;
+      } else {
+        newRanking[Wins] += 1;
+      }
     }
     if (newRanking.WinsAll) {
       newRanking.WinsAll = 1;
     } else {
       newRanking.WinsAll += 1;
     }
-    newRanking[Points] += 1; // battle experience points
+    if (BATTLETYPES[periodType].indexOf(type) > -1) {
+      newRanking[Points] += 1; // battle experience points
+    }
     newRanking.PointsAll += 1;
     // battle win row
-    if (type === 'NM' && !period) {
+    if (
+      type === 'NM' &&
+      !period &&
+      BATTLETYPES[periodType].indexOf(type) > -1
+    ) {
       const BestRow = `BestRow${type}`;
       if (!newRanking[Row]) {
         newRanking[Row] = 1;
@@ -187,7 +250,11 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
       }
     }
   } else {
-    if (type === 'NM' && !period) {
+    if (
+      type === 'NM' &&
+      !period &&
+      BATTLETYPES[periodType].indexOf(type) > -1
+    ) {
       // if not won battle
       newRanking[Row] = 0; // battle win row
     }
@@ -200,16 +267,14 @@ const addRanking = (current, type, results, place, kuski, designer, period) => {
 
 export function calcRankings(getBattleList, battleResults, current) {
   return new Promise(resolve => {
-    const newRankings = { all: {}, year: {} };
+    const newRankings = { all: {}, year: {}, month: {}, week: {}, day: {} };
     let updatedCurrent = cloneDeep(current);
     // get battle results for selected battles
     eachSeries(getBattleList, battleResults, () => {
       // loop battles
       forEach(Results, result => {
-        if (result.battle.BattleType === 'HT') {
-          return;
-        }
-        if (result.battle.Multi) {
+        // skip 1htt, multi and ints
+        if (skippedBattles(result.battle)) {
           return;
         }
         if (result.result.length > 0) {
@@ -223,9 +288,11 @@ export function calcRankings(getBattleList, battleResults, current) {
               place,
               r.KuskiIndex,
               result.battle.KuskiIndex,
+              '',
+              'all',
             );
             // add ranking for year
-            /* newRankings.year[
+            newRankings.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
             ] = addRanking(
               updatedCurrent.year,
@@ -235,7 +302,53 @@ export function calcRankings(getBattleList, battleResults, current) {
               r.KuskiIndex,
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYY'),
-            ); */
+              'year',
+            );
+            // add ranking for month
+            newRankings.month[
+              `${r.KuskiIndex}-${moment(result.battle.Started).format(
+                'YYYYMM',
+              )}`
+            ] = addRanking(
+              updatedCurrent.month,
+              getBattleType(result.battle),
+              result.result,
+              place,
+              r.KuskiIndex,
+              result.battle.KuskiIndex,
+              moment(result.battle.Started).format('YYYYMM'),
+              'month',
+            );
+            // add ranking for week
+            newRankings.week[
+              `${r.KuskiIndex}-${moment(result.battle.Started).format(
+                'YYYYww',
+              )}`
+            ] = addRanking(
+              updatedCurrent.week,
+              getBattleType(result.battle),
+              result.result,
+              place,
+              r.KuskiIndex,
+              result.battle.KuskiIndex,
+              moment(result.battle.Started).format('YYYYww'),
+              'week',
+            );
+            // add ranking for day
+            newRankings.day[
+              `${r.KuskiIndex}-${moment(result.battle.Started).format(
+                'YYYYMMDD',
+              )}`
+            ] = addRanking(
+              updatedCurrent.day,
+              getBattleType(result.battle),
+              result.result,
+              place,
+              r.KuskiIndex,
+              result.battle.KuskiIndex,
+              moment(result.battle.Started).format('YYYYMMDD'),
+              'day',
+            );
           });
           const Designed = `Designed${getBattleType(result.battle)}`; // battles designed
           if (!newRankings.all[result.battle.KuskiIndex]) {
@@ -291,11 +404,56 @@ const updateOrCreateKinglistYearly = async (data, done) => {
   }
 };
 
+const updateOrCreateKinglistMonthly = async (data, done) => {
+  const obj = await KinglistMonthly.findOne({
+    where: { KuskiIndex: data.KuskiIndex, Month: data.Month },
+  });
+  if (obj) {
+    await obj.update(data);
+    done();
+  } else {
+    await KinglistMonthly.create(data);
+    done();
+  }
+};
+
+const updateOrCreateKinglistWeekly = async (data, done) => {
+  const obj = await KinglistWeekly.findOne({
+    where: { KuskiIndex: data.KuskiIndex, Week: data.Week },
+  });
+  if (obj) {
+    await obj.update(data);
+    done();
+  } else {
+    await KinglistWeekly.create(data);
+    done();
+  }
+};
+
+const updateOrCreateKinglistDaily = async (data, done) => {
+  const obj = await KinglistDaily.findOne({
+    where: { KuskiIndex: data.KuskiIndex, Day: data.Day },
+  });
+  if (obj) {
+    await obj.update(data);
+    done();
+  } else {
+    await KinglistDaily.create(data);
+    done();
+  }
+};
+
 export function updateKinglist(newRankings) {
   return new Promise(resolve => {
     eachSeries(newRankings.all, updateOrCreateKinglist, () => {
       eachSeries(newRankings.year, updateOrCreateKinglistYearly, () => {
-        resolve();
+        eachSeries(newRankings.month, updateOrCreateKinglistMonthly, () => {
+          eachSeries(newRankings.week, updateOrCreateKinglistWeekly, () => {
+            eachSeries(newRankings.day, updateOrCreateKinglistDaily, () => {
+              resolve();
+            });
+          });
+        });
       });
     });
   });
@@ -311,13 +469,25 @@ export const deleteRanking = async () => {
 };
 
 export const updateRanking = async (toId, limit) => {
-  const current = { all: {}, year: {} };
+  const current = { all: {}, year: {}, month: {}, week: {}, day: {} };
   const getCurrent = await getCurrentRankings();
   forEach(getCurrent.all, c => {
     current.all[c.dataValues.KuskiIndex] = c.dataValues;
   });
   forEach(getCurrent.year, c => {
     current.year[`${c.dataValues.KuskiIndex}-${c.dataValues.Year}`] =
+      c.dataValues;
+  });
+  forEach(getCurrent.month, c => {
+    current.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Month}`] =
+      c.dataValues;
+  });
+  forEach(getCurrent.week, c => {
+    current.week[`${c.dataValues.KuskiIndex}-${c.dataValues.Week}`] =
+      c.dataValues;
+  });
+  forEach(getCurrent.day, c => {
+    current.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
       c.dataValues;
   });
   const getBattleList = await getBattles(toId, limit);

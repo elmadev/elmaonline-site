@@ -138,7 +138,7 @@ class Ranking extends React.Component {
                               <TableCell
                                 style={{ padding: '4px 10px 4px 10px' }}
                               >
-                                {i.RankingNM}
+                                {parseFloat(i.RankingNM).toFixed(2)}
                               </TableCell>
                               <TableCell
                                 style={{ padding: '4px 10px 4px 10px' }}
