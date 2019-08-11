@@ -18,6 +18,7 @@ import KinglistYearly from './KinglistYearly';
 import KinglistMonthly from './KinglistMonthly';
 import KinglistWeekly from './KinglistWeekly';
 import KinglistDaily from './KinglistDaily';
+import RankingHistory from './RankingHistory';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -156,4 +157,5 @@ export {
   KinglistMonthly,
   KinglistWeekly,
   KinglistDaily,
+  RankingHistory,
 }; // add the data model here as well so it exports

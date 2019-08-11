@@ -10,6 +10,7 @@ import {
   KinglistMonthly,
   KinglistWeekly,
   KinglistDaily,
+  RankingHistory,
   Battletime,
 } from './data/models';
 
@@ -109,6 +110,23 @@ const ranking = (currentRanking, results, kuski, current, Ranking) => {
     }
   });
   return updatedRanking;
+};
+
+const newRankingRow = (kuski, periodType, period) => {
+  const obj = { KuskiIndex: kuski };
+  if (periodType === 'year') {
+    obj.Year = moment(period).format('YYYY');
+  }
+  if (periodType === 'month') {
+    obj.Month = moment(period).format('YYYYMM');
+  }
+  if (periodType === 'week') {
+    obj.Week = moment(period).format('YYYYww');
+  }
+  if (periodType === 'day') {
+    obj.Day = moment(period).format('YYYYMMDD');
+  }
+  return obj;
 };
 
 const addRanking = (
@@ -268,6 +286,7 @@ const addRanking = (
 export function calcRankings(getBattleList, battleResults, current) {
   return new Promise(resolve => {
     const newRankings = { all: {}, year: {}, month: {}, week: {}, day: {} };
+    const history = [];
     let updatedCurrent = cloneDeep(current);
     // get battle results for selected battles
     eachSeries(getBattleList, battleResults, () => {
@@ -280,6 +299,10 @@ export function calcRankings(getBattleList, battleResults, current) {
         if (result.result.length > 0) {
           // loop results
           forEach(result.result, (r, place) => {
+            // skip designer
+            if (r.KuskiIndex === result.battle.KuskiIndex) {
+              return;
+            }
             // add ranking for all time
             newRankings.all[r.KuskiIndex] = addRanking(
               updatedCurrent.all,
@@ -291,6 +314,47 @@ export function calcRankings(getBattleList, battleResults, current) {
               '',
               'all',
             );
+            history.push({
+              KuskiIndex: r.KuskiIndex,
+              BattleIndex: result.battle.BattleIndex,
+              BattleType: result.battle.BattleType,
+              Played:
+                newRankings.all[r.KuskiIndex][
+                  `Played${result.battle.BattleType}`
+                ],
+              Ranking:
+                newRankings.all[r.KuskiIndex][
+                  `Ranking${result.battle.BattleType}`
+                ],
+              Points:
+                newRankings.all[r.KuskiIndex][
+                  `Points${result.battle.BattleType}`
+                ],
+              Wins:
+                newRankings.all[r.KuskiIndex][
+                  `Wins${result.battle.BattleType}`
+                ],
+              Designed:
+                newRankings.all[r.KuskiIndex][
+                  `Designed${result.battle.BattleType}`
+                ],
+              Position: place,
+              Started: moment(result.battle.Started).format('X'),
+            });
+            history.push({
+              KuskiIndex: r.KuskiIndex,
+              BattleIndex: result.battle.BattleIndex,
+              BattleType: 'All',
+              Played: newRankings.all[r.KuskiIndex].PlayedAll,
+              Ranking: newRankings.all[r.KuskiIndex].RankingAll,
+              Points: newRankings.all[r.KuskiIndex].PointsAll,
+              Wins: newRankings.all[r.KuskiIndex].WinsAll
+                ? newRankings.all[r.KuskiIndex].WinsAll
+                : 0,
+              Designed: newRankings.all[r.KuskiIndex].DesignedAll,
+              Position: place,
+              Started: moment(result.battle.Started).format('X'),
+            });
             // add ranking for year
             newRankings.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
@@ -351,26 +415,50 @@ export function calcRankings(getBattleList, battleResults, current) {
             );
           });
           const Designed = `Designed${getBattleType(result.battle)}`; // battles designed
-          if (!newRankings.all[result.battle.KuskiIndex]) {
-            newRankings.all[result.battle.KuskiIndex] = {};
-          }
-          if (!newRankings.all[result.battle.KuskiIndex][Designed]) {
-            newRankings.all[result.battle.KuskiIndex][Designed] = 1;
-          } else {
-            newRankings.all[result.battle.KuskiIndex][Designed] += 1;
-          }
-          if (!newRankings.all[result.battle.KuskiIndex]) {
-            newRankings.all[result.battle.KuskiIndex] = {};
-          }
-          if (!newRankings.all[result.battle.KuskiIndex].DesignedAll) {
-            newRankings.all[result.battle.KuskiIndex].DesignedAll = 1;
-          } else {
-            newRankings.all[result.battle.KuskiIndex].DesignedAll += 1;
-          }
+          forEach(newRankings, (nR, periodType) => {
+            if (
+              BATTLETYPES[periodType].indexOf(getBattleType(result.battle)) > -1
+            ) {
+              if (!newRankings[periodType][result.battle.KuskiIndex]) {
+                newRankings[periodType][
+                  result.battle.KuskiIndex
+                ] = newRankingRow(
+                  result.battle.KuskiIndex,
+                  periodType,
+                  result.battle.Started,
+                );
+              }
+              if (
+                !newRankings[periodType][result.battle.KuskiIndex][Designed]
+              ) {
+                newRankings[periodType][result.battle.KuskiIndex][Designed] = 1;
+              } else {
+                newRankings[periodType][result.battle.KuskiIndex][
+                  Designed
+                ] += 1;
+              }
+            }
+            if (!newRankings[periodType][result.battle.KuskiIndex]) {
+              newRankings[periodType][result.battle.KuskiIndex] = newRankingRow(
+                result.battle.KuskiIndex,
+                periodType,
+                result.battle.Started,
+              );
+            }
+            if (
+              !newRankings[periodType][result.battle.KuskiIndex].DesignedAll
+            ) {
+              newRankings[periodType][result.battle.KuskiIndex].DesignedAll = 1;
+            } else {
+              newRankings[periodType][
+                result.battle.KuskiIndex
+              ].DesignedAll += 1;
+            }
+          });
           updatedCurrent = cloneDeep(newRankings);
         }
       });
-      resolve(newRankings);
+      resolve({ newRankings, history });
     });
   });
 }
@@ -443,6 +531,14 @@ const updateOrCreateKinglistDaily = async (data, done) => {
   }
 };
 
+export function insertHistory(history) {
+  return new Promise(resolve => {
+    RankingHistory.bulkCreate(history).then(() => {
+      resolve();
+    });
+  });
+}
+
 export function updateKinglist(newRankings) {
   return new Promise(resolve => {
     eachSeries(newRankings.all, updateOrCreateKinglist, () => {
@@ -461,6 +557,31 @@ export function updateKinglist(newRankings) {
 
 export const deleteRanking = async () => {
   await Kinglist.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  await KinglistYearly.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  await KinglistMonthly.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  await KinglistWeekly.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  await KinglistDaily.destroy({
+    where: {
+      KuskiIndex: { [Op.gt]: 0 },
+    },
+  });
+  await RankingHistory.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
@@ -492,11 +613,12 @@ export const updateRanking = async (toId, limit) => {
   });
   const getBattleList = await getBattles(toId, limit);
   Results = [];
-  const newRankings = await calcRankings(
+  const { newRankings, history } = await calcRankings(
     getBattleList,
     getBattleResults,
     current,
   );
   await updateKinglist(newRankings);
-  return newRankings;
+  await insertHistory(history);
+  return history;
 };

@@ -5,6 +5,19 @@ export const BATTLETYPES = {
   week: ['All'],
   day: ['All'],
 };
+export const BATTLETYPES_LONG = {
+  NM: 'Normal',
+  All: 'All',
+  FF: 'First Finish',
+  OL: 'One Life',
+  SL: 'Slowness',
+  SR: 'Survivor',
+  LC: 'Last Counts',
+  FT: 'Flag Tag',
+  AP: 'Apple',
+  SP: 'Speed',
+  FC: 'Finish Count',
+};
 export const INTERNALS = [
   2,
   4,
