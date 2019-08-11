@@ -1,0 +1,20 @@
+query RankingQuery($Period: Int!) {
+  getKinglistDaily(Day: $Period) {
+    KinglistDailyIndex
+    KuskiIndex
+    Day
+    PlayedAll
+    WinsAll
+    PointsAll
+    RankingAll
+    DesignedAll
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+}

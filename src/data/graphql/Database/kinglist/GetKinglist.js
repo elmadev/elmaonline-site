@@ -16,18 +16,63 @@ export const schema = [
     KuskiIndex: Int
     PlayedNM: Int
     PlayedAll: Int
+    PlayedFF: Int
+    PlayedOL: Int
+    PlayedSL: Int
+    PlayedSR: Int
+    PlayedLC: Int
+    PlayedFT: Int
+    PlayedAP: Int
+    PlayedSP: Int
+    PlayedFC: Int
     WinsNM: Int
     WinsAll: Int
+    WinsFF: Int
+    WinsOL: Int
+    WinsSL: Int
+    WinsSR: Int
+    WinsLC: Int
+    WinsFT: Int
+    WinsAP: Int
+    WinsSP: Int
+    WinsFC: Int
     RowNM: Int
     BestRowNM: Int
     BestRowAll: Int
     RowAll: Int
     PointsNM: Int
     PointsAll: Int
+    PointsFF: Int
+    PointsOL: Int
+    PointsSL: Int
+    PointsSR: Int
+    PointsLC: Int
+    PointsFT: Int
+    PointsAP: Int
+    PointsSP: Int
+    PointsFC: Int
     RankingNM: Float
     RankingAll: Float
+    RankingFF: Float
+    RankingOL: Float
+    RankingSL: Float
+    RankingSR: Float
+    RankingLC: Float
+    RankingFT: Float
+    RankingAP: Float
+    RankingSP: Float
+    RankingFC: Float
     DesignedNM: Int
-    DesginedAll: Int
+    DesignedAll: Int
+    DesignedFF: Int
+    DesignedOL: Int
+    DesignedSL: Int
+    DesignedSR: Int
+    DesignedLC: Int
+    DesignedFT: Int
+    DesignedAP: Int
+    DesignedSP: Int
+    DesignedFC: Int
     KuskiData: DatabaseKuski
   }
 
@@ -38,18 +83,59 @@ export const schema = [
     Year: Int
     PlayedNM: Int
     PlayedAll: Int
+    PlayedFF: Int
+    PlayedOL: Int
+    PlayedSL: Int
+    PlayedSR: Int
+    PlayedLC: Int
+    PlayedFT: Int
+    PlayedAP: Int
+    PlayedSP: Int
+    PlayedFC: Int
     WinsNM: Int
     WinsAll: Int
-    RowNM: Int
-    BestRowNM: Int
-    BestRowAll: Int
-    RowAll: Int
+    WinsFF: Int
+    WinsOL: Int
+    WinsSL: Int
+    WinsSR: Int
+    WinsLC: Int
+    WinsFT: Int
+    WinsAP: Int
+    WinsSP: Int
+    WinsFC: Int
     PointsNM: Int
     PointsAll: Int
+    PointsFF: Int
+    PointsOL: Int
+    PointsSL: Int
+    PointsSR: Int
+    PointsLC: Int
+    PointsFT: Int
+    PointsAP: Int
+    PointsSP: Int
+    PointsFC: Int
     RankingNM: Float
     RankingAll: Float
+    RankingFF: Float
+    RankingOL: Float
+    RankingSL: Float
+    RankingSR: Float
+    RankingLC: Float
+    RankingFT: Float
+    RankingAP: Float
+    RankingSP: Float
+    RankingFC: Float
     DesignedNM: Int
-    DesginedAll: Int
+    DesignedAll: Int
+    DesignedFF: Int
+    DesignedOL: Int
+    DesignedSL: Int
+    DesignedSR: Int
+    DesignedLC: Int
+    DesignedFT: Int
+    DesignedAP: Int
+    DesignedSP: Int
+    DesignedFC: Int
     KuskiData: DatabaseKuski
   }
 
@@ -60,14 +146,24 @@ export const schema = [
     Month: Int
     PlayedNM: Int
     PlayedAll: Int
+    PlayedFF: Int
+    PlayedAP: Int
     WinsNM: Int
     WinsAll: Int
+    WinsFF: Int
+    WinsAP: Int
     PointsNM: Int
     PointsAll: Int
+    PointsFF: Int
+    PointsAP: Int
     RankingNM: Float
     RankingAll: Float
+    RankingFF: Float
+    RankingAP: Float
     DesignedNM: Int
-    DesginedAll: Int
+    DesignedAll: Int
+    DesignedFF: Int
+    DesignedAP: Int
     KuskiData: DatabaseKuski
   }
 
@@ -80,7 +176,7 @@ export const schema = [
     WinsAll: Int
     PointsAll: Int
     RankingAll: Float
-    DesginedAll: Int
+    DesignedAll: Int
     KuskiData: DatabaseKuski
   }
 
@@ -93,8 +189,23 @@ export const schema = [
     WinsAll: Int
     PointsAll: Int
     RankingAll: Float
-    DesginedAll: Int
+    DesignedAll: Int
     KuskiData: DatabaseKuski
+  }
+
+  # Battle rankings history
+  type DatabaseRankingHistory {
+    RankingHistoryIndex: Int
+    KuskiIndex: Int
+    BattleIndex: Int
+    BattleType: String
+    Played: Int
+    Ranking: Float
+    Points: Int
+    Wins: Int
+    Designed: Int
+    Position: Int
+    Started: Int
   }
 `,
 ];

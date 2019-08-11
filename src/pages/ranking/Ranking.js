@@ -1,78 +1,52 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { graphql, compose } from 'react-apollo';
+import { compose } from 'react-apollo';
 import m from 'moment';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 
-import Kuski from 'components/Kuski';
-import PaginationActions from 'components/Table/PaginationActions';
-import { Year, Month, Week } from 'components/Selectors';
+import RankingOverall from 'components/RankingTable/Overall';
+import RankingYear from 'components/RankingTable/Year';
+import RankingMonth from 'components/RankingTable/Month';
+import RankingWeek from 'components/RankingTable/Week';
+import RankingDay from 'components/RankingTable/Day';
+import { Year, Month, Week, Day, BattleTypes } from 'components/Selectors';
 
-import rankingQuery from './ranking.graphql';
 import s from './Ranking.css';
 
-class Ranking extends React.Component {
-  static propTypes = {
-    data: PropTypes.shape({
-      loading: PropTypes.bool.isRequired,
-      refetch: PropTypes.func.isRequired,
-    }).isRequired,
-  };
+const formatPeriod = (type, year, month, week, day) => {
+  const monthFixed = `0${month}`.slice(-2);
+  const weekFixed = `0${week}`.slice(-2);
+  const dayFixed = `0${day}`.slice(-2);
+  if (type === 'month') {
+    return parseInt(`${year}${monthFixed}`, 10);
+  }
+  if (type === 'week') {
+    return parseInt(`${year}${weekFixed}`, 10);
+  }
+  if (type === 'day') {
+    return parseInt(`${year}${monthFixed}${dayFixed}`, 10);
+  }
+  return year;
+};
 
+class Ranking extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tab: 0,
       year: 2010,
-      month: m().format('M'),
-      week: m().format('w'),
-      day: m().format('D'),
-      page: 0,
-      rowsPerPage: 10,
+      month: parseInt(m().format('M'), 10),
+      week: parseInt(m().format('w'), 10),
+      day: parseInt(m().format('D'), 10),
+      battleType: 'All',
     };
   }
 
   render() {
-    const {
-      data: {
-        loading,
-        getKinglist,
-        getKinglistYearly,
-        getKinglistMonthly,
-        getKinglistWeekly,
-        getKinglistDaily,
-      },
-    } = this.props;
-    const { tab, year, month, week, day, page, rowsPerPage } = this.state;
-    let kinglist;
-    if (tab === 0) {
-      kinglist = getKinglist;
-    }
-    if (tab === 1) {
-      kinglist = getKinglistYearly;
-    }
-    if (tab === 2) {
-      kinglist = getKinglistMonthly;
-    }
-    if (tab === 3) {
-      kinglist = getKinglistWeekly;
-    }
-    if (tab === 4) {
-      kinglist = getKinglistDaily;
-    }
+    const { tab, year, month, week, day, battleType } = this.state;
     return (
       <React.Fragment>
         <Tabs
@@ -80,10 +54,10 @@ class Ranking extends React.Component {
           onChange={(e, value) => this.setState({ tab: value })}
         >
           <Tab label="Overall" />
-          <Tab label={`Yearly ${year}`} />
-          <Tab label={`Monthly ${month}`} />
-          <Tab label={`Weekly ${week}`} />
-          <Tab label={`Daily ${day}`} />
+          <Tab label={`Yearly (${year})`} />
+          <Tab label={`Monthly (${year}/${month})`} />
+          <Tab label={`Weekly (${year}/${week})`} />
+          <Tab label={`Daily (${year}/${month}/${day})`} />
         </Tabs>
         <div className={s.root}>
           <Grid container spacing={24}>
@@ -91,102 +65,28 @@ class Ranking extends React.Component {
               <Typography variant="h3" gutterBottom>
                 Ranking
               </Typography>
-              <Paper>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>#</TableCell>
-                      <TableCell>Player</TableCell>
-                      <TableCell>Ranking</TableCell>
-                      <TableCell>Points</TableCell>
-                      <TableCell>Wins</TableCell>
-                      <TableCell>Designed</TableCell>
-                      <TableCell>Extra</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {loading && <CircularProgress />}
-                    {!loading &&
-                      kinglist
-                        .sort((a, b) => {
-                          return b.RankingNM - a.RankingNM;
-                        })
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage,
-                        )
-                        .map((i, no) => {
-                          return (
-                            <TableRow
-                              hover
-                              key={
-                                i.KinglistIndex
-                                  ? i.KinglistIndex
-                                  : i.KinglistYearlyIndex
-                              }
-                            >
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {no + 1 + page * rowsPerPage}.
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                <Kuski kuskiData={i.KuskiData} team flag />
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {parseFloat(i.RankingNM).toFixed(2)}
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {i.PointsNM}
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {i.WinsNM}
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {i.DesignedNM}
-                              </TableCell>
-                              <TableCell
-                                style={{ padding: '4px 10px 4px 10px' }}
-                              >
-                                {i.Year ? i.Year : ''}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                        colSpan={7}
-                        count={kinglist ? kinglist.length : 0}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onChangePage={(e, nextPage) =>
-                          this.setState({ page: nextPage })
-                        }
-                        onChangeRowsPerPage={e =>
-                          this.setState({
-                            page: 0,
-                            rowsPerPage: e.target.value,
-                          })
-                        }
-                        ActionsComponent={PaginationActions}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </Paper>
+              {tab === 0 && <RankingOverall battleType={battleType} />}
+              {tab === 1 && (
+                <RankingYear period={year} battleType={battleType} />
+              )}
+              {tab === 2 && (
+                <RankingMonth
+                  period={formatPeriod('month', year, month, week, day)}
+                  battleType={battleType}
+                />
+              )}
+              {tab === 3 && (
+                <RankingWeek
+                  period={formatPeriod('week', year, month, week, day)}
+                  battleType={battleType}
+                />
+              )}
+              {tab === 4 && (
+                <RankingDay
+                  period={formatPeriod('day', year, month, week, day)}
+                  battleType={battleType}
+                />
+              )}
             </Grid>
             <Grid item xs={12} sm={4}>
               <Typography variant="h3" gutterBottom>
@@ -217,6 +117,22 @@ class Ranking extends React.Component {
                     weekUpdated={newWeek => this.setState({ week: newWeek })}
                   />
                 )}
+                {tab === 4 && (
+                  <Day dayUpdated={newDay => this.setState({ day: newDay })} />
+                )}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                }}
+              >
+                <BattleTypes
+                  periodType={tab}
+                  typeUpdated={type => this.setState({ battleType: type })}
+                />
               </div>
             </Grid>
           </Grid>
@@ -226,19 +142,4 @@ class Ranking extends React.Component {
   }
 }
 
-export default compose(
-  withStyles(s),
-  graphql(rankingQuery, {
-    options: () => ({
-      variables: {
-        Year: parseInt(m().format('YYYY'), 10),
-        Month: parseInt(`${m().format('YYYY')}${m().format('MM')}`, 10),
-        Week: parseInt(`${m().format('YYYY')}${m().format('WW')}`, 10),
-        Day: parseInt(
-          `${m().format('YYYY')}${m().format('MM')}${m().format('DD')}`,
-          10,
-        ),
-      },
-    }),
-  }),
-)(Ranking);
+export default compose(withStyles(s))(Ranking);
