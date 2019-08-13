@@ -338,7 +338,7 @@ export function calcRankings(getBattleList, battleResults, current) {
                 newRankings.all[r.KuskiIndex][
                   `Designed${result.battle.BattleType}`
                 ],
-              Position: place,
+              Position: place + 1,
               Started: moment(result.battle.Started).format('X'),
             });
             history.push({
@@ -352,7 +352,7 @@ export function calcRankings(getBattleList, battleResults, current) {
                 ? newRankings.all[r.KuskiIndex].WinsAll
                 : 0,
               Designed: newRankings.all[r.KuskiIndex].DesignedAll,
-              Position: place,
+              Position: place + 1,
               Started: moment(result.battle.Started).format('X'),
             });
             // add ranking for year
