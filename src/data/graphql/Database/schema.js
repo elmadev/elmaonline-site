@@ -29,6 +29,12 @@ import {
 } from './kuski/GetKuskis';
 
 import {
+  schema as GetKinglist,
+  queries as GetKinglistQueries,
+  resolvers as GetKinglistResolver,
+} from './kinglist/GetKinglist';
+
+import {
   schema as GetBattletime,
   queries as GetBattletimeQueries,
   resolvers as GetBattletimeResolver,
@@ -75,6 +81,7 @@ export const schema = [
   ...GetBesttime,
   ...GetChatLines,
   ...InsertReplay,
+  ...GetKinglist,
   ...GetTimes,
   ...GetLevelPacks,
 ];
@@ -89,6 +96,7 @@ export const queries = [
   ...GetChatLinesQueries,
   ...GetTimesQueries,
   ...GetLevelPacksQueries,
+  ...GetKinglistQueries,
 ];
 
 export const mutations = [...InsertReplayMutation];
@@ -102,6 +110,7 @@ export const resolvers = merge(
   GetBesttimeResolver,
   GetChatLinesResolver,
   InsertReplayResolver,
+  GetKinglistResolver,
   GetTimesResolver,
   GetLevelPacksResolver,
 );

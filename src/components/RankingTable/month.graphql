@@ -1,0 +1,35 @@
+query RankingQuery($Period: Int!) {
+  getKinglistMonthly(Month: $Period) {
+    KinglistMonthlyIndex
+    KuskiIndex
+    Month
+    PlayedNM
+    PlayedAll
+    PlayedFF
+    PlayedAP
+    WinsNM
+    WinsAll
+    WinsFF
+    WinsAP
+    PointsNM
+    PointsAll
+    PointsFF
+    PointsAP
+    RankingNM
+    RankingAll
+    RankingFF
+    RankingAP
+    DesignedNM
+    DesignedAll
+    DesignedFF
+    DesignedAP
+    KuskiData {
+      KuskiIndex
+      Kuski
+      Country
+      TeamData {
+        Team
+      }
+    }
+  }
+}

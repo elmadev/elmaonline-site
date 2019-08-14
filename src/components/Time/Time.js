@@ -10,10 +10,12 @@ class Time extends React.Component {
     apples: PropTypes.number,
     thousands: PropTypes.bool,
   };
+
   static defaultProps = {
     thousands: false,
     apples: 0,
   };
+
   formatTime = time => {
     if (time === 0) {
       return `${this.props.apples} apple${this.props.apples !== 1 ? `s` : ``}`;

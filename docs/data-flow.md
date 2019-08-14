@@ -14,10 +14,10 @@ When the data model is defined you need to link it so sequelize knows it exists.
 
 Sequelize is the library that does the actual MySQL querying, so you'll be using the sequelize functions to create queries. Learn more on [their website](http://docs.sequelizejs.com/manual/tutorial/querying.html). If there's no folder for the table you're querying create one in /src/data/graphql/Database/ and inside that one create a new .js file. We're using [GetBattles.js](../src/data/graphql/Database/battle/GetBattles.js) here as an example. This consists of 3 or 4 objects:
 
-* schema: Database schema documentation for graphql
-* queries: Database select queries documentation for graphql
-* mutation: Database create/update/delete query documentation for graphql (currently no documented examples)
-* resolvers: The actual queries built using sequelize
+- schema: Database schema documentation for graphql
+- queries: Database select queries documentation for graphql
+- mutation: Database create/update/delete query documentation for graphql (currently no documented examples)
+- resolvers: The actual queries built using sequelize
 
 Inside the resolvers is also where you can apply any extra backend logic you want to apply to the data before sending it to the frontend.
 
@@ -48,9 +48,9 @@ Click the play icon on the top left and you will see the result in the right sid
 
 If you're making a new route (page) create a folder in /src/pages/ which will have a .css, (most likely) a .graphql, an index.js and a Component .js file.
 
-* In the [.graphql](../src/pages/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
-* In the [index.js](../src/pages/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
-* In the [Component.js file](../src/pages/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the `this.props` object that you can use in the render. Deconstruct the `this.props` object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
+- In the [.graphql](../src/pages/home/home.graphql) file you paste the query you made in the graphiQL tool adding "Query SomeName" in front of it. As you can see in this example you can add multiple queries to the same file, and they'll be executed at once.
+- In the [index.js](../src/pages/home/index.js) you import the secondary .js file, and place it as a component in the JSX.
+- In the [Component.js file](../src/pages/home/Home.js) you import the .graphql file at the top, in the bottom you place the object inside the graphql decorator which will place the result object of the query in the `this.props` object that you can use in the render. Deconstruct the `this.props` object to get some nicer sounding variable names. Then you can use the variable in the JSX, for example with a loop/map.
 
 ```js
 {

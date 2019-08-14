@@ -5,12 +5,11 @@ import Flag from 'components/Flag';
 
 const Kuski = ({ kuskiData, team, flag }) => (
   <span>
-    {flag &&
-      kuskiData.Country && (
-        <span>
-          <Flag nationality={kuskiData.Country} />{' '}
-        </span>
-      )}
+    {flag && kuskiData.Country && (
+      <span>
+        <Flag nationality={kuskiData.Country} />{' '}
+      </span>
+    )}
     {kuskiData.Kuski && kuskiData.Kuski}
     {team && kuskiData.TeamData && ` [${kuskiData.TeamData.Team}]`}
   </span>

@@ -31,7 +31,6 @@ import {
   MuiThemeProvider,
   createGenerateClassName,
 } from '@material-ui/core/styles';
-
 import { setRuntimeVariable } from 'actions/runtime';
 import App from 'components/App';
 import Html from 'components/Html';
@@ -51,7 +50,7 @@ import {
   battleresults,
 } from 'utils/events';
 import { discord } from 'utils/discord';
-
+import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
 import config from './config';
@@ -158,6 +157,18 @@ app.get('/dl/level/:id', async (req, res, next) => {
       msg: e.message,
     });
   }
+});
+
+//
+// ranking
+//--------------------------------------------
+app.get('/ranking/:toId/:limit', async (req, res) => {
+  const data = await updateRanking(req.params.toId, req.params.limit);
+  res.json(data);
+});
+app.get('/ranking/delete', async (req, res) => {
+  const data = await deleteRanking();
+  res.json({ deleted: data });
 });
 
 //

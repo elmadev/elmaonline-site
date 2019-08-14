@@ -153,7 +153,7 @@ export function discordBattlestart(content) {
   text += battleIn(content.battleType, content.level);
   text += `${cripple(content)} started by ${content.designer},`;
   text += ` ${content.durationMinutes} mins**\n`;
-  text += `More info <${config.discord.url}battles/${content.battleIndex}>`;
+  text += `More info: <${config.discord.url}battles/${content.battleIndex}>`;
   sendMessage(config.discord.channels.battle, text);
 }
 
@@ -189,7 +189,7 @@ export function discordBattleresults(content) {
   let text = `${config.discord.icons.results} **`;
   text += battleIn(content.battleType, content.level);
   text += `${cripple(content)} by ${content.designer} over**\n`;
-  text += `More info: <${config.discord.url}/battles/${content.battleIndex}>`;
+  text += `More info: <${config.discord.url}battles/${content.battleIndex}>`;
   text += '```\n';
   content.results.map(r => {
     text += `${alignPlacement(r.position)}. `;
