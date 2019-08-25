@@ -19,6 +19,8 @@ import KinglistMonthly from './KinglistMonthly';
 import KinglistWeekly from './KinglistWeekly';
 import KinglistDaily from './KinglistDaily';
 import RankingHistory from './RankingHistory';
+import BestMultitime from './BestMultitime';
+import Multitime from './Multitime';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -132,6 +134,16 @@ KinglistDaily.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+BestMultitime.belongsTo(Multitime, {
+  foreignKey: 'MultiTimeIndex',
+  as: 'TimeData',
+});
+
+Multitime.belongsTo(BestMultitime, {
+  foreignKey: 'MultiTimeIndex',
+  as: 'TimeData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -158,4 +170,6 @@ export {
   KinglistWeekly,
   KinglistDaily,
   RankingHistory,
+  BestMultitime,
+  Multitime,
 }; // add the data model here as well so it exports
