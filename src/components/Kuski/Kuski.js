@@ -4,15 +4,21 @@ import PropTypes from 'prop-types';
 import Flag from 'components/Flag';
 
 const Kuski = ({ kuskiData, team, flag }) => (
-  <span>
-    {flag && kuskiData.Country && (
+  <React.Fragment>
+    {kuskiData ? (
       <span>
-        <Flag nationality={kuskiData.Country} />{' '}
+        {flag && kuskiData.Country && (
+          <span>
+            <Flag nationality={kuskiData.Country} />{' '}
+          </span>
+        )}
+        {kuskiData.Kuski && kuskiData.Kuski}
+        {team && kuskiData.TeamData && ` [${kuskiData.TeamData.Team}]`}
       </span>
+    ) : (
+      <span>Unkonwn</span>
     )}
-    {kuskiData.Kuski && kuskiData.Kuski}
-    {team && kuskiData.TeamData && ` [${kuskiData.TeamData.Team}]`}
-  </span>
+  </React.Fragment>
 );
 
 Kuski.defaultProps = {

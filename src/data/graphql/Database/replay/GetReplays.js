@@ -1,4 +1,4 @@
-import { Replay, Kuski } from 'data/models';
+import { Replay, Kuski, Level } from 'data/models';
 
 export const schema = [
   `
@@ -21,6 +21,7 @@ export const schema = [
     RecFileName: String
     DrivenByData: DatabaseKuski
     UploadedByData: DatabaseKuski
+    LevelData: DatabaseLevel
   }
 `,
 ];
@@ -76,6 +77,21 @@ export const resolvers = {
         limit: 100,
         order: [['ReplayIndex', 'DESC']],
         where: { Unlisted: 0 },
+        include: [
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+          {
+            model: Kuski,
+            as: 'UploadedByData',
+          },
+          {
+            model: Kuski,
+            as: 'DrivenByData',
+          },
+        ],
       });
       return replays;
     },

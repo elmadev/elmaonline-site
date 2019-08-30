@@ -5,7 +5,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import { Kuski, Level, BattleType } from 'components/Names';
+import { Level, BattleType } from 'components/Names';
+import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 
 import s from './battleCard.css';
@@ -23,10 +24,10 @@ const BattleCard = props => {
       <Card className={s.card}>
         <CardContent>
           <Typography variant="h4">
-            <Level index={battle.LevelIndex} />
+            <Level LevelData={battle.LevelData} />
           </Typography>
           <Typography variant="subtitle1" color="textSecondary">
-            <Level long index={battle.LevelIndex} />
+            <Level long LevelData={battle.LevelData} />
           </Typography>
           <Typography
             className={s.info}
@@ -36,7 +37,7 @@ const BattleCard = props => {
             <div>
               <span>Author: </span>
               <strong>
-                <Kuski index={battle.KuskiIndex} />
+                <Kuski kuskiData={battle.KuskiData} />
               </strong>
             </div>
             <div>
@@ -69,7 +70,7 @@ const BattleCard = props => {
 };
 
 BattleCard.propTypes = {
-  battle: PropTypes.isRequired,
+  battle: PropTypes.shape().isRequired,
 };
 
 export default withStyles(s)(BattleCard);

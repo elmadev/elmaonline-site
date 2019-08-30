@@ -42,6 +42,11 @@ Battle.belongsTo(Level, {
   as: 'LevelData',
 });
 
+Replay.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 Battletime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

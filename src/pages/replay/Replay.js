@@ -78,7 +78,7 @@ class Replay extends React.Component {
                     {getReplayByUuid.DrivenByData
                       ? getReplayByUuid.DrivenByData.Kuski
                       : 'Unknown'}{' '}
-                    in <Level index={getReplayByUuid.LevelIndex} />
+                    in <Level LevelData={getReplayByUuid.LevelData} />
                   </div>
                   <br />
                   <Link to={`/levels/${getReplayByUuid.LevelIndex}`}>
@@ -108,7 +108,7 @@ class Replay extends React.Component {
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body2">
                   <React.Fragment>
-                    <Level index={getReplayByUuid.LevelIndex} />.lev
+                    <Level LevelData={getReplayByUuid.LevelData} />.lev
                   </React.Fragment>
                 </Typography>
               </ExpansionPanelSummary>
