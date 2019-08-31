@@ -93,7 +93,7 @@ export const resolvers = {
           },
           {
             model: Level,
-            attributes: ['LevelName'],
+            attributes: ['LevelName', 'LongName'],
             as: 'LevelData',
           },
           {

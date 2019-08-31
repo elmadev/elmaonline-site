@@ -121,7 +121,7 @@ class Home extends React.Component {
                             </TableCell>
                             <TableCell style={{ padding: '4px 10px 4px 10px' }}>
                               <Link to={`/dl/level/${i.LevelIndex}`}>
-                                <Level index={i.LevelIndex} />
+                                <Level LevelData={i.LevelData} />
                               </Link>
                             </TableCell>
                             <TableCell style={{ padding: '4px 10px 4px 10px' }}>

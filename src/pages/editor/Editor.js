@@ -8,9 +8,11 @@ class Editor extends React.Component {
       server: 'https://janka.la:3123',
     });
   }
+
   componentWillUnmount() {
     this.editor.stopAnimationLoop();
   }
+
   render() {
     return (
       <div

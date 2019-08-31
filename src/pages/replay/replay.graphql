@@ -18,5 +18,8 @@ query replayQuery($UUID: String!) {
     DrivenByData {
       Kuski
     }
+    LevelData {
+      LevelName
+    }
   }
 }

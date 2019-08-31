@@ -19,6 +19,7 @@ query HomeNews {
     }
     LevelData {
       LevelName
+      LongName
     }
     Results {
       BattleTimeIndex
@@ -50,5 +51,14 @@ query HomeNews {
     Bug
     Nitro
     Finished
+    LevelData {
+      LevelName
+    }
+    UploadedByData {
+      Kuski
+    }
+    DrivenByData {
+      Kuski
+    }
   }
 }

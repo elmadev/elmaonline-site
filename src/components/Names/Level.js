@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql, compose } from 'react-apollo';
-import levelQuery from './level.graphql';
 
 const formatLevel = level => {
   if (
@@ -16,40 +14,27 @@ const formatLevel = level => {
 class Level extends React.Component {
   static propTypes = {
     long: PropTypes.bool,
-    data: PropTypes.shape({
-      loading: PropTypes.bool.isRequired,
-      getLevel: PropTypes.shape({
-        LevelName: PropTypes.string,
-        LongName: PropTypes.string,
-      }),
-    }).isRequired,
+    LevelData: PropTypes.shape({
+      LevelName: PropTypes.string,
+      LongName: PropTypes.string,
+    }),
   };
 
   static defaultProps = {
     long: false,
+    LevelData: null,
   };
 
   render() {
-    const {
-      data: { getLevel, variables },
-      long,
-    } = this.props;
+    const { LevelData, long } = this.props;
     return (
       <React.Fragment>
-        {long && getLevel && getLevel.LongName}
-        {!long && getLevel && formatLevel(getLevel.LevelName)}
-        {!long && !getLevel && variables.LevelIndex}
+        {long && LevelData && LevelData.LongName}
+        {!long && LevelData && formatLevel(LevelData.LevelName)}
+        {!LevelData && 'Unknown'}
       </React.Fragment>
     );
   }
 }
 
-export default compose(
-  graphql(levelQuery, {
-    options: ownProps => ({
-      variables: {
-        LevelIndex: ownProps.index,
-      },
-    }),
-  }),
-)(Level);
+export default Level;
