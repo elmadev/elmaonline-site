@@ -60,17 +60,19 @@ class App extends React.PureComponent {
   static childContextTypes = ContextType;
 
   getChildContext() {
-    return this.props.context;
+    const { context } = this.props;
+    return context;
   }
 
   render() {
+    const { context, children } = this.props;
     // Here, we are at universe level, sure? ;-)
-    const { client, store } = this.props.context;
+    const { client, store } = context;
     // NOTE: If you need to add or modify header, footer etc. of the app,
     // please do that inside the Layout component.
     return (
       <ApolloProvider client={client}>
-        <ReduxProvider store={store}>{this.props.children}</ReduxProvider>
+        <ReduxProvider store={store}>{children}</ReduxProvider>
       </ApolloProvider>
     );
   }

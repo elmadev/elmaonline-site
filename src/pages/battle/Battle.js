@@ -196,7 +196,7 @@ class Battle extends React.Component {
                 <TableBody>
                   <Query
                     query={GET_BATTLE_TIMES}
-                    variables={{ id: this.props.BattleIndex }}
+                    variables={{ id: BattleIndex }}
                   >
                     {({ data: { getBattleTimes }, loading }) => {
                       if (loading) return null;

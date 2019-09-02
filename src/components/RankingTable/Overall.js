@@ -37,7 +37,7 @@ class RankingOverall extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     return (
-      <React.Fragment>
+      <>
         {getKinglist && (
           <DerpTable
             headers={[
@@ -86,7 +86,7 @@ class RankingOverall extends React.Component {
               })}
           </DerpTable>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

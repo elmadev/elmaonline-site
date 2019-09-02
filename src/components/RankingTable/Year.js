@@ -37,7 +37,7 @@ class RankingYear extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     return (
-      <React.Fragment>
+      <>
         {getKinglistYearly && (
           <DerpTable
             headers={[
@@ -86,7 +86,7 @@ class RankingYear extends React.Component {
               })}
           </DerpTable>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -53,7 +53,7 @@ class Recplayer extends React.Component {
     }
 
     return (
-      <React.Fragment>
+      <>
         {RecPlayer && lev ? (
           <RecPlayer
             recUrl={rec}
@@ -68,7 +68,7 @@ class Recplayer extends React.Component {
         ) : (
           <span>Loading..</span>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -42,7 +42,7 @@ class Year extends React.Component {
     const { year } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Icon
           onClick={() => this.updateYear(year - 1)}
           style={{
@@ -78,7 +78,7 @@ class Year extends React.Component {
         >
           chevron_right
         </Icon>
-      </React.Fragment>
+      </>
     );
   }
 }

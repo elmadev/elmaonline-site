@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * React Starter Kit (https://www.reactstarterkit.com/)
  *
@@ -31,8 +32,9 @@ class Link extends React.Component {
   };
 
   handleClick = event => {
-    if (this.props.onClick) {
-      this.props.onClick(event);
+    const { onClick, to } = this.props;
+    if (onClick) {
+      onClick(event);
     }
 
     if (isModifiedEvent(event) || !isLeftClickEvent(event)) {
@@ -44,7 +46,7 @@ class Link extends React.Component {
     }
 
     event.preventDefault();
-    history.push(this.props.to);
+    history.push(to);
   };
 
   render() {

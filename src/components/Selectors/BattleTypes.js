@@ -47,7 +47,7 @@ class BattleTypes extends React.Component {
     const types = BATTLETYPES[periodTypes[periodType]];
 
     return (
-      <React.Fragment>
+      <>
         <Icon
           onClick={() => this.updateType(-1)}
           style={{
@@ -86,7 +86,7 @@ class BattleTypes extends React.Component {
         >
           chevron_right
         </Icon>
-      </React.Fragment>
+      </>
     );
   }
 }

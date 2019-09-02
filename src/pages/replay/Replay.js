@@ -68,7 +68,7 @@ class Replay extends React.Component {
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body1">
-                  <React.Fragment>{getReplayByUuid.RecFileName}</React.Fragment>
+                  <>{getReplayByUuid.RecFileName}</>
                 </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>

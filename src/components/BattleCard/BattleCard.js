@@ -17,7 +17,7 @@ const BattleCard = props => {
   if (!battle) return null;
 
   return (
-    <React.Fragment>
+    <>
       <Typography variant="h3" gutterBottom>
         Current Battle
       </Typography>
@@ -65,7 +65,7 @@ const BattleCard = props => {
           alt="Elmaonline battle"
         />
       </Card>
-    </React.Fragment>
+    </>
   );
 };
 

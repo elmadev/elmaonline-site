@@ -101,6 +101,7 @@ module.exports = {
     'prettier/prettier': 'error',
     'react/destructuring-assignment': 1,
     'react/static-property-placement': 0,
+    'react/prop-types': 0,
   },
 
   settings: {

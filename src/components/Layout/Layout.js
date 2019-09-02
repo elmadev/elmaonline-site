@@ -25,9 +25,8 @@ class Layout extends React.Component {
   };
 
   render() {
-    const className = this.props.sidebarVisible
-      ? `${s.sideBarExpanded}`
-      : `${s.layout}`;
+    const { sidebarVisible, children } = this.props;
+    const className = sidebarVisible ? `${s.sideBarExpanded}` : `${s.layout}`;
     return (
       <div className={className}>
         <TopBar />
@@ -40,7 +39,7 @@ class Layout extends React.Component {
             boxSizing: 'border-box',
           }}
         >
-          {this.props.children}
+          {children}
         </div>
       </div>
     );

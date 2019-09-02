@@ -37,7 +37,7 @@ class RankingMonth extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     return (
-      <React.Fragment>
+      <>
         {getKinglistDaily && (
           <DerpTable
             headers={[
@@ -86,7 +86,7 @@ class RankingMonth extends React.Component {
               })}
           </DerpTable>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

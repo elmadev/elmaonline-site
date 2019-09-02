@@ -28,11 +28,11 @@ class Level extends React.Component {
   render() {
     const { LevelData, long } = this.props;
     return (
-      <React.Fragment>
+      <>
         {long && LevelData && LevelData.LongName}
         {!long && LevelData && formatLevel(LevelData.LevelName)}
         {!LevelData && 'Unknown'}
-      </React.Fragment>
+      </>
     );
   }
 }
