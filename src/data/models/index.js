@@ -52,6 +52,11 @@ Battletime.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Battletime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'KuskiData2',
+});
+
 AllFinished.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

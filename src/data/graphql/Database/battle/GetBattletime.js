@@ -21,6 +21,7 @@ export const schema = [
     Time: Int
     Apples: Int
     KuskiData: DatabaseKuski
+    KuskiData2: DatabaseKuski
   }
 `,
 ];
@@ -56,6 +57,17 @@ export const resolvers = {
               model: Kuski,
               attributes: ['Kuski', 'Country'],
               as: 'KuskiData',
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'KuskiData2',
               include: [
                 {
                   model: Team,
