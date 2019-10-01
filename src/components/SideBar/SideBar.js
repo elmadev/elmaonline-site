@@ -16,19 +16,20 @@ class SideBar extends React.Component {
 
   onNavigation = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 1000) {
-      this.props.toggleSidebar();
+      this.props.toggleSidebar(); // eslint-disable-line
     }
   };
 
   onToggle = () => {
-    this.props.toggleSidebar();
+    this.props.toggleSidebar(); // eslint-disable-line
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 10);
   };
 
   render() {
-    const className = this.props.sidebarVisible ? ` ${s.expanded}` : '';
+    const { sidebarVisible } = this.props;
+    const className = sidebarVisible ? ` ${s.expanded}` : '';
     return (
       <div className={s.root + className}>
         <div className={s.container}>

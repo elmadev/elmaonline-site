@@ -334,7 +334,7 @@ app.get('*', async (req, res, next) => {
       s3SubFolder: config.s3SubFolder,
     };
 
-    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
+    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {

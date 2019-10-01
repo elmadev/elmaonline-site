@@ -29,7 +29,7 @@ class Week extends React.Component {
     const { week } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Icon
           onClick={() => this.updateWeek(week - 1)}
           style={{
@@ -65,7 +65,7 @@ class Week extends React.Component {
         >
           chevron_right
         </Icon>
-      </React.Fragment>
+      </>
     );
   }
 }

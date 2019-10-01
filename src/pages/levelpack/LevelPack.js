@@ -60,7 +60,7 @@ const LevelPopup = withStyles(s)(({ levelId, close }) => {
           if (loading) return null;
 
           return (
-            <React.Fragment>
+            <>
               <div className={s.levelTimesContainer}>
                 <div className={s.title}>
                   {getLevel.LevelName}.lev
@@ -101,7 +101,7 @@ const LevelPopup = withStyles(s)(({ levelId, close }) => {
                   <Link to={`/levels/${levelId}`}>Go to level page</Link>
                 </div>
               </div>
-            </React.Fragment>
+            </>
           );
         }}
       </Query>
@@ -118,7 +118,7 @@ const LevelPack = ({ name }) => {
           if (loading) return null;
           if (error) return <div>something went wrong</div>;
           return (
-            <React.Fragment>
+            <>
               <div className={s.levelPackName}>
                 <span className={s.shortName}>
                   {getLevelPack.LevelPackName}
@@ -159,7 +159,7 @@ const LevelPack = ({ name }) => {
                   }}
                 />
               )}
-            </React.Fragment>
+            </>
           );
         }}
       </Query>

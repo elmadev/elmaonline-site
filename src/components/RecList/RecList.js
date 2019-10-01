@@ -76,7 +76,10 @@ class RecList extends React.Component {
     });
   }
 
-  isSelected = uuid => this.props.currentUUID === uuid;
+  isSelected = uuid => {
+    const { currentUUID } = this.props;
+    return currentUUID === uuid;
+  };
 
   handleOpenReplay(uuid) {
     historyRefresh.push({
@@ -107,12 +110,12 @@ class RecList extends React.Component {
       return show;
     };
     return (
-      <React.Fragment>
+      <>
         <div>
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showTAS}
+                checked={showTAS}
                 onChange={() => this.onFilterChange('showTAS')}
                 value="ShowTAS"
                 color="primary"
@@ -123,7 +126,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showDNF}
+                checked={showDNF}
                 onChange={() => this.onFilterChange('showDNF')}
                 value="ShowDNF"
                 color="primary"
@@ -136,7 +139,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showBug}
+                checked={showBug}
                 onChange={() => this.onFilterChange('showBug')}
                 value="showBug"
                 color="primary"
@@ -147,7 +150,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showNitro}
+                checked={showNitro}
                 onChange={() => this.onFilterChange('showNitro')}
                 value="showNitro"
                 color="primary"
@@ -184,7 +187,7 @@ class RecList extends React.Component {
             )}
           </TableBody>
         </Table>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -44,7 +44,7 @@ class Month extends React.Component {
     const { month } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Icon
           onClick={() => this.updateMonth(month - 1)}
           style={{
@@ -80,7 +80,7 @@ class Month extends React.Component {
         >
           chevron_right
         </Icon>
-      </React.Fragment>
+      </>
     );
   }
 }

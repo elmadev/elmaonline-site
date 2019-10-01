@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Flag from 'components/Flag';
 
 const Kuski = ({ kuskiData, team, flag }) => (
-  <React.Fragment>
+  <>
     {kuskiData ? (
       <span>
         {flag && kuskiData.Country && (
@@ -18,16 +18,17 @@ const Kuski = ({ kuskiData, team, flag }) => (
     ) : (
       <span>Unkonwn</span>
     )}
-  </React.Fragment>
+  </>
 );
 
 Kuski.defaultProps = {
   team: false,
   flag: false,
+  kuskiData: null,
 };
 
 Kuski.propTypes = {
-  kuskiData: PropTypes.shape({}).isRequired,
+  kuskiData: PropTypes.shape({}),
   team: PropTypes.bool,
   flag: PropTypes.bool,
 };

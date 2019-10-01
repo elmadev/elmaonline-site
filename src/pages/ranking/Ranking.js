@@ -48,7 +48,7 @@ class Ranking extends React.Component {
   render() {
     const { tab, year, month, week, day, battleType } = this.state;
     return (
-      <React.Fragment>
+      <>
         <Tabs
           value={tab}
           onChange={(e, value) => this.setState({ tab: value })}
@@ -137,7 +137,7 @@ class Ranking extends React.Component {
             </Grid>
           </Grid>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

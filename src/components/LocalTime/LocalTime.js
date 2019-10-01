@@ -7,8 +7,8 @@ const formatDate = (date, format, parse) =>
 
 const LocalTime = props => {
   const { date, format, parse } = props;
-  if (parseInt(date, 10) === 0) return <React.Fragment />;
-  return <React.Fragment>{formatDate(date, format, parse)}</React.Fragment>;
+  if (parseInt(date, 10) === 0) return <></>;
+  return <>{formatDate(date, format, parse)}</>;
 };
 
 LocalTime.propTypes = {

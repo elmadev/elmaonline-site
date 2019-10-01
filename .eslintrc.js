@@ -99,7 +99,9 @@ module.exports = {
     // ESLint plugin for prettier formatting
     // https://github.com/prettier/eslint-plugin-prettier
     'prettier/prettier': 'error',
-    'react/destructuring-assignment': 'always',
+    'react/destructuring-assignment': 1,
+    'react/static-property-placement': 0,
+    'react/prop-types': 0,
   },
 
   settings: {
