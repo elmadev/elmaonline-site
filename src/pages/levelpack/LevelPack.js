@@ -33,7 +33,7 @@ const GET_LEVELPACK = gql`
 
 const GET_LEVEL = gql`
   query($LevelIndex: Int!) {
-    getBestTimes(LevelIndex: $LevelIndex) {
+    getBestTimes(LevelIndex: $LevelIndex, Limit: 10) {
       TimeIndex
       KuskiIndex
       Time
@@ -48,6 +48,23 @@ const GET_LEVEL = gql`
     getLevel(LevelIndex: $LevelIndex) {
       LevelName
       LongName
+    }
+  }
+`;
+
+const GET_BEST_TIME = gql`
+  query($LevelIndex: Int!) {
+    getBestTimes(LevelIndex: $LevelIndex, Limit: 1) {
+      TimeIndex
+      KuskiIndex
+      Time
+      KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
     }
   }
 `;
@@ -83,7 +100,7 @@ const LevelPopup = withStyles(s)(({ levelId, close }) => {
                     <span>Kuski</span>
                     <span>Time</span>
                   </div>
-                  {getBestTimes.splice(0, 10).map((t, i) => {
+                  {getBestTimes.map((t, i) => {
                     return (
                       <div key={t.TimeIndex}>
                         <span>{i + 1}.</span>
@@ -133,6 +150,8 @@ const LevelPack = ({ name }) => {
                 <div className={s.tableHead}>
                   <span>Filename</span>
                   <span>Level name</span>
+                  <span>Kuski</span>
+                  <span>Time</span>
                 </div>
                 {getLevelPack.Levels.map(l => {
                   return (
@@ -147,6 +166,33 @@ const LevelPack = ({ name }) => {
                     >
                       <span>{l.Level.LevelName}</span>
                       <span>{l.Level.LongName}</span>
+                      <Query
+                        query={GET_BEST_TIME}
+                        variables={{ LevelIndex: l.LevelIndex }}
+                      >
+                        {({ data: { getBestTimes } }) => {
+                          if (!getBestTimes || getBestTimes.length < 1)
+                            return (
+                              <>
+                                <span />
+                                <span />
+                              </>
+                            );
+
+                          return getBestTimes.map(t => {
+                            return (
+                              <React.Fragment key={t.TimeIndex}>
+                                <span>
+                                  <Kuski kuskiData={t.KuskiData} team flag />
+                                </span>
+                                <span>
+                                  <Time time={t.Time} />
+                                </span>
+                              </React.Fragment>
+                            );
+                          });
+                        }}
+                      </Query>
                     </Link>
                   );
                 })}
