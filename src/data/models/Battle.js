@@ -90,6 +90,11 @@ const Battle = Model.define(
     RecFileName: {
       type: DataType.STRING(15),
     },
+    Multi: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     RecData: {
       type: DataType.BLOB,
       allowNull: true,

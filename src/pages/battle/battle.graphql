@@ -9,6 +9,7 @@ query Battletime($BattleIndex: Int!) {
     Aborted
     InQueue
     Finished
+    Multi
     LevelData {
       LevelName
     }

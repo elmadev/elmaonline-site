@@ -21,6 +21,7 @@ export const schema = [
     AcceptBugs: Int
     InQueue: Int
     Countdown: Int
+    Multi: Int
     RecFileName: String
     KuskiData: DatabaseKuski
     Results: [DatabaseBattletime]
@@ -277,6 +278,7 @@ export const resolvers = {
           'Aborted',
           'InQueue',
           'Finished',
+          'Multi',
         ],
         where: { BattleIndex /* Finished: 1 */ },
         include: [
