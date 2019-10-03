@@ -48,7 +48,7 @@ export const schema = [
 export const queries = [
   `
     getTimes(LevelIndex: Int!): [DatabaseTime]
-    getBestTimes(LevelIndex: Int!): [DatabaseBestTime]
+    getBestTimes(LevelIndex: Int!, Limit: Int): [DatabaseBestTime]
   `,
 ];
 
@@ -77,7 +77,7 @@ export const resolvers = {
       });
       return times;
     }, */
-    async getBestTimes(parent, { LevelIndex }) {
+    async getBestTimes(parent, { LevelIndex, Limit }) {
       const level = await Level.findOne({
         attributes: ['Hidden', 'Locked'],
         where: { LevelIndex },
@@ -90,6 +90,7 @@ export const resolvers = {
       const times = await sourceModel.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
+        limit: Limit,
         include: [
           {
             model: Kuski,

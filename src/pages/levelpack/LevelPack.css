@@ -50,6 +50,14 @@
   width: 70px;
 }
 
+.levels > * > span:nth-child(2) {
+  width: 300px;
+}
+
+.levels > * > span:nth-child(3) {
+  width: 180px;
+}
+
 .levels a:hover {
   background: #f9f9f9;
 }
