@@ -72,6 +72,11 @@ import {
   resolvers as GetLevelPacksResolver,
 } from './levelpack/LevelPack';
 
+import {
+  queries as SearchQueries,
+  resolvers as SearchResolver,
+} from './search/Search';
+
 export const schema = [
   ...GetBattles, // export the schema object here
   ...GetReplays,
@@ -97,6 +102,7 @@ export const queries = [
   ...GetTimesQueries,
   ...GetLevelPacksQueries,
   ...GetKinglistQueries,
+  ...SearchQueries,
 ];
 
 export const mutations = [...InsertReplayMutation];
@@ -113,4 +119,5 @@ export const resolvers = merge(
   GetKinglistResolver,
   GetTimesResolver,
   GetLevelPacksResolver,
+  SearchResolver,
 );
