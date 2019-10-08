@@ -37,10 +37,14 @@ class RecList extends React.Component {
       ),
     }).isRequired,
     currentUUID: PropTypes.string,
+    columns: PropTypes.arrayOf(PropTypes.string),
+    horizontalMargin: PropTypes.number,
   };
 
   static defaultProps = {
     currentUUID: null,
+    columns: ['Replay', 'Level', 'Time', 'By'],
+    horizontalMargin: 0,
   };
 
   constructor(props) {
@@ -91,6 +95,8 @@ class RecList extends React.Component {
   render() {
     const {
       data: { loading, getReplaysByLevelIndex },
+      columns,
+      horizontalMargin,
     } = this.props;
     const { showTAS, showDNF, showBug, showNitro } = this.state;
     const filterFunction = o => {
@@ -159,13 +165,18 @@ class RecList extends React.Component {
             label="Show Modded"
           />
         </div>
-        <Table>
+        <Table
+          style={{
+            marginLeft: `${horizontalMargin}px`,
+            marginRight: `${horizontalMargin}px`,
+            width: `calc(100% - ${horizontalMargin * 2}px)`,
+          }}
+        >
           <TableHead>
             <TableRow>
-              <TableCell>Replay</TableCell>
-              <TableCell>Level</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>By</TableCell>
+              {columns.map(c => (
+                <TableCell key={c}>{c}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -182,6 +193,7 @@ class RecList extends React.Component {
                   replay={i}
                   openReplay={uuid => this.handleOpenReplay(uuid)}
                   selected={this.isSelected(i.UUID)}
+                  columns={columns}
                 />
               ))
             )}
