@@ -158,8 +158,10 @@ class Level extends React.Component {
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body1">Battles in level</Typography>
               </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <div>
+              <ExpansionPanelDetails
+                style={{ paddingLeft: 0, paddingRight: 0 }}
+              >
+                <div style={{ width: '100%' }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -222,7 +224,11 @@ class Level extends React.Component {
                 <Typography variant="body1">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList LevelIndex={LevelIndex} />
+                <RecList
+                  LevelIndex={LevelIndex}
+                  columns={['Replay', 'Time', 'By']}
+                  horizontalMargin={-24}
+                />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>

@@ -128,6 +128,8 @@ class Replay extends React.Component {
                   LevelIndex={getReplayByUuid.LevelIndex}
                   currentUUID={getReplayByUuid.UUID}
                   openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
+                  columns={['Replay', 'Time', 'By']}
+                  horizontalMargin={-24}
                 />
               </ExpansionPanelDetails>
             </ExpansionPanel>
