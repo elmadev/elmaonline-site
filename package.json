@@ -55,6 +55,7 @@
     "graphql-tools": "^4.0.4",
     "history": "^4.9.0",
     "isomorphic-style-loader": "^5.0.1",
+    "jws": "^3.2.2",
     "level-editor-gui": "https://github.com/ville-j/level-editor-gui.git",
     "lodash": "4.17.15",
     "moment": "^2.24.0",
@@ -85,6 +86,7 @@
     "sequelize": "^5.7.0",
     "serialize-javascript": "^1.7.0",
     "source-map-support": "^0.5.12",
+    "universal-cookie": "^4.0.2",
     "universal-router": "^8.1.0",
     "whatwg-fetch": "^3.0.0"
   },

@@ -50,6 +50,7 @@ import {
   battleresults,
 } from 'utils/events';
 import { discord } from 'utils/discord';
+import { auth, authContext } from 'utils/auth';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -89,6 +90,11 @@ app.use(
 if (__DEV__) {
   app.enable('trust proxy');
 }
+
+app.post('/token', async (req, res) => {
+  const authResponse = await auth(req.body);
+  res.json({ Response: authResponse });
+});
 
 //
 // Events API
@@ -238,6 +244,7 @@ app.get('*', async (req, res, next) => {
     const apolloClient = createApolloClient({
       schema,
       rootValue: { request: req },
+      context: authContext(req),
     });
 
     // Universal HTTP client
