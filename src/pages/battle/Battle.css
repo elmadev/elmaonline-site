@@ -117,7 +117,7 @@
   border: 2px solid #219653;
   border-radius: 50%;
   margin: 6px;
-  z-index: 10;
+  z-index: 2;
   position: relative;
 }
 
@@ -129,7 +129,7 @@
   top: 0;
   left: 50%;
   margin-left: -1px;
-  z-index: 9;
+  z-index: 1;
 }
 
 .timeDevelopmentRow:first-child .timelineLine {
