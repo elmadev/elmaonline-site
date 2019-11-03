@@ -16,6 +16,7 @@ import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Upload from 'components/Upload';
 import RecListItem from 'components/RecListItem';
+import Login from 'components/Login';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
@@ -151,6 +152,7 @@ class Home extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
+            <Login />
             <Typography variant="h3" gutterBottom>
               Upload Replays
             </Typography>
