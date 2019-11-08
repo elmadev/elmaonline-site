@@ -27,8 +27,8 @@ If you need to access the info of logged in user you can do it using the third p
 export const resolvers = {
   RootQuery: {
     async getReplays(parent, args, context) {
-      const Kuski = context.userInfo.payload.username;
-      const KuskiIndex = context.userInfo.payload.userid;
+      const Kuski = context.user;
+      const KuskiIndex = context.userid;
     }
   }
 }
