@@ -24,6 +24,7 @@ class Login extends React.Component {
       password: '',
       loggedIn: false,
       collapsed: true,
+      loading: true,
     };
   }
 
@@ -36,6 +37,7 @@ class Login extends React.Component {
       this.setState({
         kuski: username,
         loggedIn: true,
+        loading: false,
       });
     }
   }
@@ -73,18 +75,22 @@ class Login extends React.Component {
 
   render() {
     const { oneLine, collapsable } = this.props;
-    const { kuski, password, loggedIn, collapsed } = this.state;
+    const { kuski, password, loggedIn, collapsed, loading } = this.state;
     const showForm = !collapsable || !collapsed;
     return (
       <>
         {!showForm && (
-          <Button onClick={() => this.setState({ collapsed: !collapsed })}>
+          <Button
+            onClick={() =>
+              this.setState(state => ({ collapsed: !state.collapsed }))
+            }
+          >
             Log in
           </Button>
         )}
         {showForm && (
           <div className={oneLine ? s.oneLineContainer : s.container}>
-            {loggedIn && (
+            {loggedIn && !loading && (
               <div className={s.loggedIn}>
                 <div>Welcome {kuski}</div>
                 <Button onClick={() => this.logout()} variant="contained">
@@ -92,7 +98,7 @@ class Login extends React.Component {
                 </Button>
               </div>
             )}
-            {!loggedIn && (
+            {!loggedIn && !loading && (
               <>
                 <div className={s.textfield}>
                   <TextField

@@ -222,6 +222,7 @@ const graphqlMiddleware = expressGraphQL(req => ({
   schema,
   graphiql: __DEV__,
   rootValue: { request: req },
+  context: authContext(req),
   pretty: __DEV__,
 }));
 

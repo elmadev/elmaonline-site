@@ -62,7 +62,13 @@ export function authContext(req) {
   if (req.cookies.token) {
     if (jws.verify(req.cookies.token, config.jwtAlgo, config.jwtSecret)) {
       const userInfo = jws.decode(req.cookies.token);
-      return { auth: true, userInfo };
+      const payload = JSON.parse(userInfo.payload);
+      return {
+        auth: true,
+        user: payload.username,
+        userid: payload.userid,
+        signature: userInfo.signature,
+      };
     }
   }
   return { auth: false };
