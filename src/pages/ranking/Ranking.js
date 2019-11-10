@@ -117,9 +117,6 @@ class Ranking extends React.Component {
                     weekUpdated={newWeek => this.setState({ week: newWeek })}
                   />
                 )}
-                {tab === 4 && (
-                  <Day dayUpdated={newDay => this.setState({ day: newDay })} />
-                )}
               </div>
               <div
                 style={{
@@ -129,6 +126,9 @@ class Ranking extends React.Component {
                   alignItems: 'center',
                 }}
               >
+                {tab === 4 && (
+                  <Day dayUpdated={newDay => this.setState({ day: newDay })} />
+                )}
                 <BattleTypes
                   periodType={tab}
                   typeUpdated={type => this.setState({ battleType: type })}
