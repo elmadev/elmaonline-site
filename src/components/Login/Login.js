@@ -39,6 +39,16 @@ class Login extends React.Component {
         loggedIn: true,
         loading: false,
       });
+    } else {
+      this.setState({
+        loading: false,
+      });
+    }
+  }
+
+  onEnter(e) {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      this.login();
     }
   }
 
@@ -108,6 +118,7 @@ class Login extends React.Component {
                     onChange={this.handleChange('kuski')}
                     margin="normal"
                     fullWidth={!oneLine}
+                    onKeyPress={e => this.onEnter(e)}
                   />
                 </div>
                 <div className={s.textfield}>
@@ -120,6 +131,7 @@ class Login extends React.Component {
                     value={password}
                     onChange={this.handleChange('password')}
                     fullWidth={!oneLine}
+                    onKeyPress={e => this.onEnter(e)}
                   />
                 </div>
                 <div className={s.buttonContainer}>
