@@ -45,6 +45,10 @@ class BattleTypes extends React.Component {
     const { type } = this.state;
     const { periodType } = this.props;
     const types = BATTLETYPES[periodTypes[periodType]];
+    let selected = type;
+    if (types.indexOf(type) === -1) {
+      selected = types[0];
+    }
 
     return (
       <>
@@ -61,7 +65,7 @@ class BattleTypes extends React.Component {
         <FormControl>
           <InputLabel htmlFor="type-simple">Battle Type</InputLabel>
           <Select
-            value={type}
+            value={selected}
             onChange={e => this.updateType(e.target.value)}
             inputProps={{
               name: 'type',

@@ -13,6 +13,15 @@ query RankingQuery {
     PlayedAP
     PlayedSP
     PlayedFC
+    PlayedNV
+    PlayedNT
+    PlayedOT
+    PlayedNB
+    PlayedNTH
+    PlayedAT
+    PlayedD
+    PlayedOW
+    PlayedM
     WinsNM
     WinsAll
     WinsFF
@@ -24,6 +33,15 @@ query RankingQuery {
     WinsAP
     WinsSP
     WinsFC
+    WinsNV
+    WinsNT
+    WinsOT
+    WinsNB
+    WinsNTH
+    WinsAT
+    WinsD
+    WinsOW
+    WinsM
     RowNM
     BestRowNM
     BestRowAll
@@ -39,6 +57,15 @@ query RankingQuery {
     PointsAP
     PointsSP
     PointsFC
+    PointsNV
+    PointsNT
+    PointsOT
+    PointsNB
+    PointsNTH
+    PointsAT
+    PointsD
+    PointsOW
+    PointsM
     RankingNM
     RankingAll
     RankingFF
@@ -50,6 +77,15 @@ query RankingQuery {
     RankingAP
     RankingSP
     RankingFC
+    RankingNV
+    RankingNT
+    RankingOT
+    RankingNB
+    RankingNTH
+    RankingAT
+    RankingD
+    RankingOW
+    RankingM
     DesignedNM
     DesignedAll
     DesignedFF
@@ -61,6 +97,15 @@ query RankingQuery {
     DesignedAP
     DesignedSP
     DesignedFC
+    DesignedNV
+    DesignedNT
+    DesignedOT
+    DesignedNB
+    DesignedNTH
+    DesignedAT
+    DesignedD
+    DesignedOW
+    DesignedM
     KuskiData {
       KuskiIndex
       Kuski

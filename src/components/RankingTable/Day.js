@@ -36,6 +36,7 @@ class RankingMonth extends React.Component {
     const Ranking = `Ranking${battleType}`;
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
+    const Played = `Played${battleType}`;
     return (
       <>
         {getKinglistDaily && (
@@ -47,7 +48,7 @@ class RankingMonth extends React.Component {
               'Points',
               'Wins',
               'Designed',
-              'Day',
+              'Played',
             ]}
             length={getKinglistDaily.length}
             pagination
@@ -80,7 +81,7 @@ class RankingMonth extends React.Component {
                     <DerpTableCell>{i[Points]}</DerpTableCell>
                     <DerpTableCell>{i[Wins]}</DerpTableCell>
                     <DerpTableCell>{i[Designed]}</DerpTableCell>
-                    <DerpTableCell>{i.Day ? i.Day : ''}</DerpTableCell>
+                    <DerpTableCell>{i[Played]}</DerpTableCell>
                   </TableRow>
                 );
               })}

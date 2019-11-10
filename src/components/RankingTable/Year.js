@@ -36,6 +36,7 @@ class RankingYear extends React.Component {
     const Ranking = `Ranking${battleType}`;
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
+    const Played = `Played${battleType}`;
     return (
       <>
         {getKinglistYearly && (
@@ -47,7 +48,7 @@ class RankingYear extends React.Component {
               'Points',
               'Wins',
               'Designed',
-              'Year',
+              'Played',
             ]}
             length={getKinglistYearly.length}
             pagination
@@ -80,7 +81,7 @@ class RankingYear extends React.Component {
                     <DerpTableCell>{i[Points]}</DerpTableCell>
                     <DerpTableCell>{i[Wins]}</DerpTableCell>
                     <DerpTableCell>{i[Designed]}</DerpTableCell>
-                    <DerpTableCell>{i.Year ? i.Year : ''}</DerpTableCell>
+                    <DerpTableCell>{i[Played]}</DerpTableCell>
                   </TableRow>
                 );
               })}
