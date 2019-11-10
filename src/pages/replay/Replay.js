@@ -68,7 +68,7 @@ class Replay extends React.Component {
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body1">
-                  <React.Fragment>{getReplayByUuid.RecFileName}</React.Fragment>
+                  <>{getReplayByUuid.RecFileName}</>
                 </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
@@ -128,6 +128,8 @@ class Replay extends React.Component {
                   LevelIndex={getReplayByUuid.LevelIndex}
                   currentUUID={getReplayByUuid.UUID}
                   openReplay={uuid => historyRefresh.push(`/r/${uuid}`)}
+                  columns={['Replay', 'Time', 'By']}
+                  horizontalMargin={-24}
                 />
               </ExpansionPanelDetails>
             </ExpansionPanel>

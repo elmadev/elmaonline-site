@@ -14,6 +14,15 @@ query RankingQuery($Period: Int!) {
     PlayedAP
     PlayedSP
     PlayedFC
+    PlayedNV
+    PlayedNT
+    PlayedOT
+    PlayedNB
+    PlayedNTH
+    PlayedAT
+    PlayedD
+    PlayedOW
+    PlayedM
     WinsNM
     WinsAll
     WinsFF
@@ -25,6 +34,15 @@ query RankingQuery($Period: Int!) {
     WinsAP
     WinsSP
     WinsFC
+    WinsNV
+    WinsNT
+    WinsOT
+    WinsNB
+    WinsNTH
+    WinsAT
+    WinsD
+    WinsOW
+    WinsM
     PointsNM
     PointsAll
     PointsFF
@@ -36,6 +54,15 @@ query RankingQuery($Period: Int!) {
     PointsAP
     PointsSP
     PointsFC
+    PointsNV
+    PointsNT
+    PointsOT
+    PointsNB
+    PointsNTH
+    PointsAT
+    PointsD
+    PointsOW
+    PointsM
     RankingNM
     RankingAll
     RankingFF
@@ -47,6 +74,15 @@ query RankingQuery($Period: Int!) {
     RankingAP
     RankingSP
     RankingFC
+    RankingNV
+    RankingNT
+    RankingOT
+    RankingNB
+    RankingNTH
+    RankingAT
+    RankingD
+    RankingOW
+    RankingM
     DesignedNM
     DesignedAll
     DesignedFF
@@ -58,6 +94,15 @@ query RankingQuery($Period: Int!) {
     DesignedAP
     DesignedSP
     DesignedFC
+    DesignedNV
+    DesignedNT
+    DesignedOT
+    DesignedNB
+    DesignedNTH
+    DesignedAT
+    DesignedD
+    DesignedOW
+    DesignedM
     KuskiData {
       KuskiIndex
       Kuski

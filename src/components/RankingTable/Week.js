@@ -36,8 +36,9 @@ class RankingMonth extends React.Component {
     const Ranking = `Ranking${battleType}`;
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
+    const Played = `Played${battleType}`;
     return (
-      <React.Fragment>
+      <>
         {getKinglistWeekly && (
           <DerpTable
             headers={[
@@ -47,7 +48,7 @@ class RankingMonth extends React.Component {
               'Points',
               'Wins',
               'Designed',
-              'Week',
+              'Played',
             ]}
             length={getKinglistWeekly.length}
             pagination
@@ -80,13 +81,13 @@ class RankingMonth extends React.Component {
                     <DerpTableCell>{i[Points]}</DerpTableCell>
                     <DerpTableCell>{i[Wins]}</DerpTableCell>
                     <DerpTableCell>{i[Designed]}</DerpTableCell>
-                    <DerpTableCell>{i.Week ? i.Week : ''}</DerpTableCell>
+                    <DerpTableCell>{i[Played]}</DerpTableCell>
                   </TableRow>
                 );
               })}
           </DerpTable>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

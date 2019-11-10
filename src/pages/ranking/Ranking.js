@@ -48,7 +48,7 @@ class Ranking extends React.Component {
   render() {
     const { tab, year, month, week, day, battleType } = this.state;
     return (
-      <React.Fragment>
+      <>
         <Tabs
           value={tab}
           onChange={(e, value) => this.setState({ tab: value })}
@@ -117,9 +117,6 @@ class Ranking extends React.Component {
                     weekUpdated={newWeek => this.setState({ week: newWeek })}
                   />
                 )}
-                {tab === 4 && (
-                  <Day dayUpdated={newDay => this.setState({ day: newDay })} />
-                )}
               </div>
               <div
                 style={{
@@ -129,6 +126,9 @@ class Ranking extends React.Component {
                   alignItems: 'center',
                 }}
               >
+                {tab === 4 && (
+                  <Day dayUpdated={newDay => this.setState({ day: newDay })} />
+                )}
                 <BattleTypes
                   periodType={tab}
                   typeUpdated={type => this.setState({ battleType: type })}
@@ -137,7 +137,7 @@ class Ranking extends React.Component {
             </Grid>
           </Grid>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

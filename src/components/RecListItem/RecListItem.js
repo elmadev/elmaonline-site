@@ -23,11 +23,13 @@ class RecListItem extends React.Component {
     }).isRequired,
     openReplay: PropTypes.func,
     selected: PropTypes.bool,
+    columns: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
     openReplay: null,
     selected: false,
+    columns: ['Replay', 'Level', 'Time', 'By'],
   };
 
   handleOpenReplay(uuid) {
@@ -40,7 +42,7 @@ class RecListItem extends React.Component {
   }
 
   render() {
-    const { replay, selected } = this.props;
+    const { replay, selected, columns } = this.props;
     return (
       <TableRow
         hover
@@ -49,24 +51,36 @@ class RecListItem extends React.Component {
         onClick={() => this.handleOpenReplay(replay.UUID)}
         selected={selected}
       >
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Level LevelData={replay.LevelData} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px', textAlign: 'right' }}>
-          {replay.TAS === 1 && <span style={{ color: 'red' }}>(TAS) </span>}
-          {replay.Finished === 0 && (
-            <span style={{ color: 'gray' }}>(DNF) </span>
-          )}
-          {replay.Bug === 1 && <span style={{ color: 'brown' }}>(Bug) </span>}
-          {replay.Nitro === 1 && <span style={{ color: 'blue' }}>(Mod) </span>}
-          <Time thousands time={replay.ReplayTime} />
-        </TableCell>
-        <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-          <Kuski kuskiData={replay.DrivenByData} />
-        </TableCell>
+        {columns.indexOf('Replay') !== -1 && (
+          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+            <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
+          </TableCell>
+        )}
+        {columns.indexOf('Level') !== -1 && (
+          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+            <Level LevelData={replay.LevelData} />
+          </TableCell>
+        )}
+        {columns.indexOf('Time') !== -1 && (
+          <TableCell
+            style={{ padding: '4px 10px 4px 10px', textAlign: 'right' }}
+          >
+            {replay.TAS === 1 && <span style={{ color: 'red' }}>(TAS) </span>}
+            {replay.Finished === 0 && (
+              <span style={{ color: 'gray' }}>(DNF) </span>
+            )}
+            {replay.Bug === 1 && <span style={{ color: 'brown' }}>(Bug) </span>}
+            {replay.Nitro === 1 && (
+              <span style={{ color: 'blue' }}>(Mod) </span>
+            )}
+            <Time thousands time={replay.ReplayTime} />
+          </TableCell>
+        )}
+        {columns.indexOf('By') !== -1 && (
+          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+            <Kuski kuskiData={replay.DrivenByData} />
+          </TableCell>
+        )}
       </TableRow>
     );
   }

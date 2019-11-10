@@ -49,9 +49,13 @@ export const mutation = [
 
 export const resolvers = {
   Mutation: {
-    async insertReplay(parent, args) {
+    async insertReplay(parent, args, context) {
+      let UploadedBy = 0;
+      if (context.auth) {
+        UploadedBy = context.userid;
+      }
       const replay = await Replay.create({
-        UploadedBy: args.UploadedBy,
+        UploadedBy,
         UUID: args.UUID,
         RecFileName: args.RecFileName,
         Uploaded: args.Uploaded,

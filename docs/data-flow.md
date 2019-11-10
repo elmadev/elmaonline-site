@@ -21,6 +21,19 @@ Sequelize is the library that does the actual MySQL querying, so you'll be using
 
 Inside the resolvers is also where you can apply any extra backend logic you want to apply to the data before sending it to the frontend.
 
+If you need to access the info of logged in user you can do it using the third parameter in the resolver function. Like so:
+
+```
+export const resolvers = {
+  RootQuery: {
+    async getReplays(parent, args, context) {
+      const Kuski = context.user;
+      const KuskiIndex = context.userid;
+    }
+  }
+}
+```
+
 ## 4. Linking the queries
 
 After creating the database queries you need to link them in the graphql [schema.js](../src/data/graphql/Database/schema.js).

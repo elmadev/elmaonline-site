@@ -64,6 +64,10 @@ const routes = {
       path: '/r/:uuid',
       load: () => import(/* webpackChunkName: 'replay' */ './pages/replay'),
     },
+    {
+      path: '/search',
+      load: () => import(/* webpackChunkName: 'search' */ './pages/search'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

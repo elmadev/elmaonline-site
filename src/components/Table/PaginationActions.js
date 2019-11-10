@@ -8,22 +8,23 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 class PaginationActions extends React.Component {
   handleFirstPageButtonClick = event => {
-    this.props.onChangePage(event, 0);
+    const { onChangePage } = this.props;
+    onChangePage(event, 0);
   };
 
   handleBackButtonClick = event => {
-    this.props.onChangePage(event, this.props.page - 1);
+    const { onChangePage, page } = this.props;
+    onChangePage(event, page - 1);
   };
 
   handleNextButtonClick = event => {
-    this.props.onChangePage(event, this.props.page + 1);
+    const { onChangePage, page } = this.props;
+    onChangePage(event, page + 1);
   };
 
   handleLastPageButtonClick = event => {
-    this.props.onChangePage(
-      event,
-      Math.max(0, Math.ceil(this.props.count / this.props.rowsPerPage) - 1),
-    );
+    const { onChangePage, count, rowsPerPage } = this.props;
+    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
   render() {

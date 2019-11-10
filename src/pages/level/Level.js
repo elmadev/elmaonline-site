@@ -117,7 +117,9 @@ class Level extends React.Component {
   render() {
     const {
       data: { getBestTimes, getLevel, getBattlesForLevel, loading },
+      LevelIndex,
     } = this.props;
+    const { tab } = this.state;
     const isWindow = typeof window !== 'undefined';
     return (
       <div className={s.root}>
@@ -128,10 +130,7 @@ class Level extends React.Component {
               {isWindow &&
                 (getBattlesForLevel.length < 1 ||
                   battleStatus(getBattlesForLevel[0]) !== 'Queued') && (
-                  <Recplayer
-                    lev={`/dl/level/${this.props.LevelIndex}`}
-                    controls
-                  />
+                  <Recplayer lev={`/dl/level/${LevelIndex}`} controls />
                 )}
             </div>
           )}
@@ -150,7 +149,7 @@ class Level extends React.Component {
                     <div className={s.levelFullName}>{getLevel.LongName}</div>
                     <br />
                     {'Level ID: '}
-                    {`${this.props.LevelIndex}`}
+                    {`${LevelIndex}`}
                   </div>
                 </ExpansionPanelDetails>
               </ExpansionPanel>
@@ -159,8 +158,10 @@ class Level extends React.Component {
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="body1">Battles in level</Typography>
               </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <div>
+              <ExpansionPanelDetails
+                style={{ paddingLeft: 0, paddingRight: 0 }}
+              >
+                <div style={{ width: '100%' }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -223,7 +224,11 @@ class Level extends React.Component {
                 <Typography variant="body1">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList LevelIndex={this.props.LevelIndex} />
+                <RecList
+                  LevelIndex={LevelIndex}
+                  columns={['Replay', 'Time', 'By']}
+                  horizontalMargin={-24}
+                />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           </div>
@@ -232,25 +237,23 @@ class Level extends React.Component {
           <Paper>
             {loading && <Loading />}
             {!loading && (
-              <React.Fragment>
-                <Tabs value={this.state.tab} onChange={this.onTabClick}>
+              <>
+                <Tabs value={tab} onChange={this.onTabClick}>
                   <Tab label="Best times" />
                   <Tab label="All times" />
                   <Tab label="Best multi times" />
                   <Tab label="All multi times" />
                 </Tabs>
-                {this.state.tab === 0 && (
+                {tab === 0 && (
                   <TimeTable
                     data={getBestTimes}
                     latestBattle={getBattlesForLevel[0]}
                   />
                 )}
-                {this.state.tab === 1 && <TimeTable data={getBestTimes} />}
-                {this.state.tab === 2 && <TimeTable data={getBestTimes} />}
-                {this.state.tab === 3 && (
-                  <AllTimes LevelIndex={this.props.LevelIndex} />
-                )}
-              </React.Fragment>
+                {tab === 1 && <TimeTable data={getBestTimes} />}
+                {tab === 2 && <TimeTable data={getBestTimes} />}
+                {tab === 3 && <AllTimes LevelIndex={LevelIndex} />}
+              </>
             )}
           </Paper>
         </div>

@@ -32,7 +32,16 @@ const GET_BATTLE_TIMES = gql`
     getBattleTimes(BattleIndex: $id) {
       Time
       KuskiIndex
+      KuskiIndex2
+      Apples
       KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+      KuskiData2 {
         Kuski
         Country
         TeamData {
@@ -196,7 +205,7 @@ class Battle extends React.Component {
                 <TableBody>
                   <Query
                     query={GET_BATTLE_TIMES}
-                    variables={{ id: this.props.BattleIndex }}
+                    variables={{ id: BattleIndex }}
                   >
                     {({ data: { getBattleTimes }, loading }) => {
                       if (loading) return null;
@@ -207,6 +216,12 @@ class Battle extends React.Component {
                             <TableCell>{i + 1}.</TableCell>
                             <TableCell>
                               <Kuski kuskiData={r.KuskiData} flag team />
+                              {getBattle.Multi === 1 && (
+                                <>
+                                  {' '}
+                                  & <Kuski kuskiData={r.KuskiData2} flag team />
+                                </>
+                              )}
                             </TableCell>
                             <TableCell>
                               <Time time={r.Time} apples={r.Apples} />

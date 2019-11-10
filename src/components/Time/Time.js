@@ -17,11 +17,12 @@ class Time extends React.Component {
   };
 
   formatTime = time => {
+    const { apples, thousands } = this.props;
     if (time === 0) {
-      return `${this.props.apples} apple${this.props.apples !== 1 ? `s` : ``}`;
+      return `${apples} apple${apples !== 1 ? `s` : ``}`;
     }
     let values = hundredsValues;
-    if (this.props.thousands) {
+    if (thousands) {
       values = thousandsValues;
     }
     const string = `${Math.floor((time / values[0]) % 60)
@@ -38,7 +39,8 @@ class Time extends React.Component {
   };
 
   render() {
-    return <span>{this.formatTime(this.props.time)}</span>;
+    const { time } = this.props;
+    return <span>{this.formatTime(time)}</span>;
   }
 }
 
