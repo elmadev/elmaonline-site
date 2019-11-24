@@ -6,6 +6,7 @@ import {
   KinglistDaily,
   Kuski,
   Team,
+  RankingHistory,
 } from 'data/models'; // import the data model
 
 export const schema = [
@@ -291,6 +292,7 @@ export const schema = [
     BattleType: String
     Played: Int
     Ranking: Float
+    Increase: Float
     Points: Int
     Wins: Int
     Designed: Int
@@ -312,6 +314,8 @@ export const queries = [
   getKinglistWeekly(Week: Int!): [DatabaseKinglistWeekly]
   # Retrieves kinglist daily stored in the database
   getKinglistDaily(Day: Int!): [DatabaseKinglistDaily]
+  # Retrieves ranking history for a battle
+  getRankingHistoryByBattle(BattleIndex: Int!): [DatabaseRankingHistory]
 `,
 ];
 
@@ -410,6 +414,12 @@ export const resolvers = {
         ],
       });
       return kinglistDaily;
+    },
+    async getRankingHistoryByBattle(parent, { BattleIndex }) {
+      const RankingHistoryByBattle = await RankingHistory.findAll({
+        where: { BattleIndex },
+      });
+      return RankingHistoryByBattle;
     },
   },
 };
