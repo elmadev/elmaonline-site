@@ -304,6 +304,8 @@ export const schema = [
 
 export const queries = [
   `
+  # Retrives kinglist for a single kuski
+  getKinglistByKuski(KuskiIndex: Int!): [DatabaseKinglist]
   # Retrieves kinglist stored in the database
   getKinglist: [DatabaseKinglist]
   # Retrieves kinglist yearly stored in the database
@@ -321,6 +323,12 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
+    async getKinglistByKuski(parent, { KuskiIndex }) {
+      const kinglist = await Kinglist.findAll({
+        where: { KuskiIndex },
+      });
+      return kinglist;
+    },
     async getKinglist() {
       const kinglist = await Kinglist.findAll({
         include: [
