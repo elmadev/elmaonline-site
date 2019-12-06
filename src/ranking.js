@@ -41,7 +41,7 @@ const getBattleResults = async (battleId, done) => {
   done();
 };
 
-const getBattles = async (toId, limit) => {
+const getBattles = async (fromId, limit) => {
   const data = await Battle.findAll({
     attributes: [
       'BattleIndex',
@@ -63,7 +63,7 @@ const getBattles = async (toId, limit) => {
       'Finished',
       'InQueue',
     ],
-    where: { BattleIndex: { [Op.lte]: parseInt(toId, 10) } },
+    where: { BattleIndex: { [Op.gt]: parseInt(fromId, 10) } },
     limit: parseInt(limit, 10),
   });
   return data;
@@ -594,7 +594,7 @@ export const deleteRanking = async () => {
   return true;
 };
 
-export const updateRanking = async (toId, limit) => {
+export const updateRanking = async limit => {
   const current = { all: {}, year: {}, month: {}, week: {}, day: {} };
   const getCurrent = await getCurrentRankings();
   forEach(getCurrent.all, c => {
@@ -616,7 +616,8 @@ export const updateRanking = async (toId, limit) => {
     current.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
       c.dataValues;
   });
-  const getBattleList = await getBattles(toId, limit);
+  const max = await RankingHistory.max('BattleIndex');
+  const getBattleList = await getBattles(max, limit);
   Results = [];
   const { newRankings, history } = await calcRankings(
     getBattleList,

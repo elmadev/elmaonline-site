@@ -64,6 +64,9 @@ module.exports = {
   jwtSecret:
     'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
   jwtAlgo: 'HS256',
+  run: {
+    ranking: 'ueMDaaSlyhNsYGUCGnq0FChDg0DSaPsRb3-gdMXz',
+  },
 
   // Discord, with no token it will not attempt to connect
   // to test locally create own server and bot

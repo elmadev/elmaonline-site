@@ -168,13 +168,23 @@ app.get('/dl/level/:id', async (req, res, next) => {
 //
 // ranking
 //--------------------------------------------
-app.get('/ranking/:toId/:limit', async (req, res) => {
-  const data = await updateRanking(req.params.toId, req.params.limit);
-  res.json(data);
+app.get('/run/ranking/:limit', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await updateRanking(req.params.limit);
+    res.json(data);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
 });
-app.get('/ranking/delete', async (req, res) => {
-  const data = await deleteRanking();
-  res.json({ deleted: data });
+app.get('/run/ranking/delete', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await deleteRanking();
+    res.json({ deleted: data });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
 });
 
 //
