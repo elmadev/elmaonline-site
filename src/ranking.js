@@ -214,7 +214,7 @@ const addRanking = (
 
   // if won battle
   const Row = `Row${type}`;
-  if (place === 0) {
+  if (place === 0 && results.length >= 5) {
     if (BATTLETYPES[periodType].indexOf(type) > -1) {
       const Wins = `Wins${type}`; // battle wins
       if (!newRanking[Wins]) {
@@ -266,7 +266,7 @@ const addRanking = (
         newRanking.BestRowAll = newRanking.RowAll;
       }
     }
-  } else {
+  } else if (results.length >= 5) {
     if (
       type === 'NM' &&
       !period &&
