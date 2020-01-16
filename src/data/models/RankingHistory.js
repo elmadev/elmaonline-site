@@ -34,6 +34,11 @@ const getFields = () => {
       allowNull: false,
       defaultValue: 0,
     },
+    Increase: {
+      type: DataType.DECIMAL(24, 20),
+      allowNull: false,
+      defaultValue: 0,
+    },
     Points: {
       type: DataType.INTEGER,
       allowNull: false,

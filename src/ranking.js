@@ -13,6 +13,7 @@ import {
   RankingHistory,
   Battletime,
 } from './data/models';
+import { getBattleType } from './utils/battle';
 
 const getCurrentRankings = async () => {
   const rankingData = await Kinglist.findAll();
@@ -40,7 +41,7 @@ const getBattleResults = async (battleId, done) => {
   done();
 };
 
-const getBattles = async (toId, limit) => {
+const getBattles = async (fromId, limit) => {
   const data = await Battle.findAll({
     attributes: [
       'BattleIndex',
@@ -62,134 +63,10 @@ const getBattles = async (toId, limit) => {
       'Finished',
       'InQueue',
     ],
-    where: { BattleIndex: { [Op.lte]: parseInt(toId, 10) } },
+    where: { BattleIndex: { [Op.gt]: parseInt(fromId, 10) } },
     limit: parseInt(limit, 10),
   });
   return data;
-};
-
-const getBattleType = battle => {
-  if (battle.BattleType !== 'NM') {
-    return battle.BattleType;
-  }
-  if (
-    battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'NV';
-  }
-  if (
-    !battle.NoVolt &&
-    battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'NT';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'OT';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'NB';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'NTH';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'AT';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    battle.Drunk &&
-    !battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'D';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    battle.OneWheel &&
-    !battle.Multi
-  ) {
-    return 'OW';
-  }
-  if (
-    !battle.NoVolt &&
-    !battle.NoTurn &&
-    !battle.OneTurn &&
-    !battle.NoBrake &&
-    !battle.NoThrottle &&
-    !battle.AlwaysThrottle &&
-    !battle.Drunk &&
-    !battle.OneWheel &&
-    battle.Multi
-  ) {
-    return 'M';
-  }
-  return battle.BattleType;
 };
 
 const skippedBattles = battle => {
@@ -337,7 +214,7 @@ const addRanking = (
 
   // if won battle
   const Row = `Row${type}`;
-  if (place === 0) {
+  if (place === 0 && results.length >= 5) {
     if (BATTLETYPES[periodType].indexOf(type) > -1) {
       const Wins = `Wins${type}`; // battle wins
       if (!newRanking[Wins]) {
@@ -389,7 +266,7 @@ const addRanking = (
         newRanking.BestRowAll = newRanking.RowAll;
       }
     }
-  } else {
+  } else if (results.length >= 5) {
     if (
       type === 'NM' &&
       !period &&
@@ -436,43 +313,49 @@ export function calcRankings(getBattleList, battleResults, current) {
               '',
               'all',
             );
+            const RankingBattleType = getBattleType(result.battle);
+            let previousRanking = 1000;
+            if (current.all[r.KuskiIndex]) {
+              if (current.all[r.KuskiIndex][`Ranking${RankingBattleType}`]) {
+                previousRanking =
+                  current.all[r.KuskiIndex][`Ranking${RankingBattleType}`];
+              }
+            }
             history.push({
               KuskiIndex: r.KuskiIndex,
               BattleIndex: result.battle.BattleIndex,
-              BattleType: result.battle.BattleType,
+              BattleType: RankingBattleType,
               Played:
-                newRankings.all[r.KuskiIndex][
-                  `Played${result.battle.BattleType}`
-                ],
+                newRankings.all[r.KuskiIndex][`Played${RankingBattleType}`],
               Ranking:
-                newRankings.all[r.KuskiIndex][
-                  `Ranking${result.battle.BattleType}`
-                ],
+                newRankings.all[r.KuskiIndex][`Ranking${RankingBattleType}`],
+              Increase:
+                newRankings.all[r.KuskiIndex][`Ranking${RankingBattleType}`] -
+                previousRanking,
               Points:
-                newRankings.all[r.KuskiIndex][
-                  `Points${result.battle.BattleType}`
-                ],
-              Wins:
-                newRankings.all[r.KuskiIndex][
-                  `Wins${result.battle.BattleType}`
-                ],
+                newRankings.all[r.KuskiIndex][`Points${RankingBattleType}`],
+              Wins: newRankings.all[r.KuskiIndex][`Wins${RankingBattleType}`],
               Designed:
-                newRankings.all[r.KuskiIndex][
-                  `Designed${result.battle.BattleType}`
-                ],
+                newRankings.all[r.KuskiIndex][`Designed${RankingBattleType}`],
               Position: place + 1,
               Started: moment(result.battle.Started).format('X'),
             });
+            previousRanking = 1000;
+            if (current.all[r.KuskiIndex]) {
+              if (current.all[r.KuskiIndex].RankingAll) {
+                previousRanking = current.all[r.KuskiIndex].RankingAll;
+              }
+            }
             history.push({
               KuskiIndex: r.KuskiIndex,
               BattleIndex: result.battle.BattleIndex,
               BattleType: 'All',
               Played: newRankings.all[r.KuskiIndex].PlayedAll,
               Ranking: newRankings.all[r.KuskiIndex].RankingAll,
+              Increase:
+                newRankings.all[r.KuskiIndex].RankingAll - previousRanking,
               Points: newRankings.all[r.KuskiIndex].PointsAll,
-              Wins: newRankings.all[r.KuskiIndex].WinsAll
-                ? newRankings.all[r.KuskiIndex].WinsAll
-                : 0,
+              Wins: newRankings.all[r.KuskiIndex].WinsAll,
               Designed: newRankings.all[r.KuskiIndex].DesignedAll,
               Position: place + 1,
               Started: moment(result.battle.Started).format('X'),
@@ -711,7 +594,7 @@ export const deleteRanking = async () => {
   return true;
 };
 
-export const updateRanking = async (toId, limit) => {
+export const updateRanking = async limit => {
   const current = { all: {}, year: {}, month: {}, week: {}, day: {} };
   const getCurrent = await getCurrentRankings();
   forEach(getCurrent.all, c => {
@@ -733,7 +616,8 @@ export const updateRanking = async (toId, limit) => {
     current.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
       c.dataValues;
   });
-  const getBattleList = await getBattles(toId, limit);
+  const max = await RankingHistory.max('BattleIndex');
+  const getBattleList = await getBattles(max, limit);
   Results = [];
   const { newRankings, history } = await calcRankings(
     getBattleList,
