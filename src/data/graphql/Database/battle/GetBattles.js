@@ -12,16 +12,25 @@ export const schema = [
     KuskiIndex: Int
     LevelIndex: Int
     BattleType: String
+    SeeOthers: Int
+    SeeTimes: Int
+    AllowStarter: Int
+    AcceptBugs: Int
+    NoVolt: Int
+    NoTurn: Int
+    OneTurn: Int
+    NoBrake: Int
+    NoThrottle: Int
+    Drunk: Int
+    OneWheel: Int
+    Multi: Int
     Started: String
     StartedUtc: Int
     Duration: Int
     Aborted: Int
     Finished: Int
-    SeeTimes: Int
-    AcceptBugs: Int
     InQueue: Int
     Countdown: Int
-    Multi: Int
     RecFileName: String
     KuskiData: DatabaseKuski
     Results: [DatabaseBattletime]
@@ -61,6 +70,18 @@ const attributes = [
   'KuskiIndex',
   'LevelIndex',
   'BattleType',
+  'SeeOthers',
+  'SeeTimes',
+  'AllowStarter',
+  'AcceptBugs',
+  'NoVolt',
+  'NoTurn',
+  'OneTurn',
+  'NoBrake',
+  'NoThrottle',
+  'Drunk',
+  'OneWheel',
+  'Multi',
   'Started',
   'StartedUtc',
   'Duration',
@@ -268,18 +289,7 @@ export const resolvers = {
     },
     async getBattle(parent, { BattleIndex }) {
       const battle = await Battle.findOne({
-        attributes: [
-          'BattleIndex',
-          'KuskiIndex',
-          'LevelIndex',
-          'Started',
-          'BattleType',
-          'Duration',
-          'Aborted',
-          'InQueue',
-          'Finished',
-          'Multi',
-        ],
+        attributes,
         where: { BattleIndex /* Finished: 1 */ },
         include: [
           {

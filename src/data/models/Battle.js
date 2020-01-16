@@ -28,6 +28,66 @@ const Battle = Model.define(
       allowNull: false,
       defaultValue: '',
     },
+    SeeOthers: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    SeeTimes: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    AllowStarter: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    AcceptBugs: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    NoVolt: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    NoTurn: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    OneTurn: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    NoBrake: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    NoThrottle: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    Drunk: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    OneWheel: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+    Multi: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
     Started: {
       type: DataType.STRING(19),
       allowNull: true,
@@ -67,16 +127,6 @@ const Battle = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    SeeTimes: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    AcceptBugs: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     InQueue: {
       type: DataType.INTEGER,
       allowNull: false,
@@ -89,11 +139,6 @@ const Battle = Model.define(
     },
     RecFileName: {
       type: DataType.STRING(15),
-    },
-    Multi: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
     },
     RecData: {
       type: DataType.BLOB,

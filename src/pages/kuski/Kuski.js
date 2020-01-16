@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Flag from 'components/Flag';
 
 import PlayedBattles from './PlayedBattles';
+import KuskiHeader from './KuskiHeader';
 import kuskiQuery from './kuski.graphql';
 import s from './Kuski.css';
 
@@ -39,20 +40,7 @@ class Kuski extends React.Component {
                 `Team: ${getKuskiByName.TeamData.Team}`}
             </div>
           </div>
-          <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-            <div className={s.statsContainer}>
-              <div>_42:31:09</div>
-              <div className={s.statsTitle}>total time</div>
-            </div>
-            <div className={s.statsContainer}>
-              <div>_2874</div>
-              <div className={s.statsTitle}>battles played</div>
-            </div>
-            <div className={s.statsContainer}>
-              <div>_345</div>
-              <div className={s.statsTitle}>battles won</div>
-            </div>
-          </div>
+          <KuskiHeader KuskiIndex={getKuskiByName.KuskiIndex} />
         </div>
         <h2>Played battles</h2>
         <div style={{ maxWidth: '100%', overflow: 'auto' }}>

@@ -25,6 +25,7 @@ class Login extends React.Component {
       loggedIn: false,
       collapsed: true,
       loading: true,
+      error: '',
     };
   }
 
@@ -66,11 +67,15 @@ class Login extends React.Component {
       },
     }).then(response => {
       response.json().then(body => {
-        const cookies = new Cookies();
-        cookies.set('token', body.Response.token, { path: '/' });
-        cookies.set('username', body.Response.username, { path: '/' });
-        cookies.set('userid', body.Response.userid, { path: '/' });
-        this.setState({ loggedIn: true });
+        if (!body.Response.success) {
+          this.setState({ error: body.Response.message });
+        } else {
+          const cookies = new Cookies();
+          cookies.set('token', body.Response.token, { path: '/' });
+          cookies.set('username', body.Response.username, { path: '/' });
+          cookies.set('userid', body.Response.userid, { path: '/' });
+          this.setState({ loggedIn: true });
+        }
       });
     });
   }
@@ -85,7 +90,7 @@ class Login extends React.Component {
 
   render() {
     const { oneLine, collapsable } = this.props;
-    const { kuski, password, loggedIn, collapsed, loading } = this.state;
+    const { kuski, password, loggedIn, collapsed, loading, error } = this.state;
     const showForm = !collapsable || !collapsed;
     return (
       <>
@@ -135,6 +140,7 @@ class Login extends React.Component {
                   />
                 </div>
                 <div className={s.buttonContainer}>
+                  {error && <div className={s.errorMessage}>{error}</div>}
                   <Button
                     onClick={() => this.login()}
                     variant="contained"

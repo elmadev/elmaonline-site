@@ -44,4 +44,128 @@ const battleStatusBgColor = data => {
   return bgColor;
 };
 
-export { sortResults, battleStatus, battleStatusBgColor };
+const getBattleType = battle => {
+  if (battle.BattleType !== 'NM') {
+    return battle.BattleType;
+  }
+  if (
+    battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'NV';
+  }
+  if (
+    !battle.NoVolt &&
+    battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'NT';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'OT';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'NB';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'NTH';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'AT';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    battle.Drunk &&
+    !battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'D';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    battle.OneWheel &&
+    !battle.Multi
+  ) {
+    return 'OW';
+  }
+  if (
+    !battle.NoVolt &&
+    !battle.NoTurn &&
+    !battle.OneTurn &&
+    !battle.NoBrake &&
+    !battle.NoThrottle &&
+    !battle.AlwaysThrottle &&
+    !battle.Drunk &&
+    !battle.OneWheel &&
+    battle.Multi
+  ) {
+    return 'M';
+  }
+  return battle.BattleType;
+};
+
+export { sortResults, battleStatus, battleStatusBgColor, getBattleType };

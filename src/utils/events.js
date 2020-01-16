@@ -7,6 +7,7 @@ import {
   discordBattleresults,
   discordBattleEnd,
 } from 'utils/discord';
+import { updateRanking } from '../ranking';
 import config from '../config';
 
 const checkAuth = (req, res, callback) => {
@@ -56,6 +57,7 @@ export function battleend(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
     discordBattleEnd(req.body);
+    updateRanking(10);
   });
 }
 
