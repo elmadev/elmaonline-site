@@ -1,0 +1,6 @@
+{
+  "name": "AddComment",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./AddComment.js"
+}
