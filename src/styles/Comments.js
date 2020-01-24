@@ -43,7 +43,7 @@ const Comments = props => {
   return (
     <Chat>
       {comments.map(c => (
-        <Chatline>
+        <Chatline key={c.ReplayCommentIndex}>
           <Timestamp>
             <LocalTime date={c.Entered} format="D MMM YYYY" parse="X" />
           </Timestamp>{' '}

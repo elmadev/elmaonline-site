@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useStoreActions } from 'easy-peasy';
 import moment from 'moment';
+import { nick } from 'utils/nick';
 
 const AddComment = props => {
   const [text, setText] = useState('');
@@ -24,6 +25,10 @@ const AddComment = props => {
       });
     }
   };
+
+  if (!nick()) {
+    return null;
+  }
 
   return (
     <Container>
