@@ -12,7 +12,7 @@ const LocalTime = props => {
 };
 
 LocalTime.propTypes = {
-  date: PropTypes.string.isRequired,
+  date: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   format: PropTypes.string.isRequired,
   parse: PropTypes.string.isRequired,
 };

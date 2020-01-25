@@ -94,7 +94,7 @@ Comments.propTypes = {
   comments: PropTypes.arrayOf(
     PropTypes.shape({
       KuskiIndex: PropTypes.number,
-      Entered: PropTypes.oneOfType(PropTypes.number, PropTypes.string),
+      Entered: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
       Text: PropTypes.string,
     }),
   ),

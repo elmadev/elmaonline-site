@@ -4,6 +4,13 @@
   padding: 7px;
 }
 
+@media (max-width: 768px) {
+  .root {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .playerContainer {
   width: 70%;
   float: left;

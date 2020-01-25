@@ -14,3 +14,10 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+@media (max-width: 768px) {
+  .root {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
