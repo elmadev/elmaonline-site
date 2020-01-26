@@ -1,0 +1,6 @@
+{
+  "name": "ReplayComments",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ReplayComments.js"
+}

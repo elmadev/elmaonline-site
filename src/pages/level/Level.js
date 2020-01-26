@@ -145,7 +145,9 @@ class Level extends React.Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div className={s.levelDescription}>
-                    {getLevel.LevelName}.lev
+                    <a href={`/dl/level/${LevelIndex}`}>
+                      {getLevel.LevelName}.lev
+                    </a>
                     <div className={s.levelFullName}>{getLevel.LongName}</div>
                     <br />
                     {'Level ID: '}

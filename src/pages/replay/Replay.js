@@ -15,6 +15,9 @@ import { Level } from 'components/Names';
 import Time from 'components/Time';
 import Link from 'components/Link';
 import RecList from 'components/RecList';
+import ReplayComments from 'components/ReplayComments';
+import ReplayRating from 'components/ReplayRating';
+import AddComment from 'components/AddComment';
 import historyRefresh from 'utils/historyRefresh';
 
 import s from './Replay.css';
@@ -43,8 +46,13 @@ class Replay extends React.Component {
       data: { getReplayByUuid },
     } = this.props;
     const isWindow = typeof window !== 'undefined';
-
+    let link = '';
     if (!getReplayByUuid) return null;
+    if (isWindow) {
+      link = `https://eol.ams3.digitaloceanspaces.com/${
+        window.App.s3SubFolder
+      }replays/${getReplayByUuid.UUID}/${getReplayByUuid.RecFileName}`;
+    }
 
     return (
       <div className={s.root}>
@@ -52,11 +60,7 @@ class Replay extends React.Component {
           <div className={s.player}>
             {isWindow && (
               <Recplayer
-                rec={`https://eol.ams3.digitaloceanspaces.com/${
-                  window.App.s3SubFolder
-                }replays/${getReplayByUuid.UUID}/${
-                  getReplayByUuid.RecFileName
-                }`}
+                rec={link}
                 lev={`/dl/level/${getReplayByUuid.LevelIndex}`}
                 controls
               />
@@ -74,7 +78,16 @@ class Replay extends React.Component {
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <div className={s.replayDescription}>
                   <div>
-                    <Time thousands time={getReplayByUuid.ReplayTime} /> by{' '}
+                    {isWindow ? (
+                      <>
+                        <a href={link}>
+                          <Time thousands time={getReplayByUuid.ReplayTime} />
+                        </a>{' '}
+                      </>
+                    ) : (
+                      <Time thousands time={getReplayByUuid.ReplayTime} />
+                    )}
+                    by{' '}
                     {getReplayByUuid.DrivenByData
                       ? getReplayByUuid.DrivenByData.Kuski
                       : 'Unknown'}{' '}
@@ -136,17 +149,30 @@ class Replay extends React.Component {
           </div>
         </div>
         <div className={s.levelStatsContainer}>
-          <Paper className={s.battleDescription}>
-            <div>{getReplayByUuid.Comment}</div>
-            <div className={s.battleTimestamp}>
-              Uploaded by{' '}
-              {getReplayByUuid.UploadedByData
-                ? getReplayByUuid.UploadedByData.Kuski
-                : 'Unknown'}{' '}
-              <Moment parse="X" format="YYYY-MM-DD HH:mm:ss">
-                {getReplayByUuid.Uploaded}
-              </Moment>
+          <Paper className={s.ReplayDescription}>
+            <div>
+              <div>{getReplayByUuid.Comment}</div>
+              <div className={s.battleTimestamp}>
+                Uploaded by{' '}
+                {getReplayByUuid.UploadedByData
+                  ? getReplayByUuid.UploadedByData.Kuski
+                  : 'Unknown'}{' '}
+                <Moment parse="X" format="YYYY-MM-DD HH:mm:ss">
+                  {getReplayByUuid.Uploaded}
+                </Moment>
+              </div>
             </div>
+            <ReplayRating ReplayIndex={getReplayByUuid.ReplayIndex} />
+          </Paper>
+        </div>
+        <div className={s.levelStatsContainer}>
+          <Paper className={s.battleDescription}>
+            <AddComment
+              add={() => {}}
+              type="replay"
+              index={getReplayByUuid.ReplayIndex}
+            />
+            <ReplayComments ReplayIndex={getReplayByUuid.ReplayIndex} />
           </Paper>
         </div>
       </div>
