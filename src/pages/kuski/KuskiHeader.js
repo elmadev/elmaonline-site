@@ -11,6 +11,14 @@ class KuskiHeader extends React.Component {
     const {
       data: { getKinglistByKuski },
     } = this.props;
+    let playedAll = 0;
+    let winsAll = 0;
+    if (getKinglistByKuski) {
+      if (getKinglistByKuski[0]) {
+        playedAll = getKinglistByKuski[0].PlayedAll;
+        winsAll = getKinglistByKuski[0].WinsAll;
+      }
+    }
     return (
       <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
         <div className={s.statsContainer}>
@@ -18,15 +26,11 @@ class KuskiHeader extends React.Component {
           <div className={s.statsTitle}>total time</div>
         </div>
         <div className={s.statsContainer}>
-          <div>
-            _{getKinglistByKuski[0] ? getKinglistByKuski[0].PlayedAll : '0'}
-          </div>
+          <div>_{playedAll}</div>
           <div className={s.statsTitle}>battles played</div>
         </div>
         <div className={s.statsContainer}>
-          <div>
-            _{getKinglistByKuski[0] ? getKinglistByKuski[0].WinsAll : '0'}
-          </div>
+          <div>_{winsAll}</div>
           <div className={s.statsTitle}>battles won</div>
         </div>
       </div>

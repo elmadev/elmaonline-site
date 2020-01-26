@@ -56,6 +56,7 @@ import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
 import config from './config';
 import muiTheme from './muiTheme';
+import apiRoutes from './api';
 
 const app = express();
 
@@ -95,6 +96,11 @@ app.post('/token', async (req, res) => {
   const authResponse = await auth(req.body);
   res.json({ Response: authResponse });
 });
+
+//
+// Rest API
+//--------------------------------------------
+app.use('/api', apiRoutes);
 
 //
 // Events API

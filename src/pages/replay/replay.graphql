@@ -1,5 +1,6 @@
 query replayQuery($UUID: String!) {
   getReplayByUuid(UUID: $UUID) {
+    ReplayIndex
     DrivenBy
     LevelIndex
     RecFileName

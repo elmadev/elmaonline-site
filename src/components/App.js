@@ -11,6 +11,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ApolloProvider } from 'react-apollo';
+import { StoreProvider, createStore } from 'easy-peasy';
+import model from 'store/easypeasy';
 
 const ContextType = {
   // Enables critical path CSS rendering
@@ -28,6 +30,9 @@ const ContextType = {
   // Apollo Client
   client: PropTypes.object.isRequired,
 };
+
+// easy-peasy store
+const easyPeasyStore = createStore(model);
 
 /**
  * The top-level React component setting context (global) variables
@@ -72,7 +77,9 @@ class App extends React.PureComponent {
     // please do that inside the Layout component.
     return (
       <ApolloProvider client={client}>
-        <ReduxProvider store={store}>{children}</ReduxProvider>
+        <StoreProvider store={easyPeasyStore}>
+          <ReduxProvider store={store}>{children}</ReduxProvider>
+        </StoreProvider>
       </ApolloProvider>
     );
   }
