@@ -29,6 +29,7 @@ module.exports = {
     '@babel/plugin-proposal-numeric-separator',
     '@babel/plugin-proposal-throw-expressions',
     '@babel/plugin-proposal-class-properties',
+    'babel-plugin-styled-components',
   ],
   ignore: ['node_modules', 'build'],
 };
