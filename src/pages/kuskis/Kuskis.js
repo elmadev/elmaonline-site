@@ -66,19 +66,19 @@ class Kuskis extends React.Component {
     const {
       data: { loading, getKuskis },
     } = this.props;
-
+    const { filter, expanded } = this.state;
     if (loading) return null;
     const filteredKuskis = getKuskis.filter(
       k =>
-        this.state.filter.length < 1 ||
-        k.Kuski.toLowerCase().includes(this.state.filter.toLocaleLowerCase()),
+        filter.length < 1 ||
+        k.Kuski.toLowerCase().includes(filter.toLocaleLowerCase()),
     );
     return (
       <div className={s.kuskis}>
         <div className={s.filter}>
           <input
             type="text"
-            value={this.state.filter}
+            value={filter}
             onChange={e => {
               this.setState({
                 filter: e.target.value,
@@ -109,8 +109,7 @@ class Kuskis extends React.Component {
                   </span>
                   <span className={s.groupItemCount}>{kuskis.length}</span>
                 </div>
-                {(this.state.filter.length > 0 ||
-                  this.state.expanded.includes(g)) && (
+                {(filter.length > 0 || expanded.includes(g)) && (
                   <div className={s.groupContent}>
                     {kuskis.map(k => (
                       <Link

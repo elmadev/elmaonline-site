@@ -29,7 +29,7 @@ class Day extends React.Component {
     const { day } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Icon
           onClick={() => this.updateDay(day - 1)}
           style={{
@@ -65,7 +65,7 @@ class Day extends React.Component {
         >
           chevron_right
         </Icon>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -16,6 +16,7 @@ import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Upload from 'components/Upload';
 import RecListItem from 'components/RecListItem';
+import Login from 'components/Login';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
@@ -77,7 +78,7 @@ class Home extends React.Component {
             <Typography variant="h3" gutterBottom>
               Latest Battles
             </Typography>
-            <Paper>
+            <Paper style={{ overflowX: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -91,66 +92,73 @@ class Home extends React.Component {
                 </TableHead>
                 <TableBody>
                   {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
-                  {loading
-                    ? 'Loading...'
-                    : battleList.map(i => {
-                        const sortedResults = [...i.Results].sort(sortResults);
-                        return (
-                          <TableRow
-                            style={{
-                              cursor: 'pointer',
-                              backgroundColor: battleStatusBgColor(i),
-                            }}
-                            hover
-                            key={i.BattleIndex}
-                            onClick={() => {
-                              this.gotoBattle(i.BattleIndex);
-                            }}
-                          >
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              <Link to={`/battles/${i.BattleIndex}`}>
-                                <LocalTime
-                                  date={i.Started}
-                                  format="HH:mm:ss"
-                                  parse="X"
-                                />
-                              </Link>
-                            </TableCell>
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              <Kuski kuskiData={i.KuskiData} team flag />
-                            </TableCell>
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              <Link to={`/dl/level/${i.LevelIndex}`}>
-                                <Level LevelData={i.LevelData} />
-                              </Link>
-                            </TableCell>
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              {i.Finished === 1 && sortedResults.length > 0 ? (
-                                <Kuski
-                                  kuskiData={sortedResults[0].KuskiData}
-                                  team
-                                  flag
-                                />
-                              ) : (
-                                battleStatus(i)
-                              )}
-                            </TableCell>
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              <BattleType type={i.BattleType} />
-                            </TableCell>
-                            <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                              {battleStatus(i) === 'Ongoing'
-                                ? this.remaining(i.Started, i.Duration)
-                                : i.Duration}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                  {loading ? (
+                    <TableRow>
+                      <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    battleList.map(i => {
+                      const sortedResults = [...i.Results].sort(sortResults);
+                      return (
+                        <TableRow
+                          style={{
+                            cursor: 'pointer',
+                            backgroundColor: battleStatusBgColor(i),
+                          }}
+                          hover
+                          key={i.BattleIndex}
+                          onClick={() => {
+                            this.gotoBattle(i.BattleIndex);
+                          }}
+                        >
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            <Link to={`/battles/${i.BattleIndex}`}>
+                              <LocalTime
+                                date={i.Started}
+                                format="HH:mm:ss"
+                                parse="X"
+                              />
+                            </Link>
+                          </TableCell>
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            <Kuski kuskiData={i.KuskiData} team flag />
+                          </TableCell>
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            <Link to={`/dl/level/${i.LevelIndex}`}>
+                              <Level LevelData={i.LevelData} />
+                            </Link>
+                          </TableCell>
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            {i.Finished === 1 && sortedResults.length > 0 ? (
+                              <Kuski
+                                kuskiData={sortedResults[0].KuskiData}
+                                team
+                                flag
+                              />
+                            ) : (
+                              battleStatus(i)
+                            )}
+                          </TableCell>
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            <BattleType type={i.BattleType} />
+                          </TableCell>
+                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                            {battleStatus(i) === 'Ongoing'
+                              ? this.remaining(i.Started, i.Duration)
+                              : i.Duration}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
                 </TableBody>
               </Table>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
+            <Login />
             <Typography variant="h3" gutterBottom>
               Upload Replays
             </Typography>
@@ -158,7 +166,7 @@ class Home extends React.Component {
             <Typography variant="h3" gutterBottom>
               Latest Replays
             </Typography>
-            <Paper>
+            <Paper style={{ overflowX: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -169,11 +177,17 @@ class Home extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {loading
-                    ? 'Loading...'
-                    : getReplays.map(i => (
-                        <RecListItem key={i.ReplayIndex} replay={i} />
-                      ))}
+                  {loading ? (
+                    <TableRow>
+                      <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    getReplays.map(i => (
+                      <RecListItem key={i.ReplayIndex} replay={i} />
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </Paper>

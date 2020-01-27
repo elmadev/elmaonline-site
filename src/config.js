@@ -43,8 +43,8 @@ module.exports = {
   s3SubFolder: 'test/',
 
   // s3
-  accessKeyId: 'BK6SGSL7RYGCASA3PUSV',
-  secretAccessKey: '+7AvMTUk6QoPyqjud9Bz+Ai0M+A13eGgLRjrWw0nlrA',
+  accessKeyId: '',
+  secretAccessKey: '',
 
   // Web analytics
   analytics: {
@@ -60,6 +60,12 @@ module.exports = {
       transport: 'session',
       state: true,
     },
+  },
+  jwtSecret:
+    'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
+  jwtAlgo: 'HS256',
+  run: {
+    ranking: 'ueMDaaSlyhNsYGUCGnq0FChDg0DSaPsRb3-gdMXz',
   },
 
   // Discord, with no token it will not attempt to connect

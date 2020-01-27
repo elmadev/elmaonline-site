@@ -7,12 +7,12 @@ const formatDate = (date, format, parse) =>
 
 const LocalTime = props => {
   const { date, format, parse } = props;
-  if (parseInt(date, 10) === 0) return <React.Fragment />;
-  return <React.Fragment>{formatDate(date, format, parse)}</React.Fragment>;
+  if (parseInt(date, 10) === 0) return <></>;
+  return <>{formatDate(date, format, parse)}</>;
 };
 
 LocalTime.propTypes = {
-  date: PropTypes.string.isRequired,
+  date: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   format: PropTypes.string.isRequired,
   parse: PropTypes.string.isRequired,
 };

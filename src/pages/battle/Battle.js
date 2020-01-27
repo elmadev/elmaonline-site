@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 
@@ -22,7 +24,7 @@ import Link from 'components/Link';
 import Chat from 'components/Chat';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
-import { sortResults, battleStatus } from 'utils/battle';
+import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
@@ -32,7 +34,16 @@ const GET_BATTLE_TIMES = gql`
     getBattleTimes(BattleIndex: $id) {
       Time
       KuskiIndex
+      KuskiIndex2
+      Apples
       KuskiData {
+        Kuski
+        Country
+        TeamData {
+          Team
+        }
+      }
+      KuskiData2 {
         Kuski
         Country
         TeamData {
@@ -54,11 +65,51 @@ class Battle extends React.Component {
     }).isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      extra: '',
+    };
+  }
+
+  getExtra(KuskiIndex) {
+    const {
+      data: { getRankingHistoryByBattle, getBattle },
+    } = this.props;
+    const { extra } = this.state;
+    let typeFilter = '';
+    let value = '';
+    if (extra === 'RankingAll') {
+      typeFilter = 'All';
+      value = 'Ranking';
+    }
+    if (extra === 'RankingType') {
+      typeFilter = getBattleType(getBattle);
+      value = 'Ranking';
+    }
+    if (extra === 'RankingIncreaseAll') {
+      typeFilter = 'All';
+      value = 'Increase';
+    }
+    if (extra === 'RankingIncreaseType') {
+      typeFilter = getBattleType(getBattle);
+      value = 'Increase';
+    }
+    const filtered = getRankingHistoryByBattle.filter(
+      r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
+    );
+    if (filtered.length > 0) {
+      return filtered[0][value];
+    }
+    return '';
+  }
+
   render() {
     const { BattleIndex } = this.props;
     const {
       data: { getBattle, getAllBattleTimes },
     } = this.props;
+    const { extra } = this.state;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
@@ -191,12 +242,32 @@ class Battle extends React.Component {
                       Kuski
                     </TableCell>
                     <TableCell>Time</TableCell>
+                    <TableCell>
+                      <Select
+                        value={extra}
+                        onChange={e => this.setState({ extra: e.target.value })}
+                        name="extra"
+                        displayEmpty
+                      >
+                        <MenuItem value="" disabled>
+                          Extra
+                        </MenuItem>
+                        <MenuItem value="RankingAll">Ranking (all)</MenuItem>
+                        <MenuItem value="RankingType">Ranking (type)</MenuItem>
+                        <MenuItem value="RankingIncreaseAll">
+                          Ranking Increase (all)
+                        </MenuItem>
+                        <MenuItem value="RankingIncreaseType">
+                          Ranking Increase (type)
+                        </MenuItem>
+                      </Select>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <Query
                     query={GET_BATTLE_TIMES}
-                    variables={{ id: this.props.BattleIndex }}
+                    variables={{ id: BattleIndex }}
                   >
                     {({ data: { getBattleTimes }, loading }) => {
                       if (loading) return null;
@@ -207,10 +278,17 @@ class Battle extends React.Component {
                             <TableCell>{i + 1}.</TableCell>
                             <TableCell>
                               <Kuski kuskiData={r.KuskiData} flag team />
+                              {getBattle.Multi === 1 && (
+                                <>
+                                  {' '}
+                                  & <Kuski kuskiData={r.KuskiData2} flag team />
+                                </>
+                              )}
                             </TableCell>
                             <TableCell>
                               <Time time={r.Time} apples={r.Apples} />
                             </TableCell>
+                            <TableCell>{this.getExtra(r.KuskiIndex)}</TableCell>
                           </TableRow>
                         ));
                     }}

@@ -36,8 +36,9 @@ class RankingOverall extends React.Component {
     const Ranking = `Ranking${battleType}`;
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
+    const Played = `Played${battleType}`;
     return (
-      <React.Fragment>
+      <>
         {getKinglist && (
           <DerpTable
             headers={[
@@ -47,7 +48,7 @@ class RankingOverall extends React.Component {
               'Points',
               'Wins',
               'Designed',
-              'Extra',
+              'Played',
             ]}
             length={getKinglist.length}
             pagination
@@ -80,13 +81,13 @@ class RankingOverall extends React.Component {
                     <DerpTableCell>{i[Points]}</DerpTableCell>
                     <DerpTableCell>{i[Wins]}</DerpTableCell>
                     <DerpTableCell>{i[Designed]}</DerpTableCell>
-                    <DerpTableCell>{i.Year ? i.Year : ''}</DerpTableCell>
+                    <DerpTableCell>{i[Played]}</DerpTableCell>
                   </TableRow>
                 );
               })}
           </DerpTable>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

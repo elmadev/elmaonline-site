@@ -78,28 +78,6 @@
   background: #f9f9f9;
 }
 
-.statsContainer {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  font-size: 30px;
-  font-weight: 500;
-  color: #219653;
-  min-width: 150px;
-  flex-basis: auto; /* default value */
-  flex-grow: 1;
-  text-align: center;
-}
-
-.statsTitle {
-  color: #c3c3c3;
-  font-size: 16px;
-  font-weight: normal;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 @media all and (max-width: 940px) {
   .head {
     flex-direction: column;

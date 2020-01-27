@@ -33,7 +33,7 @@ const BattleList = ({ start, end }) => {
             start: toServerTime(start).format(),
             end: toServerTime(end).format(),
           }}
-          fetchPolicy={end.isBefore(moment()) ? 'cache-first' : 'no-cache'}
+          fetchPolicy={end.isBefore(moment()) ? 'cache-first' : 'no-cache'} // eslint-disable-line
           ssr={false}
         >
           {({ data: { getBattlesBetween } }) => {

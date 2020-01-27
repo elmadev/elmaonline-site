@@ -31,6 +31,7 @@ import {
   MuiThemeProvider,
   createGenerateClassName,
 } from '@material-ui/core/styles';
+import { ServerStyleSheet } from 'styled-components';
 import { setRuntimeVariable } from 'actions/runtime';
 import App from 'components/App';
 import Html from 'components/Html';
@@ -50,11 +51,13 @@ import {
   battleresults,
 } from 'utils/events';
 import { discord } from 'utils/discord';
+import { auth, authContext } from 'utils/auth';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
 import config from './config';
 import muiTheme from './muiTheme';
+import apiRoutes from './api';
 
 const app = express();
 
@@ -89,6 +92,16 @@ app.use(
 if (__DEV__) {
   app.enable('trust proxy');
 }
+
+app.post('/token', async (req, res) => {
+  const authResponse = await auth(req.body);
+  res.json({ Response: authResponse });
+});
+
+//
+// Rest API
+//--------------------------------------------
+app.use('/api', apiRoutes);
 
 //
 // Events API
@@ -162,13 +175,23 @@ app.get('/dl/level/:id', async (req, res, next) => {
 //
 // ranking
 //--------------------------------------------
-app.get('/ranking/:toId/:limit', async (req, res) => {
-  const data = await updateRanking(req.params.toId, req.params.limit);
-  res.json(data);
+app.get('/run/ranking/:limit', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await updateRanking(req.params.limit);
+    res.json(data);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
 });
-app.get('/ranking/delete', async (req, res) => {
-  const data = await deleteRanking();
-  res.json({ deleted: data });
+app.get('/run/ranking/delete', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await deleteRanking();
+    res.json({ deleted: data });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
 });
 
 //
@@ -216,6 +239,7 @@ const graphqlMiddleware = expressGraphQL(req => ({
   schema,
   graphiql: __DEV__,
   rootValue: { request: req },
+  context: authContext(req),
   pretty: __DEV__,
 }));
 
@@ -238,6 +262,7 @@ app.get('*', async (req, res, next) => {
     const apolloClient = createApolloClient({
       schema,
       rootValue: { request: req },
+      context: authContext(req),
     });
 
     // Universal HTTP client
@@ -293,6 +318,7 @@ app.get('*', async (req, res, next) => {
     const sheetsRegistry = new SheetsRegistry();
     const sheetsManager = new Map();
     const generateClassName = createGenerateClassName();
+    const styledSheet = new ServerStyleSheet();
 
     const rootComponent = (
       <JssProvider
@@ -309,11 +335,15 @@ app.get('*', async (req, res, next) => {
     await getDataFromTree(rootComponent);
     // this is here because of Apollo redux APOLLO_QUERY_STOP action
     await Promise.delay(0);
-    data.children = await ReactDOMServer.renderToString(rootComponent);
+    data.children = await ReactDOMServer.renderToString(
+      styledSheet.collectStyles(rootComponent),
+    );
     const materialUICss = sheetsRegistry.toString();
+    const styledStyles = styledSheet.getStyleTags();
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
+      { id: 'styled', cssText: styledStyles },
     ];
 
     data.scripts = [assets.vendor.js];
@@ -334,7 +364,7 @@ app.get('*', async (req, res, next) => {
       s3SubFolder: config.s3SubFolder,
     };
 
-    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />);
+    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {

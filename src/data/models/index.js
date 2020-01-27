@@ -21,6 +21,8 @@ import KinglistDaily from './KinglistDaily';
 import RankingHistory from './RankingHistory';
 import BestMultitime from './BestMultitime';
 import Multitime from './Multitime';
+import ReplayComment from './ReplayComment';
+import ReplayRating from './ReplayRating';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -50,6 +52,11 @@ Replay.belongsTo(Level, {
 Battletime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+Battletime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'KuskiData2',
 });
 
 AllFinished.belongsTo(Kuski, {
@@ -139,6 +146,11 @@ KinglistDaily.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+ReplayComment.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 BestMultitime.belongsTo(Multitime, {
   foreignKey: 'MultiTimeIndex',
   as: 'TimeData',
@@ -177,4 +189,6 @@ export {
   RankingHistory,
   BestMultitime,
   Multitime,
+  ReplayComment,
+  ReplayRating,
 }; // add the data model here as well so it exports

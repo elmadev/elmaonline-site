@@ -37,10 +37,14 @@ class RecList extends React.Component {
       ),
     }).isRequired,
     currentUUID: PropTypes.string,
+    columns: PropTypes.arrayOf(PropTypes.string),
+    horizontalMargin: PropTypes.number,
   };
 
   static defaultProps = {
     currentUUID: null,
+    columns: ['Replay', 'Level', 'Time', 'By'],
+    horizontalMargin: 0,
   };
 
   constructor(props) {
@@ -76,7 +80,10 @@ class RecList extends React.Component {
     });
   }
 
-  isSelected = uuid => this.props.currentUUID === uuid;
+  isSelected = uuid => {
+    const { currentUUID } = this.props;
+    return currentUUID === uuid;
+  };
 
   handleOpenReplay(uuid) {
     historyRefresh.push({
@@ -88,6 +95,8 @@ class RecList extends React.Component {
   render() {
     const {
       data: { loading, getReplaysByLevelIndex },
+      columns,
+      horizontalMargin,
     } = this.props;
     const { showTAS, showDNF, showBug, showNitro } = this.state;
     const filterFunction = o => {
@@ -107,12 +116,12 @@ class RecList extends React.Component {
       return show;
     };
     return (
-      <React.Fragment>
+      <>
         <div>
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showTAS}
+                checked={showTAS}
                 onChange={() => this.onFilterChange('showTAS')}
                 value="ShowTAS"
                 color="primary"
@@ -123,7 +132,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showDNF}
+                checked={showDNF}
                 onChange={() => this.onFilterChange('showDNF')}
                 value="ShowDNF"
                 color="primary"
@@ -136,7 +145,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showBug}
+                checked={showBug}
                 onChange={() => this.onFilterChange('showBug')}
                 value="showBug"
                 color="primary"
@@ -147,7 +156,7 @@ class RecList extends React.Component {
           <FormControlLabel
             control={
               <Checkbox
-                checked={this.state.showNitro}
+                checked={showNitro}
                 onChange={() => this.onFilterChange('showNitro')}
                 value="showNitro"
                 color="primary"
@@ -156,13 +165,18 @@ class RecList extends React.Component {
             label="Show Modded"
           />
         </div>
-        <Table>
+        <Table
+          style={{
+            marginLeft: `${horizontalMargin}px`,
+            marginRight: `${horizontalMargin}px`,
+            width: `calc(100% - ${horizontalMargin * 2}px)`,
+          }}
+        >
           <TableHead>
             <TableRow>
-              <TableCell>Replay</TableCell>
-              <TableCell>Level</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>By</TableCell>
+              {columns.map(c => (
+                <TableCell key={c}>{c}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -179,12 +193,13 @@ class RecList extends React.Component {
                   replay={i}
                   openReplay={uuid => this.handleOpenReplay(uuid)}
                   selected={this.isSelected(i.UUID)}
+                  columns={columns}
                 />
               ))
             )}
           </TableBody>
         </Table>
-      </React.Fragment>
+      </>
     );
   }
 }

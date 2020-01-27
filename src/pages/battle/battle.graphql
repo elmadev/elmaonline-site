@@ -9,6 +9,14 @@ query Battletime($BattleIndex: Int!) {
     Aborted
     InQueue
     Finished
+    Multi
+    NoVolt
+    NoTurn
+    OneTurn
+    NoBrake
+    NoThrottle
+    Drunk
+    OneWheel
     LevelData {
       LevelName
     }
@@ -40,5 +48,14 @@ query Battletime($BattleIndex: Int!) {
         Team
       }
     }
+  }
+  getRankingHistoryByBattle(BattleIndex: $BattleIndex) {
+    BattleType
+    Played
+    Ranking
+    Increase
+    Points
+    Wins
+    KuskiIndex
   }
 }

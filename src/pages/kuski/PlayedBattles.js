@@ -16,9 +16,14 @@ import s from './PlayedBattles.css';
 
 class PlayedBattles extends React.Component {
   render() {
-    if (!this.props.data.getBattlesByKuski) return null;
+    const {
+      data: { getBattlesByKuski },
+      data,
+      KuskiIndex,
+    } = this.props;
+    if (!getBattlesByKuski) return null;
     return (
-      <React.Fragment>
+      <>
         <div className={s.recentBattlesHead}>
           <span className={s.type}>Type</span>
           <span className={s.designer}>Designer</span>
@@ -28,7 +33,7 @@ class PlayedBattles extends React.Component {
           <span className={s.placement}>#</span>
           <span className={s.started}>Started</span>
         </div>
-        {this.props.data.getBattlesByKuski.rows.map(b => {
+        {getBattlesByKuski.rows.map(b => {
           const sorted = [...b.Results].sort(sortResults(b.BattleType));
           return (
             <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
@@ -52,9 +57,7 @@ class PlayedBattles extends React.Component {
                 ) : null}
               </span>
               <span className={s.placement}>
-                {b.Results.findIndex(
-                  r => r.KuskiIndex === this.props.KuskiIndex,
-                ) + 1}
+                {b.Results.findIndex(r => r.KuskiIndex === KuskiIndex) + 1}
               </span>
               <span className={s.started}>
                 <LocalTime
@@ -68,9 +71,9 @@ class PlayedBattles extends React.Component {
         })}
         <TablePagination
           component="div"
-          count={this.props.data.getBattlesByKuski.total}
+          count={getBattlesByKuski.total}
           rowsPerPage={25}
-          page={this.props.data.getBattlesByKuski.page}
+          page={getBattlesByKuski.page}
           backIconButtonProps={{
             'aria-label': 'Previous Page',
           }}
@@ -78,13 +81,13 @@ class PlayedBattles extends React.Component {
             'aria-label': 'Next Page',
           }}
           onChangePage={(e, page) => {
-            this.props.data.fetchMore({
+            data.fetchMore({
               variables: {
                 Page: page,
               },
               updateQuery: (prev, { fetchMoreResult }) => {
                 if (!fetchMoreResult) return prev;
-                return Object.assign({}, prev, {
+                return Object.assign({}, prev, { // eslint-disable-line
                   getBattlesByKuski: {
                     __typename: prev.getBattlesByKuski.__typename,
                     total: fetchMoreResult.getBattlesByKuski.total,
@@ -97,7 +100,7 @@ class PlayedBattles extends React.Component {
           }}
           rowsPerPageOptions={[]}
         />
-      </React.Fragment>
+      </>
     );
   }
 }

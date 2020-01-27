@@ -31,20 +31,19 @@ class Battles extends React.Component {
       : moment().startOf('day');
 
   next = () => {
-    history.push(
-      `/battles?date=${this.state.start.add(1, 'days').format('YYYY-MM-DD')}`,
-    );
+    const { start } = this.state;
+    history.push(`/battles?date=${start.add(1, 'days').format('YYYY-MM-DD')}`);
   };
 
   previous = () => {
+    const { start } = this.state;
     history.push(
-      `/battles?date=${this.state.start
-        .subtract(1, 'days')
-        .format('YYYY-MM-DD')}`,
+      `/battles?date=${start.subtract(1, 'days').format('YYYY-MM-DD')}`,
     );
   };
 
   render() {
+    const { start, end } = this.state;
     return (
       <div className={s.battles}>
         <div className={s.datepicker}>
@@ -52,16 +51,13 @@ class Battles extends React.Component {
             &lt;
           </button>
           <span className={s.selectedDate}>
-            {this.state.start.format('ddd DD.MM.YYYY')}
+            {start.format('ddd DD.MM.YYYY')}
           </span>
           <button onClick={this.next} type="button">
             &gt;
           </button>
         </div>
-        <BattleList
-          start={this.state.start.clone()}
-          end={this.state.end.clone()}
-        />
+        <BattleList start={start.clone()} end={end.clone()} />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import {
   KinglistDaily,
   Kuski,
   Team,
+  RankingHistory,
 } from 'data/models'; // import the data model
 
 export const schema = [
@@ -25,6 +26,15 @@ export const schema = [
     PlayedAP: Int
     PlayedSP: Int
     PlayedFC: Int
+    PlayedNV: Int
+    PlayedNT: Int
+    PlayedOT: Int
+    PlayedNB: Int
+    PlayedNTH: Int
+    PlayedAT: Int
+    PlayedD: Int
+    PlayedOW: Int
+    PlayedM: Int
     WinsNM: Int
     WinsAll: Int
     WinsFF: Int
@@ -36,6 +46,15 @@ export const schema = [
     WinsAP: Int
     WinsSP: Int
     WinsFC: Int
+    WinsNV: Int
+    WinsNT: Int
+    WinsOT: Int
+    WinsNB: Int
+    WinsNTH: Int
+    WinsAT: Int
+    WinsD: Int
+    WinsOW: Int
+    WinsM: Int
     RowNM: Int
     BestRowNM: Int
     BestRowAll: Int
@@ -51,6 +70,15 @@ export const schema = [
     PointsAP: Int
     PointsSP: Int
     PointsFC: Int
+    PointsNV: Int
+    PointsNT: Int
+    PointsOT: Int
+    PointsNB: Int
+    PointsNTH: Int
+    PointsAT: Int
+    PointsD: Int
+    PointsOW: Int
+    PointsM: Int
     RankingNM: Float
     RankingAll: Float
     RankingFF: Float
@@ -62,6 +90,15 @@ export const schema = [
     RankingAP: Float
     RankingSP: Float
     RankingFC: Float
+    RankingNV: Float
+    RankingNT: Float
+    RankingOT: Float
+    RankingNB: Float
+    RankingNTH: Float
+    RankingAT: Float
+    RankingD: Float
+    RankingOW: Float
+    RankingM: Float
     DesignedNM: Int
     DesignedAll: Int
     DesignedFF: Int
@@ -73,6 +110,15 @@ export const schema = [
     DesignedAP: Int
     DesignedSP: Int
     DesignedFC: Int
+    DesignedNV: Int
+    DesignedNT: Int
+    DesignedOT: Int
+    DesignedNB: Int
+    DesignedNTH: Int
+    DesignedAT: Int
+    DesignedD: Int
+    DesignedOW: Int
+    DesignedM: Int
     KuskiData: DatabaseKuski
   }
 
@@ -92,6 +138,15 @@ export const schema = [
     PlayedAP: Int
     PlayedSP: Int
     PlayedFC: Int
+    PlayedNV: Int
+    PlayedNT: Int
+    PlayedOT: Int
+    PlayedNB: Int
+    PlayedNTH: Int
+    PlayedAT: Int
+    PlayedD: Int
+    PlayedOW: Int
+    PlayedM: Int
     WinsNM: Int
     WinsAll: Int
     WinsFF: Int
@@ -103,6 +158,15 @@ export const schema = [
     WinsAP: Int
     WinsSP: Int
     WinsFC: Int
+    WinsNV: Int
+    WinsNT: Int
+    WinsOT: Int
+    WinsNB: Int
+    WinsNTH: Int
+    WinsAT: Int
+    WinsD: Int
+    WinsOW: Int
+    WinsM: Int
     PointsNM: Int
     PointsAll: Int
     PointsFF: Int
@@ -114,6 +178,15 @@ export const schema = [
     PointsAP: Int
     PointsSP: Int
     PointsFC: Int
+    PointsNV: Int
+    PointsNT: Int
+    PointsOT: Int
+    PointsNB: Int
+    PointsNTH: Int
+    PointsAT: Int
+    PointsD: Int
+    PointsOW: Int
+    PointsM: Int
     RankingNM: Float
     RankingAll: Float
     RankingFF: Float
@@ -125,6 +198,15 @@ export const schema = [
     RankingAP: Float
     RankingSP: Float
     RankingFC: Float
+    RankingNV: Float
+    RankingNT: Float
+    RankingOT: Float
+    RankingNB: Float
+    RankingNTH: Float
+    RankingAT: Float
+    RankingD: Float
+    RankingOW: Float
+    RankingM: Float
     DesignedNM: Int
     DesignedAll: Int
     DesignedFF: Int
@@ -136,6 +218,15 @@ export const schema = [
     DesignedAP: Int
     DesignedSP: Int
     DesignedFC: Int
+    DesignedNV: Int
+    DesignedNT: Int
+    DesignedOT: Int
+    DesignedNB: Int
+    DesignedNTH: Int
+    DesignedAT: Int
+    DesignedD: Int
+    DesignedOW: Int
+    DesignedM: Int
     KuskiData: DatabaseKuski
   }
 
@@ -201,6 +292,7 @@ export const schema = [
     BattleType: String
     Played: Int
     Ranking: Float
+    Increase: Float
     Points: Int
     Wins: Int
     Designed: Int
@@ -212,6 +304,8 @@ export const schema = [
 
 export const queries = [
   `
+  # Retrives kinglist for a single kuski
+  getKinglistByKuski(KuskiIndex: Int!): [DatabaseKinglist]
   # Retrieves kinglist stored in the database
   getKinglist: [DatabaseKinglist]
   # Retrieves kinglist yearly stored in the database
@@ -222,11 +316,19 @@ export const queries = [
   getKinglistWeekly(Week: Int!): [DatabaseKinglistWeekly]
   # Retrieves kinglist daily stored in the database
   getKinglistDaily(Day: Int!): [DatabaseKinglistDaily]
+  # Retrieves ranking history for a battle
+  getRankingHistoryByBattle(BattleIndex: Int!): [DatabaseRankingHistory]
 `,
 ];
 
 export const resolvers = {
   RootQuery: {
+    async getKinglistByKuski(parent, { KuskiIndex }) {
+      const kinglist = await Kinglist.findAll({
+        where: { KuskiIndex },
+      });
+      return kinglist;
+    },
     async getKinglist() {
       const kinglist = await Kinglist.findAll({
         include: [
@@ -320,6 +422,12 @@ export const resolvers = {
         ],
       });
       return kinglistDaily;
+    },
+    async getRankingHistoryByBattle(parent, { BattleIndex }) {
+      const RankingHistoryByBattle = await RankingHistory.findAll({
+        where: { BattleIndex },
+      });
+      return RankingHistoryByBattle;
     },
   },
 };

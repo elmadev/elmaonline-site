@@ -19,12 +19,18 @@ export function discord() {
   if (config.discord.token) {
     client.login(config.discord.token);
   }
-  client.on('disconnect', event => {
-    // eslint-disable-next-line no-console
-    console.log('Discord disconnect:');
-    // eslint-disable-next-line no-console
-    console.log(event);
-    client.login(config.discord.token);
+  client.on('disconnect', () => {
+    if (config.discord.token) {
+      client.user.setPresence({
+        status: 'online',
+        game: {
+          name: 'Elma Online',
+          type: 'WATCHING',
+          url: config.discord.url,
+        },
+      });
+      client.login(config.discord.token);
+    }
   });
 }
 

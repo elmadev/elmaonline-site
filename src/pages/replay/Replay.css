@@ -4,6 +4,13 @@
   padding: 7px;
 }
 
+@media (max-width: 768px) {
+  .root {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .playerContainer {
   width: 70%;
   float: left;
@@ -36,6 +43,14 @@
 .battleDescription {
   font-size: 14px;
   padding: 7px;
+}
+
+.ReplayDescription {
+  font-size: 14px;
+  padding: 7px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .replayDescription {
