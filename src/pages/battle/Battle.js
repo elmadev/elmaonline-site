@@ -151,6 +151,11 @@ class Battle extends React.Component {
                       parse="X"
                     />
                   </div>
+                  <div className={s.battleTimestamp}>
+                    <a href={`/dl/battlereplay/${BattleIndex}`}>
+                      Download replay
+                    </a>
+                  </div>
                   <br />
                   <Link to={`/levels/${getBattle.LevelIndex}`}>
                     Go to level page

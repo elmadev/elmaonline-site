@@ -31,6 +31,7 @@ import {
   MuiThemeProvider,
   createGenerateClassName,
 } from '@material-ui/core/styles';
+import { ServerStyleSheet } from 'styled-components';
 import { setRuntimeVariable } from 'actions/runtime';
 import App from 'components/App';
 import Html from 'components/Html';
@@ -317,6 +318,7 @@ app.get('*', async (req, res, next) => {
     const sheetsRegistry = new SheetsRegistry();
     const sheetsManager = new Map();
     const generateClassName = createGenerateClassName();
+    const styledSheet = new ServerStyleSheet();
 
     const rootComponent = (
       <JssProvider
@@ -333,11 +335,15 @@ app.get('*', async (req, res, next) => {
     await getDataFromTree(rootComponent);
     // this is here because of Apollo redux APOLLO_QUERY_STOP action
     await Promise.delay(0);
-    data.children = await ReactDOMServer.renderToString(rootComponent);
+    data.children = await ReactDOMServer.renderToString(
+      styledSheet.collectStyles(rootComponent),
+    );
     const materialUICss = sheetsRegistry.toString();
+    const styledStyles = styledSheet.getStyleTags();
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
+      { id: 'styled', cssText: styledStyles },
     ];
 
     data.scripts = [assets.vendor.js];
