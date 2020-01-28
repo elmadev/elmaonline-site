@@ -1,6 +1,6 @@
 query RankingQuery {
-  getKinglist {
-    KinglistIndex
+  getRanking {
+    RankingIndex
     KuskiIndex
     PlayedNM
     PlayedAll

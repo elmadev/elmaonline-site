@@ -5,22 +5,22 @@ import { eachSeries } from 'neo-async';
 import { BATTLETYPES, INTERNALS } from './constants/ranking';
 import {
   Battle,
-  Kinglist,
-  KinglistYearly,
-  KinglistMonthly,
-  KinglistWeekly,
-  KinglistDaily,
+  Ranking,
+  RankingYearly,
+  RankingMonthly,
+  RankingWeekly,
+  RankingDaily,
   RankingHistory,
   Battletime,
 } from './data/models';
 import { getBattleType } from './utils/battle';
 
 const getCurrentRankings = async () => {
-  const rankingData = await Kinglist.findAll();
-  const rankingDataYearly = await KinglistYearly.findAll();
-  const rankingDataMonthly = await KinglistMonthly.findAll();
-  const rankingDataWeekly = await KinglistWeekly.findAll();
-  const rankingDataDaily = await KinglistDaily.findAll();
+  const rankingData = await Ranking.findAll();
+  const rankingDataYearly = await RankingYearly.findAll();
+  const rankingDataMonthly = await RankingMonthly.findAll();
+  const rankingDataWeekly = await RankingWeekly.findAll();
+  const rankingDataDaily = await RankingDaily.findAll();
   return {
     all: rankingData,
     year: rankingDataYearly,
@@ -82,7 +82,7 @@ const skippedBattles = battle => {
   return false;
 };
 
-const ranking = (currentRanking, results, kuski, current, Ranking) => {
+const ranking = (currentRanking, results, kuski, current, RankingDbTable) => {
   let updatedRanking = parseFloat(currentRanking);
   let beated = false;
   const kValue = 1;
@@ -93,8 +93,8 @@ const ranking = (currentRanking, results, kuski, current, Ranking) => {
     } else {
       let opponentRanking = 1000;
       if (current[r.KuskiIndex]) {
-        if (current[r.KuskiIndex][Ranking]) {
-          opponentRanking = parseFloat(current[r.KuskiIndex][Ranking]);
+        if (current[r.KuskiIndex][RankingDbTable]) {
+          opponentRanking = parseFloat(current[r.KuskiIndex][RankingDbTable]);
         }
       }
       if (beated) {
@@ -189,12 +189,12 @@ const addRanking = (
   }
 
   if (BATTLETYPES[periodType].indexOf(type) > -1) {
-    const Ranking = `Ranking${type}`; // battle ranking
-    if (!newRanking[Ranking]) {
-      newRanking[Ranking] = 1000;
+    const RankingDbTable = `Ranking${type}`; // battle ranking
+    if (!newRanking[RankingDbTable]) {
+      newRanking[RankingDbTable] = 1000;
     }
-    newRanking[Ranking] = ranking(
-      newRanking[Ranking],
+    newRanking[RankingDbTable] = ranking(
+      newRanking[RankingDbTable],
       results,
       kuski,
       current,
@@ -468,10 +468,10 @@ export function calcRankings(getBattleList, battleResults, current) {
   });
 }
 
-const updateOrCreateKinglist = async (data, done) => {
+const updateOrCreateRanking = async (data, done) => {
   let obj = false;
   if (data.KuskiIndex) {
-    obj = await Kinglist.findOne({
+    obj = await Ranking.findOne({
       where: { KuskiIndex: data.KuskiIndex },
     });
   }
@@ -479,59 +479,59 @@ const updateOrCreateKinglist = async (data, done) => {
     await obj.update(data);
     done();
   } else {
-    await Kinglist.create(data);
+    await Ranking.create(data);
     done();
   }
 };
 
-const updateOrCreateKinglistYearly = async (data, done) => {
-  const obj = await KinglistYearly.findOne({
+const updateOrCreateRankingYearly = async (data, done) => {
+  const obj = await RankingYearly.findOne({
     where: { KuskiIndex: data.KuskiIndex, Year: data.Year },
   });
   if (obj) {
     await obj.update(data);
     done();
   } else {
-    await KinglistYearly.create(data);
+    await RankingYearly.create(data);
     done();
   }
 };
 
-const updateOrCreateKinglistMonthly = async (data, done) => {
-  const obj = await KinglistMonthly.findOne({
+const updateOrCreateRankingMonthly = async (data, done) => {
+  const obj = await RankingMonthly.findOne({
     where: { KuskiIndex: data.KuskiIndex, Month: data.Month },
   });
   if (obj) {
     await obj.update(data);
     done();
   } else {
-    await KinglistMonthly.create(data);
+    await RankingMonthly.create(data);
     done();
   }
 };
 
-const updateOrCreateKinglistWeekly = async (data, done) => {
-  const obj = await KinglistWeekly.findOne({
+const updateOrCreateRankingWeekly = async (data, done) => {
+  const obj = await RankingWeekly.findOne({
     where: { KuskiIndex: data.KuskiIndex, Week: data.Week },
   });
   if (obj) {
     await obj.update(data);
     done();
   } else {
-    await KinglistWeekly.create(data);
+    await RankingWeekly.create(data);
     done();
   }
 };
 
-const updateOrCreateKinglistDaily = async (data, done) => {
-  const obj = await KinglistDaily.findOne({
+const updateOrCreateRankingDaily = async (data, done) => {
+  const obj = await RankingDaily.findOne({
     where: { KuskiIndex: data.KuskiIndex, Day: data.Day },
   });
   if (obj) {
     await obj.update(data);
     done();
   } else {
-    await KinglistDaily.create(data);
+    await RankingDaily.create(data);
     done();
   }
 };
@@ -544,13 +544,13 @@ export function insertHistory(history) {
   });
 }
 
-export function updateKinglist(newRankings) {
+export function updateRankingTable(newRankings) {
   return new Promise(resolve => {
-    eachSeries(newRankings.all, updateOrCreateKinglist, () => {
-      eachSeries(newRankings.year, updateOrCreateKinglistYearly, () => {
-        eachSeries(newRankings.month, updateOrCreateKinglistMonthly, () => {
-          eachSeries(newRankings.week, updateOrCreateKinglistWeekly, () => {
-            eachSeries(newRankings.day, updateOrCreateKinglistDaily, () => {
+    eachSeries(newRankings.all, updateOrCreateRanking, () => {
+      eachSeries(newRankings.year, updateOrCreateRankingYearly, () => {
+        eachSeries(newRankings.month, updateOrCreateRankingMonthly, () => {
+          eachSeries(newRankings.week, updateOrCreateRankingWeekly, () => {
+            eachSeries(newRankings.day, updateOrCreateRankingDaily, () => {
               resolve();
             });
           });
@@ -561,27 +561,27 @@ export function updateKinglist(newRankings) {
 }
 
 export const deleteRanking = async () => {
-  await Kinglist.destroy({
+  await Ranking.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
   });
-  await KinglistYearly.destroy({
+  await RankingYearly.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
   });
-  await KinglistMonthly.destroy({
+  await RankingMonthly.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
   });
-  await KinglistWeekly.destroy({
+  await RankingWeekly.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
   });
-  await KinglistDaily.destroy({
+  await RankingDaily.destroy({
     where: {
       KuskiIndex: { [Op.gt]: 0 },
     },
@@ -624,7 +624,7 @@ export const updateRanking = async limit => {
     getBattleResults,
     current,
   );
-  await updateKinglist(newRankings);
+  await updateRankingTable(newRankings);
   await insertHistory(history);
   return history;
 };

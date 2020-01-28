@@ -2,13 +2,34 @@ import DataType from 'sequelize';
 import { forEach } from 'lodash';
 import Model from '../sequelize';
 
-const BattleTypes = ['NM', 'All', 'FF', 'AP'];
+const BattleTypes = [
+  'NM',
+  'All',
+  'FF',
+  'OL',
+  'SL',
+  'SR',
+  'LC',
+  'FT',
+  'AP',
+  'SP',
+  'FC',
+  'M',
+  'NV',
+  'NT',
+  'OT',
+  'NB',
+  'NTH',
+  'AT',
+  'D',
+  'OW',
+];
 
 const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {
-    KinglistMonthlyIndex: {
+    RankingIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -19,7 +40,22 @@ const getFields = () => {
       allowNull: false,
       defaultValue: 0,
     },
-    Month: {
+    RowNM: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    BestRowNM: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    BestRowAll: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    RowAll: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -37,8 +73,8 @@ const getFields = () => {
   return fields;
 };
 
-const KinglistMonthly = Model.define('kinglist_monthly', getFields(), {
-  indexes: [{ fields: ['KinglistMonthlyIndex', 'KuskiIndex', 'Month'] }],
+const Ranking = Model.define('ranking', getFields(), {
+  indexes: [{ fields: ['RankingIndex', 'KuskiIndex'] }],
 });
 
-export default KinglistMonthly;
+export default Ranking;
