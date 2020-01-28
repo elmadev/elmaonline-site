@@ -7,12 +7,12 @@ import StarBorder from '@material-ui/icons/StarBorder';
 const ten = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Stars = props => {
-  const { voted, average, vote } = props;
+  const { voted, average, vote, clickable } = props;
   return (
     <Container>
       <StarContainer>
         {ten.map(t => (
-          <StarColor onClick={() => vote(t)} key={t}>
+          <StarColor clickable={clickable} onClick={() => vote(t)} key={t}>
             {t <= voted ? <Star /> : <StarBorder />}
           </StarColor>
         ))}
@@ -40,11 +40,11 @@ const Rating = styled.div`
 `;
 
 const StarColor = styled.span`
-  cursor: pointer;
+  cursor: ${props => (props.clickable ? 'pointer' : 'auto')};
   svg {
     color: #e4bb24;
     &:hover {
-      color: black;
+      color: ${props => (props.clickable ? 'black' : '#e4bb24')};
     }
   }
 `;
@@ -53,6 +53,7 @@ Stars.propTypes = {
   voted: PropTypes.number.isRequired,
   average: PropTypes.number.isRequired,
   vote: PropTypes.func.isRequired,
+  clickable: PropTypes.bool.isRequired,
 };
 
 export default Stars;

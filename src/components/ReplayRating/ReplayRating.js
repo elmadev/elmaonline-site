@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
-import { nick } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 
 import Stars from 'styles/Stars';
 
@@ -33,11 +33,19 @@ const ReplayRating = props => {
   if (ratings.length > 0) {
     avg =
       ratings.reduce((total, next) => total + next.Vote, 0) / ratings.length;
-    userRating = ratings.filter(r => r.KuskiIndex === 2)[0].Vote;
+    const findUserRating = ratings.filter(r => r.KuskiIndex === nickId());
+    if (findUserRating.length > 0) {
+      userRating = findUserRating[0].Vote;
+    }
   }
 
   return (
-    <Stars voted={userRating} average={avg} vote={rating => rate(rating)} />
+    <Stars
+      clickable={nickId() > 0}
+      voted={userRating}
+      average={avg}
+      vote={rating => rate(rating)}
+    />
   );
 };
 
