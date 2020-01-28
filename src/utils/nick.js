@@ -15,7 +15,7 @@ export const nickId = () => {
   const token = cookies.get('token');
   const userid = cookies.get('userid');
   if (token && userid) {
-    return userid;
+    return parseInt(userid, 10);
   }
   return 0;
 };
