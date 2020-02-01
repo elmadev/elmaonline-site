@@ -68,6 +68,10 @@ const routes = {
       path: '/search',
       load: () => import(/* webpackChunkName: 'search' */ './pages/search'),
     },
+    {
+      path: '/confirm/:confirmCode',
+      load: () => import(/* webpackChunkName: 'confirm' */ './pages/confirm'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

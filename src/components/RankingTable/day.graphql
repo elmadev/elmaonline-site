@@ -1,6 +1,6 @@
 query RankingQuery($Period: Int!) {
-  getKinglistDaily(Day: $Period) {
-    KinglistDailyIndex
+  getRankingDaily(Day: $Period) {
+    RankingDailyIndex
     KuskiIndex
     Day
     PlayedAll

@@ -29,7 +29,7 @@ class RankingMonth extends React.Component {
   render() {
     const {
       battleType,
-      data: { loading, getKinglistDaily },
+      data: { loading, getRankingDaily },
     } = this.props;
     const { page, rowsPerPage } = this.state;
     const Points = `Points${battleType}`;
@@ -39,7 +39,7 @@ class RankingMonth extends React.Component {
     const Played = `Played${battleType}`;
     return (
       <>
-        {getKinglistDaily && (
+        {getRankingDaily && (
           <DerpTable
             headers={[
               '#',
@@ -50,7 +50,7 @@ class RankingMonth extends React.Component {
               'Designed',
               'Played',
             ]}
-            length={getKinglistDaily.length}
+            length={getRankingDaily.length}
             pagination
             loading={loading}
             onChangePage={nextPage => this.setState({ page: nextPage })}
@@ -61,14 +61,14 @@ class RankingMonth extends React.Component {
               })
             }
           >
-            {getKinglistDaily
+            {getRankingDaily
               .sort((a, b) => {
                 return b[Ranking] - a[Ranking];
               })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((i, no) => {
                 return (
-                  <TableRow hover key={i.KinglistDailyIndex}>
+                  <TableRow hover key={i.RankingDailyIndex}>
                     <DerpTableCell>
                       {no + 1 + page * rowsPerPage}.
                     </DerpTableCell>

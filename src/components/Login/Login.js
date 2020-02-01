@@ -4,6 +4,7 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Cookies from 'universal-cookie';
+import Register from 'components/Register';
 import s from './Login.css';
 
 class Login extends React.Component {
@@ -26,6 +27,7 @@ class Login extends React.Component {
       collapsed: true,
       loading: true,
       error: '',
+      showRegister: false,
     };
   }
 
@@ -51,6 +53,10 @@ class Login extends React.Component {
     if (e.key === 'Enter' || e.keyCode === 13) {
       this.login();
     }
+  }
+
+  setRegister() {
+    this.setState({ showRegister: true });
   }
 
   handleChange = name => event => {
@@ -90,18 +96,32 @@ class Login extends React.Component {
 
   render() {
     const { oneLine, collapsable } = this.props;
-    const { kuski, password, loggedIn, collapsed, loading, error } = this.state;
-    const showForm = !collapsable || !collapsed;
+    const {
+      kuski,
+      password,
+      loggedIn,
+      collapsed,
+      loading,
+      error,
+      showRegister,
+    } = this.state;
+    let showForm = !collapsable || !collapsed;
+    if (showRegister) {
+      showForm = false;
+    }
     return (
       <>
-        {!showForm && (
+        {!showForm && !showRegister && (
           <Button
             onClick={() =>
-              this.setState(state => ({ collapsed: !state.collapsed }))
+              this.setState({ collapsed: false, showRegister: false })
             }
           >
             Log in
           </Button>
+        )}
+        {showRegister && (
+          <Register close={() => this.setState({ showRegister: false })} />
         )}
         {showForm && (
           <div className={oneLine ? s.oneLineContainer : s.container}>
@@ -124,6 +144,7 @@ class Login extends React.Component {
                     margin="normal"
                     fullWidth={!oneLine}
                     onKeyPress={e => this.onEnter(e)}
+                    variant="outlined"
                   />
                 </div>
                 <div className={s.textfield}>
@@ -137,10 +158,19 @@ class Login extends React.Component {
                     onChange={this.handleChange('password')}
                     fullWidth={!oneLine}
                     onKeyPress={e => this.onEnter(e)}
+                    variant="outlined"
                   />
                 </div>
                 <div className={s.buttonContainer}>
                   {error && <div className={s.errorMessage}>{error}</div>}
+                  {!oneLine && (
+                    <Button
+                      onClick={() => this.setRegister()}
+                      variant="contained"
+                    >
+                      Register
+                    </Button>
+                  )}
                   <Button
                     onClick={() => this.login()}
                     variant="contained"

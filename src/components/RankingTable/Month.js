@@ -29,7 +29,7 @@ class RankingMonth extends React.Component {
   render() {
     const {
       battleType,
-      data: { loading, getKinglistMonthly },
+      data: { loading, getRankingMonthly },
     } = this.props;
     const { page, rowsPerPage } = this.state;
     const Points = `Points${battleType}`;
@@ -39,7 +39,7 @@ class RankingMonth extends React.Component {
     const Played = `Played${battleType}`;
     return (
       <>
-        {getKinglistMonthly && (
+        {getRankingMonthly && (
           <DerpTable
             headers={[
               '#',
@@ -50,7 +50,7 @@ class RankingMonth extends React.Component {
               'Designed',
               'Played',
             ]}
-            length={getKinglistMonthly.length}
+            length={getRankingMonthly.length}
             pagination
             loading={loading}
             onChangePage={nextPage => this.setState({ page: nextPage })}
@@ -61,14 +61,14 @@ class RankingMonth extends React.Component {
               })
             }
           >
-            {getKinglistMonthly
+            {getRankingMonthly
               .sort((a, b) => {
                 return b[Ranking] - a[Ranking];
               })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((i, no) => {
                 return (
-                  <TableRow hover key={i.KinglistMonthlyIndex}>
+                  <TableRow hover key={i.RankingMonthlyIndex}>
                     <DerpTableCell>
                       {no + 1 + page * rowsPerPage}.
                     </DerpTableCell>

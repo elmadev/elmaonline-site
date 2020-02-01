@@ -1,6 +1,6 @@
 query RankingQuery($Period: Int!) {
-  getKinglistMonthly(Month: $Period) {
-    KinglistMonthlyIndex
+  getRankingMonthly(Month: $Period) {
+    RankingMonthlyIndex
     KuskiIndex
     Month
     PlayedNM
