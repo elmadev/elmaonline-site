@@ -29,7 +29,7 @@ const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {
-    KinglistYearlyIndex: {
+    RankingYearlyIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -58,8 +58,8 @@ const getFields = () => {
   return fields;
 };
 
-const Kinglist = Model.define('kinglist_yearly', getFields(), {
-  indexes: [{ fields: ['KinglistYearlyIndex', 'KuskiIndex', 'Year'] }],
+const Ranking = Model.define('ranking_yearly', getFields(), {
+  indexes: [{ fields: ['RankingYearlyIndex', 'KuskiIndex', 'Year'] }],
 });
 
-export default Kinglist;
+export default Ranking;

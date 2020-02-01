@@ -2,13 +2,13 @@ import DataType from 'sequelize';
 import { forEach } from 'lodash';
 import Model from '../sequelize';
 
-const BattleTypes = ['All'];
+const BattleTypes = ['NM', 'All', 'FF', 'AP'];
 
 const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {
-    KinglistWeeklyIndex: {
+    RankingMonthlyIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -19,7 +19,7 @@ const getFields = () => {
       allowNull: false,
       defaultValue: 0,
     },
-    Week: {
+    Month: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -37,8 +37,8 @@ const getFields = () => {
   return fields;
 };
 
-const KinglistWeekly = Model.define('kinglist_weekly', getFields(), {
-  indexes: [{ fields: ['KinglistWeeklyIndex', 'KuskiIndex', 'Week'] }],
+const RankingMonthly = Model.define('ranking_monthly', getFields(), {
+  indexes: [{ fields: ['RankingMonthlyIndex', 'KuskiIndex', 'Month'] }],
 });
 
-export default KinglistWeekly;
+export default RankingMonthly;

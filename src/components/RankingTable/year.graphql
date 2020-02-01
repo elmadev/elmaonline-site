@@ -1,6 +1,6 @@
 query RankingQuery($Period: Int!) {
-  getKinglistYearly(Year: $Period) {
-    KinglistYearlyIndex
+  getRankingYearly(Year: $Period) {
+    RankingYearlyIndex
     KuskiIndex
     Year
     PlayedNM

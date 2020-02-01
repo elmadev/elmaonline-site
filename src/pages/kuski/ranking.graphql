@@ -1,5 +1,5 @@
 query Ranking($KuskiIndex: Int!) {
-  getKinglistByKuski(KuskiIndex: $KuskiIndex) {
+  getRankingByKuski(KuskiIndex: $KuskiIndex) {
     KuskiIndex
     PlayedAll
     PlayedNM

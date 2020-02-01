@@ -9,14 +9,14 @@ import s from './Ranking.css';
 class KuskiHeader extends React.Component {
   render() {
     const {
-      data: { getKinglistByKuski },
+      data: { getRankingByKuski },
     } = this.props;
     let playedAll = 0;
     let winsAll = 0;
-    if (getKinglistByKuski) {
-      if (getKinglistByKuski[0]) {
-        playedAll = getKinglistByKuski[0].PlayedAll;
-        winsAll = getKinglistByKuski[0].WinsAll;
+    if (getRankingByKuski) {
+      if (getRankingByKuski[0]) {
+        playedAll = getRankingByKuski[0].PlayedAll;
+        winsAll = getRankingByKuski[0].WinsAll;
       }
     }
     return (
@@ -40,7 +40,7 @@ class KuskiHeader extends React.Component {
 
 KuskiHeader.propTypes = {
   data: PropTypes.shape({
-    getKinglistByKuski: PropTypes.arrayOf(PropTypes.shape({})),
+    getRankingByKuski: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
 };
 

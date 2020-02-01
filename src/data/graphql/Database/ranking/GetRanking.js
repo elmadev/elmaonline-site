@@ -1,9 +1,9 @@
 import {
-  Kinglist,
-  KinglistYearly,
-  KinglistMonthly,
-  KinglistWeekly,
-  KinglistDaily,
+  Ranking,
+  RankingYearly,
+  RankingMonthly,
+  RankingWeekly,
+  RankingDaily,
   Kuski,
   Team,
   RankingHistory,
@@ -12,8 +12,8 @@ import {
 export const schema = [
   `
   # Battle rankings overall
-  type DatabaseKinglist {
-    KinglistIndex: Int
+  type DatabaseRanking {
+    RankingIndex: Int
     KuskiIndex: Int
     PlayedNM: Int
     PlayedAll: Int
@@ -123,8 +123,8 @@ export const schema = [
   }
 
   # Battle rankings yearly
-  type DatabaseKinglistYearly {
-    KinglistYearlyIndex: Int
+  type DatabaseRankingYearly {
+    RankingYearlyIndex: Int
     KuskiIndex: Int
     Year: Int
     PlayedNM: Int
@@ -231,8 +231,8 @@ export const schema = [
   }
 
   # Battle rankings monthly
-  type DatabaseKinglistMonthly {
-    KinglistMonthlyIndex: Int
+  type DatabaseRankingMonthly {
+    RankingMonthlyIndex: Int
     KuskiIndex: Int
     Month: Int
     PlayedNM: Int
@@ -259,8 +259,8 @@ export const schema = [
   }
 
   # Battle rankings weekly
-  type DatabaseKinglistWeekly {
-    KinglistWeeklyIndex: Int
+  type DatabaseRankingWeekly {
+    RankingWeeklyIndex: Int
     KuskiIndex: Int
     Week: Int
     PlayedAll: Int
@@ -272,8 +272,8 @@ export const schema = [
   }
 
   # Battle rankings daily
-  type DatabaseKinglistDaily {
-    KinglistDailyIndex: Int
+  type DatabaseRankingDaily {
+    RankingDailyIndex: Int
     KuskiIndex: Int
     Day: Int
     PlayedAll: Int
@@ -304,18 +304,18 @@ export const schema = [
 
 export const queries = [
   `
-  # Retrives kinglist for a single kuski
-  getKinglistByKuski(KuskiIndex: Int!): [DatabaseKinglist]
-  # Retrieves kinglist stored in the database
-  getKinglist: [DatabaseKinglist]
-  # Retrieves kinglist yearly stored in the database
-  getKinglistYearly(Year: Int!): [DatabaseKinglistYearly]
-  # Retrieves kinglist mothly stored in the database
-  getKinglistMonthly(Month: Int!): [DatabaseKinglistMonthly]
-  # Retrieves kinglist weekly stored in the database
-  getKinglistWeekly(Week: Int!): [DatabaseKinglistWeekly]
-  # Retrieves kinglist daily stored in the database
-  getKinglistDaily(Day: Int!): [DatabaseKinglistDaily]
+  # Retrives ranking for a single kuski
+  getRankingByKuski(KuskiIndex: Int!): [DatabaseRanking]
+  # Retrieves ranking stored in the database
+  getRanking: [DatabaseRanking]
+  # Retrieves ranking yearly stored in the database
+  getRankingYearly(Year: Int!): [DatabaseRankingYearly]
+  # Retrieves ranking mothly stored in the database
+  getRankingMonthly(Month: Int!): [DatabaseRankingMonthly]
+  # Retrieves ranking weekly stored in the database
+  getRankingWeekly(Week: Int!): [DatabaseRankingWeekly]
+  # Retrieves ranking daily stored in the database
+  getRankingDaily(Day: Int!): [DatabaseRankingDaily]
   # Retrieves ranking history for a battle
   getRankingHistoryByBattle(BattleIndex: Int!): [DatabaseRankingHistory]
 `,
@@ -323,14 +323,14 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
-    async getKinglistByKuski(parent, { KuskiIndex }) {
-      const kinglist = await Kinglist.findAll({
+    async getRankingByKuski(parent, { KuskiIndex }) {
+      const ranking = await Ranking.findAll({
         where: { KuskiIndex },
       });
-      return kinglist;
+      return ranking;
     },
-    async getKinglist() {
-      const kinglist = await Kinglist.findAll({
+    async getRanking() {
+      const ranking = await Ranking.findAll({
         include: [
           {
             model: Kuski,
@@ -345,10 +345,10 @@ export const resolvers = {
           },
         ],
       });
-      return kinglist;
+      return ranking;
     },
-    async getKinglistYearly(parent, { Year }) {
-      const kinglistYearly = await KinglistYearly.findAll({
+    async getRankingYearly(parent, { Year }) {
+      const rankingYearly = await RankingYearly.findAll({
         where: { Year },
         include: [
           {
@@ -364,10 +364,10 @@ export const resolvers = {
           },
         ],
       });
-      return kinglistYearly;
+      return rankingYearly;
     },
-    async getKinglistMonthly(parent, { Month }) {
-      const kinglistMonthly = await KinglistMonthly.findAll({
+    async getRankingMonthly(parent, { Month }) {
+      const rankingMonthly = await RankingMonthly.findAll({
         where: { Month },
         include: [
           {
@@ -383,10 +383,10 @@ export const resolvers = {
           },
         ],
       });
-      return kinglistMonthly;
+      return rankingMonthly;
     },
-    async getKinglistWeekly(parent, { Week }) {
-      const kinglistWeekly = await KinglistWeekly.findAll({
+    async getRankingWeekly(parent, { Week }) {
+      const rankingWeekly = await RankingWeekly.findAll({
         where: { Week },
         include: [
           {
@@ -402,10 +402,10 @@ export const resolvers = {
           },
         ],
       });
-      return kinglistWeekly;
+      return rankingWeekly;
     },
-    async getKinglistDaily(parent, { Day }) {
-      const kinglistDaily = await KinglistDaily.findAll({
+    async getRankingDaily(parent, { Day }) {
+      const rankingDaily = await RankingDaily.findAll({
         where: { Day },
         include: [
           {
@@ -421,7 +421,7 @@ export const resolvers = {
           },
         ],
       });
-      return kinglistDaily;
+      return rankingDaily;
     },
     async getRankingHistoryByBattle(parent, { BattleIndex }) {
       const RankingHistoryByBattle = await RankingHistory.findAll({

@@ -8,7 +8,7 @@ const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {
-    KinglistDailyIndex: {
+    RankingDailyIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -37,8 +37,8 @@ const getFields = () => {
   return fields;
 };
 
-const KinglistDaily = Model.define('kinglist_daily', getFields(), {
-  indexes: [{ fields: ['KinglistDailyIndex', 'KuskiIndex', 'Day'] }],
+const RankingDaily = Model.define('ranking_daily', getFields(), {
+  indexes: [{ fields: ['RankingDailyIndex', 'KuskiIndex', 'Day'] }],
 });
 
-export default KinglistDaily;
+export default RankingDaily;

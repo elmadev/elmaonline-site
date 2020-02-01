@@ -13,16 +13,17 @@ import LevelPackLevel from './LevelPackLevel';
 import Time from './Time';
 import WeeklyWRs from './WeeklyWRs';
 import WeeklyBest from './WeeklyBest';
-import Kinglist from './Kinglist';
-import KinglistYearly from './KinglistYearly';
-import KinglistMonthly from './KinglistMonthly';
-import KinglistWeekly from './KinglistWeekly';
-import KinglistDaily from './KinglistDaily';
+import Ranking from './Ranking';
+import RankingYearly from './RankingYearly';
+import RankingMonthly from './RankingMonthly';
+import RankingWeekly from './RankingWeekly';
+import RankingDaily from './RankingDaily';
 import RankingHistory from './RankingHistory';
 import BestMultitime from './BestMultitime';
 import Multitime from './Multitime';
 import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
+import Country from './Country';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -121,27 +122,27 @@ WeeklyBest.belongsTo(WeeklyWRs, {
   as: 'WeeklyWR',
 });
 
-Kinglist.belongsTo(Kuski, {
+Ranking.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
-KinglistYearly.belongsTo(Kuski, {
+RankingYearly.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
-KinglistMonthly.belongsTo(Kuski, {
+RankingMonthly.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
-KinglistWeekly.belongsTo(Kuski, {
+RankingWeekly.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
-KinglistDaily.belongsTo(Kuski, {
+RankingDaily.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
@@ -181,14 +182,15 @@ export {
   Time,
   WeeklyWRs,
   WeeklyBest,
-  Kinglist,
-  KinglistYearly,
-  KinglistMonthly,
-  KinglistWeekly,
-  KinglistDaily,
+  Ranking,
+  RankingYearly,
+  RankingMonthly,
+  RankingWeekly,
+  RankingDaily,
   RankingHistory,
   BestMultitime,
   Multitime,
   ReplayComment,
   ReplayRating,
+  Country,
 }; // add the data model here as well so it exports
