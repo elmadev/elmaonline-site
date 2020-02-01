@@ -27,7 +27,12 @@ export function auth(body) {
       .digest('hex');
     getKuskiData(kuski, encryptedPassword).then(kuskiData => {
       if (kuskiData) {
-        if (encryptedPassword === kuskiData.dataValues.Password) {
+        if (kuskiData.dataValues.Confirmed === 0) {
+          resolve({
+            success: false,
+            message: 'User not confirmed',
+          });
+        } else if (encryptedPassword === kuskiData.dataValues.Password) {
           const token = jws.sign({
             header: { alg: config.jwtAlgo },
             payload: {

@@ -24,3 +24,6 @@ export const ReplayDrivenBy = kuskiIndex =>
   api.get(`replay/driven_by/${kuskiIndex}`);
 export const ReplayUploadedBy = kuskiIndex =>
   api.get(`replay/uploaded_by/${kuskiIndex}`);
+export const Country = () => api.get('country');
+export const Register = data => api.post('register', data);
+export const Confirm = data => api.post('register/confirm', data);

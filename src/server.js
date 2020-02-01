@@ -362,6 +362,7 @@ app.get('*', async (req, res, next) => {
       state: context.store.getState(),
       apolloState: context.client.extract(),
       s3SubFolder: config.s3SubFolder,
+      recaptcha: config.recaptcha.client,
     };
 
     const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line

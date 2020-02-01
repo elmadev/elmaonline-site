@@ -23,6 +23,7 @@ import BestMultitime from './BestMultitime';
 import Multitime from './Multitime';
 import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
+import Country from './Country';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -191,4 +192,5 @@ export {
   Multitime,
   ReplayComment,
   ReplayRating,
+  Country,
 }; // add the data model here as well so it exports
