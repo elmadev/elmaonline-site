@@ -64,6 +64,15 @@ module.exports = {
   jwtSecret:
     'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
   jwtAlgo: 'HS256',
+  recaptcha: {
+    client: '6Le-n9QUAAAAAG-3bYyysXddxwD6I6iJeDBTHf2r',
+    server: '6Le-n9QUAAAAAHjJaG9QXAUcAzgu462rrpCF_Jan',
+  },
+
+  // email
+  sibApiKey: '',
+
+  // running scripts
   run: {
     ranking: 'ueMDaaSlyhNsYGUCGnq0FChDg0DSaPsRb3-gdMXz',
   },

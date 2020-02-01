@@ -102,6 +102,16 @@ const Kuski = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    ConfirmCode: {
+      type: DataType.STRING(10),
+      allowNull: false,
+      defaultValue: '',
+    },
+    Email: {
+      type: DataType.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['Kuski', 'TeamIndex', 'Country'] }],
