@@ -616,7 +616,11 @@ export const updateRanking = async limit => {
     current.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
       c.dataValues;
   });
-  const max = await RankingHistory.max('BattleIndex');
+  let max = await RankingHistory.max('BattleIndex');
+  // eslint-disable-next-line no-restricted-globals
+  if (isNaN(max)) {
+    max = 0;
+  }
   const getBattleList = await getBattles(max, limit);
   Results = [];
   const { newRankings, history } = await calcRankings(
