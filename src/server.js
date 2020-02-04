@@ -186,8 +186,20 @@ app.get('/run/ranking/delete', async (req, res) => {
 });
 app.get('/run/ranking/:limit', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
+    const limit = Math.round(
+      Math.max(parseInt(req.params.limit, 10), 10000) / 10,
+    );
     res.json({ status: 'started' });
-    await updateRanking(req.params.limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
   } else {
     res.status(401);
     res.send('Unauthorized');
