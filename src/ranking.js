@@ -1,4 +1,4 @@
-import { forEach, cloneDeep } from 'lodash';
+import { forEach, cloneDeep, has } from 'lodash';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import { eachSeries } from 'neo-async';
@@ -17,20 +17,13 @@ import { getBattleType } from './utils/battle';
 
 const getCurrentRankings = async () => {
   const rankingData = await Ranking.findAll();
-  const rankingDataYearly = await RankingYearly.findAll();
-  const rankingDataMonthly = await RankingMonthly.findAll();
-  const rankingDataWeekly = await RankingWeekly.findAll();
-  const rankingDataDaily = await RankingDaily.findAll();
   return {
     all: rankingData,
-    year: rankingDataYearly,
-    month: rankingDataMonthly,
-    week: rankingDataWeekly,
-    day: rankingDataDaily,
   };
 };
 
 let Results = [];
+let CurrRank = { all: {}, year: {}, month: {}, week: {}, day: {} };
 
 const getBattleResults = async (battleId, done) => {
   const data = await Battletime.findAll({
@@ -38,6 +31,46 @@ const getBattleResults = async (battleId, done) => {
     order: [['BattleTimeIndex', 'ASC']],
   });
   Results.push({ battle: battleId.dataValues, result: data });
+  const Year = moment(battleId.dataValues.Started).format('YYYY');
+  if (!has(CurrRank.year, Year)) {
+    const rankingDataYearly = await RankingYearly.findAll({
+      where: { Year },
+    });
+    forEach(rankingDataYearly, c => {
+      CurrRank.year[`${c.dataValues.KuskiIndex}-${c.dataValues.Year}`] =
+        c.dataValues;
+    });
+  }
+  const Month = moment(battleId.dataValues.Started).format('YYYYMM');
+  if (!has(CurrRank.month, Year)) {
+    const rankingDataMonthly = await RankingMonthly.findAll({
+      where: { Month },
+    });
+    forEach(rankingDataMonthly, c => {
+      CurrRank.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Month}`] =
+        c.dataValues;
+    });
+  }
+  const Week = moment(battleId.dataValues.Started).format('YYYYww');
+  if (!has(CurrRank.week, Week)) {
+    const rankingDataWeekly = await RankingWeekly.findAll({
+      where: { Week },
+    });
+    forEach(rankingDataWeekly, c => {
+      CurrRank.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Week}`] =
+        c.dataValues;
+    });
+  }
+  const Day = moment(battleId.dataValues.Started).format('YYYYMMDD');
+  if (!has(CurrRank.day, Day)) {
+    const rankingDataDaily = await RankingDaily.findAll({
+      where: { Day },
+    });
+    forEach(rankingDataDaily, c => {
+      CurrRank.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
+        c.dataValues;
+    });
+  }
   done();
 };
 
@@ -282,11 +315,10 @@ const addRanking = (
   return newRanking;
 };
 
-export function calcRankings(getBattleList, battleResults, current) {
+export function calcRankings(getBattleList, battleResults) {
   return new Promise(resolve => {
     const newRankings = { all: {}, year: {}, month: {}, week: {}, day: {} };
     const history = [];
-    let updatedCurrent = cloneDeep(current);
     // get battle results for selected battles
     eachSeries(getBattleList, battleResults, () => {
       // loop battles
@@ -304,7 +336,7 @@ export function calcRankings(getBattleList, battleResults, current) {
             }
             // add ranking for all time
             newRankings.all[r.KuskiIndex] = addRanking(
-              updatedCurrent.all,
+              CurrRank.all,
               getBattleType(result.battle),
               result.result,
               place,
@@ -315,10 +347,10 @@ export function calcRankings(getBattleList, battleResults, current) {
             );
             const RankingBattleType = getBattleType(result.battle);
             let previousRanking = 1000;
-            if (current.all[r.KuskiIndex]) {
-              if (current.all[r.KuskiIndex][`Ranking${RankingBattleType}`]) {
+            if (CurrRank.all[r.KuskiIndex]) {
+              if (CurrRank.all[r.KuskiIndex][`Ranking${RankingBattleType}`]) {
                 previousRanking =
-                  current.all[r.KuskiIndex][`Ranking${RankingBattleType}`];
+                  CurrRank.all[r.KuskiIndex][`Ranking${RankingBattleType}`];
               }
             }
             history.push({
@@ -341,9 +373,9 @@ export function calcRankings(getBattleList, battleResults, current) {
               Started: moment(result.battle.Started).format('X'),
             });
             previousRanking = 1000;
-            if (current.all[r.KuskiIndex]) {
-              if (current.all[r.KuskiIndex].RankingAll) {
-                previousRanking = current.all[r.KuskiIndex].RankingAll;
+            if (CurrRank.all[r.KuskiIndex]) {
+              if (CurrRank.all[r.KuskiIndex].RankingAll) {
+                previousRanking = CurrRank.all[r.KuskiIndex].RankingAll;
               }
             }
             history.push({
@@ -364,7 +396,7 @@ export function calcRankings(getBattleList, battleResults, current) {
             newRankings.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
             ] = addRanking(
-              updatedCurrent.year,
+              CurrRank.year,
               getBattleType(result.battle),
               result.result,
               place,
@@ -379,7 +411,7 @@ export function calcRankings(getBattleList, battleResults, current) {
                 'YYYYMM',
               )}`
             ] = addRanking(
-              updatedCurrent.month,
+              CurrRank.month,
               getBattleType(result.battle),
               result.result,
               place,
@@ -394,7 +426,7 @@ export function calcRankings(getBattleList, battleResults, current) {
                 'YYYYww',
               )}`
             ] = addRanking(
-              updatedCurrent.week,
+              CurrRank.week,
               getBattleType(result.battle),
               result.result,
               place,
@@ -409,7 +441,7 @@ export function calcRankings(getBattleList, battleResults, current) {
                 'YYYYMMDD',
               )}`
             ] = addRanking(
-              updatedCurrent.day,
+              CurrRank.day,
               getBattleType(result.battle),
               result.result,
               place,
@@ -460,7 +492,7 @@ export function calcRankings(getBattleList, battleResults, current) {
               ].DesignedAll += 1;
             }
           });
-          updatedCurrent = cloneDeep(newRankings);
+          CurrRank = cloneDeep(newRankings);
         }
       });
       resolve({ newRankings, history });
@@ -595,26 +627,10 @@ export const deleteRanking = async () => {
 };
 
 export const updateRanking = async limit => {
-  const current = { all: {}, year: {}, month: {}, week: {}, day: {} };
   const getCurrent = await getCurrentRankings();
+  CurrRank = { all: {}, year: {}, month: {}, week: {}, day: {} };
   forEach(getCurrent.all, c => {
-    current.all[c.dataValues.KuskiIndex] = c.dataValues;
-  });
-  forEach(getCurrent.year, c => {
-    current.year[`${c.dataValues.KuskiIndex}-${c.dataValues.Year}`] =
-      c.dataValues;
-  });
-  forEach(getCurrent.month, c => {
-    current.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Month}`] =
-      c.dataValues;
-  });
-  forEach(getCurrent.week, c => {
-    current.week[`${c.dataValues.KuskiIndex}-${c.dataValues.Week}`] =
-      c.dataValues;
-  });
-  forEach(getCurrent.day, c => {
-    current.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
-      c.dataValues;
+    CurrRank.all[c.dataValues.KuskiIndex] = c.dataValues;
   });
   let max = await RankingHistory.max('BattleIndex');
   // eslint-disable-next-line no-restricted-globals
@@ -626,7 +642,6 @@ export const updateRanking = async limit => {
   const { newRankings, history } = await calcRankings(
     getBattleList,
     getBattleResults,
-    current,
   );
   await updateRankingTable(newRankings);
   await insertHistory(history);
