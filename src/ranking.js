@@ -113,6 +113,12 @@ const skippedBattles = battle => {
   if (INTERNALS.indexOf(battle.LevelIndex) > -1) {
     return true;
   }
+  if (!battle.Started) {
+    return true;
+  }
+  if (battle.Aborted === 1) {
+    return true;
+  }
   return false;
 };
 
@@ -596,11 +602,13 @@ const updateOrCreateRankingYearly = async (data, done) => {
       delete insertData.new;
       insertBulk.year.push(insertData);
       done();
-    } else {
+    } else if (insertData.Year) {
       delete insertData.RankingYearlyIndex;
       await RankingYearly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Year: insertData.Year },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -615,11 +623,13 @@ const updateOrCreateRankingMonthly = async (data, done) => {
       delete insertData.new;
       insertBulk.month.push(insertData);
       done();
-    } else {
+    } else if (insertData.Month) {
       delete insertData.RankingMonthlyIndex;
       await RankingMonthly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Month: insertData.Month },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -634,11 +644,13 @@ const updateOrCreateRankingWeekly = async (data, done) => {
       delete insertData.new;
       insertBulk.week.push(insertData);
       done();
-    } else {
+    } else if (insertData.Week) {
       delete insertData.RankingWeeklyIndex;
       await RankingWeekly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Week: insertData.Week },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -653,11 +665,13 @@ const updateOrCreateRankingDaily = async (data, done) => {
       delete insertData.new;
       insertBulk.day.push(insertData);
       done();
-    } else {
+    } else if (insertData.Day) {
       delete insertData.RankingDailyIndex;
       await RankingDaily.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Day: insertData.Day },
       });
+      done();
+    } else {
       done();
     }
   } else {
