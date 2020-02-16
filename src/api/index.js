@@ -4,6 +4,7 @@ import ReplayRating from './replay_rating';
 import Replay from './replay';
 import Country from './country';
 import Register from './register';
+import Cups from './cups';
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router
   .use('/replay_rating', ReplayRating)
   .use('/replay', Replay)
   .use('/country', Country)
-  .use('/register', Register);
+  .use('/register', Register)
+  .use('/cups', Cups);
 
 export default router;
