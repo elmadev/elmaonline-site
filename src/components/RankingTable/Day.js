@@ -16,6 +16,11 @@ class RankingMonth extends React.Component {
       refetch: PropTypes.func.isRequired,
     }).isRequired,
     battleType: PropTypes.string.isRequired,
+    minPlayed: PropTypes.number,
+  };
+
+  static defaultProps = {
+    minPlayed: 1,
   };
 
   constructor(props) {
@@ -29,6 +34,7 @@ class RankingMonth extends React.Component {
   render() {
     const {
       battleType,
+      minPlayed,
       data: { loading, getRankingDaily },
     } = this.props;
     const { page, rowsPerPage } = this.state;
@@ -37,9 +43,12 @@ class RankingMonth extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     const Played = `Played${battleType}`;
+    const FilteredRanking = getRankingDaily
+      ? getRankingDaily.filter(r => r[Played] > minPlayed)
+      : null;
     return (
       <>
-        {getRankingDaily && (
+        {FilteredRanking && (
           <DerpTable
             headers={[
               '#',
@@ -50,7 +59,7 @@ class RankingMonth extends React.Component {
               'Designed',
               'Played',
             ]}
-            length={getRankingDaily.length}
+            length={FilteredRanking.length}
             pagination
             loading={loading}
             onChangePage={nextPage => this.setState({ page: nextPage })}
@@ -61,10 +70,9 @@ class RankingMonth extends React.Component {
               })
             }
           >
-            {getRankingDaily
-              .sort((a, b) => {
-                return b[Ranking] - a[Ranking];
-              })
+            {FilteredRanking.sort((a, b) => {
+              return b[Ranking] - a[Ranking];
+            })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((i, no) => {
                 return (

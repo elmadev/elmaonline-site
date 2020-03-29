@@ -134,10 +134,16 @@ const skippedBattles = battle => {
   return false;
 };
 
-const ranking = (currentRanking, results, kuski, current, RankingDbTable) => {
+const ranking = (
+  currentRanking,
+  results,
+  kuski,
+  current,
+  RankingDbTable,
+  kValue = 1,
+) => {
   let updatedRanking = parseFloat(currentRanking);
   let beated = false;
-  const kValue = 1;
   const bValue = 800;
   forEach(results, r => {
     if (r.KuskiIndex === kuski) {
@@ -189,6 +195,7 @@ const addRanking = (
   designer,
   period,
   periodType,
+  kValue,
 ) => {
   let newRanking = { new: true };
   if (period) {
@@ -251,6 +258,7 @@ const addRanking = (
       kuski,
       current,
       Ranking,
+      kValue,
     );
   }
   if (!newRanking.RankingAll) {
@@ -262,6 +270,7 @@ const addRanking = (
     kuski,
     current,
     'RankingAll',
+    kValue,
   );
 
   // if won battle
@@ -363,6 +372,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               '',
               'all',
+              3,
             );
             const RankingBattleType = getBattleType(result.battle);
             let previousRanking = 1000;
@@ -424,6 +434,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYY'),
               'year',
+              5,
             );
             CurrRank.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
@@ -447,6 +458,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMM'),
               'month',
+              16,
             );
             CurrRank.month[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -472,6 +484,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYww'),
               'week',
+              24,
             );
             CurrRank.week[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -497,6 +510,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMMDD'),
               'day',
+              24,
             );
             CurrRank.day[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
