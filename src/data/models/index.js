@@ -25,6 +25,8 @@ import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
 import Country from './Country';
 import SiteCupGroup from './SiteCupGroup';
+import SiteCup from './SiteCup';
+import SiteCupTime from './SiteCupTime';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -163,6 +165,26 @@ Multitime.belongsTo(BestMultitime, {
   as: 'TimeData',
 });
 
+SiteCup.belongsTo(Kuski, {
+  foreignKey: 'Designer',
+  as: 'KuskiData',
+});
+
+SiteCup.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'Level',
+});
+
+SiteCup.hasMany(SiteCupTime, {
+  foreignKey: 'CupIndex',
+  as: 'CupTimes',
+});
+
+SiteCupTime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -195,4 +217,6 @@ export {
   ReplayRating,
   Country,
   SiteCupGroup,
+  SiteCup,
+  SiteCupTime,
 }; // add the data model here as well so it exports

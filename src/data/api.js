@@ -28,3 +28,6 @@ export const Country = () => api.get('country');
 export const Register = data => api.post('register', data);
 export const Confirm = data => api.post('register/confirm', data);
 export const Cups = () => api.get('cups');
+export const Cup = shortName => api.get(`cups/${shortName}`);
+export const CupEvents = cupGroupIndex =>
+  api.get(`cups/events/${cupGroupIndex}`);

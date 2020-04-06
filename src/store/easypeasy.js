@@ -3,6 +3,7 @@ import ReplayRating from 'components/ReplayRating/store';
 import ReplaysBy from 'components/ReplaysBy/store';
 import Register from 'components/Register/store';
 import Cups from 'pages/cups/store';
+import Cup from 'pages/cup/store';
 
 export default {
   ReplayComments,
@@ -10,6 +11,7 @@ export default {
   ReplaysBy,
   Register,
   Cups,
+  Cup,
   test: {
     derp: 'hi',
   },

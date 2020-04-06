@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
+import Link from 'components/Link';
 
 const Cups = () => {
   const { cupList } = useStoreState(state => state.Cups);
@@ -24,7 +25,9 @@ const Cups = () => {
         .filter(c => c.Finished === 0)
         .map(c => (
           <>
-            <CupName>{c.CupName}</CupName>
+            <Link to={`cup/${c.ShortName}`}>
+              <CupName>{c.CupName}</CupName>
+            </Link>
             <Description dangerouslySetInnerHTML={{ __html: c.Description }} />
           </>
         ))}
@@ -35,7 +38,9 @@ const Cups = () => {
         .filter(c => c.Finished === 1)
         .map(c => (
           <>
-            <CupName>{c.CupName}</CupName>
+            <Link to={`cup/${c.ShortName}`}>
+              <CupName>{c.CupName}</CupName>
+            </Link>
             <Description dangerouslySetInnerHTML={{ __html: c.Description }} />
           </>
         ))}
