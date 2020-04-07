@@ -1,4 +1,5 @@
 import express from 'express';
+import { filterResults } from 'utils/cups';
 import {
   SiteCupGroup,
   SiteCup,
@@ -39,7 +40,7 @@ const getCupEvents = async CupGroupIndex => {
       },
       {
         model: SiteCupTime,
-        attributes: ['KuskiIndex', 'Time'],
+        attributes: ['KuskiIndex', 'Time', 'TimeExists'],
         as: 'CupTimes',
         where: { TimeExists: 1 },
         include: [
@@ -52,7 +53,7 @@ const getCupEvents = async CupGroupIndex => {
       },
     ],
   });
-  return data;
+  return filterResults(data);
 };
 
 router
