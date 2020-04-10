@@ -4,12 +4,14 @@ import Tab from '@material-ui/core/Tab';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Events from './Events';
+import Standings from './Standings';
+import RulesInfo from './RulesInfo';
 
 const Cups = props => {
   const { ShortName } = props;
   const [tab, setTab] = useState(0);
   const { cup, lastCupShortName, events } = useStoreState(state => state.Cup);
-  const { getCup } = useStoreActions(actions => actions.Cup);
+  const { getCup, update } = useStoreActions(actions => actions.Cup);
 
   useEffect(() => {
     if (lastCupShortName !== ShortName) {
@@ -33,6 +35,19 @@ const Cups = props => {
       </Tabs>
       <CupName>{cup.CupName}</CupName>
       {tab === 1 && <Events events={events} />}
+      {tab === 2 && <Standings events={events} />}
+      {tab === 3 && (
+        <RulesInfo
+          description={cup.Description}
+          owner={cup.KuskiIndex}
+          updateDesc={newDesc => {
+            update({
+              shortName: cup.ShortName,
+              data: { Description: newDesc },
+            });
+          }}
+        />
+      )}
     </>
   );
 };

@@ -31,3 +31,5 @@ export const Cups = () => api.get('cups');
 export const Cup = shortName => api.get(`cups/${shortName}`);
 export const CupEvents = cupGroupIndex =>
   api.get(`cups/events/${cupGroupIndex}`);
+export const UpdateCup = (shortName, data) =>
+  api.post(`cups/${shortName}`, data);

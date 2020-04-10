@@ -1,4 +1,5 @@
 import express from 'express';
+import { authContext } from 'utils/auth';
 import { filterResults } from 'utils/cups';
 import {
   SiteCupGroup,
@@ -56,6 +57,13 @@ const getCupEvents = async CupGroupIndex => {
   return filterResults(data);
 };
 
+const editCup = async (ShortName, data) => {
+  await SiteCupGroup.update(data, {
+    where: { ShortName },
+  });
+  return true;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -68,6 +76,23 @@ router
   .get('/events/:CupGroupIndex', async (req, res) => {
     const data = await getCupEvents(req.params.CupGroupIndex);
     res.json(data);
+  })
+  .post('/:ShortName', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCup(req.params.ShortName);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        await editCup(req.params.ShortName, {
+          ...req.body,
+          KuskiIndex: auth.userid,
+        });
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
   });
 
 export default router;

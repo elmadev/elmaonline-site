@@ -91,3 +91,32 @@ export const filterResults = events => {
   });
   return filtered;
 };
+
+export const calculateStandings = events => {
+  const standings = [];
+  forEach(events, event => {
+    forEach(event.CupTimes, time => {
+      let existsIndex = -1;
+      const exists = standings.filter((x, i) => {
+        if (x.KuskiIndex === time.KuskiIndex) {
+          existsIndex = i;
+          return true;
+        }
+        return false;
+      });
+      if (exists.length === 0) {
+        standings.push({
+          KuskiIndex: time.KuskiIndex,
+          Points: time.Points,
+          Kuski: time.KuskiData.Kuski,
+        });
+      } else {
+        standings[existsIndex] = {
+          ...standings[existsIndex],
+          Points: standings[existsIndex].Points + time.Points,
+        };
+      }
+    });
+  });
+  return standings.sort((a, b) => b.Points - a.Points);
+};
