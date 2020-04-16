@@ -31,5 +31,6 @@ export const Cups = () => api.get('cups');
 export const Cup = shortName => api.get(`cups/${shortName}`);
 export const CupEvents = cupGroupIndex =>
   api.get(`cups/events/${cupGroupIndex}`);
-export const UpdateCup = (shortName, data) =>
-  api.post(`cups/${shortName}`, data);
+export const UpdateCup = (cupGroupIndex, data) =>
+  api.post(`cups/edit/${cupGroupIndex}`, data);
+export const UpdateCupBlog = data => api.post(`cups/blog/add`, data);

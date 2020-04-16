@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { Cup, CupEvents, UpdateCup } from 'data/api';
+import { Cup, CupEvents, UpdateCup, UpdateCupBlog } from 'data/api';
 
 export default {
   cup: {},
@@ -24,8 +24,14 @@ export default {
     }
   }),
   update: thunk(async (actions, payload) => {
-    const update = await UpdateCup(payload.shortName, payload.data);
+    const update = await UpdateCup(payload.CupGroupIndex, payload.data);
     if (update.ok) {
+      actions.getCup(payload.shortName);
+    }
+  }),
+  addNewBlog: thunk(async (actions, payload) => {
+    const add = await UpdateCupBlog(payload.data);
+    if (add.ok) {
       actions.getCup(payload.shortName);
     }
   }),

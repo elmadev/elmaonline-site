@@ -62,6 +62,26 @@ const SiteCup = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    FirstPlaceInterview: {
+      type: DataType.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    SecondPlaceInterview: {
+      type: DataType.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    ThirdPlaceInterview: {
+      type: DataType.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    DesignerInterview: {
+      type: DataType.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['CupGroupIndex, LevelIndex, Designer'] }],

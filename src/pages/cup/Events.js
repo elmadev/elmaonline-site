@@ -3,10 +3,17 @@ import styled from 'styled-components';
 import { formatDistance, format } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
+import Link from 'components/Link';
 import CupResults from 'components/CupResults';
+import Kuski from 'components/Kuski';
 import Today from '@material-ui/icons/Today';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Grid from '@material-ui/core/Grid';
 import CheckBox from '@material-ui/icons/CheckBox';
 import Timer from '@material-ui/icons/Timer';
+import Recplayer from 'components/Recplayer';
+import Interviews from './Interviews';
 
 const GetWinner = times => {
   if (times.length > 0) {
@@ -19,14 +26,15 @@ const GetWinner = times => {
 const Cups = props => {
   const { events } = props;
   const [openEvent, setOpenEvent] = useState(-1);
+  const [tab, setTab] = useState(0);
 
   if (!events) {
     return null;
   }
 
   return (
-    <Container>
-      <HalfContainer>
+    <Grid container spacing={0}>
+      <Grid item xs={12} sm={6}>
         {events.map((e, i) => (
           <EventContainer
             highlight={i === openEvent}
@@ -35,7 +43,10 @@ const Cups = props => {
             <EventNo>{i + 1}.</EventNo>
             <RightSide>
               <By>
-                {e.Level.LevelName} by {e.KuskiData.Kuski}
+                <Link to={`/dl/level/${e.LevelIndex}`}>
+                  {e.Level.LevelName}
+                </Link>{' '}
+                by <Kuski kuskiData={e.KuskiData} />
               </By>
               <div>
                 <Today />{' '}
@@ -70,27 +81,41 @@ const Cups = props => {
             </RightSide>
           </EventContainer>
         ))}
-      </HalfContainer>
+      </Grid>
       {openEvent > -1 && (
-        <HalfContainerRight>
-          <CupResults results={events[openEvent].CupTimes} />
-        </HalfContainerRight>
+        <Grid item xs={12} sm={6}>
+          <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+            <Tab label="Results" />
+            {events[openEvent].StartTime < format(new Date(), 't') && (
+              <Tab label="Map" />
+            )}
+            {events[openEvent].EndTime < format(new Date(), 't') && (
+              <Tab label="Interviews" />
+            )}
+          </Tabs>
+          {tab === 0 && <CupResults results={events[openEvent].CupTimes} />}
+          {tab === 1 && events[openEvent].StartTime < format(new Date(), 't') && (
+            <PlayerContainer>
+              <Recplayer
+                lev={`/dl/level/${events[openEvent].LevelIndex}`}
+                controls
+              />
+            </PlayerContainer>
+          )}
+          {tab === 2 && events[openEvent].EndTime < format(new Date(), 't') && (
+            <Interviews event={events[openEvent]} />
+          )}
+        </Grid>
       )}
-    </Container>
+    </Grid>
   );
 };
 
-const Container = styled.div`
+const PlayerContainer = styled.div`
   display: flex;
-  flex-direction: row;
-`;
-
-const HalfContainer = styled.div`
-  flex-grow: 1;
-`;
-
-const HalfContainerRight = styled(HalfContainer)`
-  padding-right: 8px;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
 `;
 
 const By = styled.div`

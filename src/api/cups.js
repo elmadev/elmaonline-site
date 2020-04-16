@@ -7,6 +7,7 @@ import {
   Kuski,
   Level,
   SiteCupTime,
+  SiteCupBlog,
 } from '../data/models';
 
 const router = express.Router();
@@ -18,9 +19,34 @@ const getCups = async () => {
   return data;
 };
 
+const getCupById = async CupGroupIndex => {
+  const data = await SiteCupGroup.findOne({
+    where: { CupGroupIndex },
+  });
+  return data;
+};
+
 const getCup = async ShortName => {
   const data = await SiteCupGroup.findOne({
     where: { ShortName },
+    include: [
+      {
+        model: SiteCupBlog,
+        as: 'CupBlog',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+          },
+        ],
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+      },
+    ],
   });
   return data;
 };
@@ -57,11 +83,16 @@ const getCupEvents = async CupGroupIndex => {
   return filterResults(data);
 };
 
-const editCup = async (ShortName, data) => {
+const editCup = async (CupGroupIndex, data) => {
   await SiteCupGroup.update(data, {
-    where: { ShortName },
+    where: { CupGroupIndex },
   });
   return true;
+};
+
+const addCupBlog = async Data => {
+  const NewCupBlog = await SiteCupBlog.create(Data);
+  return NewCupBlog;
 };
 
 router
@@ -77,16 +108,32 @@ router
     const data = await getCupEvents(req.params.CupGroupIndex);
     res.json(data);
   })
-  .post('/:ShortName', async (req, res) => {
+  .post('/edit/:CupGroupIndex', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      const data = await getCup(req.params.ShortName);
+      const data = await getCupById(req.params.CupGroupIndex);
       if (data.dataValues.KuskiIndex === auth.userid) {
-        await editCup(req.params.ShortName, {
+        await editCup(req.params.CupGroupIndex, {
+          ...req.body,
+        });
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/blog/add', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCupById(req.body.CupGroupIndex);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        const insert = await addCupBlog({
           ...req.body,
           KuskiIndex: auth.userid,
         });
-        res.sendStatus(200);
+        res.json(insert);
       } else {
         res.sendStatus(401);
       }

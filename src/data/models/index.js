@@ -27,6 +27,7 @@ import Country from './Country';
 import SiteCupGroup from './SiteCupGroup';
 import SiteCup from './SiteCup';
 import SiteCupTime from './SiteCupTime';
+import SiteCupBlog from './SiteCupBlog';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -185,6 +186,21 @@ SiteCupTime.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+SiteCupBlog.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+SiteCupGroup.hasMany(SiteCupBlog, {
+  foreignKey: 'CupGroupIndex',
+  as: 'CupBlog',
+});
+
+SiteCupGroup.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -219,4 +235,5 @@ export {
   SiteCupGroup,
   SiteCup,
   SiteCupTime,
+  SiteCupBlog,
 }; // add the data model here as well so it exports
