@@ -69,6 +69,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'search' */ './pages/search'),
     },
     {
+      path: '/map',
+      load: () => import(/* webpackChunkName: 'map' */ './pages/map'),
+    },
+    {
       path: '/confirm/:confirmCode',
       load: () => import(/* webpackChunkName: 'confirm' */ './pages/confirm'),
     },

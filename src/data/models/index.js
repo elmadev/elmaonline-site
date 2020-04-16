@@ -24,6 +24,7 @@ import Multitime from './Multitime';
 import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
 import Country from './Country';
+import KuskiMap from './KuskiMap';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -162,6 +163,11 @@ Multitime.belongsTo(BestMultitime, {
   as: 'TimeData',
 });
 
+KuskiMap.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -193,4 +199,5 @@ export {
   ReplayComment,
   ReplayRating,
   Country,
+  KuskiMap,
 }; // add the data model here as well so it exports

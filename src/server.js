@@ -175,19 +175,31 @@ app.get('/dl/level/:id', async (req, res, next) => {
 //
 // ranking
 //--------------------------------------------
-app.get('/run/ranking/:limit', async (req, res) => {
+app.get('/run/ranking/delete', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
-    const data = await updateRanking(req.params.limit);
-    res.json(data);
+    const data = await deleteRanking();
+    res.json({ deleted: data });
   } else {
     res.status(401);
     res.send('Unauthorized');
   }
 });
-app.get('/run/ranking/delete', async (req, res) => {
+app.get('/run/ranking/:limit', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
-    const data = await deleteRanking();
-    res.json({ deleted: data });
+    const limit = Math.round(
+      Math.min(parseInt(req.params.limit, 10), 10000) / 10,
+    );
+    res.json({ status: 'started' });
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
+    await updateRanking(limit);
   } else {
     res.status(401);
     res.send('Unauthorized');
@@ -363,6 +375,7 @@ app.get('*', async (req, res, next) => {
       apolloState: context.client.extract(),
       s3SubFolder: config.s3SubFolder,
       recaptcha: config.recaptcha.client,
+      google: config.google,
     };
 
     const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line
