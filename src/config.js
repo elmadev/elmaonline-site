@@ -46,10 +46,9 @@ module.exports = {
   accessKeyId: '',
   secretAccessKey: '',
 
-  // Web analytics
-  analytics: {
-    // https://analytics.google.com/
-    googleTrackingId: process.env.GOOGLE_TRACKING_ID, // UA-XXXXX-X
+  // Google
+  google: {
+    maps: 'AIzaSyDE8Prt4OybzNNxo1MzIn1XYNGxm9rI8Zk',
   },
 
   // Authentication
