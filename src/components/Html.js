@@ -10,7 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import serialize from 'serialize-javascript';
-import config from '../config';
+// import config from '../config';
 
 /* eslint-disable react/no-danger */
 
@@ -80,7 +80,7 @@ class Html extends React.Component {
           {scripts.map(script => (
             <script key={script} src={script} />
           ))}
-          {config.analytics.googleTrackingId && (
+          {/* config.analytics.googleTrackingId && (
             <script
               dangerouslySetInnerHTML={{
                 __html:
@@ -97,7 +97,7 @@ class Html extends React.Component {
               async
               defer
             />
-          )}
+          ) */}
         </body>
       </html>
     );
