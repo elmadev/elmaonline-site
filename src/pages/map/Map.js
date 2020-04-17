@@ -11,6 +11,7 @@ import GoogleMapReact from 'google-map-react';
 import styled from 'styled-components';
 import { format } from 'date-fns';
 import { nickId } from 'utils/nick';
+import MarkerBike from '../../images/marker-bike.png';
 
 const Map = () => {
   const [open, setOpen] = useState(false);
@@ -36,9 +37,18 @@ const Map = () => {
 
   return (
     <Container>
-      <Typography variant="h3" gutterBottom>
-        Kuski Map
-      </Typography>
+      <HeaderContainer>
+        <TextContainer>
+          <Typography variant="h3" gutterBottom>
+            Kuski Map
+          </Typography>
+        </TextContainer>
+        <TextContainer>
+          The kuski map is made to visualize where in the world kuskis live and
+          maybe inspire irl meetings. To add your marker make sure you&apos;re
+          logged in and then simply click on the map.
+        </TextContainer>
+      </HeaderContainer>
       <MapContainer>
         {isWindow && (
           <GoogleMapReact
@@ -53,9 +63,15 @@ const Map = () => {
             }}
           >
             {markerList.map(m => (
-              <Marker key={`${m.Lat}${m.Lng}`} lat={m.Lat} lng={m.Lng}>
-                {m.KuskiData.Kuski}
-              </Marker>
+              <Marker
+                title={`${m.KuskiData.Kuski} (Added: ${format(
+                  new Date(m.LastUpdated * 1000),
+                  'd LLL y',
+                )})`}
+                key={`${m.Lat}${m.Lng}`}
+                lat={m.Lat}
+                lng={m.Lng}
+              />
             ))}
           </GoogleMapReact>
         )}
@@ -89,16 +105,24 @@ const MapContainer = styled.div`
   flex-grow: 1;
 `;
 
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const TextContainer = styled.div`
+  min-width: 300px;
+`;
+
 const Marker = styled.div`
-  height: 20px;
-  width: 20px;
-  border-radius: 10px;
-  border: 1px dashed black;
-  background-color: white;
+  height: 40px;
+  width: 40px;
+  background-color: transparent;
   justify-content: center;
   align-items: center;
   display: flex;
-  transform: translate(-10px, -10px);
+  transform: translate(-20px, -40px);
+  background-image: url('${MarkerBike}');
 `;
 
 const Container = styled.div`
