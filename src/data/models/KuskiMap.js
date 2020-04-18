@@ -6,6 +6,7 @@ const KuskiMap = Model.define(
   {
     KuskiMapIndex: {
       type: DataType.INTEGER,
+      autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
