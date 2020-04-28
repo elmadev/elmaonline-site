@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
 import Link from 'components/Link';
+import AddCup from 'components/AddCup';
 
 const Cups = () => {
-  const { cupList } = useStoreState(state => state.Cups);
-  const { getCups } = useStoreActions(actions => actions.Cups);
+  const { cupList, addSuccess } = useStoreState(state => state.Cups);
+  const { getCups, addCup } = useStoreActions(actions => actions.Cups);
 
   useEffect(() => {
     getCups();
@@ -18,32 +20,50 @@ const Cups = () => {
 
   return (
     <Container>
-      <Typography variant="h3" gutterBottom>
-        Ongoing Cups
-      </Typography>
-      {cupList
-        .filter(c => c.Finished === 0)
-        .map(c => (
-          <>
-            <Link to={`cup/${c.ShortName}`}>
-              <CupName>{c.CupName}</CupName>
-            </Link>
-            <Description dangerouslySetInnerHTML={{ __html: c.Description }} />
-          </>
-        ))}
-      <Typography variant="h3" gutterBottom>
-        Finished Cups
-      </Typography>
-      {cupList
-        .filter(c => c.Finished === 1)
-        .map(c => (
-          <>
-            <Link to={`cup/${c.ShortName}`}>
-              <CupName>{c.CupName}</CupName>
-            </Link>
-            <Description dangerouslySetInnerHTML={{ __html: c.Description }} />
-          </>
-        ))}
+      <Grid container spacing={24}>
+        <Grid item xs={12} sm={7}>
+          <Typography variant="h3" gutterBottom>
+            Ongoing Cups
+          </Typography>
+          {cupList
+            .filter(c => c.Finished === 0)
+            .map(c => (
+              <Fragment key={c.ShortName}>
+                <Link to={`cup/${c.ShortName}`}>
+                  <CupName>{c.CupName}</CupName>
+                </Link>
+                <Description
+                  dangerouslySetInnerHTML={{ __html: c.Description }}
+                />
+              </Fragment>
+            ))}
+          <Typography variant="h3" gutterBottom>
+            Finished Cups
+          </Typography>
+          {cupList
+            .filter(c => c.Finished === 1)
+            .map(c => (
+              <Fragment key={c.ShortName}>
+                <Link to={`cup/${c.ShortName}`}>
+                  <CupName>{c.CupName}</CupName>
+                </Link>
+                <Description
+                  dangerouslySetInnerHTML={{ __html: c.Description }}
+                />
+              </Fragment>
+            ))}
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <Typography variant="h3" gutterBottom>
+            Create new cup
+          </Typography>
+          {addSuccess === '' ? (
+            <AddCup add={data => addCup(data)} />
+          ) : (
+            <div>Cup {addSuccess} has been created successfully.</div>
+          )}
+        </Grid>
+      </Grid>
     </Container>
   );
 };

@@ -1,0 +1,25 @@
+/* eslint-disable react/jsx-props-no-spreading */
+import React from 'react';
+import TextField from '@material-ui/core/TextField';
+
+export default function Field({ id, label, error, value, ...props }) {
+  let isError = false;
+  if (error) {
+    isError = true;
+  }
+  return (
+    <div>
+      <TextField
+        id={label.replace(' ', '')}
+        label={label}
+        margin="normal"
+        variant="outlined"
+        fullWidth
+        inputProps={{ ...props }}
+        error={isError}
+        helperText={error}
+        InputLabelProps={{ shrink: value }}
+      />
+    </div>
+  );
+}

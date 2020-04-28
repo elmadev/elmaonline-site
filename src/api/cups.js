@@ -95,6 +95,11 @@ const addCupBlog = async Data => {
   return NewCupBlog;
 };
 
+const addCup = async data => {
+  const NewCup = await SiteCupGroup.create(data);
+  return NewCup;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -103,6 +108,18 @@ router
   .get('/:ShortName', async (req, res) => {
     const data = await getCup(req.params.ShortName);
     res.json(data);
+  })
+  .post('/add', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const add = await addCup({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      res.json(add);
+    } else {
+      res.sendStatus(401);
+    }
   })
   .get('/events/:CupGroupIndex', async (req, res) => {
     const data = await getCupEvents(req.params.CupGroupIndex);

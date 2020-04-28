@@ -34,3 +34,4 @@ export const CupEvents = cupGroupIndex =>
 export const UpdateCup = (cupGroupIndex, data) =>
   api.post(`cups/edit/${cupGroupIndex}`, data);
 export const UpdateCupBlog = data => api.post(`cups/blog/add`, data);
+export const AddCup = data => api.post(`cups/add`, data);
