@@ -18,7 +18,11 @@ import Interviews from './Interviews';
 const GetWinner = times => {
   if (times.length > 0) {
     const ordered = times.sort((a, b) => a.Time - b.Time);
-    return ordered[0];
+    return (
+      <>
+        <Time time={ordered[0].Time} /> by {ordered[0].KuskiData.Kuski}
+      </>
+    );
   }
   return '';
 };
@@ -73,8 +77,7 @@ const Cups = props => {
                 ) : (
                   <>
                     <CheckBox />
-                    <Time time={GetWinner(e.CupTimes).Time} /> by{' '}
-                    {GetWinner(e.CupTimes).KuskiData.Kuski}
+                    {GetWinner(e.CupTimes)}
                   </>
                 )}
               </div>

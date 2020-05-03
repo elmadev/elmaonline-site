@@ -1,6 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { Cup, CupEvents, UpdateCup, UpdateCupBlog } from 'data/api';
+import {
+  Cup,
+  CupEvents,
+  UpdateCup,
+  UpdateCupBlog,
+  AddEvent,
+  EditEvent,
+} from 'data/api';
 
 export default {
   cup: {},
@@ -33,6 +40,18 @@ export default {
     const add = await UpdateCupBlog(payload.data);
     if (add.ok) {
       actions.getCup(payload.shortName);
+    }
+  }),
+  addEvent: thunk(async (actions, payload) => {
+    const add = await AddEvent(payload.event, payload.CupGroupIndex);
+    if (add.ok) {
+      actions.getCup(payload.last);
+    }
+  }),
+  editEvent: thunk(async (actions, payload) => {
+    const edit = await EditEvent(payload);
+    if (edit.ok) {
+      actions.getCup(payload.last);
     }
   }),
 };

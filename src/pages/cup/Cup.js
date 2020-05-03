@@ -8,12 +8,13 @@ import Events from './Events';
 import Standings from './Standings';
 import RulesInfo from './RulesInfo';
 import Blog from './Blog';
+import Admin from './Admin';
 
 const Cups = props => {
   const { ShortName } = props;
   const [tab, setTab] = useState(0);
   const { cup, lastCupShortName, events } = useStoreState(state => state.Cup);
-  const { getCup, update, addNewBlog } = useStoreActions(
+  const { getCup, update, addNewBlog, addEvent, editEvent } = useStoreActions(
     actions => actions.Cup,
   );
 
@@ -60,6 +61,26 @@ const Cups = props => {
           addEntry={newBlog => {
             addNewBlog({ data: newBlog, shortName: cup.ShortName });
           }}
+        />
+      )}
+      {tab === 5 && (
+        <Admin
+          events={events}
+          addEvent={event =>
+            addEvent({
+              event,
+              last: lastCupShortName,
+              CupGroupIndex: cup.CupGroupIndex,
+            })
+          }
+          editEvent={(CupIndex, event) =>
+            editEvent({
+              CupIndex,
+              CupGroupIndex: cup.CupGroupIndex,
+              last: lastCupShortName,
+              event,
+            })
+          }
         />
       )}
     </>

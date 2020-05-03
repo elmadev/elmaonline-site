@@ -1,6 +1,7 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
 import { filterResults } from 'utils/cups';
+import { zeroPad } from 'utils/time';
 import {
   SiteCupGroup,
   SiteCup,
@@ -69,6 +70,7 @@ const getCupEvents = async CupGroupIndex => {
         model: SiteCupTime,
         attributes: ['KuskiIndex', 'Time', 'TimeExists'],
         as: 'CupTimes',
+        required: false,
         where: { TimeExists: 1 },
         include: [
           {
@@ -98,6 +100,26 @@ const addCupBlog = async Data => {
 const addCup = async data => {
   const NewCup = await SiteCupGroup.create(data);
   return NewCup;
+};
+
+const getKuski = async k => {
+  const findKuski = await Kuski.findOne({
+    where: { Kuski: k },
+    attributes: ['KuskiIndex', 'Kuski'],
+  });
+  return findKuski;
+};
+
+const addEvent = async data => {
+  const newEvent = await SiteCup.create(data);
+  return newEvent;
+};
+
+const EditEvent = async (CupIndex, data) => {
+  await SiteCup.update(data, {
+    where: { CupIndex },
+  });
+  return {};
 };
 
 router
@@ -151,6 +173,55 @@ router
           KuskiIndex: auth.userid,
         });
         res.json(insert);
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/:CupGroupIndex/event/add', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCupById(req.params.CupGroupIndex);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        const kuski = await getKuski(req.body.Designer);
+        const insert = await addEvent({
+          CupGroupIndex: req.params.CupGroupIndex,
+          LevelIndex: req.body.LevelIndex ? req.body.LevelIndex : 0,
+          StartTime: `${req.body.StartTime} ${zeroPad(
+            req.body.StartHour,
+            2,
+          )}:00:00`,
+          EndTime: `${req.body.EndTime} ${zeroPad(req.body.EndHour, 2)}:00:00`,
+          Designer: kuski ? kuski.KuskiIndex : 0,
+        });
+        res.json(insert);
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/:CupGroupIndex/event/:CupIndex/edit', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCupById(req.params.CupGroupIndex);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        let kuski;
+        if (req.body.Designer) {
+          kuski = await getKuski(req.body.Designer);
+          if (kuski) {
+            req.body.Designer = kuski.KuskiIndex;
+          }
+        }
+        if (!req.body.Designer || (req.body.Designer && kuski)) {
+          const edit = await EditEvent(req.params.CupIndex, req.body);
+          res.json(edit);
+        } else {
+          res.json({ error: "Kuski doesn't exist" });
+        }
       } else {
         res.sendStatus(401);
       }
