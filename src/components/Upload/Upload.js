@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Dropzone from 'react-dropzone';
 import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import TextField from '@material-ui/core/TextField';
@@ -13,6 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Dropzone from 'components/Dropzone';
 
 import Alert from 'components/Alert';
 import Link from 'components/Link';
@@ -287,25 +287,10 @@ class Upload extends React.Component {
         <section>
           <div className="dropzone">
             <Dropzone
-              accept={filetype}
+              filetype={filetype}
+              error={this.state.error}
               onDrop={e => this.onDrop(e)}
-              multiple={false}
-              style={{
-                width: '100%',
-                height: 'auto',
-                minHeight: '100px',
-                border: '2px dashed black',
-              }}
-            >
-              <div style={{ padding: '8px' }}>
-                Drop replay file here, or click to select file to upload
-              </div>
-              {this.state.error && (
-                <div style={{ padding: '8px', color: 'red' }}>
-                  {this.state.error}
-                </div>
-              )}
-            </Dropzone>
+            />
           </div>
           {uploaded &&
             this.state.uploaded.map(u => (

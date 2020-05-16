@@ -1,0 +1,6 @@
+{
+  "name": "Dropzone",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Dropzone.js"
+}
