@@ -20,6 +20,7 @@ class RecListItem extends React.Component {
       Bug: PropTypes.number,
       Nitro: PropTypes.number,
       Finished: PropTypes.number,
+      DrivenByText: PropTypes.string,
     }).isRequired,
     openReplay: PropTypes.func,
     selected: PropTypes.bool,
@@ -78,7 +79,11 @@ class RecListItem extends React.Component {
         )}
         {columns.indexOf('By') !== -1 && (
           <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-            <Kuski kuskiData={replay.DrivenByData} />
+            {replay.DrivenByData ? (
+              <Kuski kuskiData={replay.DrivenByData} />
+            ) : (
+              <div>{replay.DrivenByText}</div>
+            )}
           </TableCell>
         )}
       </TableRow>

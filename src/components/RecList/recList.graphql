@@ -12,5 +12,6 @@ query RecList($LevelIndex: Int!) {
     Bug
     Nitro
     Finished
+    DrivenByText
   }
 }
