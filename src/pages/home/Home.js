@@ -9,20 +9,22 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
 import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Upload from 'components/Upload';
+import Header from 'components/Header';
 import RecListItem from 'components/RecListItem';
 import Login from 'components/Login';
+import Welcome from 'components/Welcome';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toLocalTime } from 'utils/time';
+import { nickId } from 'utils/nick';
 
 import homeQuery from './home.graphql'; // import the graphql query here
 import s from './Home.css';
@@ -74,10 +76,14 @@ class Home extends React.Component {
       <div className={s.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} sm={7}>
+            {nickId() === 0 && (
+              <>
+                <Header h2>Welcome</Header>
+                <Welcome />
+              </>
+            )}
             {currentBattle && <BattleCard battle={currentBattle} />}
-            <Typography variant="h3" gutterBottom>
-              Latest Battles
-            </Typography>
+            <Header h2>Latest Battles</Header>
             <Paper style={{ overflowX: 'auto' }}>
               <Table>
                 <TableHead>
@@ -159,13 +165,9 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Login />
-            <Typography variant="h3" gutterBottom>
-              Upload Replays
-            </Typography>
+            <Header h2>Upload Replays</Header>
             <Upload onUpload={() => refetch()} filetype=".rec" />
-            <Typography variant="h3" gutterBottom>
-              Latest Replays
-            </Typography>
+            <Header h2>Latest Replays</Header>
             <Paper style={{ overflowX: 'auto' }}>
               <Table>
                 <TableHead>

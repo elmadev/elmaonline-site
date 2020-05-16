@@ -92,7 +92,7 @@ export const resolvers = {
     },
     async getKuskiByName(parent, { Name }) {
       const kuski = await Kuski.findOne({
-        attributes: ['Kuski', 'Country', 'KuskiIndex'],
+        attributes,
         where: { Kuski: Name },
         include: [{ model: Team, as: 'TeamData' }],
       });

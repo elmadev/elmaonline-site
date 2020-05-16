@@ -3,6 +3,17 @@ query Kuski($Name: String!) {
     KuskiIndex
     Kuski
     Country
+    RPlay
+    RStartBattle
+    RSpecialBattle
+    RStartCup
+    RStart24htt
+    RStop
+    RMultiPlay
+    RChat
+    RBan
+    RMod
+    RAdmin
     TeamData {
       Team
     }

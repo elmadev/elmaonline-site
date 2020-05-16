@@ -66,6 +66,9 @@ class SideBar extends React.Component {
             <Link to="/map" onClick={this.onNavigation}>
               Map
             </Link>
+            <Link to="/help" onClick={this.onNavigation}>
+              Help
+            </Link>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Cookies from 'universal-cookie';
 import Register from 'components/Register';
+import Link from 'components/Link';
 import s from './Login.css';
 
 class Login extends React.Component {
@@ -127,7 +128,9 @@ class Login extends React.Component {
           <div className={oneLine ? s.oneLineContainer : s.container}>
             {loggedIn && !loading && (
               <div className={s.loggedIn}>
-                <div>Welcome {kuski}</div>
+                <div>
+                  Welcome <Link to={`/kuskis/${kuski}`}>{kuski}</Link>
+                </div>
                 <Button onClick={() => this.logout()} variant="contained">
                   Log out
                 </Button>
