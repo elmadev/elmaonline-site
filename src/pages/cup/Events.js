@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { formatDistance, format } from 'date-fns';
 import LocalTime from 'components/LocalTime';
@@ -28,13 +28,17 @@ const GetWinner = times => {
 };
 
 const Cups = props => {
-  const { events } = props;
+  const { events, setEvent } = props;
   const [openEvent, setOpenEvent] = useState(-1);
   const [tab, setTab] = useState(0);
 
   if (!events) {
     return null;
   }
+
+  useEffect(() => {
+    setOpenEvent(setEvent);
+  }, [setEvent]);
 
   return (
     <Grid container spacing={0}>

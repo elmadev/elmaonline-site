@@ -9,10 +9,12 @@ import Standings from './Standings';
 import RulesInfo from './RulesInfo';
 import Blog from './Blog';
 import Admin from './Admin';
+import Dashboard from './Dashboard';
 
 const Cups = props => {
   const { ShortName } = props;
   const [tab, setTab] = useState(0);
+  const [openEvent, setOpenEvent] = useState(-1);
   const { cup, lastCupShortName, events } = useStoreState(state => state.Cup);
   const { getCup, update, addNewBlog, addEvent, editEvent } = useStoreActions(
     actions => actions.Cup,
@@ -39,7 +41,17 @@ const Cups = props => {
         {nickId() === cup.KuskiIndex && <Tab label="Admin" />}
       </Tabs>
       <CupName>{cup.CupName}</CupName>
-      {tab === 1 && <Events events={events} />}
+      {tab === 0 && (
+        <Dashboard
+          events={events}
+          openStandings={() => setTab(2)}
+          openEvent={e => {
+            setTab(1);
+            setOpenEvent(e);
+          }}
+        />
+      )}
+      {tab === 1 && <Events events={events} setEvent={openEvent} />}
       {tab === 2 && <Standings events={events} />}
       {tab === 3 && (
         <RulesInfo
