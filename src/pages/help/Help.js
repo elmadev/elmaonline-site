@@ -1,21 +1,18 @@
 import React from 'react';
-import Welcome from 'components/Welcome';
-import styled from 'styled-components';
 import Header from 'components/Header';
+import Welcome from 'components/Welcome';
 
-const Help = () => {
-  return (
-    <Container>
-      <Header>Help</Header>
-      <Welcome />
-    </Container>
-  );
-};
-
-const Container = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-`;
+class Help extends React.Component {
+  render() {
+    return (
+      <div
+        style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}
+      >
+        <Header>Help</Header>
+        <Welcome />
+      </div>
+    );
+  }
+}
 
 export default Help;
