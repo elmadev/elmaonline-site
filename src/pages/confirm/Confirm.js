@@ -8,11 +8,15 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Confirm = props => {
   const { confirmCode } = props;
-  const { confirmSuccess } = useStoreState(state => state.Register);
-  const { tryConfirm } = useStoreActions(actions => actions.Register);
+  const { confirmSuccess, password } = useStoreState(state => state.Register);
+  const { tryConfirm, tryReset } = useStoreActions(actions => actions.Register);
 
   useEffect(() => {
-    tryConfirm({ confirmCode });
+    if (confirmCode.substring(0, 3) === 'rez') {
+      tryReset({ confirmCode });
+    } else {
+      tryConfirm({ confirmCode });
+    }
   }, []);
 
   return (
@@ -32,10 +36,23 @@ const Confirm = props => {
           )}
           {confirmSuccess === -1 && (
             <Paper>
-              Email confirmation has failed. Either you are already confirmed,
-              check your play rights. Or you have mistyped the confirm url,
-              check the link in the email. Or there were a server error, try
+              Email confirmation has failed. Either you are already confirmed
+              (check your play rights), or you have mistyped the confirm url
+              (check the link in the email), or there were a server error, try
               reloading the page.
+            </Paper>
+          )}
+          {confirmSuccess === 2 && (
+            <Paper>
+              Your email has been confirmed. You can now login using the form on
+              the right. Your new password is: {password}
+            </Paper>
+          )}
+          {confirmSuccess === -2 && (
+            <Paper>
+              Email confirmation has failed. Either or you have mistyped the
+              confirm url (check the link in the email), or there were a server
+              error, try reloading the page.
             </Paper>
           )}
         </Grid>

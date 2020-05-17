@@ -13,15 +13,13 @@ import Layout from 'components/Layout';
 
 import NotFound from './NotFound';
 
-const title = 'Page Not Found';
-
 function action() {
   return {
     chunks: ['not-found'],
-    title,
+    title: 'Not Found',
     component: (
       <Layout>
-        <NotFound title={title} />
+        <NotFound />
       </Layout>
     ),
     status: 404,
