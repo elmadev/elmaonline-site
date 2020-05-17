@@ -365,7 +365,9 @@ app.get('*', async (req, res, next) => {
       styledSheet.collectStyles(rootComponent),
     );
     const materialUICss = sheetsRegistry.toString();
-    const styledStyles = styledSheet.getStyleTags();
+    const styledStyles = styledSheet
+      .getStyleTags()
+      .replace('<style data-styled data-styled-version="5.0.0">', '');
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
