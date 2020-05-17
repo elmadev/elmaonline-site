@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -38,11 +37,7 @@ const Map = () => {
   return (
     <Container>
       <HeaderContainer>
-        <TextContainer>
-          <Typography variant="h3" gutterBottom>
-            Kuski Map
-          </Typography>
-        </TextContainer>
+        <HeadlineContainer>Kuski Map</HeadlineContainer>
         <TextContainer>
           The kuski map is made to visualize where in the world kuskis live and
           maybe inspire irl meetings. To add your marker make sure you&apos;re
@@ -109,6 +104,15 @@ const MapContainer = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row;
+`;
+
+const HeadlineContainer = styled.div`
+  min-width: 300px;
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: 0em;
+  margin-bottom: 0.35em;
 `;
 
 const TextContainer = styled.div`

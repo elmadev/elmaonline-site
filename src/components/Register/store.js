@@ -1,6 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { Country, Register, Confirm } from 'data/api';
+import {
+  Country,
+  Register,
+  Confirm,
+  ResetPasswordConfirm,
+  ResetPassword,
+} from 'data/api';
 
 export default {
   countries: [],
@@ -12,6 +18,28 @@ export default {
   }),
   setCountries: action((state, payload) => {
     state.countries = payload;
+  }),
+  resetMessage: '',
+  setResetMessage: action((state, payload) => {
+    state.resetMessage = payload;
+  }),
+  resetSuccess: false,
+  setResetSuccess: action((state, payload) => {
+    state.resetSuccess = payload;
+  }),
+  password: '',
+  setPassword: action((state, payload) => {
+    state.password = payload;
+  }),
+  resetPassword: thunk(async (actions, payload) => {
+    const attemptReset = await ResetPasswordConfirm(payload);
+    if (attemptReset.ok) {
+      if (attemptReset.data.success) {
+        actions.setResetSuccess(true);
+      } else {
+        actions.setResetMessage(attemptReset.data.message);
+      }
+    }
   }),
   registerMessage: '',
   setRegisterMessage: action((state, payload) => {
@@ -45,6 +73,19 @@ export default {
       }
     } else {
       actions.setConfirmSuccess(-1);
+    }
+  }),
+  tryReset: thunk(async (actions, payload) => {
+    const attempReset = await ResetPassword(payload);
+    if (attempReset.ok) {
+      if (attempReset.data.success) {
+        actions.setConfirmSuccess(2);
+        actions.setPassword(attempReset.data.newPassword);
+      } else {
+        actions.setConfirmSuccess(-2);
+      }
+    } else {
+      actions.setConfirmSuccess(-2);
     }
   }),
 };

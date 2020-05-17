@@ -5,8 +5,8 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 
+import Header from 'components/Header';
 import RankingOverall from 'components/RankingTable/Overall';
 import RankingYear from 'components/RankingTable/Year';
 import RankingMonth from 'components/RankingTable/Month';
@@ -62,9 +62,7 @@ class Ranking extends React.Component {
         <div className={s.root}>
           <Grid container spacing={24}>
             <Grid item xs={12} sm={8}>
-              <Typography variant="h3" gutterBottom>
-                Ranking
-              </Typography>
+              <Header>Ranking</Header>
               {tab === 0 && <RankingOverall battleType={battleType} />}
               {tab === 1 && (
                 <RankingYear period={year} battleType={battleType} />
@@ -89,9 +87,7 @@ class Ranking extends React.Component {
               )}
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Typography variant="h3" gutterBottom>
-                Filter
-              </Typography>
+              <Header h2>Filter</Header>
               <div
                 style={{
                   display: 'flex',

@@ -13,6 +13,7 @@ mutation insertReplay(
   $Nitro: Int!
   $Comment: String!
   $MD5: String!
+  $DrivenByText: String!
 ) {
   insertReplay(
     UploadedBy: $UploadedBy
@@ -29,6 +30,7 @@ mutation insertReplay(
     Nitro: $Nitro
     Comment: $Comment
     MD5: $MD5
+    DrivenByText: $DrivenByText
   ) {
     ReplayIndex
   }

@@ -91,6 +91,7 @@ class Upload extends React.Component {
     Nitro,
     Comment,
     MD5,
+    DrivenByText,
   ) => {
     this.props
       .insertReplay({
@@ -109,6 +110,7 @@ class Upload extends React.Component {
           Nitro,
           Comment,
           MD5,
+          DrivenByText,
         },
       })
       .then(() => {
@@ -266,6 +268,7 @@ class Upload extends React.Component {
               +this.state.fileInfo[body.file].nitro,
               this.state.fileInfo[body.file].comment,
               body.MD5,
+              this.state.fileInfo[body.file].drivenBy,
             );
           }
         });
