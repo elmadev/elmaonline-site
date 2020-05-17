@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Cookies from 'universal-cookie';
 import Register from 'components/Register';
+import ForgotPassword from 'components/ForgotPassword';
 import Link from 'components/Link';
 import s from './Login.css';
 
@@ -29,6 +30,7 @@ class Login extends React.Component {
       loading: true,
       error: '',
       showRegister: false,
+      showForgotPassword: false,
     };
   }
 
@@ -105,14 +107,15 @@ class Login extends React.Component {
       loading,
       error,
       showRegister,
+      showForgotPassword,
     } = this.state;
     let showForm = !collapsable || !collapsed;
-    if (showRegister) {
+    if (showRegister || showForgotPassword) {
       showForm = false;
     }
     return (
       <>
-        {!showForm && !showRegister && (
+        {!showForm && !showRegister && !showForgotPassword && (
           <Button
             onClick={() =>
               this.setState({ collapsed: false, showRegister: false })
@@ -123,6 +126,11 @@ class Login extends React.Component {
         )}
         {showRegister && (
           <Register close={() => this.setState({ showRegister: false })} />
+        )}
+        {showForgotPassword && (
+          <ForgotPassword
+            close={() => this.setState({ showForgotPassword: false })}
+          />
         )}
         {showForm && (
           <div className={oneLine ? s.oneLineContainer : s.container}>
@@ -167,12 +175,18 @@ class Login extends React.Component {
                 <div className={s.buttonContainer}>
                   {error && <div className={s.errorMessage}>{error}</div>}
                   {!oneLine && (
-                    <Button
-                      onClick={() => this.setRegister()}
-                      variant="contained"
-                    >
-                      Register
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() =>
+                          this.setState({ showForgotPassword: true })
+                        }
+                      >
+                        Forgot password
+                      </Button>
+                      <Button onClick={() => this.setRegister()}>
+                        Register
+                      </Button>
+                    </>
                   )}
                   <Button
                     onClick={() => this.login()}
