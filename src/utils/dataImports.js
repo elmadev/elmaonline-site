@@ -1,6 +1,6 @@
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
-import { KuskiMap } from '../data/models';
+import { KuskiMap, SiteSetting, Kuski } from '../data/models';
 import * as data from '../data/json/kuskimap.json';
 
 const addMarker = async Data => {
@@ -39,6 +39,33 @@ export const kuskimap = () => {
         resolve();
       });
     });
+  });
+};
+
+const EmailsFromSettings = async () => {
+  const get = await SiteSetting.findAll({
+    where: { SettingName: 'Email' },
+  });
+  return get;
+};
+
+const insertEmailToKuski = async (Email, kuskiId) => {
+  let kuski = false;
+  kuski = await Kuski.findOne({
+    where: { KuskiIndex: kuskiId },
+  });
+  if (kuski) {
+    await kuski.update({ Email });
+  }
+  return kuski;
+};
+
+export const email = async () => {
+  const getEmails = await EmailsFromSettings();
+  forEach(getEmails, e => {
+    if (e.Setting && e.KuskiIndex) {
+      insertEmailToKuski(e.Setting, e.KuskiIndex);
+    }
   });
 };
 

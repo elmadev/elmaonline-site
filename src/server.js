@@ -52,7 +52,7 @@ import {
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
-import { kuskimap } from 'utils/dataImports';
+import { kuskimap, email } from 'utils/dataImports';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -213,6 +213,15 @@ app.get('/run/ranking/:limit', async (req, res) => {
 app.get('/run/kuskimap', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     await kuskimap();
+    res.json({ status: 'done' });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+app.get('/run/email', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    await email();
     res.json({ status: 'done' });
   } else {
     res.status(401);

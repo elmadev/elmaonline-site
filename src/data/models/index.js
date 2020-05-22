@@ -25,6 +25,7 @@ import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
 import Country from './Country';
 import KuskiMap from './KuskiMap';
+import SiteSetting from './SiteSetting';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -200,4 +201,5 @@ export {
   ReplayRating,
   Country,
   KuskiMap,
+  SiteSetting,
 }; // add the data model here as well so it exports
