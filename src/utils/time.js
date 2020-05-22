@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 const toServerTime = (date, parse) =>
   moment(
     moment(date, parse)
-      .tz('America/Los_Angeles')
+      .tz('UTC')
       .toObject(),
   );
 const toLocalTime = (date, parse) =>
@@ -12,7 +12,7 @@ const toLocalTime = (date, parse) =>
       moment(date, parse)
         .utc()
         .toObject(),
-      'America/Los_Angeles',
+      'UTC',
     )
     .tz(moment.tz.guess());
 
