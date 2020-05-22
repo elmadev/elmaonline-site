@@ -5,6 +5,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Cookies from 'universal-cookie';
 import Register from 'components/Register';
+import ForgotPassword from 'components/ForgotPassword';
+import Link from 'components/Link';
 import s from './Login.css';
 
 class Login extends React.Component {
@@ -28,6 +30,7 @@ class Login extends React.Component {
       loading: true,
       error: '',
       showRegister: false,
+      showForgotPassword: false,
     };
   }
 
@@ -77,9 +80,18 @@ class Login extends React.Component {
           this.setState({ error: body.Response.message });
         } else {
           const cookies = new Cookies();
-          cookies.set('token', body.Response.token, { path: '/' });
-          cookies.set('username', body.Response.username, { path: '/' });
-          cookies.set('userid', body.Response.userid, { path: '/' });
+          cookies.set('token', body.Response.token, {
+            path: '/',
+            maxAge: 8640000,
+          });
+          cookies.set('username', body.Response.username, {
+            path: '/',
+            maxAge: 8640000,
+          });
+          cookies.set('userid', body.Response.userid, {
+            path: '/',
+            maxAge: 8640000,
+          });
           this.setState({ loggedIn: true });
         }
       });
@@ -104,14 +116,15 @@ class Login extends React.Component {
       loading,
       error,
       showRegister,
+      showForgotPassword,
     } = this.state;
     let showForm = !collapsable || !collapsed;
-    if (showRegister) {
+    if (showRegister || showForgotPassword) {
       showForm = false;
     }
     return (
       <>
-        {!showForm && !showRegister && (
+        {!showForm && !showRegister && !showForgotPassword && (
           <Button
             onClick={() =>
               this.setState({ collapsed: false, showRegister: false })
@@ -123,11 +136,18 @@ class Login extends React.Component {
         {showRegister && (
           <Register close={() => this.setState({ showRegister: false })} />
         )}
+        {showForgotPassword && (
+          <ForgotPassword
+            close={() => this.setState({ showForgotPassword: false })}
+          />
+        )}
         {showForm && (
           <div className={oneLine ? s.oneLineContainer : s.container}>
             {loggedIn && !loading && (
               <div className={s.loggedIn}>
-                <div>Welcome {kuski}</div>
+                <div>
+                  Welcome <Link to={`/kuskis/${kuski}`}>{kuski}</Link>
+                </div>
                 <Button onClick={() => this.logout()} variant="contained">
                   Log out
                 </Button>
@@ -164,12 +184,18 @@ class Login extends React.Component {
                 <div className={s.buttonContainer}>
                   {error && <div className={s.errorMessage}>{error}</div>}
                   {!oneLine && (
-                    <Button
-                      onClick={() => this.setRegister()}
-                      variant="contained"
-                    >
-                      Register
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() =>
+                          this.setState({ showForgotPassword: true })
+                        }
+                      >
+                        Forgot password
+                      </Button>
+                      <Button onClick={() => this.setRegister()}>
+                        Register
+                      </Button>
+                    </>
                   )}
                   <Button
                     onClick={() => this.login()}

@@ -15,6 +15,11 @@ const Replay = Model.define(
       allowNull: true,
       defaultValue: 0,
     },
+    DrivenByText: {
+      type: DataType.STRING(255),
+      allowNull: true,
+      defaultValue: DataType.NULL,
+    },
     UploadedBy: {
       type: DataType.INTEGER,
       allowNull: false,

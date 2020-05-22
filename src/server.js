@@ -52,6 +52,7 @@ import {
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
+import { kuskimap, email } from 'utils/dataImports';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -207,6 +208,28 @@ app.get('/run/ranking/:limit', async (req, res) => {
 });
 
 //
+// Data imports
+// -------------------------------------------
+app.get('/run/kuskimap', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    await kuskimap();
+    res.json({ status: 'done' });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+app.get('/run/email', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    await email();
+    res.json({ status: 'done' });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+//
 // Uploading files
 //--------------------------------------------
 app.post('/upload/:type', async (req, res) => {
@@ -351,7 +374,9 @@ app.get('*', async (req, res, next) => {
       styledSheet.collectStyles(rootComponent),
     );
     const materialUICss = sheetsRegistry.toString();
-    const styledStyles = styledSheet.getStyleTags();
+    const styledStyles = styledSheet
+      .getStyleTags()
+      .replace('<style data-styled data-styled-version="5.0.0">', '');
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
@@ -375,6 +400,7 @@ app.get('*', async (req, res, next) => {
       apolloState: context.client.extract(),
       s3SubFolder: config.s3SubFolder,
       recaptcha: config.recaptcha.client,
+      google: config.google,
     };
 
     const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line

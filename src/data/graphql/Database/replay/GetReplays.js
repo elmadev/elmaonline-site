@@ -6,6 +6,7 @@ export const schema = [
   type DatabaseReplay {
     ReplayIndex: Int
     DrivenBy: Int
+    DrivenByText: String
     UploadedBy: Int
     LevelIndex: Int
     TimeIndex: Int
@@ -54,6 +55,7 @@ export const queries = [
 const attributes = [
   'ReplayIndex',
   'DrivenBy',
+  'DrivenByText',
   'UploadedBy',
   'LevelIndex',
   'TimeIndex',

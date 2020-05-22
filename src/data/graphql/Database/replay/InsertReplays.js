@@ -37,6 +37,8 @@ export const mutation = [
     Comment: String!
     #
     MD5: String!
+    #
+    DrivenByText: String!
   ): DatabaseReplay
 
   # Updates a replay in database
@@ -54,6 +56,10 @@ export const resolvers = {
       if (context.auth) {
         UploadedBy = context.userid;
       }
+      let DrivenByText = '';
+      if (args.DrivenBy === 0) {
+        DrivenByText = args.DrivenByText;
+      }
       const replay = await Replay.create({
         UploadedBy,
         UUID: args.UUID,
@@ -69,6 +75,7 @@ export const resolvers = {
         Nitro: args.Nitro,
         Comment: args.Comment,
         MD5: args.MD5,
+        DrivenByText,
       });
       return replay;
     },

@@ -113,6 +113,12 @@ const skippedBattles = battle => {
   if (INTERNALS.indexOf(battle.LevelIndex) > -1) {
     return true;
   }
+  if (!battle.Started) {
+    return true;
+  }
+  if (battle.Aborted === 1) {
+    return true;
+  }
   return false;
 };
 
@@ -346,7 +352,6 @@ export function calcRankings(getBattleList, battleResults) {
               '',
               'all',
             );
-            CurrRank.all[r.KuskiIndex] = newRankings.all[r.KuskiIndex];
             const RankingBattleType = getBattleType(result.battle);
             let previousRanking = 1000;
             if (CurrRank.all[r.KuskiIndex]) {
@@ -355,6 +360,7 @@ export function calcRankings(getBattleList, battleResults) {
                   CurrRank.all[r.KuskiIndex][`Ranking${RankingBattleType}`];
               }
             }
+            CurrRank.all[r.KuskiIndex] = newRankings.all[r.KuskiIndex];
             history.push({
               KuskiIndex: r.KuskiIndex,
               BattleIndex: result.battle.BattleIndex,
@@ -493,51 +499,74 @@ export function calcRankings(getBattleList, battleResults) {
           });
           const Designed = `Designed${getBattleType(result.battle)}`; // battles designed
           forEach(newRankings, (nR, periodType) => {
+            let kuskiAndPeriod = result.battle.KuskiIndex;
+            if (periodType === 'year') {
+              kuskiAndPeriod = `${result.battle.KuskiIndex}-${moment(
+                result.battle.Started,
+              ).format('YYYY')}`;
+            }
+            if (periodType === 'month') {
+              kuskiAndPeriod = `${result.battle.KuskiIndex}-${moment(
+                result.battle.Started,
+              ).format('YYYYMM')}`;
+            }
+            if (periodType === 'week') {
+              kuskiAndPeriod = `${result.battle.KuskiIndex}-${moment(
+                result.battle.Started,
+              ).format('YYYYww')}`;
+            }
+            if (periodType === 'day') {
+              kuskiAndPeriod = `${result.battle.KuskiIndex}-${moment(
+                result.battle.Started,
+              ).format('YYYYMMDD')}`;
+            }
             if (
               BATTLETYPES[periodType].indexOf(getBattleType(result.battle)) > -1
             ) {
-              if (!newRankings[periodType][result.battle.KuskiIndex]) {
-                newRankings[periodType][
-                  result.battle.KuskiIndex
-                ] = newRankingRow(
+              if (!CurrRank[periodType][kuskiAndPeriod]) {
+                newRankings[periodType][kuskiAndPeriod] = newRankingRow(
                   result.battle.KuskiIndex,
                   periodType,
                   result.battle.Started,
                 );
-                CurrRank[periodType][result.battle.KuskiIndex] =
-                  newRankings[periodType][result.battle.KuskiIndex];
+                CurrRank[periodType][kuskiAndPeriod] =
+                  newRankings[periodType][kuskiAndPeriod];
               }
-              if (
-                !newRankings[periodType][result.battle.KuskiIndex][Designed]
-              ) {
-                newRankings[periodType][result.battle.KuskiIndex][Designed] = 1;
-                CurrRank[periodType][result.battle.KuskiIndex][Designed] = 1;
+              if (!newRankings[periodType][kuskiAndPeriod]) {
+                newRankings[periodType][kuskiAndPeriod] =
+                  CurrRank[periodType][kuskiAndPeriod];
+              }
+              if (!CurrRank[periodType][kuskiAndPeriod][Designed]) {
+                newRankings[periodType][kuskiAndPeriod][Designed] = 1;
+                CurrRank[periodType][kuskiAndPeriod][Designed] = 1;
               } else {
-                newRankings[periodType][result.battle.KuskiIndex][
-                  Designed
-                ] += 1;
-                CurrRank[periodType][result.battle.KuskiIndex][Designed] += 1;
+                newRankings[periodType][kuskiAndPeriod][Designed] =
+                  CurrRank[periodType][kuskiAndPeriod][Designed] + 1;
+                CurrRank[periodType][kuskiAndPeriod][Designed] =
+                  newRankings[periodType][kuskiAndPeriod][Designed];
               }
             }
-            if (!newRankings[periodType][result.battle.KuskiIndex]) {
-              newRankings[periodType][result.battle.KuskiIndex] = newRankingRow(
+            if (!CurrRank[periodType][kuskiAndPeriod]) {
+              newRankings[periodType][kuskiAndPeriod] = newRankingRow(
                 result.battle.KuskiIndex,
                 periodType,
                 result.battle.Started,
               );
-              CurrRank[periodType][result.battle.KuskiIndex] =
-                newRankings[periodType][result.battle.KuskiIndex];
+              CurrRank[periodType][kuskiAndPeriod] =
+                newRankings[periodType][kuskiAndPeriod];
             }
-            if (
-              !newRankings[periodType][result.battle.KuskiIndex].DesignedAll
-            ) {
-              newRankings[periodType][result.battle.KuskiIndex].DesignedAll = 1;
-              CurrRank[periodType][result.battle.KuskiIndex].DesignedAll = 1;
+            if (!newRankings[periodType][kuskiAndPeriod]) {
+              newRankings[periodType][kuskiAndPeriod] =
+                CurrRank[periodType][kuskiAndPeriod];
+            }
+            if (!CurrRank[periodType][kuskiAndPeriod].DesignedAll) {
+              newRankings[periodType][kuskiAndPeriod].DesignedAll = 1;
+              CurrRank[periodType][kuskiAndPeriod].DesignedAll = 1;
             } else {
-              newRankings[periodType][
-                result.battle.KuskiIndex
-              ].DesignedAll += 1;
-              CurrRank[periodType][result.battle.KuskiIndex].DesignedAll += 1;
+              newRankings[periodType][kuskiAndPeriod].DesignedAll =
+                CurrRank[periodType][kuskiAndPeriod].DesignedAll + 1;
+              CurrRank[periodType][kuskiAndPeriod].DesignedAll =
+                newRankings[periodType][kuskiAndPeriod].DesignedAll;
             }
           });
         }
@@ -573,11 +602,13 @@ const updateOrCreateRankingYearly = async (data, done) => {
       delete insertData.new;
       insertBulk.year.push(insertData);
       done();
-    } else {
-      delete insertData.RankingIndex;
+    } else if (insertData.Year) {
+      delete insertData.RankingYearlyIndex;
       await RankingYearly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Year: insertData.Year },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -592,11 +623,13 @@ const updateOrCreateRankingMonthly = async (data, done) => {
       delete insertData.new;
       insertBulk.month.push(insertData);
       done();
-    } else {
-      delete insertData.RankingIndex;
+    } else if (insertData.Month) {
+      delete insertData.RankingMonthlyIndex;
       await RankingMonthly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Month: insertData.Month },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -611,11 +644,13 @@ const updateOrCreateRankingWeekly = async (data, done) => {
       delete insertData.new;
       insertBulk.week.push(insertData);
       done();
-    } else {
-      delete insertData.RankingIndex;
+    } else if (insertData.Week) {
+      delete insertData.RankingWeeklyIndex;
       await RankingWeekly.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Week: insertData.Week },
       });
+      done();
+    } else {
       done();
     }
   } else {
@@ -630,11 +665,13 @@ const updateOrCreateRankingDaily = async (data, done) => {
       delete insertData.new;
       insertBulk.day.push(insertData);
       done();
-    } else {
-      delete insertData.RankingIndex;
+    } else if (insertData.Day) {
+      delete insertData.RankingDailyIndex;
       await RankingDaily.update(insertData, {
         where: { KuskiIndex: insertData.KuskiIndex, Day: insertData.Day },
       });
+      done();
+    } else {
       done();
     }
   } else {

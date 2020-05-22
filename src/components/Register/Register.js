@@ -176,9 +176,7 @@ const Register = props => {
             {registerMessage !== '' && (
               <ErrorMessage>{registerMessage}</ErrorMessage>
             )}
-            <Button onClick={() => close && close()} variant="contained">
-              Login
-            </Button>
+            <Button onClick={() => close && close()}>Login</Button>
             <Button
               onClick={() => clickRegister()}
               variant="contained"
