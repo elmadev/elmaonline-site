@@ -39,6 +39,7 @@ const Welcome = () => {
                   </a>
                 </li>
                 <li>Register on this site</li>
+                <RedLi>New IP May 2020: 161.35.35.82</RedLi>
               </List>
             </Text>
           </Grid>
@@ -136,8 +137,8 @@ const Welcome = () => {
                     according to last paragraph
                   </li>
                   <li>
-                    Make sure IP is set to 208.113.166.227, TCP port to 4460,
-                    UDP port to 4461, and that 2nd nick box is unticked
+                    Make sure IP is set to 161.35.35.82, TCP port to 4460, UDP
+                    port to 4461, and that 2nd nick box is unticked
                   </li>
                   <li>
                     Check your account on the website to make sure you have
@@ -225,6 +226,10 @@ const Buttons = styled.div`
   button {
     margin: 8px;
   }
+`;
+
+const RedLi = styled.li`
+  color: red;
 `;
 
 const ExpandContainer = styled.div``;
