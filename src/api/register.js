@@ -32,6 +32,11 @@ const addKuski = async data => {
   return NewReplayComment;
 };
 
+const createTeam = async data => {
+  const newTeam = await Team.create(data);
+  return newTeam;
+};
+
 const updateConfirm = async ConfirmCode => {
   let findKuski = false;
   findKuski = await Kuski.findOne({
@@ -89,7 +94,7 @@ router
     if (kuskiData.length > 0) {
       message = 'Nickname is already taken.';
     }
-    if (!message) {
+    if (!message && req.body.Team) {
       const teamData = await getTeamData(req.body.Team);
       if (teamData.length > 0) {
         if (teamData[0].dataValues.Locked) {
@@ -97,15 +102,18 @@ router
         } else {
           TeamIndex = teamData[0].dataValues.TeamIndex;
         }
+      } else {
+        const addTeam = await createTeam({ Team: req.body.Team });
+        TeamIndex = addTeam.TeamIndex;
       }
     }
     if (!message) {
       if (!validateEmail(req.body.Email)) {
-        message = 'Invalid email adresse.';
+        message = 'Invalid email address.';
       }
     }
     if (!message) {
-      const emails = await checkEmail();
+      const emails = await checkEmail(req.body.Email);
       if (emails.length > 0) {
         message = 'Email is already taken.';
       }
