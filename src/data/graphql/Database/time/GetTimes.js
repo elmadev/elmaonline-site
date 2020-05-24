@@ -5,6 +5,7 @@ import {
   Level,
   WeeklyBest,
   WeeklyWRs,
+  AllFinished,
 } from 'data/models';
 
 export const schema = [
@@ -54,10 +55,14 @@ export const queries = [
 
 export const resolvers = {
   RootQuery: {
-    async getTimes() {
-      return null;
-    },
-    /* async getTimes(parent, { LevelIndex }) {
+    async getTimes(parent, { LevelIndex }) {
+      const level = await Level.findOne({
+        attributes: ['Hidden', 'Locked'],
+        where: { LevelIndex },
+      });
+
+      if (level.Locked || level.Hidden) return [];
+
       const times = await AllFinished.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
@@ -76,7 +81,7 @@ export const resolvers = {
         ],
       });
       return times;
-    }, */
+    },
     async getBestTimes(parent, { LevelIndex, Limit }) {
       const level = await Level.findOne({
         attributes: ['Hidden', 'Locked'],
