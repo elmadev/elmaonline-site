@@ -40,7 +40,7 @@ const BattleList = ({ start, end }) => {
             if (!getBattlesBetween) return null;
 
             return getBattlesBetween.map(b => {
-              const sorted = [...b.Results].sort(sortResults);
+              const sorted = [...b.Results].sort(sortResults(b.BattleType));
               return (
                 <Link
                   key={b.BattleIndex}
