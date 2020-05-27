@@ -47,6 +47,7 @@ query HomeNews {
     RecFileName
     UUID
     DrivenBy
+    DrivenByText
     TAS
     Bug
     Nitro

@@ -8,26 +8,41 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/withStyles';
-import s from './NotFound.css';
+import styled from 'styled-components';
+import Header from 'components/Header';
+import FourOFour0 from '../../images/404_0.png';
+import FourOFour1 from '../../images/404_1.png';
+import FourOFour2 from '../../images/404_2.png';
+
+const images = [FourOFour0, FourOFour1, FourOFour2];
 
 class NotFound extends React.Component {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-  };
-
   render() {
-    const { title } = this.props;
     return (
-      <div className={s.root}>
-        <div className={s.container}>
-          <h1>{title}</h1>
-          <p>Sorry, the page you were trying to view does not exist.</p>
-        </div>
-      </div>
+      <Container>
+        <Header>Not Found</Header>
+        <div>Sorry, the page you were trying to view does not exist.</div>
+        <Image>
+          <img
+            src={images[Math.floor(Math.random() * images.length)]}
+            alt="Not found.."
+          />
+        </Image>
+      </Container>
     );
   }
 }
 
-export default withStyles(s)(NotFound);
+const Container = styled.div`
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Image = styled.div`
+  padding: 16px;
+`;
+
+export default NotFound;

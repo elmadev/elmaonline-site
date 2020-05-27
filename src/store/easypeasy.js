@@ -4,6 +4,7 @@ import ReplaysBy from 'components/ReplaysBy/store';
 import Register from 'components/Register/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
+import KuskiMap from 'pages/map/store';
 
 export default {
   ReplayComments,
@@ -12,6 +13,7 @@ export default {
   Register,
   Cups,
   Cup,
+  KuskiMap,
   test: {
     derp: 'hi',
   },

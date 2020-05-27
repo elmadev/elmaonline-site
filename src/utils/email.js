@@ -27,6 +27,25 @@ export const confirmMail = (kuski, email, confirmId) => {
   });
 };
 
+export const resetMail = (kuski, email, confirmId) => {
+  return new Promise((resolve, reject) => {
+    const apiInstance = new SibApiV3Sdk.SMTPApi();
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.to = [{ email, name: kuski }];
+    sendSmtpEmail.sender = { email: fromMail, name: fromName };
+    sendSmtpEmail.templateId = 3;
+    sendSmtpEmail.params = { kuski, confirmId };
+    apiInstance.sendTransacEmail(sendSmtpEmail).then(
+      data => {
+        resolve(data);
+      },
+      error => {
+        reject(error);
+      },
+    );
+  });
+};
+
 export const newsMail = () => {
   return new Promise(resolve => {
     resolve(true);

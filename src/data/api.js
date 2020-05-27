@@ -52,3 +52,8 @@ export const GenerateEvent = data =>
     `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/generate`,
     data.event,
   );
+export const KuskiMap = () => api.get('kuskimap');
+export const AddKuskiMap = data => api.post('kuskimap/add', data);
+export const ResetPasswordConfirm = data =>
+  api.post('register/resetconfirm', data);
+export const ResetPassword = data => api.post('register/reset', data);

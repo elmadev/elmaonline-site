@@ -5,6 +5,7 @@ import Replay from './replay';
 import Country from './country';
 import Register from './register';
 import Cups from './cups';
+import KuskiMap from './kuskimap';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router
   .use('/country', Country)
   .use('/register', Register)
   .use('/cups', Cups);
+  .use('/kuskimap', KuskiMap);
 
 export default router;

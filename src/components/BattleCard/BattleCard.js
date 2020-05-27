@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 
 import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
+import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
 
 import s from './battleCard.css';
@@ -19,16 +20,14 @@ const BattleCard = props => {
 
   return (
     <>
-      <Typography variant="h3" gutterBottom>
-        Current Battle
-      </Typography>
+      <Header h2>Current Battle</Header>
       <Card className={s.card}>
         <Grid container spacing={0}>
           <Grid item xs={12} md={6}>
             <CardContent>
-              <Typography variant="h4">
+              <Header h2 nomargin>
                 <Level LevelData={battle.LevelData} />
-              </Typography>
+              </Header>
               <Typography variant="subtitle1" color="textSecondary">
                 <Level long LevelData={battle.LevelData} />
               </Typography>
