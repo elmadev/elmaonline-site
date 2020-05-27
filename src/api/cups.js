@@ -1,6 +1,7 @@
 import express from 'express';
+import { eachSeries } from 'neo-async';
 import { authContext } from 'utils/auth';
-import { filterResults } from 'utils/cups';
+import { filterResults, generateEvent } from 'utils/cups';
 import { zeroPad } from 'utils/time';
 import {
   SiteCupGroup,
@@ -9,6 +10,7 @@ import {
   Level,
   SiteCupTime,
   SiteCupBlog,
+  Time,
 } from '../data/models';
 
 const router = express.Router();
@@ -68,7 +70,7 @@ const getCupEvents = async CupGroupIndex => {
       },
       {
         model: SiteCupTime,
-        attributes: ['KuskiIndex', 'Time', 'TimeExists'],
+        attributes: ['KuskiIndex', 'Time', 'TimeExists', 'CupTimeIndex'],
         as: 'CupTimes',
         required: false,
         where: { TimeExists: 1 },
@@ -119,6 +121,33 @@ const EditEvent = async (CupIndex, data) => {
   await SiteCup.update(data, {
     where: { CupIndex },
   });
+  return {};
+};
+
+const DeleteEvent = async data => {
+  await SiteCup.destroy({
+    where: { CupIndex: data.CupIndex },
+  });
+  return {};
+};
+
+const generateUpdate = async (data, done) => {
+  await SiteCupTime.update(
+    { TimeIndex: data.TimeIndex, TimeExists: 1 },
+    { where: { CupTimeIndex: data.CupTimeIndex } },
+  );
+  done();
+};
+
+const generate = async (event, cup) => {
+  const getTimes = await Time.findAll({
+    where: { LevelIndex: event.LevelIndex },
+    order: [['TimeIndex', 'ASC']],
+  });
+  const generatedTimes = await generateEvent(event, cup, getTimes);
+  await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
+  await eachSeries(generatedTimes.updateBulk, generateUpdate);
+  await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });
   return {};
 };
 
@@ -222,6 +251,34 @@ router
         } else {
           res.json({ error: "Kuski doesn't exist" });
         }
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/:CupGroupIndex/event/:CupIndex/delete', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCupById(req.params.CupGroupIndex);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        await DeleteEvent(req.body);
+        res.json({ success: true });
+      } else {
+        res.sendStatus(401);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/:CupGroupIndex/event/:CupIndex/generate', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getCupById(req.params.CupGroupIndex);
+      if (data.dataValues.KuskiIndex === auth.userid) {
+        await generate(req.body, data.dataValues);
+        res.json({ success: true });
       } else {
         res.sendStatus(401);
       }

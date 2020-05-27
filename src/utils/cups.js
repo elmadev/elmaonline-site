@@ -120,3 +120,52 @@ export const calculateStandings = events => {
   });
   return standings.sort((a, b) => b.Points - a.Points);
 };
+
+export const generateEvent = (event, cup, times) => {
+  const insertBulk = [];
+  const updateBulk = [];
+  // loop times and find finished runs
+  forEach(times, t => {
+    if (t.Finished === 'F' || (event.AppleBugs && t.Finished === 'B')) {
+      if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
+        const exists = event.CupTimes.filter(
+          c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
+        );
+        // update cup times if replay is uploaded
+        if (exists.length > 0) {
+          updateBulk.push({
+            TimeIndex: t.TimeIndex,
+            TimeExists: 1,
+            CupTimeIndex: exists[0].CupTimeIndex,
+          });
+          // add to cup times if not uploaded and replay not required
+        } else if (!cup.ReplayRequired) {
+          insertBulk.push({
+            CupIndex: event.CupIndex,
+            KuskiIndex: t.KuskiIndex,
+            TimeIndex: t.TimeIndex,
+            Time: t.Time,
+            TimeExists: 1,
+            RecData: null,
+          });
+        }
+      }
+      // find apple results
+    } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E')) {
+      if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
+        const exists = event.CupTimes.filter(
+          c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
+        );
+        // insert only if replay uploaded
+        if (exists.length > 0) {
+          updateBulk.push({
+            TimeIndex: t.TimeIndex,
+            TimeExists: 1,
+            CupTimeIndex: exists[0].CupTimeIndex,
+          });
+        }
+      }
+    }
+  });
+  return { insertBulk, updateBulk };
+};

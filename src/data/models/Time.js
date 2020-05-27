@@ -1,4 +1,5 @@
 import DataType from 'sequelize';
+import moment from 'moment';
 import Model from '../sequelize';
 
 const Time = Model.define(
@@ -31,9 +32,12 @@ const Time = Model.define(
       defaultValue: 0,
     },
     Driven: {
-      type: DataType.INTEGER,
+      type: DataType.STRING(19),
+      defaultValue: '0000-00-00 00:00:00',
       allowNull: false,
-      defaultValue: 0,
+      get() {
+        return moment(this.getDataValue('Driven')).format('X');
+      },
     },
     Finished: {
       type: DataType.STRING(1),

@@ -42,3 +42,13 @@ export const EditEvent = data =>
     `cups/${data.CupGroupIndex}/event/${data.CupIndex}/edit`,
     data.event,
   );
+export const DeleteEvent = data =>
+  api.post(
+    `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/delete`,
+    data.event,
+  );
+export const GenerateEvent = data =>
+  api.post(
+    `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/generate`,
+    data.event,
+  );

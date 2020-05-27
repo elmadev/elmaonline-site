@@ -7,6 +7,8 @@ import {
   UpdateCupBlog,
   AddEvent,
   EditEvent,
+  DeleteEvent,
+  GenerateEvent,
 } from 'data/api';
 
 export default {
@@ -52,6 +54,23 @@ export default {
     const edit = await EditEvent(payload);
     if (edit.ok) {
       actions.getCup(payload.last);
+    }
+  }),
+  deleteEvent: thunk(async (actions, payload) => {
+    const del = await DeleteEvent(payload);
+    if (del.ok) {
+      actions.getCup(payload.last);
+    }
+  }),
+  updated: '',
+  setUpdated: action((state, payload) => {
+    state.updated = payload;
+  }),
+  generateEvent: thunk(async (actions, payload) => {
+    const generate = await GenerateEvent(payload);
+    if (generate.ok) {
+      actions.getCup(payload.last);
+      actions.setUpdated('Event results generated');
     }
   }),
 };

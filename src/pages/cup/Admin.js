@@ -18,6 +18,7 @@ import LocalTime from 'components/LocalTime';
 import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
 import { points } from 'utils/cups';
+import { format } from 'date-fns';
 
 const schema = yup.object().shape({
   LevelIndex: yup.number().min(1),
@@ -35,7 +36,15 @@ const schema = yup.object().shape({
 });
 
 const Admin = props => {
-  const { events, addEvent, editEvent, deleteEvent } = props;
+  const {
+    events,
+    addEvent,
+    editEvent,
+    deleteEvent,
+    generateEvent,
+    updated,
+    closeUpdated,
+  } = props;
   const [error, setError] = useState('');
   const formal = useFormal(
     {},
@@ -104,7 +113,7 @@ const Admin = props => {
               <li>
                 Put the number in level index under add event, add start,
                 deadline and designer, remember it&apos;s in server&apos;s
-                timezone (UTC-8).
+                timezone (UTC).
               </li>
             </ol>
             <Header>Editing events</Header>
@@ -192,6 +201,11 @@ const Admin = props => {
                 </ClickToEdit>
               </DerpTableCell>
               <DerpTableCell>
+                {e.Updated === 0 && e.StartTime < format(new Date(), 't') && (
+                  <Button variant="contained" onClick={() => generateEvent(e)}>
+                    Generate
+                  </Button>
+                )}
                 <Button variant="contained" onClick={() => deleteEvent(e)}>
                   Delete
                 </Button>
@@ -205,6 +219,12 @@ const Admin = props => {
         text={error}
         type="error"
         close={() => setError('')}
+      />
+      <Feedback
+        open={updated !== ''}
+        text={updated}
+        type="success"
+        close={() => closeUpdated()}
       />
     </Container>
   );

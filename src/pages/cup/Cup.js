@@ -15,10 +15,19 @@ const Cups = props => {
   const { ShortName } = props;
   const [tab, setTab] = useState(0);
   const [openEvent, setOpenEvent] = useState(-1);
-  const { cup, lastCupShortName, events } = useStoreState(state => state.Cup);
-  const { getCup, update, addNewBlog, addEvent, editEvent } = useStoreActions(
-    actions => actions.Cup,
+  const { cup, lastCupShortName, events, updated } = useStoreState(
+    state => state.Cup,
   );
+  const {
+    getCup,
+    update,
+    addNewBlog,
+    addEvent,
+    editEvent,
+    deleteEvent,
+    generateEvent,
+    setUpdated,
+  } = useStoreActions(actions => actions.Cup);
 
   useEffect(() => {
     if (lastCupShortName !== ShortName) {
@@ -77,6 +86,8 @@ const Cups = props => {
       )}
       {tab === 5 && (
         <Admin
+          closeUpdated={() => setUpdated('')}
+          updated={updated}
           events={events}
           addEvent={event =>
             addEvent({
@@ -93,6 +104,20 @@ const Cups = props => {
               event,
             })
           }
+          generateEvent={event => {
+            generateEvent({
+              event,
+              last: lastCupShortName,
+              CupGroupIndex: cup.CupGroupIndex,
+            });
+          }}
+          deleteEvent={event => {
+            deleteEvent({
+              event,
+              last: lastCupShortName,
+              CupGroupIndex: cup.CupGroupIndex,
+            });
+          }}
         />
       )}
     </>
