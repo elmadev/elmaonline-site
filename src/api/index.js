@@ -18,7 +18,7 @@ router
   .use('/replay', Replay)
   .use('/country', Country)
   .use('/register', Register)
-  .use('/cups', Cups);
+  .use('/cups', Cups)
   .use('/kuskimap', KuskiMap);
 
 export default router;
