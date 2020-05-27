@@ -39,7 +39,7 @@ import createApolloClient from 'core/createApolloClient';
 import schema from 'data/schema';
 import configureStore from 'store/configureStore';
 import { getReplayByBattleId, getLevel } from 'utils/download';
-import uploadReplayS3 from 'utils/upload';
+import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
 import {
   chatline,
@@ -262,6 +262,20 @@ app.post('/upload/:type', async (req, res) => {
         replayInfo,
         file,
       });
+    }
+  }
+  if (req.params.type === 'cupreplay') {
+    folder = 'cupreplays';
+    const getAuth = authContext(req);
+    if (getAuth.auth) {
+      const result = await uploadCupReplay(
+        replayFile,
+        req.body.filename,
+        getAuth.userid,
+      );
+      res.json(result);
+    } else {
+      res.sendStatus(401);
     }
   }
 });

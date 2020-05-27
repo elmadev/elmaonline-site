@@ -69,6 +69,14 @@ const routes = {
       load: () => import(/* webpackChunkName: 'search' */ './pages/search'),
     },
     {
+      path: '/cups',
+      load: () => import(/* webpackChunkName: 'cups' */ './pages/cups'),
+    },
+    {
+      path: '/cup/:id',
+      load: () => import(/* webpackChunkName: 'battle' */ './pages/cup'),
+    },
+    {
       path: '/map',
       load: () => import(/* webpackChunkName: 'map' */ './pages/map'),
     },
