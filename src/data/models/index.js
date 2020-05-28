@@ -24,6 +24,10 @@ import Multitime from './Multitime';
 import ReplayComment from './ReplayComment';
 import ReplayRating from './ReplayRating';
 import Country from './Country';
+import SiteCupGroup from './SiteCupGroup';
+import SiteCup from './SiteCup';
+import SiteCupTime from './SiteCupTime';
+import SiteCupBlog from './SiteCupBlog';
 import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
 
@@ -164,6 +168,41 @@ Multitime.belongsTo(BestMultitime, {
   as: 'TimeData',
 });
 
+SiteCup.belongsTo(Kuski, {
+  foreignKey: 'Designer',
+  as: 'KuskiData',
+});
+
+SiteCup.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'Level',
+});
+
+SiteCup.hasMany(SiteCupTime, {
+  foreignKey: 'CupIndex',
+  as: 'CupTimes',
+});
+
+SiteCupTime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+SiteCupBlog.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+SiteCupGroup.hasMany(SiteCupBlog, {
+  foreignKey: 'CupGroupIndex',
+  as: 'CupBlog',
+});
+
+SiteCupGroup.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 KuskiMap.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -200,6 +239,10 @@ export {
   ReplayComment,
   ReplayRating,
   Country,
+  SiteCupGroup,
+  SiteCup,
+  SiteCupTime,
+  SiteCupBlog,
   KuskiMap,
   SiteSetting,
 }; // add the data model here as well so it exports

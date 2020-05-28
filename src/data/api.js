@@ -27,6 +27,31 @@ export const ReplayUploadedBy = kuskiIndex =>
 export const Country = () => api.get('country');
 export const Register = data => api.post('register', data);
 export const Confirm = data => api.post('register/confirm', data);
+export const Cups = () => api.get('cups');
+export const Cup = shortName => api.get(`cups/${shortName}`);
+export const CupEvents = cupGroupIndex =>
+  api.get(`cups/events/${cupGroupIndex}`);
+export const UpdateCup = (cupGroupIndex, data) =>
+  api.post(`cups/edit/${cupGroupIndex}`, data);
+export const UpdateCupBlog = data => api.post(`cups/blog/add`, data);
+export const AddCup = data => api.post(`cups/add`, data);
+export const AddEvent = (data, cupGroupIndex) =>
+  api.post(`cups/${cupGroupIndex}/event/add`, data);
+export const EditEvent = data =>
+  api.post(
+    `cups/${data.CupGroupIndex}/event/${data.CupIndex}/edit`,
+    data.event,
+  );
+export const DeleteEvent = data =>
+  api.post(
+    `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/delete`,
+    data.event,
+  );
+export const GenerateEvent = data =>
+  api.post(
+    `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/generate`,
+    data.event,
+  );
 export const KuskiMap = () => api.get('kuskimap');
 export const AddKuskiMap = data => api.post('kuskimap/add', data);
 export const ResetPasswordConfirm = data =>

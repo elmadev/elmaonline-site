@@ -176,7 +176,9 @@ class Level extends React.Component {
                     <TableBody>
                       {!loading &&
                         getBattlesForLevel.map(i => {
-                          const sorted = [...i.Results].sort(sortResults);
+                          const sorted = [...i.Results].sort(
+                            sortResults(i.BattleType),
+                          );
                           return (
                             <TableRow
                               style={{
