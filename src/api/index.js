@@ -6,6 +6,8 @@ import Country from './country';
 import Register from './register';
 import Cups from './cups';
 import KuskiMap from './kuskimap';
+import AllFinished from './allfinished';
+import LevelPack from './levelpack';
 
 const router = express.Router();
 
@@ -19,6 +21,8 @@ router
   .use('/country', Country)
   .use('/register', Register)
   .use('/cups', Cups)
-  .use('/kuskimap', KuskiMap);
+  .use('/kuskimap', KuskiMap)
+  .use('/allfinished', AllFinished)
+  .use('/levelpack', LevelPack);
 
 export default router;

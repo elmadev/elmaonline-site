@@ -57,3 +57,6 @@ export const AddKuskiMap = data => api.post('kuskimap/add', data);
 export const ResetPasswordConfirm = data =>
   api.post('register/resetconfirm', data);
 export const ResetPassword = data => api.post('register/reset', data);
+export const Highlight = () => api.get('allfinished/highlight');
+export const TotalTimes = LevelPackIndex =>
+  api.get(`levelpack/${LevelPackIndex}/totaltimes`);

@@ -11,7 +11,6 @@
 
 .description {
   margin: 0 10px;
-  margin-bottom: 40px;
   font-size: 14px;
 }
 
@@ -56,15 +55,6 @@
 
 .levels > * > span:nth-child(3) {
   width: 180px;
-}
-
-.levels a:hover {
-  background: #f9f9f9;
-}
-
-.levels a.selected {
-  background: #219653;
-  color: #fff;
 }
 
 .levelPopup {
