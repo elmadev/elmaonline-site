@@ -60,3 +60,9 @@ export const ResetPassword = data => api.post('register/reset', data);
 export const Highlight = () => api.get('allfinished/highlight');
 export const TotalTimes = LevelPackIndex =>
   api.get(`levelpack/${LevelPackIndex}/totaltimes`);
+export const PersonalTimes = data =>
+  api.get(`levelpack/${data.name}/personal/${data.PersonalKuskiIndex}`);
+export const PersonalAllFinished = data =>
+  api.get(`allfinished/${data.LevelIndex}/${data.KuskiIndex}/${data.limit}`);
+export const Besttime = data =>
+  api.get(`besttime/${data.levelId}/${data.limit}`);

@@ -12,9 +12,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import OutsideClickHandler from 'react-outside-click-handler';
 
+import { nickId } from 'utils/nick';
 import { Number } from 'components/Selectors';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
+import Personal from './Personal';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
@@ -42,17 +44,25 @@ const GET_LEVELPACK = gql`
 `;
 
 const LevelPack = ({ name }) => {
-  const { highlight, totaltimes } = useStoreState(state => state.LevelPack);
-  const { getHighlight, getTotalTimes } = useStoreActions(
+  const { highlight, totaltimes, personalTimes } = useStoreState(
+    state => state.LevelPack,
+  );
+  const { getHighlight, getTotalTimes, getPersonalTimes } = useStoreActions(
     actions => actions.LevelPack,
   );
   const [openSettings, setOpenSettings] = useState(false);
   const [highlightWeeks, setHighlightWeeks] = useState(1);
   const [tts, getTTs] = useState(0);
   const [tab, setTab] = useState(0);
+  const [KuskiIndex, setKuskiIndex] = useState(0);
 
   useEffect(() => {
     getHighlight();
+    const PersonalKuskiIndex = nickId();
+    setKuskiIndex(PersonalKuskiIndex);
+    if (PersonalKuskiIndex > 0) {
+      getPersonalTimes({ PersonalKuskiIndex, name });
+    }
   }, []);
 
   useEffect(() => {
@@ -75,6 +85,7 @@ const LevelPack = ({ name }) => {
               <Tabs value={tab} onChange={(e, t) => setTab(t)}>
                 <Tab label="Records" />
                 <Tab label="Total Times" />
+                <Tab label="Personal" />
               </Tabs>
               <div className={s.levelPackName}>
                 <span className={s.shortName}>
@@ -124,6 +135,14 @@ const LevelPack = ({ name }) => {
                   totals={totaltimes}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
+                />
+              )}
+              {tab === 2 && (
+                <Personal
+                  times={personalTimes}
+                  highlight={highlight}
+                  highlightWeeks={highlightWeeks}
+                  KuskiIndex={KuskiIndex}
                 />
               )}
             </>

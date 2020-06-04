@@ -25,15 +25,34 @@ const getHighlights = async () => {
   return { week, twoweek, threeweek, fourweek };
 };
 
-router.get('/highlight', async (req, res) => {
-  const data = await getHighlights();
-  res.json([
-    9999999999,
-    data.week.TimeIndex,
-    data.twoweek.TimeIndex,
-    data.threeweek.TimeIndex,
-    data.fourweek.TimeIndex,
-  ]);
-});
+const getTimes = async (LevelIndex, KuskiIndex, limit) => {
+  const times = await AllFinished.findAll({
+    where: { LevelIndex, KuskiIndex },
+    order: [['Time', 'ASC']],
+    attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
+    limit: parseInt(limit, 10),
+  });
+  return times;
+};
+
+router
+  .get('/highlight', async (req, res) => {
+    const data = await getHighlights();
+    res.json([
+      9999999999,
+      data.week.TimeIndex,
+      data.twoweek.TimeIndex,
+      data.threeweek.TimeIndex,
+      data.fourweek.TimeIndex,
+    ]);
+  })
+  .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
+    const data = await getTimes(
+      req.params.LevelIndex,
+      req.params.KuskiIndex,
+      req.params.limit,
+    );
+    res.json(data);
+  });
 
 export default router;

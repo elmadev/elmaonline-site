@@ -14,10 +14,10 @@ const TotalTimes = ({ totals, highlight, highlightWeeks }) => {
           .sort((a, b) => a.tt - b.tt)
           .map((r, no) => (
             <TableRow hover key={r.KuskiIndex}>
-              <DerpTableCell width={50}>{no + 1}.</DerpTableCell>
-              <DerpTableCell width={150}>{r.KuskiData.Kuski}</DerpTableCell>
+              <DerpTableCell width="50px">{no + 1}.</DerpTableCell>
+              <DerpTableCell width="150px">{r.KuskiData.Kuski}</DerpTableCell>
               <DerpTableCell
-                highlight={r.TimeIndex > highlight[highlightWeeks]}
+                highlight={r.TimeIndex >= highlight[highlightWeeks]}
               >
                 <Time time={r.tt} />
               </DerpTableCell>

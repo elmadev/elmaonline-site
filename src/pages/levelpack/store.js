@@ -1,6 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { Highlight, TotalTimes } from 'data/api';
+import {
+  Highlight,
+  TotalTimes,
+  PersonalTimes,
+  PersonalAllFinished,
+  Besttime,
+} from 'data/api';
 
 export default {
   highlight: [9999999999, 9999999999, 9999999999, 9999999999, 9999999999],
@@ -21,6 +27,36 @@ export default {
     const tts = await TotalTimes(payload);
     if (tts.ok) {
       actions.setTotalTimes(tts.data);
+    }
+  }),
+  personalTimes: [],
+  setPersonalTimes: action((state, payload) => {
+    state.personalTimes = payload;
+  }),
+  getPersonalTimes: thunk(async (actions, payload) => {
+    const times = await PersonalTimes(payload);
+    if (times.ok) {
+      actions.setPersonalTimes(times.data);
+    }
+  }),
+  personalAllFinished: [],
+  setPeronalAllFinished: action((state, payload) => {
+    state.personalAllFinished = payload;
+  }),
+  getPersonalAllFinished: thunk(async (actions, payload) => {
+    const times = await PersonalAllFinished(payload);
+    if (times.ok) {
+      actions.setPeronalAllFinished(times.data);
+    }
+  }),
+  levelBesttimes: [],
+  setLevelBesttimes: action((state, payload) => {
+    state.levelBesttimes = payload;
+  }),
+  getLevelBesttimes: thunk(async (actions, payload) => {
+    const times = await Besttime(payload);
+    if (times.ok) {
+      actions.setLevelBesttimes(times.data);
     }
   }),
 };

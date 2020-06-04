@@ -1,8 +1,44 @@
 import express from 'express';
 import { forEach } from 'lodash';
-import { WeeklyBest, LevelPackLevel, Kuski } from '../data/models';
+import {
+  WeeklyBest,
+  LevelPackLevel,
+  Kuski,
+  LevelPack,
+  Level,
+} from '../data/models';
 
 const router = express.Router();
+
+const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  const times = await LevelPackLevel.findAll({
+    where: { LevelPackIndex: packInfo.LevelPackIndex },
+    include: [
+      {
+        model: WeeklyBest,
+        as: 'LevelBesttime',
+        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        where: { KuskiIndex },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelName', 'LongName'],
+      },
+    ],
+  });
+  return times;
+};
 
 const getTimes = async LevelPackIndex => {
   const times = await LevelPackLevel.findAll({
@@ -55,10 +91,18 @@ const totalTimes = times => {
   return tts.filter(x => x.count === times.length);
 };
 
-router.get('/:LevelPackIndex/totaltimes', async (req, res) => {
-  const data = await getTimes(req.params.LevelPackIndex);
-  const tts = totalTimes(data);
-  res.json(tts);
-});
+router
+  .get('/:LevelPackIndex/totaltimes', async (req, res) => {
+    const data = await getTimes(req.params.LevelPackIndex);
+    const tts = totalTimes(data);
+    res.json(tts);
+  })
+  .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
+    const data = await getPersonalTimes(
+      req.params.LevelPackName,
+      req.params.KuskiIndex,
+    );
+    res.json(data);
+  });
 
 export default router;

@@ -75,7 +75,7 @@ const Records = ({ getLevelPack, highlight, highlightWeeks }) => {
                           <Kuski kuskiData={t.KuskiData} team flag />
                         </span>
                         <TimeSpan
-                          highlight={t.TimeIndex > highlight[highlightWeeks]}
+                          highlight={t.TimeIndex >= highlight[highlightWeeks]}
                         >
                           <Time time={t.Time} />
                         </TimeSpan>
