@@ -3,8 +3,6 @@ import {
   Team,
   Besttime,
   Level,
-  WeeklyBest,
-  WeeklyWRs,
   AllFinished,
 } from 'data/models';
 
@@ -83,16 +81,17 @@ export const resolvers = {
       return times;
     },
     async getBestTimes(parent, { LevelIndex, Limit }) {
-      const level = await Level.findOne({
+      // commented may be needed again for legacy times
+      /* const level = await Level.findOne({
         attributes: ['Hidden', 'Locked'],
         where: { LevelIndex },
       });
 
       if (level.Locked) return [];
 
-      const sourceModel = level.Hidden ? WeeklyBest : Besttime;
+      const sourceModel = level.Hidden ? WeeklyBest : Besttime; */
 
-      const times = await sourceModel.findAll({
+      const times = await Besttime.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC']],
         limit: Limit,
@@ -108,13 +107,9 @@ export const resolvers = {
               },
             ],
           },
-          {
-            model: WeeklyWRs,
-            as: 'WeeklyWR',
-          },
         ],
       });
-      return times.filter(t => !t.WeeklyWR);
+      return times;
     },
   },
 };

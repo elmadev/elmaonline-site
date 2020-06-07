@@ -12,7 +12,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { nickId } from 'utils/nick';
+import { nick } from 'utils/nick';
 import { Number } from 'components/Selectors';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
@@ -44,40 +44,32 @@ const GET_LEVELPACK = gql`
 `;
 
 const LevelPack = ({ name }) => {
-  const { highlight, totaltimes, personalTimes } = useStoreState(
+  const { highlight, personalTimes, timesError, records } = useStoreState(
     state => state.LevelPack,
   );
-  const { getHighlight, getTotalTimes, getPersonalTimes } = useStoreActions(
-    actions => actions.LevelPack,
-  );
+  const {
+    getHighlight,
+    getPersonalTimes,
+    setError,
+    getRecords,
+  } = useStoreActions(actions => actions.LevelPack);
   const [openSettings, setOpenSettings] = useState(false);
   const [highlightWeeks, setHighlightWeeks] = useState(1);
-  const [tts, getTTs] = useState(0);
   const [tab, setTab] = useState(0);
-  const [KuskiIndex, setKuskiIndex] = useState(0);
 
   useEffect(() => {
+    getRecords(name);
     getHighlight();
-    const PersonalKuskiIndex = nickId();
-    setKuskiIndex(PersonalKuskiIndex);
-    if (PersonalKuskiIndex > 0) {
+    const PersonalKuskiIndex = nick();
+    if (PersonalKuskiIndex !== '') {
       getPersonalTimes({ PersonalKuskiIndex, name });
     }
   }, []);
-
-  useEffect(() => {
-    if (tts) {
-      getTotalTimes(tts);
-    }
-  }, [tts]);
 
   return (
     <div className={s.root}>
       <Query query={GET_LEVELPACK} variables={{ name }}>
         {({ data: { getLevelPack }, loading, error }) => {
-          if (!loading) {
-            getTTs(getLevelPack.LevelPackIndex);
-          }
           if (loading) return null;
           if (error) return <div>something went wrong</div>;
           return (
@@ -125,24 +117,28 @@ const LevelPack = ({ name }) => {
               </Settings>
               {tab === 0 && (
                 <Records
-                  getLevelPack={getLevelPack}
+                  records={records}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
                 />
               )}
               {tab === 1 && (
                 <TotalTimes
-                  totals={totaltimes}
+                  levelPackIndex={getLevelPack.LevelPackIndex}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
                 />
               )}
               {tab === 2 && (
                 <Personal
+                  timesError={timesError}
+                  setError={e => setError(e)}
+                  getTimes={newKuski =>
+                    getPersonalTimes({ PersonalKuskiIndex: newKuski, name })
+                  }
                   times={personalTimes}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
-                  KuskiIndex={KuskiIndex}
                 />
               )}
             </>

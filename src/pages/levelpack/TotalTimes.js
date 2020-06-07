@@ -1,31 +1,64 @@
-import React from 'react';
-import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
+import React, { useEffect } from 'react';
+import withStyles from 'isomorphic-style-loader/withStyles';
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import styled from 'styled-components';
 
 import Time from 'components/Time';
 
-const TotalTimes = ({ totals, highlight, highlightWeeks }) => {
+// eslint-disable-next-line css-modules/no-unused-class
+import s from './LevelPack.css';
+
+const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
+  const { totaltimes } = useStoreState(state => state.LevelPack);
+  const { getTotalTimes } = useStoreActions(actions => actions.LevelPack);
+
+  useEffect(() => {
+    getTotalTimes(levelPackIndex);
+  }, [levelPackIndex]);
+
   return (
     <>
       <h2>Total Times</h2>
-      <DerpTable headers={['#', 'Player', 'Total Time']} length={totals.length}>
-        {totals
-          .sort((a, b) => a.tt - b.tt)
-          .map((r, no) => (
-            <TableRow hover key={r.KuskiIndex}>
-              <DerpTableCell width="50px">{no + 1}.</DerpTableCell>
-              <DerpTableCell width="150px">{r.KuskiData.Kuski}</DerpTableCell>
-              <DerpTableCell
-                highlight={r.TimeIndex >= highlight[highlightWeeks]}
-              >
-                <Time time={r.tt} />
-              </DerpTableCell>
-            </TableRow>
-          ))}
-      </DerpTable>
+      <div className={s.levels}>
+        <div className={s.tableHead}>
+          <span>#</span>
+          <span>Player</span>
+          <span>Total Time</span>
+          <span />
+        </div>
+        {totaltimes.length > 0 && (
+          <>
+            {totaltimes
+              .sort((a, b) => a.tt - b.tt)
+              .map((r, no) => (
+                <TimeRow key={r.KuskiIndex}>
+                  <span>{no + 1}</span>
+                  <span>{r.KuskiData.Kuski}</span>
+                  <TimeSpan
+                    highlight={r.TimeIndex >= highlight[highlightWeeks]}
+                  >
+                    <Time time={r.tt} />
+                  </TimeSpan>
+                  <span />
+                </TimeRow>
+              ))}
+          </>
+        )}
+      </div>
     </>
   );
 };
 
-export default TotalTimes;
+const TimeSpan = styled.span`
+  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
+  width: auto !important;
+`;
+
+const TimeRow = styled.div`
+  display: table-row;
+  color: inherit;
+  font-size: 14px;
+  padding: 10px;
+`;
+
+export default withStyles(s)(TotalTimes);

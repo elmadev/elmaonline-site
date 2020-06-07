@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
 
@@ -12,24 +10,7 @@ import LevelPopup from './LevelPopup';
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const GET_BEST_TIME = gql`
-  query($LevelIndex: Int!) {
-    getBestTimes(LevelIndex: $LevelIndex, Limit: 1) {
-      TimeIndex
-      KuskiIndex
-      Time
-      KuskiData {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-    }
-  }
-`;
-
-const Records = ({ getLevelPack, highlight, highlightWeeks }) => {
+const Records = ({ highlight, highlightWeeks, records }) => {
   const [level, selectLevel] = useState(-1);
 
   return (
@@ -42,51 +23,30 @@ const Records = ({ getLevelPack, highlight, highlightWeeks }) => {
           <span>Kuski</span>
           <span>Time</span>
         </div>
-        {getLevelPack.Levels.map(l => {
-          return (
-            <TimeRow
-              to={`/levels/${l.LevelIndex}`}
-              key={l.LevelIndex}
-              onClick={e => {
-                e.preventDefault();
-                selectLevel(level === l.LevelIndex ? -1 : l.LevelIndex);
-              }}
-              selected={level === l.LevelIndex}
+        {records.map(r => (
+          <TimeRow
+            to={`/levels/${r.LevelIndex}`}
+            key={r.LevelIndex}
+            onClick={e => {
+              e.preventDefault();
+              selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
+            }}
+            selected={level === r.LevelIndex}
+          >
+            <span>{r.Level.LevelName}</span>
+            <span>{r.Level.LongName}</span>
+            <span>
+              <Kuski kuskiData={r.LevelBesttime[0].KuskiData} team flag />
+            </span>
+            <TimeSpan
+              highlight={
+                r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
+              }
             >
-              <span>{l.Level.LevelName}</span>
-              <span>{l.Level.LongName}</span>
-              <Query
-                query={GET_BEST_TIME}
-                variables={{ LevelIndex: l.LevelIndex }}
-              >
-                {({ data: { getBestTimes } }) => {
-                  if (!getBestTimes || getBestTimes.length < 1)
-                    return (
-                      <>
-                        <span />
-                        <span />
-                      </>
-                    );
-
-                  return getBestTimes.map(t => {
-                    return (
-                      <React.Fragment key={t.TimeIndex}>
-                        <span>
-                          <Kuski kuskiData={t.KuskiData} team flag />
-                        </span>
-                        <TimeSpan
-                          highlight={t.TimeIndex >= highlight[highlightWeeks]}
-                        >
-                          <Time time={t.Time} />
-                        </TimeSpan>
-                      </React.Fragment>
-                    );
-                  });
-                }}
-              </Query>
-            </TimeRow>
-          );
-        })}
+              <Time time={r.LevelBesttime[0].Time} />
+            </TimeSpan>
+          </TimeRow>
+        ))}
       </div>
       {level !== -1 && (
         <LevelPopup

@@ -114,12 +114,6 @@ LevelPackLevel.belongsTo(Level, {
 LevelPackLevel.hasMany(Besttime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
-  as: 'LevelBesttime2',
-});
-
-LevelPackLevel.hasMany(WeeklyBest, {
-  foreignKey: 'LevelIndex',
-  sourceKey: 'LevelIndex',
   as: 'LevelBesttime',
 });
 

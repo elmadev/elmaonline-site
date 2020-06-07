@@ -1,14 +1,61 @@
 import express from 'express';
 import { forEach } from 'lodash';
 import {
-  WeeklyBest,
+  Besttime,
   LevelPackLevel,
   Kuski,
   LevelPack,
   Level,
+  Team,
 } from '../data/models';
 
 const router = express.Router();
+
+const getKuski = async k => {
+  const findKuski = await Kuski.findOne({
+    where: { Kuski: k },
+  });
+  return findKuski;
+};
+
+const getRecords = async LevelPackName => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  const times = await LevelPackLevel.findAll({
+    where: { LevelPackIndex: packInfo.LevelPackIndex },
+    order: [['LevelPackLevelIndex', 'ASC']],
+    include: [
+      {
+        model: Besttime,
+        as: 'LevelBesttime',
+        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+        limit: 1,
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+                attributes: ['Team'],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelName', 'LongName'],
+      },
+    ],
+  });
+  return times;
+};
 
 const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   const packInfo = await LevelPack.findOne({
@@ -16,9 +63,10 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   });
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
+    order: [['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: WeeklyBest,
+        model: Besttime,
         as: 'LevelBesttime',
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         where: { KuskiIndex },
@@ -46,7 +94,7 @@ const getTimes = async LevelPackIndex => {
     attributes: ['LevelIndex'],
     include: [
       {
-        model: WeeklyBest,
+        model: Besttime,
         as: 'LevelBesttime',
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         include: [
@@ -98,11 +146,20 @@ router
     res.json(tts);
   })
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
-    const data = await getPersonalTimes(
-      req.params.LevelPackName,
-      req.params.KuskiIndex,
-    );
-    res.json(data);
+    const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+    if (getKuskiIndex) {
+      const data = await getPersonalTimes(
+        req.params.LevelPackName,
+        getKuskiIndex.dataValues.KuskiIndex,
+      );
+      res.json(data);
+    } else {
+      res.json({ error: 'Kuski does not exist' });
+    }
+  })
+  .get('/:LevelPackName/records', async (req, res) => {
+    const records = await getRecords(req.params.LevelPackName);
+    res.json(records);
   });
 
 export default router;

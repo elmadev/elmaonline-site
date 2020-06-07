@@ -5,13 +5,24 @@ import styled from 'styled-components';
 import Kuski from 'components/Kuski';
 import Link from 'components/Link';
 import Time from 'components/Time';
+import ClickToEdit from 'components/ClickToEdit';
+import Feedback from 'components/Feedback';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const Personal = ({ times, highlight, highlightWeeks, KuskiIndex }) => {
+const Personal = ({
+  times,
+  getTimes,
+  highlight,
+  highlightWeeks,
+  timesError,
+  setError,
+}) => {
   const [level, selectLevel] = useState(-1);
+
+  if (times.length === 0) return null;
 
   return (
     <>
@@ -21,7 +32,12 @@ const Personal = ({ times, highlight, highlightWeeks, KuskiIndex }) => {
           <span>Filename</span>
           <span>Level name</span>
           <span>
-            <Kuski kuskiData={times[0].LevelBesttime[0].KuskiData} flag />
+            <ClickToEdit
+              value={times[0].LevelBesttime[0].Kuski}
+              update={newKuski => getTimes(newKuski)}
+            >
+              <Kuski kuskiData={times[0].LevelBesttime[0].KuskiData} flag />
+            </ClickToEdit>
           </span>
           <span />
         </div>
@@ -59,9 +75,15 @@ const Personal = ({ times, highlight, highlightWeeks, KuskiIndex }) => {
           close={() => {
             selectLevel(-1);
           }}
-          KuskiIndex={KuskiIndex}
+          KuskiIndex={times[0].LevelBesttime[0].KuskiIndex}
         />
       )}
+      <Feedback
+        open={timesError !== ''}
+        close={() => setError('')}
+        text={timesError}
+        type="error"
+      />
     </>
   );
 };

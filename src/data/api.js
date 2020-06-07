@@ -66,3 +66,5 @@ export const PersonalAllFinished = data =>
   api.get(`allfinished/${data.LevelIndex}/${data.KuskiIndex}/${data.limit}`);
 export const Besttime = data =>
   api.get(`besttime/${data.levelId}/${data.limit}`);
+export const Records = LevelPackName =>
+  api.get(`levelpack/${LevelPackName}/records`);

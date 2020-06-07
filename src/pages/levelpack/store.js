@@ -6,6 +6,7 @@ import {
   PersonalTimes,
   PersonalAllFinished,
   Besttime,
+  Records,
 } from 'data/api';
 
 export default {
@@ -29,6 +30,10 @@ export default {
       actions.setTotalTimes(tts.data);
     }
   }),
+  timesError: '',
+  setError: action((state, payload) => {
+    state.timesError = payload;
+  }),
   personalTimes: [],
   setPersonalTimes: action((state, payload) => {
     state.personalTimes = payload;
@@ -36,7 +41,11 @@ export default {
   getPersonalTimes: thunk(async (actions, payload) => {
     const times = await PersonalTimes(payload);
     if (times.ok) {
-      actions.setPersonalTimes(times.data);
+      if (times.data.error) {
+        actions.setError(times.data.error);
+      } else {
+        actions.setPersonalTimes(times.data);
+      }
     }
   }),
   personalAllFinished: [],
@@ -57,6 +66,16 @@ export default {
     const times = await Besttime(payload);
     if (times.ok) {
       actions.setLevelBesttimes(times.data);
+    }
+  }),
+  records: [],
+  setRecords: action((state, payload) => {
+    state.records = payload;
+  }),
+  getRecords: thunk(async (actions, payload) => {
+    const times = await Records(payload);
+    if (times.ok) {
+      actions.setRecords(times.data);
     }
   }),
 };
