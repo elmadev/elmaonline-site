@@ -34,7 +34,7 @@ const Besttime = Model.define(
   {
     indexes: [
       {
-        fields: ['BestTimeIndex'],
+        fields: ['LevelIndex, TimeIndex'],
       },
     ],
   },
