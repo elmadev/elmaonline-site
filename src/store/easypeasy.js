@@ -5,6 +5,7 @@ import Register from 'components/Register/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
+import LevelPack from 'pages/levelpack/store';
 
 export default {
   ReplayComments,
@@ -14,6 +15,7 @@ export default {
   Cups,
   Cup,
   KuskiMap,
+  LevelPack,
   test: {
     derp: 'hi',
   },

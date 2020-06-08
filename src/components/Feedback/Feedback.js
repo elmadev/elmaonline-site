@@ -30,7 +30,7 @@ const Feedback = props => {
             key="close"
             aria-label="Close"
             color="inherit"
-            onClick={() => close()}
+            onClick={() => close && close()}
           >
             <CloseIcon />
           </IconButton>,
