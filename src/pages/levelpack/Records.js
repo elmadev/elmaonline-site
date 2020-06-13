@@ -35,16 +35,25 @@ const Records = ({ highlight, highlightWeeks, records }) => {
           >
             <span>{r.Level.LevelName}</span>
             <span>{r.Level.LongName}</span>
-            <span>
-              <Kuski kuskiData={r.LevelBesttime[0].KuskiData} team flag />
-            </span>
-            <TimeSpan
-              highlight={
-                r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
-              }
-            >
-              <Time time={r.LevelBesttime[0].Time} />
-            </TimeSpan>
+            {r.LevelBesttime.length > 0 ? (
+              <>
+                <span>
+                  <Kuski kuskiData={r.LevelBesttime[0].KuskiData} team flag />
+                </span>
+                <TimeSpan
+                  highlight={
+                    r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
+                  }
+                >
+                  <Time time={r.LevelBesttime[0].Time} />
+                </TimeSpan>
+              </>
+            ) : (
+              <>
+                <span />
+                <span />
+              </>
+            )}
           </TimeRow>
         ))}
       </div>

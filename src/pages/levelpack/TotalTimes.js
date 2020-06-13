@@ -4,12 +4,15 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from 'styled-components';
 
 import Time from 'components/Time';
+import Loading from 'components/Loading';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
 const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
-  const { totaltimes } = useStoreState(state => state.LevelPack);
+  const { totaltimes, totaltimesLoading } = useStoreState(
+    state => state.LevelPack,
+  );
   const { getTotalTimes } = useStoreActions(actions => actions.LevelPack);
 
   useEffect(() => {
@@ -26,6 +29,7 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
           <span>Total Time</span>
           <span />
         </div>
+        {totaltimesLoading && <Loading />}
         {totaltimes.length > 0 && (
           <>
             {totaltimes
