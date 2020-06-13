@@ -22,8 +22,6 @@ const Personal = ({
 }) => {
   const [level, selectLevel] = useState(-1);
 
-  if (times.length === 0) return null;
-
   return (
     <>
       <h2>Personal records</h2>
@@ -33,40 +31,48 @@ const Personal = ({
           <span>Level name</span>
           <span>
             <ClickToEdit
-              value={times[0].LevelBesttime[0].Kuski}
+              value={times.length > 0 ? times[0].LevelBesttime[0].Kuski : ''}
               update={newKuski => getTimes(newKuski)}
             >
-              <Kuski kuskiData={times[0].LevelBesttime[0].KuskiData} flag />
+              {times.length > 0 ? (
+                <Kuski kuskiData={times[0].LevelBesttime[0].KuskiData} flag />
+              ) : (
+                <span>None</span>
+              )}
             </ClickToEdit>
           </span>
           <span />
         </div>
-        {times.map(r => (
-          <TimeRow
-            to={`/levels/${r.LevelIndex}`}
-            key={r.LevelIndex}
-            onClick={e => {
-              e.preventDefault();
-              selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
-            }}
-            selected={level === r.LevelIndex}
-          >
-            <span>{r.Level.LevelName}</span>
-            <span>{r.Level.LongName}</span>
-            {r.LevelBesttime.length > 0 ? (
-              <TimeSpan
-                highlight={
-                  r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
-                }
+        {times.length !== 0 && (
+          <>
+            {times.map(r => (
+              <TimeRow
+                to={`/levels/${r.LevelIndex}`}
+                key={r.LevelIndex}
+                onClick={e => {
+                  e.preventDefault();
+                  selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
+                }}
+                selected={level === r.LevelIndex}
               >
-                <Time time={r.LevelBesttime[0].Time} />
-              </TimeSpan>
-            ) : (
-              <span />
-            )}
-            <span />
-          </TimeRow>
-        ))}
+                <span>{r.Level.LevelName}</span>
+                <span>{r.Level.LongName}</span>
+                {r.LevelBesttime.length > 0 ? (
+                  <TimeSpan
+                    highlight={
+                      r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
+                    }
+                  >
+                    <Time time={r.LevelBesttime[0].Time} />
+                  </TimeSpan>
+                ) : (
+                  <span />
+                )}
+                <span />
+              </TimeRow>
+            ))}
+          </>
+        )}
       </div>
       {level !== -1 && (
         <LevelPopup
