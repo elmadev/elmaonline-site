@@ -64,7 +64,7 @@ const LevelPack = ({ name }) => {
     if (PersonalKuskiIndex !== '') {
       getPersonalTimes({ PersonalKuskiIndex, name });
     }
-  }, []);
+  }, [name]);
 
   return (
     <div className={s.root}>

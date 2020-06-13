@@ -21,14 +21,20 @@ export default {
     }
   }),
   totaltimes: [],
+  totaltimesLoading: false,
   setTotalTimes: action((state, payload) => {
     state.totaltimes = payload;
   }),
+  setTotaltimesLoading: action((state, payload) => {
+    state.totaltimesLoading = payload;
+  }),
   getTotalTimes: thunk(async (actions, payload) => {
+    actions.setTotaltimesLoading(true);
     const tts = await TotalTimes(payload);
     if (tts.ok) {
       actions.setTotalTimes(tts.data);
     }
+    actions.setTotaltimesLoading(false);
   }),
   timesError: '',
   setError: action((state, payload) => {
