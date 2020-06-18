@@ -37,6 +37,7 @@
     "apollo-link-http": "^1.5.14",
     "apollo-link-logger": "^1.2.3",
     "apollo-link-schema": "^1.2.2",
+    "archiver": "^4.0.1",
     "aws-sdk": "^2.441.0",
     "bluebird": "^3.5.4",
     "body-parser": "^1.18.3",

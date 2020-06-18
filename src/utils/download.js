@@ -1,4 +1,10 @@
-import { Battle, Level } from 'data/models';
+import { Battle, Level, LevelPackLevel, LevelPack } from 'data/models';
+import { eachSeries } from 'neo-async';
+import { forEach } from 'lodash';
+import generate from 'nanoid/generate';
+import fs from 'fs';
+import archiver from 'archiver';
+import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
   const replayData = await Battle.findOne({
@@ -35,6 +41,19 @@ const getLevelData = async id => {
   return { level: levelData, battle: battleData };
 };
 
+const getLevels = async LevelPackName => {
+  const levelData = await LevelPack.findOne({
+    where: { LevelPackName },
+    include: [
+      {
+        model: LevelPackLevel,
+        as: 'Levels',
+      },
+    ],
+  });
+  return levelData;
+};
+
 export function getLevel(id) {
   return new Promise((resolve, reject) => {
     getLevelData(id).then(data => {
@@ -68,3 +87,54 @@ export function getLevel(id) {
     });
   });
 }
+
+export const zipFiles = files => {
+  return new Promise((resolve, reject) => {
+    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+    const output = fs.createWriteStream(
+      `.${config.publicFolder}/temp/${uuid}.zip`,
+    );
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+    output.on('close', () => {
+      resolve(`.${config.publicFolder}/temp/${uuid}.zip`);
+    });
+    archive.on('error', err => {
+      reject(err);
+    });
+    archive.pipe(output);
+    forEach(files, file => {
+      archive.append(Buffer.from(file.file), { name: file.filename });
+    });
+    archive.finalize();
+  });
+};
+
+const zipLevelPack = levels => {
+  return new Promise(resolve => {
+    const levelData = [];
+    const levelDataIterator = async (level, done) => {
+      const data = await getLevel(level.dataValues.LevelIndex);
+      levelData.push(data);
+      done();
+    };
+    eachSeries(levels, levelDataIterator, async () => {
+      const zip = await zipFiles(levelData);
+      resolve(zip);
+    });
+  });
+};
+
+export const getLevelPack = async name => {
+  const levels = await getLevels(name);
+  if (levels) {
+    if (levels.Levels.length > 0) {
+      const zip = await zipLevelPack(levels.Levels);
+      const fileData = fs.readFileSync(zip);
+      fs.unlink(zip, () => {});
+      return fileData;
+    }
+  }
+  return false;
+};
