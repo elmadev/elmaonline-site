@@ -1,4 +1,4 @@
-import { forEach } from 'lodash';
+import { forEach, has } from 'lodash';
 import moment from 'moment';
 
 export const points = [
@@ -84,16 +84,35 @@ export const filterResults = events => {
         }
       }
     });
+    // iterate results to assign points
+    const drawResults = {};
     forEach(filteredResults, (result, pos) => {
-      filteredResults[pos].Points = points[pos] ? points[pos] : 1;
+      // check for draw results
+      const draws = filteredResults.filter(r => r.Time === result.Time);
+      if (draws.length > 1) {
+        if (!has(drawResults, result.Time)) {
+          drawResults[result.Time] = pos;
+        }
+        let combinedPoints = 0;
+        for (let p = 0; p < draws.length; p += 1) {
+          const drawPos = drawResults[result.Time] + p;
+          combinedPoints += points[drawPos] ? points[drawPos] : 1;
+        }
+        const drawPoints = combinedPoints / draws.length;
+        filteredResults[pos].Points = drawPoints;
+      } else {
+        // otherwise assign points normally
+        filteredResults[pos].Points = points[pos] ? points[pos] : 1;
+      }
     });
     filtered[eventIndex].CupTimes = filteredResults;
   });
   return filtered;
 };
 
-export const calculateStandings = events => {
+export const calculateStandings = (events, cup) => {
   const standings = [];
+  let skipStandings = [];
   forEach(events, event => {
     forEach(event.CupTimes, time => {
       let existsIndex = -1;
@@ -109,15 +128,36 @@ export const calculateStandings = events => {
           KuskiIndex: time.KuskiIndex,
           Points: time.Points,
           Kuski: time.KuskiData.Kuski,
+          Events: 1,
+          AllPoints: [time.Points],
         });
       } else {
         standings[existsIndex] = {
           ...standings[existsIndex],
           Points: standings[existsIndex].Points + time.Points,
+          Events: standings[existsIndex].Events + 1,
+          AllPoints: [...standings[existsIndex].AllPoints, time.Points],
         };
       }
     });
   });
+  if (cup.Skips) {
+    skipStandings = standings.map(s => {
+      if (s.Events <= cup.Events - cup.Skips) {
+        return s;
+      }
+      const { AllPoints } = s;
+      let { Points } = s;
+      for (let i = 0; i < s.Events - (cup.Events - cup.Skips); i += 1) {
+        const min = Math.min(...AllPoints);
+        const removeIndex = AllPoints.findIndex(ap => ap === min);
+        AllPoints.splice(removeIndex, 1);
+        Points -= min;
+      }
+      return { ...s, AllPoints, Points };
+    });
+    return skipStandings.sort((a, b) => b.Points - a.Points);
+  }
   return standings.sort((a, b) => b.Points - a.Points);
 };
 

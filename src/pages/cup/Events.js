@@ -51,9 +51,12 @@ const Cups = props => {
             <EventNo>{i + 1}.</EventNo>
             <RightSide>
               <By>
-                <Link to={`/dl/level/${e.LevelIndex}`}>
+                <EventLink
+                  highlight={i === openEvent}
+                  to={`/dl/level/${e.LevelIndex}`}
+                >
                   {e.Level.LevelName}
-                </Link>{' '}
+                </EventLink>{' '}
                 by <Kuski kuskiData={e.KuskiData} />
               </By>
               <div>
@@ -118,6 +121,10 @@ const Cups = props => {
   );
 };
 
+const EventLink = styled(Link)`
+  color: ${p => (p.highlight ? 'white' : '#219653')};
+`;
+
 const PlayerContainer = styled.div`
   display: flex;
   align-items: center;
@@ -135,6 +142,7 @@ const EventContainer = styled.div`
   height: 100px;
   cursor: pointer;
   background-color: ${props => (props.highlight ? '#219653' : 'transparent')};
+  color: ${props => (props.highlight ? 'white' : 'black')};
 `;
 
 const EventNo = styled.div`
