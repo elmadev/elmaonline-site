@@ -52,6 +52,7 @@ const Cups = props => {
       <CupName>{cup.CupName}</CupName>
       {tab === 0 && (
         <Dashboard
+          cup={cup}
           events={events}
           openStandings={() => setTab(2)}
           openEvent={e => {
@@ -61,7 +62,7 @@ const Cups = props => {
         />
       )}
       {tab === 1 && <Events events={events} setEvent={openEvent} />}
-      {tab === 2 && <Standings events={events} />}
+      {tab === 2 && <Standings events={events} cup={cup} />}
       {tab === 3 && (
         <RulesInfo
           description={cup.Description}

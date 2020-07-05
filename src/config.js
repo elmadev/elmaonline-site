@@ -31,11 +31,11 @@ module.exports = {
 
   // Database
   mysql: {
-    host: 'sql.elma.online',
+    host: 'sql-master.elma.online',
     port: 3306,
     user: 'sandbox',
-    pass: 'Icommandthesun',
-    database: 'eol1',
+    pass: 'cksnmbmlfchozooqrdxahytwer',
+    database: 'eolwebtest',
   },
 
   // files

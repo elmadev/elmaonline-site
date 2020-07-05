@@ -6,11 +6,11 @@ import TableRow from '@material-ui/core/TableRow';
 import { calculateStandings } from 'utils/cups';
 
 const Standings = props => {
-  const { events } = props;
+  const { events, cup } = props;
   const [standings, setStandings] = useState([]);
 
   useEffect(() => {
-    setStandings(calculateStandings(events));
+    setStandings(calculateStandings(events, cup));
   }, []);
 
   return (
