@@ -38,7 +38,7 @@ import Html from 'components/Html';
 import createApolloClient from 'core/createApolloClient';
 import schema from 'data/schema';
 import configureStore from 'store/configureStore';
-import { getReplayByBattleId, getLevel } from 'utils/download';
+import { getReplayByBattleId, getLevel, getLevelPack } from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
 import {
@@ -165,6 +165,31 @@ app.get('/dl/level/:id', async (req, res, next) => {
       'Content-Type': 'application/octet-stream',
     });
     readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/pack/:name', async (req, res, next) => {
+  try {
+    const zipData = await getLevelPack(req.params.name);
+    if (zipData) {
+      const readStream = new stream.PassThrough();
+      readStream.end(zipData);
+      res.set({
+        'Content-disposition': `attachment; filename=${req.params.name}.zip`,
+        'Content-Type': 'application/octet-stream',
+      });
+      readStream.pipe(res);
+    } else {
+      next({
+        status: 403,
+        msg: 'Level pack does not exist.',
+      });
+    }
   } catch (e) {
     next({
       status: 403,

@@ -1,6 +1,8 @@
 import express from 'express';
 import { eachSeries } from 'neo-async';
+import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
+import { format } from 'date-fns';
 import { filterResults, generateEvent } from 'utils/cups';
 import { zeroPad } from 'utils/time';
 import {
@@ -151,6 +153,32 @@ const generate = async (event, cup) => {
   return {};
 };
 
+const getUnstarted = async () => {
+  const unStarted = await SiteCup.findAll({
+    where: { Started: 0 },
+    include: [
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelIndex', 'Hidden', 'Locked'],
+      },
+    ],
+  });
+  return unStarted;
+};
+
+const unlockLevel = async (indices, done) => {
+  await Level.update(
+    { Hidden: 1, Locked: 0 },
+    { where: { LevelIndex: indices.LevelIndex } },
+  );
+  await SiteCup.update(
+    { Started: 1 },
+    { where: { CupIndex: indices.CupIndex } },
+  );
+  done();
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -285,6 +313,26 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .post('/unlock', async (req, res) => {
+    const data = await getUnstarted();
+    const toUnlock = [];
+    forEach(data, event => {
+      if (
+        event.StartTime <= format(new Date(), 't') &&
+        (event.Level.Hidden === 0 ||
+          event.Level.Locked === 1 ||
+          event.Started === 0)
+      ) {
+        toUnlock.push({
+          LevelIndex: event.LevelIndex,
+          CupIndex: event.CupIndex,
+        });
+      }
+    });
+    eachSeries(toUnlock, unlockLevel, () => {
+      res.json({ data });
+    });
   });
 
 export default router;

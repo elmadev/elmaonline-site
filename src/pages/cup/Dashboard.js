@@ -13,14 +13,14 @@ import Time from 'components/Time';
 import CupCurrent from 'components/CupCurrent';
 
 const Dashboard = props => {
-  const { events, openEvent, openStandings } = props;
+  const { events, openEvent, openStandings, cup } = props;
   const [standings, setStandings] = useState([]);
   const [lastEvent, setLastEvent] = useState(-1);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    setStandings(calculateStandings(events));
+    setStandings(calculateStandings(events, cup));
     let lastEndTime = 0;
     forEach(events, (e, i) => {
       if (e.EndTime < format(new Date(), 't')) {
