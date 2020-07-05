@@ -11,7 +11,6 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import OutsideClickHandler from 'react-outside-click-handler';
-import SaveAlt from '@material-ui/icons/SaveAlt';
 
 import { nick } from 'utils/nick';
 import { Number } from 'components/Selectors';
@@ -88,9 +87,7 @@ const LevelPack = ({ name }) => {
                   {getLevelPack.LevelPackLongName}
                 </span>
                 <a href={`/dl/pack/${getLevelPack.LevelPackName}`}>
-                  <Download>
-                    <SaveAlt />
-                  </Download>
+                  <Download>Download</Download>
                 </a>
               </div>
               <div className={s.description}>{getLevelPack.LevelPackDesc}</div>
@@ -162,6 +159,8 @@ LevelPack.propTypes = {
 const Download = styled.span`
   padding-left: 10px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
 `;
 
 const Settings = styled.div`
