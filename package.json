@@ -63,7 +63,7 @@
     "isomorphic-style-loader": "^5.0.1",
     "jws": "^3.2.2",
     "level-editor-gui": "https://github.com/ville-j/level-editor-gui.git",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "mysql2": "^1.6.5",
