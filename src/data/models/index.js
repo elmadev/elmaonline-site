@@ -30,6 +30,8 @@ import SiteCupTime from './SiteCupTime';
 import SiteCupBlog from './SiteCupBlog';
 import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
+import LegacyFinished from './LegacyFinished';
+import LegacyBesttime from './LegacyBesttime';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -251,4 +253,6 @@ export {
   SiteCupBlog,
   KuskiMap,
   SiteSetting,
+  LegacyFinished,
+  LegacyBesttime,
 }; // add the data model here as well so it exports

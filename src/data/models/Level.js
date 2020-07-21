@@ -1,4 +1,5 @@
 import DataType from 'sequelize';
+import moment from 'moment';
 import Model from '../sequelize';
 
 const Level = Model.define(
@@ -59,6 +60,19 @@ const Level = Model.define(
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    Legacy: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Added: {
+      type: DataType.STRING(19),
+      defaultValue: '0000-00-00 00:00:00',
+      allowNull: false,
+      get() {
+        return moment(this.getDataValue('Driven')).format('X');
+      },
     },
   },
   {

@@ -1,7 +1,20 @@
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
-import { KuskiMap, SiteSetting, Kuski } from '../data/models';
-import * as data from '../data/json/kuskimap.json';
+import { eachSeries } from 'neo-async';
+import {
+  KuskiMap,
+  SiteSetting,
+  Kuski,
+  LevelPack,
+  LevelPackLevel,
+  Level,
+  LegacyFinished,
+  LegacyBesttime,
+  Besttime,
+} from '../data/models';
+import * as kuskiMapData from '../data/json/kuskimap.json';
+import * as skintPRsData from '../data/json/skintatious_PRs.json';
+import * as skintNonPRsData from '../data/json/skintatious_nonPRs.json';
 
 const addMarker = async Data => {
   let newMarker = false;
@@ -18,7 +31,7 @@ const addMarker = async Data => {
 
 export const kuskimap = () => {
   return new Promise(resolve => {
-    forEach(data.default, d => {
+    forEach(kuskiMapData.default, d => {
       const addedDate = d.DateAdded.split('/');
       const addedTime = d.TimeAdded.split(':');
       addMarker({
@@ -69,4 +82,121 @@ export const email = async () => {
   });
 };
 
-export const dummy = null;
+const getPacks = packs => {
+  const get = LevelPack.findAll({
+    where: { LevelPackName: packs },
+    include: {
+      model: LevelPackLevel,
+      as: 'Levels',
+      include: {
+        model: Besttime,
+        as: 'LevelBesttime',
+      },
+    },
+  });
+  return get;
+};
+
+const updateLegacyLevel = async (LevelIndex, done) => {
+  await Level.update({ Legacy: 1 }, { where: { LevelIndex } });
+  done();
+};
+
+const skint = json => {
+  const times = [];
+  forEach(json.default, s => {
+    times.push({
+      LevelIndex: s.LevelIndex,
+      KuskiIndex: s.KuskiIndex,
+      Time: s.Time,
+      Driven: s.Driven,
+      Source: 3,
+    });
+  });
+  return times;
+};
+
+const insertFinished = times => {
+  return new Promise(resolve => {
+    LegacyFinished.bulkCreate(times).then(() => {
+      resolve();
+    });
+  });
+};
+
+const insertBesttime = times => {
+  return new Promise(resolve => {
+    LegacyBesttime.bulkCreate(times).then(() => {
+      resolve();
+    });
+  });
+};
+
+export const legacyTimes = async (levelpacks, importStrategy) => {
+  const packs = await getPacks(levelpacks);
+  const updateBulk = [];
+  const insertLegacyBesttimeEOL = [];
+  forEach(packs, pack => {
+    forEach(pack.Levels, level => {
+      updateBulk.push(level.LevelIndex);
+      forEach(level.LevelBesttime, time => {
+        insertLegacyBesttimeEOL.push({
+          LevelIndex: time.LevelIndex,
+          KuskiIndex: time.KuskiIndex,
+          Time: time.Time,
+          Driven:
+            time.Driven !== 'Invalid date'
+              ? format(new Date(time.Driven * 1000), 'yyyy-MM-dd HH:mm:ss')
+              : '0000-00-00 00:00:00',
+          Source: 0,
+        });
+      });
+    });
+  });
+  await insertBesttime(insertLegacyBesttimeEOL);
+  let finished = [];
+  let besttime = [];
+  if (importStrategy === 'skint') {
+    const skintFinished = await skint(skintNonPRsData);
+    const skintBest = await skint(skintPRsData);
+    finished = [...skintFinished, ...skintBest];
+    besttime = skintBest;
+  }
+  await insertFinished(finished);
+  const insertToLegacyBesttime = [];
+  eachSeries(
+    besttime,
+    async (time, done) => {
+      const exists = await LegacyBesttime.findOne({
+        where: { LevelIndex: time.LevelIndex, KuskiIndex: time.KuskiIndex },
+      });
+      if (exists) {
+        if (exists.Time > time.Time) {
+          await exists.update({
+            TimeIndex: 0,
+            Time: time.Time,
+            Driven: time.Driven,
+            Source: time.Source,
+          });
+          done();
+        } else {
+          done();
+        }
+      } else {
+        insertToLegacyBesttime.push(time);
+        done();
+      }
+    },
+    async () => {
+      await insertBesttime(insertToLegacyBesttime);
+      eachSeries(updateBulk, updateLegacyLevel, () => {
+        return {
+          insertLegacyBesttimeBulk: insertLegacyBesttimeEOL.length,
+          updateBulk: updateBulk.length,
+          finished: finished.length,
+          besttime: besttime.length,
+        };
+      });
+    },
+  );
+};
