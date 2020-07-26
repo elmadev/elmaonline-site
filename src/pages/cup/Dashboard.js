@@ -43,12 +43,14 @@ const Dashboard = props => {
       response.json().then(json => {
         if (json.error) {
           setError(json.error);
-        } else {
+        } else if (json.finished) {
           setSuccess(
             <>
               Replay uploaded, time: <Time time={json.Time} />
             </>,
           );
+        } else {
+          setSuccess(<>Replay uploaded, apples: {json.Apples}</>);
         }
       });
     });

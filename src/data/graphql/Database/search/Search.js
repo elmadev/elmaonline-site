@@ -38,6 +38,7 @@ export const resolvers = {
           LevelName: {
             [sequelize.Op.like]: `${Search}%`,
           },
+          Locked: 0,
         },
         limit: 25,
         order: [['LevelName', 'ASC']],

@@ -19,7 +19,7 @@ const CupResults = props => {
             <DerpTableCell>{no + 1}.</DerpTableCell>
             <DerpTableCell>{r.KuskiData.Kuski}</DerpTableCell>
             <DerpTableCell>
-              <Time time={r.Time} />
+              <Time time={r.Time} apples={-1} />
             </DerpTableCell>
             <DerpTableCell right>
               {r.Points} point{r.Points > 1 ? 's' : ''}

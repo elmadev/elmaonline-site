@@ -194,7 +194,9 @@ export const generateEvent = (event, cup, times) => {
     } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E')) {
       if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
         const exists = event.CupTimes.filter(
-          c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
+          c =>
+            c.KuskiIndex === t.KuskiIndex &&
+            c.Time === 999900 + (100 - t.apples),
         );
         // insert only if replay uploaded
         if (exists.length > 0) {

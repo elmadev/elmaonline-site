@@ -20,7 +20,7 @@ class Recplayer extends React.Component {
     rec: null,
     width: 'auto',
     height: 'auto',
-    zoom: 0.7,
+    zoom: 1,
     controls: true,
     imageUrl: 'https://elma.online/recplayer',
     autoPlay: 'if-visible',
