@@ -59,6 +59,11 @@ const Dashboard = props => {
   return (
     <Container>
       <Grid container spacing={16}>
+        <Grid item xs={12} sm={12}>
+          <Description dangerouslySetInnerHTML={{ __html: cup.Description }} />
+        </Grid>
+      </Grid>
+      <Grid container spacing={16}>
         <Grid item xs={12} sm={6}>
           <Headline>Upload</Headline>
           <DropContainer>
@@ -110,6 +115,10 @@ const DropContainer = styled.div`
 const Container = styled.div`
   padding-left: 8px;
   padding-right: 8px;
+`;
+
+const Description = styled.div`
+  padding-bottom: 12px;
 `;
 
 const Headline = styled.div`
