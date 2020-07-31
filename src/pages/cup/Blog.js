@@ -28,6 +28,12 @@ const Standings = props => {
     setNewHeadline('');
   };
 
+  const addLinks = text => {
+    const re = /(?![^<]*>|[^<>]*<\/)((https?:)\/\/[a-z0-9&#=./\-?_]+)/gi;
+    const subst = '<a href="$1">$1</a>';
+    return text.replace(re, subst);
+  };
+
   return (
     <Container>
       {nickId() === cup.KuskiIndex && (
@@ -71,7 +77,7 @@ const Standings = props => {
               />
             </SubHeadline>
             <Paper>
-              <Text>{i.Text}</Text>
+              <Text dangerouslySetInnerHTML={{ __html: addLinks(i.Text) }} />
             </Paper>
           </>
         ))}
@@ -97,6 +103,7 @@ const SubHeadline = styled.div`
 
 const Text = styled.div`
   padding: 8px;
+  white-space: pre-line;
 `;
 
 export default Standings;
