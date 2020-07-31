@@ -4,6 +4,7 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import { has } from 'lodash';
+import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 
@@ -41,13 +42,32 @@ const Search = ({
 }) => {
   const [moreLevels, setMoreLevels] = useState(true);
   const [moreReplays, setMoreReplays] = useState(true);
-  const { levelPacks } = useStoreState(state => state.Search);
-  const { getLevelPacks } = useStoreActions(actions => actions.Search);
+  const {
+    levelPacks,
+    battlesByFilename,
+    battlesByDesigner,
+    moreBattleFile,
+    moreBattleDesigner,
+  } = useStoreState(state => state.Search);
+  const {
+    getLevelPacks,
+    getBattles,
+    fetchMoreBattlesFile,
+    fetchMoreBattlesDesigner,
+  } = useStoreActions(actions => actions.Search);
   useEffect(() => {
-    setMoreLevels(true);
-    setMoreReplays(true);
     if (t === 'level') {
       getLevelPacks(q);
+      setMoreLevels(true);
+    }
+    if (t === 'battle') {
+      getBattles({
+        q,
+        offset: 0,
+      });
+    }
+    if (t === 'replay') {
+      setMoreReplays(true);
     }
   }, [q]);
 
@@ -220,6 +240,90 @@ const Search = ({
               </Query>
             )}
           </div>
+        )}
+        {t === 'battle' && (
+          <>
+            <div>
+              <div className={s.resultGroupTitle}>Battles by level name</div>
+              {battlesByFilename.length !== 0 && (
+                <>
+                  {battlesByFilename.map(b => (
+                    <Link
+                      to={`battles/${b.BattleIndex}`}
+                      key={b.BattleIndex}
+                      className={s.resultLink}
+                    >
+                      <div className={s.resultMainData}>
+                        {b.LevelData.LevelName}.lev
+                      </div>
+                      <div className={s.resultSecondaryData}>
+                        {b.BattleIndex} / <Kuski kuskiData={b.KuskiData} /> /{' '}
+                        {b.LevelIndex} /{' '}
+                        <LocalTime
+                          date={b.Started}
+                          format="DD.MM.YYYY HH:mm:ss"
+                          parse="X"
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    className={s.loadMore}
+                    disabled={!moreBattleFile}
+                    type="button"
+                    onClick={() => {
+                      fetchMoreBattlesFile({
+                        offset: battlesByFilename.length,
+                        q,
+                      });
+                    }}
+                  >
+                    {moreBattleFile ? 'Show more' : 'No more results'}
+                  </button>
+                </>
+              )}
+            </div>
+            <div>
+              <div className={s.resultGroupTitle}>Battles by designer</div>
+              {battlesByDesigner.length !== 0 && (
+                <>
+                  {battlesByDesigner.map(b => (
+                    <Link
+                      to={`battles/${b.BattleIndex}`}
+                      key={b.BattleIndex}
+                      className={s.resultLink}
+                    >
+                      <div className={s.resultMainData}>
+                        {b.LevelData.LevelName}.lev
+                      </div>
+                      <div className={s.resultSecondaryData}>
+                        {b.BattleIndex} / <Kuski kuskiData={b.KuskiData} /> /{' '}
+                        {b.LevelIndex} /{' '}
+                        <LocalTime
+                          date={b.Started}
+                          format="DD.MM.YYYY HH:mm:ss"
+                          parse="X"
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    className={s.loadMore}
+                    disabled={!moreBattleDesigner}
+                    type="button"
+                    onClick={() => {
+                      fetchMoreBattlesDesigner({
+                        offset: battlesByDesigner.length,
+                        q,
+                      });
+                    }}
+                  >
+                    {moreBattleDesigner ? 'Show more' : 'No more results'}
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
