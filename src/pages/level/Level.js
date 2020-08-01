@@ -176,7 +176,9 @@ class Level extends React.Component {
                     <TableBody>
                       {!loading &&
                         getBattlesForLevel.map(i => {
-                          const sorted = [...i.Results].sort(sortResults);
+                          const sorted = [...i.Results].sort(
+                            sortResults(i.BattleType),
+                          );
                           return (
                             <TableRow
                               style={{
@@ -243,8 +245,8 @@ class Level extends React.Component {
                 <Tabs value={tab} onChange={this.onTabClick}>
                   <Tab label="Best times" />
                   <Tab label="All times" />
-                  <Tab label="Best multi times" />
-                  <Tab label="All multi times" />
+                  {/* <Tab label="Best multi times" />
+                  <Tab label="All multi times" /> */}
                 </Tabs>
                 {tab === 0 && (
                   <TimeTable
@@ -252,7 +254,7 @@ class Level extends React.Component {
                     latestBattle={getBattlesForLevel[0]}
                   />
                 )}
-                {tab === 1 && <TimeTable data={getBestTimes} />}
+                {tab === 1 && <AllTimes LevelIndex={LevelIndex} />}
                 {tab === 2 && <TimeTable data={getBestTimes} />}
                 {tab === 3 && <AllTimes LevelIndex={LevelIndex} />}
               </>

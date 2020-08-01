@@ -20,6 +20,7 @@ class DerpTable extends React.Component {
     pagination: PropTypes.bool,
     onChangePage: PropTypes.func,
     onChangeRowsPerPage: PropTypes.func,
+    width: PropTypes.string,
   };
 
   static defaultProps = {
@@ -28,6 +29,7 @@ class DerpTable extends React.Component {
     pagination: false,
     onChangePage: null,
     onChangeRowsPerPage: null,
+    width: 'auto',
   };
 
   constructor(props) {
@@ -47,10 +49,11 @@ class DerpTable extends React.Component {
       pagination,
       onChangePage,
       onChangeRowsPerPage,
+      width,
     } = this.props;
     const { page, rowsPerPage } = this.state;
     return (
-      <Paper>
+      <Paper style={{ width }}>
         <Table>
           <TableHead>
             <TableRow>

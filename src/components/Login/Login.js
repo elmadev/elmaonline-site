@@ -80,9 +80,18 @@ class Login extends React.Component {
           this.setState({ error: body.Response.message });
         } else {
           const cookies = new Cookies();
-          cookies.set('token', body.Response.token, { path: '/' });
-          cookies.set('username', body.Response.username, { path: '/' });
-          cookies.set('userid', body.Response.userid, { path: '/' });
+          cookies.set('token', body.Response.token, {
+            path: '/',
+            maxAge: 8640000,
+          });
+          cookies.set('username', body.Response.username, {
+            path: '/',
+            maxAge: 8640000,
+          });
+          cookies.set('userid', body.Response.userid, {
+            path: '/',
+            maxAge: 8640000,
+          });
           this.setState({ loggedIn: true });
         }
       });

@@ -141,7 +141,10 @@ class Battle extends React.Component {
                   <span className={s.battleType}>
                     <BattleType type={getBattle.BattleType} />
                   </span>{' '}
-                  battle in {getBattle.LevelData.LevelName}.lev by{' '}
+                  battle in{' '}
+                  <a href={`/dl/level/${getBattle.LevelIndex}`}>
+                    {getBattle.LevelData.LevelName}.lev
+                  </a>{' '}
                   {getBattle.KuskiData.Kuski}
                   <div className={s.battleTimestamp}>
                     Started{' '}

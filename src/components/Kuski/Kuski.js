@@ -16,7 +16,7 @@ const Kuski = ({ kuskiData, team, flag }) => (
         {team && kuskiData.TeamData && ` [${kuskiData.TeamData.Team}]`}
       </span>
     ) : (
-      <span>Unkonwn</span>
+      <span>Unknown</span>
     )}
   </>
 );

@@ -9,7 +9,7 @@ Current website can be seen on http://elmaonline.net/. The point of making a com
 
 ## Status
 
-As of summer 2018 we have started making the first features on the site. Which means we can now start accepting contributions, and there's some code you can take a look at to get an idea for the structure. The [data flow](./docs/data-flow.md) doc contains a complete explanation of how to fetch data from the database and show it in the UI. Any comments or suggestions for improvements to this data flow is welcome right now.
+As of summer 2020 site has been live for a while and is considered the primary site for most statistics and times. Current focus is to react feature parity with old site so it can be completely replaced. Which means we are accepting contributions, and a lot of code you can take a look at to get an idea for the structure. The [data flow](./docs/data-flow.md) doc is outdated as we are now using easy-peasy and rest api's instead of graphql and apollo.
 
 ## Branches
 
@@ -23,6 +23,7 @@ As of summer 2018 we have started making the first features on the site. Which m
 ## Developing on the project
 
 Please check the guidelines in docs folder before you start developing, so we can follow the same principles more or less.
+
 - [Getting started](./docs/getting-started.md)
 - [Contributing](./docs/contributing.md)
 - [Data flow](./docs/data-flow.md)
@@ -31,14 +32,18 @@ Please check the guidelines in docs folder before you start developing, so we ca
 - [React style guide](./docs/react-style-guide.md)
 
 ### Frameworks
+
 The project uses the following frameworks. Consider checking out their tutorials to get started.
+
 - [Express](http://expressjs.com/) as the backend framework
 - [react](https://facebook.github.io/react/) for the frontend user interface
 - [GraphQL](https://graphql.org/) a query language for the API
 - [react-starter-kit](https://github.com/kriasoft/react-starter-kit) boilerplate starter kit that we plan on using, includes backend and frontend
 
 ### Principles
+
 When developing always try to follow these principles.
+
 - **Data flow**
   - Data flow in the app follows this principle: mysql -> sequelize -> graphql -> apollo -> UI
 - **Thinking in components**
@@ -47,13 +52,24 @@ When developing always try to follow these principles.
   - The UI should follow the general principles of [Material Design](https://material.io/guidelines/). We are using [Material UI](https://material-ui.com/) for this, so you can just take UI components you need and build the page from that, adding in data component to fill them out.
 
 ### Dev tools
+
 Check these tools for your preferred IDE. [More](./docs/how-to-configure-text-editors.md)
 
 ### Useful Tutorials
+
 - [Official react tutorial](https://facebook.github.io/react/tutorial/tutorial.html)
 - [Understand react in 5 steps](https://medium.freecodecamp.com/the-5-things-you-need-to-know-to-understand-react-a1dbd5d114a3#.4oloyujg7)
 - [Sequelize MySQL querying](http://docs.sequelizejs.com/manual/tutorial/querying.html)
 - Apollo, react and graphql [youtube](https://www.youtube.com/watch?v=kXH2dbnHYA0) or [slides](https://speakerdeck.com/mbrochh/using-apollo-with-reactjs-and-graphql)
 
+### Test database
+
+The config is set up to use a test database. Bear in mind the following:
+
+- Test database is a copy of live from end june 2020
+- time, battle and allfinished tables only have a subset of live (last year or two) to keep size down
+- Passwords, emails and private comments have been stripped
+
 ## Communication
+
 Feel free to create issues here on github in order to discuss things related to the project. You can also join the [elma discord](https://discord.gg/j5WMFC6) #developers channel to chat.

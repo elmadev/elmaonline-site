@@ -1,4 +1,6 @@
 import express from 'express';
+import { Op } from 'sequelize';
+import { like } from 'utils/database';
 import { Replay, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -21,10 +23,12 @@ const getReplayByDrivenBy = async KuskiIndex => {
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'UploadedByData',
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'DrivenByData',
       },
     ],
@@ -43,10 +47,64 @@ const getReplayByUploadedBy = async KuskiIndex => {
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'UploadedByData',
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return data;
+};
+
+const getReplaysSearchDriven = async (query, offset) => {
+  const data = await Replay.findAll({
+    limit: 25,
+    offset: parseInt(offset, 10),
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+        where: { Kuski: { [Op.like]: `${like(query)}%` } },
+      },
+    ],
+  });
+  return data;
+};
+
+const getReplaysSearchLevel = async (query, offset) => {
+  const data = await Replay.findAll({
+    limit: 25,
+    offset: parseInt(offset, 10),
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+        where: { LevelName: { [Op.like]: `${like(query)}%` } },
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'DrivenByData',
       },
     ],
@@ -68,6 +126,20 @@ router
   })
   .get('/uploaded_by/:KuskiIndex', async (req, res) => {
     const data = await getReplayByUploadedBy(req.params.KuskiIndex);
+    res.json(data);
+  })
+  .get('/search/byDriven/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchDriven(
+      req.params.query,
+      req.params.offset,
+    );
+    res.json(data);
+  })
+  .get('/search/byLevel/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchLevel(
+      req.params.query,
+      req.params.offset,
+    );
     res.json(data);
   });
 

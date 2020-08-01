@@ -38,8 +38,8 @@ import Html from 'components/Html';
 import createApolloClient from 'core/createApolloClient';
 import schema from 'data/schema';
 import configureStore from 'store/configureStore';
-import { getReplayByBattleId, getLevel } from 'utils/download';
-import uploadReplayS3 from 'utils/upload';
+import { getReplayByBattleId, getLevel, getLevelPack } from 'utils/download';
+import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
 import {
   chatline,
@@ -52,7 +52,7 @@ import {
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
-import { kuskimap } from 'utils/dataImports';
+import { kuskimap, email } from 'utils/dataImports';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -173,6 +173,31 @@ app.get('/dl/level/:id', async (req, res, next) => {
   }
 });
 
+app.get('/dl/pack/:name', async (req, res, next) => {
+  try {
+    const zipData = await getLevelPack(req.params.name);
+    if (zipData) {
+      const readStream = new stream.PassThrough();
+      readStream.end(zipData);
+      res.set({
+        'Content-disposition': `attachment; filename=${req.params.name}.zip`,
+        'Content-Type': 'application/octet-stream',
+      });
+      readStream.pipe(res);
+    } else {
+      next({
+        status: 403,
+        msg: 'Level pack does not exist.',
+      });
+    }
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
 //
 // ranking
 //--------------------------------------------
@@ -219,6 +244,15 @@ app.get('/run/kuskimap', async (req, res) => {
     res.send('Unauthorized');
   }
 });
+app.get('/run/email', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    await email();
+    res.json({ status: 'done' });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
 
 //
 // Uploading files
@@ -253,6 +287,20 @@ app.post('/upload/:type', async (req, res) => {
         replayInfo,
         file,
       });
+    }
+  }
+  if (req.params.type === 'cupreplay') {
+    folder = 'cupreplays';
+    const getAuth = authContext(req);
+    if (getAuth.auth) {
+      const result = await uploadCupReplay(
+        replayFile,
+        req.body.filename,
+        getAuth.userid,
+      );
+      res.json(result);
+    } else {
+      res.sendStatus(401);
     }
   }
 });
@@ -365,7 +413,9 @@ app.get('*', async (req, res, next) => {
       styledSheet.collectStyles(rootComponent),
     );
     const materialUICss = sheetsRegistry.toString();
-    const styledStyles = styledSheet.getStyleTags();
+    const styledStyles = styledSheet
+      .getStyleTags()
+      .replace('<style data-styled data-styled-version="5.0.0">', '');
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },

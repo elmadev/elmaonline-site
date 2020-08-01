@@ -4,7 +4,13 @@ import ReplayRating from './replay_rating';
 import Replay from './replay';
 import Country from './country';
 import Register from './register';
+import Cups from './cups';
 import KuskiMap from './kuskimap';
+import AllFinished from './allfinished';
+import LevelPack from './levelpack';
+import Besttime from './besttime';
+import Battle from './battle';
+import Player from './player';
 
 const router = express.Router();
 
@@ -17,6 +23,12 @@ router
   .use('/replay', Replay)
   .use('/country', Country)
   .use('/register', Register)
-  .use('/kuskimap', KuskiMap);
+  .use('/cups', Cups)
+  .use('/kuskimap', KuskiMap)
+  .use('/allfinished', AllFinished)
+  .use('/levelpack', LevelPack)
+  .use('/besttime', Besttime)
+  .use('/battle', Battle)
+  .use('/player', Player);
 
 export default router;

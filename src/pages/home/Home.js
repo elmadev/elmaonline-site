@@ -106,7 +106,9 @@ class Home extends React.Component {
                     </TableRow>
                   ) : (
                     battleList.map(i => {
-                      const sortedResults = [...i.Results].sort(sortResults);
+                      const sortedResults = [...i.Results].sort(
+                        sortResults(i.BattleType),
+                      );
                       return (
                         <TableRow
                           style={{

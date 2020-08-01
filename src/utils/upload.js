@@ -1,11 +1,12 @@
-import { Replay } from 'node-elma';
+import { Replay } from 'elmajs';
 import readChunk from 'read-chunk';
 import fs from 'fs';
 import crypto from 'crypto';
 import generate from 'nanoid/generate';
 import AWS from 'aws-sdk';
+import { format } from 'date-fns';
 
-import { Level, Replay as ReplayDB } from 'data/models';
+import { Level, Replay as ReplayDB, SiteCup, SiteCupTime } from 'data/models';
 import config from '../config';
 
 const getLevelsFromName = async LevelName => {
@@ -33,6 +34,80 @@ const getReplaysByMd5 = async MD5 => {
   return replays;
 };
 
+const getCupEventByLevelIndex = async LevelIndex => {
+  const cups = await SiteCup.findAll({
+    where: { LevelIndex },
+  });
+  let last = 0;
+  let event;
+  cups.forEach(cup => {
+    if (cup.StartTime < format(new Date(), 't') && cup.StartTime > last) {
+      last = cup.StartTime;
+      event = cup;
+    }
+  });
+  if (event) {
+    return event.CupIndex;
+  }
+  return 0;
+};
+
+const CreateOrUpdateCuptime = async (
+  CupIndex,
+  KuskiIndex,
+  Time,
+  RecData,
+  Code,
+  ReplayInfo,
+) => {
+  const cuptime = await SiteCupTime.findOne({
+    where: { CupIndex, KuskiIndex, Time },
+  });
+  if (cuptime) {
+    await cuptime.update({ Replay: 1, RecData, Code });
+    return true;
+  }
+  if (ReplayInfo.finished) {
+    await SiteCupTime.create({
+      Replay: 1,
+      RecData,
+      KuskiIndex,
+      CupIndex,
+      Time,
+      Code,
+    });
+  } else {
+    await SiteCupTime.create({
+      Replay: 1,
+      RecData,
+      KuskiIndex,
+      CupIndex,
+      Time: 999900 + (100 - ReplayInfo.apples),
+      Code,
+    });
+  }
+  return true;
+};
+
+const findLevelIndexFromReplay = async file => {
+  const replayCRC = readChunk.sync(file, 16, 4);
+  let replayLevel = readChunk.sync(file, 20, 12);
+  replayLevel = replayLevel.toString('utf-8').split('.')[0];
+  const levels = await getLevelsFromName(replayLevel);
+  let Levelindex = 0;
+  levels.forEach(level => {
+    if (level.LevelData && replayCRC) {
+      if (
+        level.LevelData.toString('hex').substring(14, 22) ===
+        replayCRC.toString('hex')
+      ) {
+        Levelindex = level.LevelIndex;
+      }
+    }
+  });
+  return Levelindex;
+};
+
 AWS.config.update({
   accessKeyId: config.accessKeyId,
   secretAccessKey: config.secretAccessKey,
@@ -40,7 +115,14 @@ AWS.config.update({
 const spacesEndpoint = new AWS.Endpoint('ams3.digitaloceanspaces.com');
 const s3 = new AWS.S3({ endpoint: spacesEndpoint });
 
-export default function uploadReplayS3(replayFile, folder, filename) {
+const getReplayInfo = async dir => {
+  const fileBuffer = fs.readFileSync(dir);
+  const rec = Replay.from(fileBuffer);
+  const { finished, time, reason } = rec.getTime();
+  return { finished, time, reason, apples: rec.apples };
+};
+
+export function uploadReplayS3(replayFile, folder, filename) {
   return new Promise(resolve => {
     const bucketName = 'eol';
     const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
@@ -70,29 +152,9 @@ export default function uploadReplayS3(replayFile, folder, filename) {
               });
             } else {
               // find LevelIndex
-              const replayCRC = readChunk.sync(
+              findLevelIndexFromReplay(
                 `.${config.publicFolder}/temp/${uuid}-${filename}`,
-                16,
-                4,
-              );
-              let replayLevel = readChunk.sync(
-                `.${config.publicFolder}/temp/${uuid}-${filename}`,
-                20,
-                12,
-              );
-              replayLevel = replayLevel.toString('utf-8').split('.')[0];
-              getLevelsFromName(replayLevel).then(levels => {
-                let LevelIndex = 0;
-                levels.forEach(level => {
-                  if (level.LevelData && replayCRC) {
-                    if (
-                      level.LevelData.toString('hex').substring(14, 22) ===
-                      replayCRC.toString('hex')
-                    ) {
-                      LevelIndex = level.LevelIndex;
-                    }
-                  }
-                });
+              ).then(LevelIndex => {
                 if (LevelIndex === 0) {
                   resolve({
                     error: 'Level not found',
@@ -107,11 +169,10 @@ export default function uploadReplayS3(replayFile, folder, filename) {
                       resolve({ error: err, replayInfo: null, file: filename });
                     } else {
                       // find replay time and finished state
-                      Replay.load(
+                      getReplayInfo(
                         `.${config.publicFolder}/temp/${uuid}-${filename}`,
                       )
-                        .then(result => {
-                          const replayData = result.getTime();
+                        .then(replayData => {
                           // return all data
                           resolve({
                             file: filename,
@@ -135,6 +196,63 @@ export default function uploadReplayS3(replayFile, folder, filename) {
               });
             }
           });
+        });
+      }
+    });
+  });
+}
+
+export function uploadCupReplay(replayFile, filename, kuskiId) {
+  return new Promise(resolve => {
+    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+    const fileDir = `.${config.publicFolder}/temp/${uuid}-${filename}`;
+    replayFile.mv(fileDir, mvErr => {
+      if (mvErr) {
+        resolve({ error: mvErr });
+      } else {
+        getReplayInfo(fileDir);
+        findLevelIndexFromReplay(fileDir).then(LevelIndex => {
+          if (LevelIndex === 0) {
+            resolve({ error: 'Level not found' });
+            fs.unlink(fileDir);
+          } else {
+            getReplayInfo(fileDir).then(replayData => {
+              const replayTime = Math.floor(replayData.time / 10);
+              getCupEventByLevelIndex(LevelIndex).then(CupIndex => {
+                if (CupIndex === 0) {
+                  resolve({ error: 'Replay is not from a cup level' });
+                  fs.unlink(fileDir);
+                } else if (!replayData.finished && !replayData.apples) {
+                  resolve({ error: 'Level not finished or apple not picked' });
+                  fs.unlink(fileDir);
+                } else {
+                  fs.readFile(fileDir, (error, data) => {
+                    if (error) {
+                      resolve({ error });
+                      fs.unlink(fileDir);
+                    } else {
+                      CreateOrUpdateCuptime(
+                        CupIndex,
+                        kuskiId,
+                        replayTime,
+                        data,
+                        uuid,
+                        replayData,
+                      ).then(() => {
+                        resolve({
+                          CupIndex,
+                          Time: replayTime,
+                          Apples: replayData.apples,
+                          Finished: replayData.finished,
+                        });
+                        fs.unlink(fileDir);
+                      });
+                    }
+                  });
+                }
+              });
+            });
+          }
         });
       }
     });
