@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import express from 'express';
 import { Op } from 'sequelize';
+import { like } from 'utils/database';
 import { Battle, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -24,7 +25,7 @@ const BattlesSearchByFilename = async (query, offset) => {
         model: Level,
         as: 'LevelData',
         attributes: ['LevelName', 'LongName'],
-        where: { LevelName: { [Op.like]: `${query}%` } },
+        where: { LevelName: { [Op.like]: `${like(query)}%` } },
       },
       {
         model: Kuski,
@@ -60,7 +61,7 @@ const BattlesSearchByDesigner = async (query, offset) => {
         model: Kuski,
         as: 'KuskiData',
         attributes: ['Kuski', 'Country'],
-        where: { Kuski: { [Op.like]: `${query}%` } },
+        where: { Kuski: { [Op.like]: `${like(query)}%` } },
       },
     ],
   });

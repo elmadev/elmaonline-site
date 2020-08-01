@@ -1,5 +1,6 @@
 import express from 'express';
 import { forEach } from 'lodash';
+import { like } from 'utils/database';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -115,8 +116,8 @@ const getPacksByQuery = async query => {
   const packs = await LevelPack.findAll({
     where: {
       [Op.or]: [
-        { LevelPackName: { [Op.like]: `${query}%` } },
-        { LevelPackLongName: { [Op.like]: `${query}%` } },
+        { LevelPackName: { [Op.like]: `${like(query)}%` } },
+        { LevelPackLongName: { [Op.like]: `${like(query)}%` } },
       ],
     },
     include: [
@@ -134,7 +135,7 @@ const getPacksByQuery = async query => {
         model: Level,
         as: 'Level',
         attributes: ['LevelName', 'LongName', 'LevelIndex'],
-        where: { LevelName: { [Op.like]: `${query}%` } },
+        where: { LevelName: { [Op.like]: `${like(query)}%` } },
       },
       {
         model: LevelPack,

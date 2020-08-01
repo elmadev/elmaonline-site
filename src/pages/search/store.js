@@ -37,7 +37,12 @@ export default {
       state.moreBattleDesigner = true;
     }
   }),
+  resetBattles: action(state => {
+    state.battlesByFilename = [];
+    state.battlesByDesigner = [];
+  }),
   getBattles: thunk(async (actions, payload) => {
+    actions.resetBattles();
     const battles = await BattlesSearchByFilename(payload);
     if (battles.ok) {
       actions.setBattlesByFilename(battles.data);
