@@ -6,6 +6,8 @@ import {
   BattlesSearchByDesigner,
   PlayersSearch,
   TeamsSearch,
+  ReplaysSearchByDriven,
+  ReplaysSearchByLevel,
 } from 'data/api';
 
 export default {
@@ -116,6 +118,53 @@ export default {
     const teams = await TeamsSearch(payload);
     if (teams.ok) {
       actions.setTeams(teams.data);
+    }
+  }),
+  replaysByDriven: [],
+  replaysByLevel: [],
+  moreReplaysDriven: true,
+  moreReplaysLevel: true,
+  setReplaysByDriven: action((state, payload) => {
+    state.replaysByDriven = [...state.replaysByDriven, ...payload];
+    if (payload.length < 25) {
+      state.moreReplaysDriven = false;
+    } else {
+      state.moreReplaysDriven = true;
+    }
+  }),
+  setReplaysByLevel: action((state, payload) => {
+    state.replaysByLevel = [...state.replaysByLevel, ...payload];
+    if (payload.length < 25) {
+      state.moreReplaysLevel = false;
+    } else {
+      state.moreReplaysLevel = true;
+    }
+  }),
+  resetReplays: action(state => {
+    state.replaysByDriven = [];
+    state.replaysByLevel = [];
+  }),
+  getReplays: thunk(async (actions, payload) => {
+    actions.resetReplays();
+    const replays = await ReplaysSearchByDriven(payload);
+    if (replays.ok) {
+      actions.setReplaysByDriven(replays.data);
+    }
+    const replaysLevel = await ReplaysSearchByLevel(payload);
+    if (replaysLevel.ok) {
+      actions.setReplaysByLevel(replaysLevel.data);
+    }
+  }),
+  fetchMoreReplaysDriven: thunk(async (actions, payload) => {
+    const replays = await ReplaysSearchByDriven(payload);
+    if (replays.ok) {
+      actions.setReplaysByDriven(replays.data);
+    }
+  }),
+  fetchMoreReplaysLevel: thunk(async (actions, payload) => {
+    const replaysLevel = await ReplaysSearchByLevel(payload);
+    if (replaysLevel.ok) {
+      actions.setReplaysByLevel(replaysLevel.data);
     }
   }),
 };

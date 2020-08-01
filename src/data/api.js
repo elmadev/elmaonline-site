@@ -77,3 +77,7 @@ export const PlayersSearch = data =>
   api.get(`player/search/${data.q}/${data.offset}`);
 export const TeamsSearch = data =>
   api.get(`player/searchTeam/${data.q}/${data.offset}`);
+export const ReplaysSearchByDriven = data =>
+  api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
+export const ReplaysSearchByLevel = data =>
+  api.get(`replay/search/byLevel/${data.q}/${data.offset}`);

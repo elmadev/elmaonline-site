@@ -56,6 +56,10 @@ const Search = ({
     morePlayers,
     teams,
     moreTeams,
+    replaysByDriven,
+    replaysByLevel,
+    moreReplaysDriven,
+    moreReplaysLevel,
   } = useStoreState(state => state.Search);
   const {
     getLevelPacks,
@@ -66,6 +70,9 @@ const Search = ({
     fetchMorePlayers,
     getTeams,
     fetchMoreTeams,
+    getReplays,
+    fetchMoreReplaysDriven,
+    fetchMoreReplaysLevel,
   } = useStoreActions(actions => actions.Search);
   useEffect(() => {
     if (t === 'level') {
@@ -80,6 +87,7 @@ const Search = ({
     }
     if (t === 'replay') {
       setMoreReplays(true);
+      getReplays({ q, offset: 0 });
     }
     if (t === 'player') {
       getPlayers({ q, offset: 0 });
@@ -192,78 +200,164 @@ const Search = ({
           </>
         )}
         {t === 'replay' && (
-          <div>
-            <div className={s.resultGroupTitle}>Replays</div>
-            {q.length > 2 && (
-              <Query query={SEARCH_REPLAY} variables={{ Search: q }}>
-                {({ data: { searchReplay }, loading, fetchMore }) => {
-                  if (loading) return null;
-                  return (
-                    <>
-                      {searchReplay.map(r => {
-                        return (
-                          <Link
-                            to={`r/${r.UUID}`}
-                            key={r.UUID}
-                            className={s.resultLink}
-                          >
-                            <div className={s.resultMainData}>
-                              {r.RecFileName}
-                            </div>
-                            <div className={s.resultSecondaryData}>
-                              {(r.LevelData &&
-                                `${r.LevelData.LevelName}.lev`) ||
-                                'unknown'}{' '}
-                              /{' '}
-                              {(r.DrivenByData && r.DrivenByData.Kuski) ||
-                                'unknown'}{' '}
-                              /{' '}
-                              <LocalTime
-                                date={r.Uploaded}
-                                format="DD.MM.YYYY HH:mm:ss"
-                                parse="X"
-                              />{' '}
-                              / <Kuski kuskiData={r.UploadedByData} />
-                            </div>
-                          </Link>
-                        );
-                      })}
+          <>
+            <div>
+              <div className={s.resultGroupTitle}>Replays by filename</div>
+              {q.length > 2 && (
+                <Query query={SEARCH_REPLAY} variables={{ Search: q }}>
+                  {({ data: { searchReplay }, loading, fetchMore }) => {
+                    if (loading) return null;
+                    return (
+                      <>
+                        {searchReplay.map(r => {
+                          return (
+                            <Link
+                              to={`r/${r.UUID}`}
+                              key={r.UUID}
+                              className={s.resultLink}
+                            >
+                              <div className={s.resultMainData}>
+                                {r.RecFileName}
+                              </div>
+                              <div className={s.resultSecondaryData}>
+                                {(r.LevelData &&
+                                  `${r.LevelData.LevelName}.lev`) ||
+                                  'unknown'}{' '}
+                                /{' '}
+                                {(r.DrivenByData && r.DrivenByData.Kuski) ||
+                                  'unknown'}{' '}
+                                /{' '}
+                                <LocalTime
+                                  date={r.Uploaded}
+                                  format="DD.MM.YYYY HH:mm:ss"
+                                  parse="X"
+                                />{' '}
+                                / <Kuski kuskiData={r.UploadedByData} />
+                              </div>
+                            </Link>
+                          );
+                        })}
 
-                      <button
-                        className={s.loadMore}
-                        disabled={!moreReplays}
-                        type="button"
-                        onClick={() => {
-                          fetchMore({
-                            variables: {
-                              Offset: searchReplay.length,
-                            },
-                            updateQuery: (prev, { fetchMoreResult }) => {
-                              if (!fetchMoreResult) return prev;
-                              if (fetchMoreResult.searchReplay.length < 1) {
-                                setMoreReplays(false);
-                              }
-                              return {
-                                ...prev,
-                                ...{
-                                  searchReplay: [
-                                    ...prev.searchReplay,
-                                    ...fetchMoreResult.searchReplay,
-                                  ],
-                                },
-                              };
-                            },
-                          });
-                        }}
-                      >
-                        {moreReplays ? 'Show more' : 'No more results'}
-                      </button>
-                    </>
-                  );
-                }}
-              </Query>
-            )}
-          </div>
+                        <button
+                          className={s.loadMore}
+                          disabled={!moreReplays}
+                          type="button"
+                          onClick={() => {
+                            fetchMore({
+                              variables: {
+                                Offset: searchReplay.length,
+                              },
+                              updateQuery: (prev, { fetchMoreResult }) => {
+                                if (!fetchMoreResult) return prev;
+                                if (fetchMoreResult.searchReplay.length < 1) {
+                                  setMoreReplays(false);
+                                }
+                                return {
+                                  ...prev,
+                                  ...{
+                                    searchReplay: [
+                                      ...prev.searchReplay,
+                                      ...fetchMoreResult.searchReplay,
+                                    ],
+                                  },
+                                };
+                              },
+                            });
+                          }}
+                        >
+                          {moreReplays ? 'Show more' : 'No more results'}
+                        </button>
+                      </>
+                    );
+                  }}
+                </Query>
+              )}
+            </div>
+            <div>
+              <div className={s.resultGroupTitle}>Replays by driven by</div>
+              {replaysByDriven.length !== 0 && (
+                <>
+                  {replaysByDriven.map(r => (
+                    <Link
+                      to={`r/${r.UUID}`}
+                      key={r.UUID}
+                      className={s.resultLink}
+                    >
+                      <div className={s.resultMainData}>{r.RecFileName}</div>
+                      <div className={s.resultSecondaryData}>
+                        {(r.LevelData && `${r.LevelData.LevelName}.lev`) ||
+                          'unknown'}{' '}
+                        /{' '}
+                        {(r.DrivenByData && r.DrivenByData.Kuski) || 'unknown'}{' '}
+                        /{' '}
+                        <LocalTime
+                          date={r.Uploaded}
+                          format="DD.MM.YYYY HH:mm:ss"
+                          parse="X"
+                        />{' '}
+                        / <Kuski kuskiData={r.UploadedByData} />
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    className={s.loadMore}
+                    disabled={!moreReplaysDriven}
+                    type="button"
+                    onClick={() =>
+                      fetchMoreReplaysDriven({
+                        q,
+                        offset: replaysByDriven.length,
+                      })
+                    }
+                  >
+                    {moreReplaysDriven ? 'Show more' : 'No more results'}
+                  </button>
+                </>
+              )}
+            </div>
+            <div>
+              <div className={s.resultGroupTitle}>Replays by level</div>
+              {replaysByLevel.length !== 0 && (
+                <>
+                  {replaysByLevel.map(r => (
+                    <Link
+                      to={`r/${r.UUID}`}
+                      key={r.UUID}
+                      className={s.resultLink}
+                    >
+                      <div className={s.resultMainData}>{r.RecFileName}</div>
+                      <div className={s.resultSecondaryData}>
+                        {(r.LevelData && `${r.LevelData.LevelName}.lev`) ||
+                          'unknown'}{' '}
+                        /{' '}
+                        {(r.DrivenByData && r.DrivenByData.Kuski) || 'unknown'}{' '}
+                        /{' '}
+                        <LocalTime
+                          date={r.Uploaded}
+                          format="DD.MM.YYYY HH:mm:ss"
+                          parse="X"
+                        />{' '}
+                        / <Kuski kuskiData={r.UploadedByData} />
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    className={s.loadMore}
+                    disabled={!moreReplaysLevel}
+                    type="button"
+                    onClick={() =>
+                      fetchMoreReplaysLevel({
+                        q,
+                        offset: replaysByLevel.length,
+                      })
+                    }
+                  >
+                    {moreReplaysLevel ? 'Show more' : 'No more results'}
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
         {t === 'battle' && (
           <>

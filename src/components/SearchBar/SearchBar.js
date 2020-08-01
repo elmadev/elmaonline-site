@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import history from 'utils/history';
 import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
+import Info from '@material-ui/icons/Info';
+import Drawer from '@material-ui/core/Drawer';
 
 const SearchBar = () => {
   const [searchType, setType] = useState('');
+  const [value, setValue] = useState('');
+  const [info, openInfo] = useState(false);
   return (
     <Container>
       {searchType === '' ? (
@@ -16,24 +20,57 @@ const SearchBar = () => {
           <Button onClick={() => setType('team')}>Team</Button>
         </TypesContainer>
       ) : (
-        <SearchInput
-          autoFocus
-          type="text"
-          placeholder={`Search ${searchType}`}
-          onKeyUp={e => {
-            if (e.keyCode === 13) {
-              if (e.target.value === '') {
-                setType('');
-              } else {
-                history.push(`/search?q=${e.target.value}&t=${searchType}`);
+        <>
+          <SearchInput
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            autoFocus
+            type="text"
+            placeholder={`Search ${searchType}`}
+            onKeyUp={e => {
+              if (e.keyCode === 13) {
+                if (e.target.value === '') {
+                  setType('');
+                } else {
+                  history.push(`/search?q=${e.target.value}&t=${searchType}`);
+                }
               }
-            }
-          }}
-        />
+              if (e.keyCode === 27) {
+                setValue('');
+                setType('');
+              }
+            }}
+          />
+          <OpenInfo onClick={() => openInfo(!info)}>
+            <Info />
+          </OpenInfo>
+        </>
       )}
+      <Drawer anchor="bottom" open={info} onClose={() => openInfo(false)}>
+        <InfoBox onClick={() => openInfo(false)}>
+          <ul>
+            <li>Press enter to search</li>
+            <li>Press esc to reset input</li>
+            <li>Use * as wildcard for a single character</li>
+            <li>Search phrase will always be used in the start of a word</li>
+          </ul>
+        </InfoBox>
+      </Drawer>
     </Container>
   );
 };
+
+const InfoBox = styled.div`
+  padding: 8px;
+`;
+
+const OpenInfo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4px;
+  cursor: pointer;
+`;
 
 const TypesContainer = styled.div`
   height: 41px;
@@ -52,6 +89,8 @@ const TypesContainer = styled.div`
 const Container = styled.div`
   margin: 5px;
   margin-left: -10px;
+  display: flex;
+  flex-direction: row;
 `;
 
 const SearchInput = styled.input`
