@@ -10,6 +10,7 @@ import AllFinished from './allfinished';
 import LevelPack from './levelpack';
 import Besttime from './besttime';
 import Battle from './battle';
+import Player from './player';
 
 const router = express.Router();
 
@@ -26,7 +27,8 @@ router
   .use('/kuskimap', KuskiMap)
   .use('/allfinished', AllFinished)
   .use('/levelpack', LevelPack)
-  .use('/Besttime', Besttime)
-  .use('/Battle', Battle);
+  .use('/besttime', Besttime)
+  .use('/battle', Battle)
+  .use('/player', Player);
 
 export default router;

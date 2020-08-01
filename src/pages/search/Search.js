@@ -25,10 +25,14 @@ const SEARCH_REPLAY = gql`
     searchReplay(Search: $Search, Offset: $Offset) {
       RecFileName
       UUID
+      Uploaded
       LevelData {
         LevelName
       }
       DrivenByData {
+        Kuski
+      }
+      UploadedByData {
         Kuski
       }
     }
@@ -48,12 +52,20 @@ const Search = ({
     battlesByDesigner,
     moreBattleFile,
     moreBattleDesigner,
+    players,
+    morePlayers,
+    teams,
+    moreTeams,
   } = useStoreState(state => state.Search);
   const {
     getLevelPacks,
     getBattles,
     fetchMoreBattlesFile,
     fetchMoreBattlesDesigner,
+    getPlayers,
+    fetchMorePlayers,
+    getTeams,
+    fetchMoreTeams,
   } = useStoreActions(actions => actions.Search);
   useEffect(() => {
     if (t === 'level') {
@@ -68,6 +80,12 @@ const Search = ({
     }
     if (t === 'replay') {
       setMoreReplays(true);
+    }
+    if (t === 'player') {
+      getPlayers({ q, offset: 0 });
+    }
+    if (t === 'team') {
+      getTeams({ q, offset: 0 });
     }
   }, [q]);
 
@@ -180,7 +198,6 @@ const Search = ({
               <Query query={SEARCH_REPLAY} variables={{ Search: q }}>
                 {({ data: { searchReplay }, loading, fetchMore }) => {
                   if (loading) return null;
-
                   return (
                     <>
                       {searchReplay.map(r => {
@@ -199,7 +216,14 @@ const Search = ({
                                 'unknown'}{' '}
                               /{' '}
                               {(r.DrivenByData && r.DrivenByData.Kuski) ||
-                                'unknown'}
+                                'unknown'}{' '}
+                              /{' '}
+                              <LocalTime
+                                date={r.Uploaded}
+                                format="DD.MM.YYYY HH:mm:ss"
+                                parse="X"
+                              />{' '}
+                              / <Kuski kuskiData={r.UploadedByData} />
                             </div>
                           </Link>
                         );
@@ -324,6 +348,62 @@ const Search = ({
               )}
             </div>
           </>
+        )}
+        {t === 'player' && (
+          <div>
+            <div className={s.resultGroupTitle}>Players</div>
+            {players.length !== 0 && (
+              <>
+                {players.map(p => (
+                  <Link
+                    to={`kuskis/${p.Kuski}`}
+                    key={p.Kuski}
+                    className={s.resultLink}
+                  >
+                    <div className={s.resultMainData}>
+                      <Kuski team kuskiData={p} />
+                    </div>
+                    <div className={s.resultSecondaryData} />
+                  </Link>
+                ))}
+                <button
+                  className={s.loadMore}
+                  disabled={!morePlayers}
+                  type="button"
+                  onClick={() => {
+                    fetchMorePlayers({ q, offset: players.length });
+                  }}
+                >
+                  {morePlayers ? 'Show more' : 'No more results'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        {t === 'team' && (
+          <div>
+            <div className={s.resultGroupTitle}>Teams</div>
+            {teams.length !== 0 && (
+              <>
+                {teams.map(v => (
+                  <div key={v.Team} className={s.resultLink}>
+                    <div className={s.resultMainData}>{v.Team}</div>
+                    <div className={s.resultSecondaryData} />
+                  </div>
+                ))}
+                <button
+                  className={s.loadMore}
+                  disabled={!moreTeams}
+                  type="button"
+                  onClick={() => {
+                    fetchMoreTeams({ q, offset: teams.length });
+                  }}
+                >
+                  {moreTeams ? 'Show more' : 'No more results'}
+                </button>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>

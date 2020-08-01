@@ -4,6 +4,8 @@ import {
   LevelPackSearch,
   BattlesSearchByFilename,
   BattlesSearchByDesigner,
+  PlayersSearch,
+  TeamsSearch,
 } from 'data/api';
 
 export default {
@@ -62,6 +64,58 @@ export default {
     const battles = await BattlesSearchByDesigner(payload);
     if (battles.ok) {
       actions.setBattlesByDesigner(battles.data);
+    }
+  }),
+  players: [],
+  morePlayers: true,
+  setPlayers: action((state, payload) => {
+    state.players = [...state.players, ...payload];
+    if (payload.length < 25) {
+      state.morePlayers = false;
+    } else {
+      state.morePlayers = true;
+    }
+  }),
+  resetPlayers: action(state => {
+    state.players = [];
+  }),
+  getPlayers: thunk(async (actions, payload) => {
+    actions.resetPlayers();
+    const players = await PlayersSearch(payload);
+    if (players.ok) {
+      actions.setPlayers(players.data);
+    }
+  }),
+  fetchMorePlayers: thunk(async (actions, payload) => {
+    const players = await PlayersSearch(payload);
+    if (players.ok) {
+      actions.setPlayers(players.data);
+    }
+  }),
+  teams: [],
+  moreTeams: true,
+  setTeams: action((state, payload) => {
+    state.teams = [...state.teams, ...payload];
+    if (payload.length < 25) {
+      state.moreTeams = false;
+    } else {
+      state.moreTeams = true;
+    }
+  }),
+  resetTeams: action(state => {
+    state.teams = [];
+  }),
+  getTeams: thunk(async (actions, payload) => {
+    actions.resetTeams();
+    const teams = await TeamsSearch(payload);
+    if (teams.ok) {
+      actions.setTeams(teams.data);
+    }
+  }),
+  fetchMoreTeams: thunk(async (actions, payload) => {
+    const teams = await TeamsSearch(payload);
+    if (teams.ok) {
+      actions.setTeams(teams.data);
     }
   }),
 };

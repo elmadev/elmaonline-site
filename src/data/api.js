@@ -73,3 +73,7 @@ export const BattlesSearchByFilename = data =>
   api.get(`battle/search/byFilename/${data.q}/${data.offset}`);
 export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
+export const PlayersSearch = data =>
+  api.get(`player/search/${data.q}/${data.offset}`);
+export const TeamsSearch = data =>
+  api.get(`player/searchTeam/${data.q}/${data.offset}`);
