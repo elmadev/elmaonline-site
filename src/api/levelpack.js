@@ -1,5 +1,7 @@
 import express from 'express';
 import { forEach } from 'lodash';
+import { like } from 'utils/database';
+import { Op } from 'sequelize';
 import {
   Besttime,
   LevelPackLevel,
@@ -110,6 +112,50 @@ const getTimes = async LevelPackIndex => {
   return times;
 };
 
+const getPacksByQuery = async query => {
+  const packs = await LevelPack.findAll({
+    where: {
+      [Op.or]: [
+        { LevelPackName: { [Op.like]: `${like(query)}%` } },
+        { LevelPackLongName: { [Op.like]: `${like(query)}%` } },
+      ],
+    },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+      },
+    ],
+  });
+  const levels = await LevelPackLevel.findAll({
+    attributes: ['LevelPackIndex', 'LevelIndex'],
+    include: [
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelName', 'LongName', 'LevelIndex'],
+        where: { LevelName: { [Op.like]: `${like(query)}%` } },
+      },
+      {
+        model: LevelPack,
+        as: 'LevelPack',
+        attributes: ['LevelPackName', 'LevelPackLongName'],
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+            attributes: ['Kuski', 'Country'],
+          },
+        ],
+      },
+    ],
+  });
+  return [...packs, ...levels].filter(
+    (v, i, a) => a.findIndex(x => x.LevelPackIndex === v.LevelPackIndex) === i,
+  );
+};
+
 const totalTimes = times => {
   const tts = [];
   forEach(times, level => {
@@ -160,6 +206,10 @@ router
   .get('/:LevelPackName/records', async (req, res) => {
     const records = await getRecords(req.params.LevelPackName);
     res.json(records);
+  })
+  .get('/search/:query', async (req, res) => {
+    const packs = await getPacksByQuery(req.params.query);
+    res.json(packs);
   });
 
 export default router;

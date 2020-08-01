@@ -1,5 +1,6 @@
 import sequelize from 'sequelize';
 import { Level, Replay, Kuski } from 'data/models';
+import { like } from 'utils/database';
 
 export const queries = [
   `
@@ -36,7 +37,7 @@ export const resolvers = {
         offset: Offset,
         where: {
           LevelName: {
-            [sequelize.Op.like]: `${Search}%`,
+            [sequelize.Op.like]: `${like(Search)}%`,
           },
           Locked: 0,
         },
@@ -50,7 +51,7 @@ export const resolvers = {
         offset: Offset,
         where: {
           RecFileName: {
-            [sequelize.Op.like]: `${Search}%`,
+            [sequelize.Op.like]: `${like(Search)}%`,
           },
         },
         limit: 25,

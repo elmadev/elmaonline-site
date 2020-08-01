@@ -16,6 +16,6 @@ export function log(func, query, benchmark) {
   }
 }
 
-export function dummy() {
-  return true;
+export function like(text) {
+  return text.replace('_', '\\_').replace('*', '_');
 }

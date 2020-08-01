@@ -111,6 +111,11 @@ LevelPackLevel.belongsTo(Level, {
   as: 'Level',
 });
 
+LevelPackLevel.belongsTo(LevelPack, {
+  foreignKey: 'LevelPackIndex',
+  as: 'LevelPack',
+});
+
 LevelPackLevel.hasMany(Besttime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',

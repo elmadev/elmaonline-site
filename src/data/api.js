@@ -68,3 +68,16 @@ export const Besttime = data =>
   api.get(`besttime/${data.levelId}/${data.limit}`);
 export const Records = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/records`);
+export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
+export const BattlesSearchByFilename = data =>
+  api.get(`battle/search/byFilename/${data.q}/${data.offset}`);
+export const BattlesSearchByDesigner = data =>
+  api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
+export const PlayersSearch = data =>
+  api.get(`player/search/${data.q}/${data.offset}`);
+export const TeamsSearch = data =>
+  api.get(`player/searchTeam/${data.q}/${data.offset}`);
+export const ReplaysSearchByDriven = data =>
+  api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
+export const ReplaysSearchByLevel = data =>
+  api.get(`replay/search/byLevel/${data.q}/${data.offset}`);
