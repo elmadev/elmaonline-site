@@ -142,6 +142,7 @@ const LevelPack = ({ name }) => {
                   times={personalTimes}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
+                  records={records}
                 />
               )}
             </>

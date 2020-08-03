@@ -19,8 +19,16 @@ const Personal = ({
   highlightWeeks,
   timesError,
   setError,
+  records,
 }) => {
   const [level, selectLevel] = useState(-1);
+  const levels = records.map(r => {
+    const personal = times.filter(t => t.LevelIndex === r.LevelIndex);
+    if (personal.length > 0) {
+      return { ...r, LevelBesttime: personal[0].LevelBesttime };
+    }
+    return { ...r, LevelBesttime: [] };
+  });
 
   return (
     <>
@@ -43,9 +51,9 @@ const Personal = ({
           </span>
           <span />
         </div>
-        {times.length !== 0 && (
+        {levels.length !== 0 && (
           <>
-            {times.map(r => (
+            {levels.map(r => (
               <TimeRow
                 to={`/levels/${r.LevelIndex}`}
                 key={r.LevelIndex}
