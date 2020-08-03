@@ -8,17 +8,44 @@ import {
   TeamsSearch,
   ReplaysSearchByDriven,
   ReplaysSearchByLevel,
+  ReplaysSearchByFilename,
+  LevelsSearch,
 } from 'data/api';
 
 export default {
   levelPacks: [],
+  levels: [],
+  moreLevels: true,
   setLevelPacks: action((state, payload) => {
     state.levelPacks = payload;
   }),
-  getLevelPacks: thunk(async (actions, payload) => {
-    const packs = await LevelPackSearch(payload);
+  setLevels: action((state, payload) => {
+    state.levels = [...state.levels, ...payload];
+    if (payload.length === 25) {
+      state.moreLevels = true;
+    } else {
+      state.moreLevels = false;
+    }
+  }),
+  resetLevels: action(state => {
+    state.levels = [];
+    state.levelPacks = [];
+  }),
+  getLevels: thunk(async (actions, payload) => {
+    actions.resetLevels();
+    const packs = await LevelPackSearch(payload.q);
     if (packs.ok) {
       actions.setLevelPacks(packs.data);
+    }
+    const levs = await LevelsSearch(payload);
+    if (levs.ok) {
+      actions.setLevels(levs.data);
+    }
+  }),
+  fetchMoreLevels: thunk(async (actions, payload) => {
+    const levs = await LevelsSearch(payload);
+    if (levs.ok) {
+      actions.setLevels(levs.data);
     }
   }),
   battlesByFilename: [],
@@ -27,18 +54,18 @@ export default {
   moreBattleDesigner: true,
   setBattlesByFilename: action((state, payload) => {
     state.battlesByFilename = [...state.battlesByFilename, ...payload];
-    if (payload.length < 25) {
-      state.moreBattleFile = false;
-    } else {
+    if (payload.length === 25) {
       state.moreBattleFile = true;
+    } else {
+      state.moreBattleFile = false;
     }
   }),
   setBattlesByDesigner: action((state, payload) => {
     state.battlesByDesigner = [...state.battlesByDesigner, ...payload];
-    if (payload.length < 25) {
-      state.moreBattleDesigner = false;
-    } else {
+    if (payload.length === 25) {
       state.moreBattleDesigner = true;
+    } else {
+      state.moreBattleDesigner = false;
     }
   }),
   resetBattles: action(state => {
@@ -72,10 +99,10 @@ export default {
   morePlayers: true,
   setPlayers: action((state, payload) => {
     state.players = [...state.players, ...payload];
-    if (payload.length < 25) {
-      state.morePlayers = false;
-    } else {
+    if (payload.length === 25) {
       state.morePlayers = true;
+    } else {
+      state.morePlayers = false;
     }
   }),
   resetPlayers: action(state => {
@@ -98,10 +125,10 @@ export default {
   moreTeams: true,
   setTeams: action((state, payload) => {
     state.teams = [...state.teams, ...payload];
-    if (payload.length < 25) {
-      state.moreTeams = false;
-    } else {
+    if (payload.length === 25) {
       state.moreTeams = true;
+    } else {
+      state.moreTeams = false;
     }
   }),
   resetTeams: action(state => {
@@ -122,27 +149,38 @@ export default {
   }),
   replaysByDriven: [],
   replaysByLevel: [],
+  replaysByFilename: [],
   moreReplaysDriven: true,
   moreReplaysLevel: true,
+  moreReplaysFile: true,
   setReplaysByDriven: action((state, payload) => {
     state.replaysByDriven = [...state.replaysByDriven, ...payload];
-    if (payload.length < 25) {
-      state.moreReplaysDriven = false;
-    } else {
+    if (payload.length === 25) {
       state.moreReplaysDriven = true;
+    } else {
+      state.moreReplaysDriven = false;
     }
   }),
   setReplaysByLevel: action((state, payload) => {
     state.replaysByLevel = [...state.replaysByLevel, ...payload];
-    if (payload.length < 25) {
-      state.moreReplaysLevel = false;
-    } else {
+    if (payload.length === 25) {
       state.moreReplaysLevel = true;
+    } else {
+      state.moreReplaysLevel = false;
+    }
+  }),
+  setReplaysByFilename: action((state, payload) => {
+    state.replaysByFilename = [...state.replaysByFilename, ...payload];
+    if (payload.length === 25) {
+      state.moreReplaysFile = true;
+    } else {
+      state.moreReplaysFile = false;
     }
   }),
   resetReplays: action(state => {
     state.replaysByDriven = [];
     state.replaysByLevel = [];
+    state.replaysByFilename = [];
   }),
   getReplays: thunk(async (actions, payload) => {
     actions.resetReplays();
@@ -153,6 +191,10 @@ export default {
     const replaysLevel = await ReplaysSearchByLevel(payload);
     if (replaysLevel.ok) {
       actions.setReplaysByLevel(replaysLevel.data);
+    }
+    const replaysFile = await ReplaysSearchByFilename(payload);
+    if (replaysFile.ok) {
+      actions.setReplaysByFilename(replaysFile.data);
     }
   }),
   fetchMoreReplaysDriven: thunk(async (actions, payload) => {
@@ -165,6 +207,12 @@ export default {
     const replaysLevel = await ReplaysSearchByLevel(payload);
     if (replaysLevel.ok) {
       actions.setReplaysByLevel(replaysLevel.data);
+    }
+  }),
+  fetchmoreReplaysFile: thunk(async (actions, payload) => {
+    const replaysFile = await ReplaysSearchByFilename(payload);
+    if (replaysFile.ok) {
+      actions.setReplaysByFilename(replaysFile.data);
     }
   }),
 };

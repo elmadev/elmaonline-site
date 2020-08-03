@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like } from 'utils/database';
+import { like, searchLimit, searchOffset } from 'utils/database';
 import { Replay, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -62,8 +62,9 @@ const getReplayByUploadedBy = async KuskiIndex => {
 
 const getReplaysSearchDriven = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: 25,
-    offset: parseInt(offset, 10),
+    limit: searchLimit(offset),
+    offset: searchOffset(offset),
+    order: [['Uploaded', 'DESC']],
     include: [
       {
         model: Level,
@@ -88,8 +89,9 @@ const getReplaysSearchDriven = async (query, offset) => {
 
 const getReplaysSearchLevel = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: 25,
-    offset: parseInt(offset, 10),
+    limit: searchLimit(offset),
+    offset: searchOffset(offset),
+    order: [['ReplayTime', 'ASC']],
     include: [
       {
         model: Level,
@@ -110,6 +112,35 @@ const getReplaysSearchLevel = async (query, offset) => {
     ],
   });
   return data;
+};
+
+const getReplaysSearchFilename = async (query, offset) => {
+  const replays = await Replay.findAll({
+    offset: searchOffset(offset),
+    where: {
+      RecFileName: {
+        [Op.like]: `${like(query)}%`,
+      },
+    },
+    limit: searchLimit(offset),
+    order: [['RecFileName', 'ASC']],
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return replays;
 };
 
 router
@@ -137,6 +168,13 @@ router
   })
   .get('/search/byLevel/:query/:offset', async (req, res) => {
     const data = await getReplaysSearchLevel(
+      req.params.query,
+      req.params.offset,
+    );
+    res.json(data);
+  })
+  .get('/search/byFilename/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchFilename(
       req.params.query,
       req.params.offset,
     );

@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import express from 'express';
 import { Op } from 'sequelize';
-import { like } from 'utils/database';
+import { like, searchLimit, searchOffset } from 'utils/database';
 import { Battle, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -15,11 +15,11 @@ const BattlesSearchByFilename = async (query, offset) => {
       'BattleType',
       'Started',
     ],
-    limit: 25,
+    limit: searchLimit(offset),
     order: [
       ['BattleIndex', 'DESC'],
     ],
-    offset: parseInt(offset, 10),
+    offset: searchOffset(offset),
     include: [
       {
         model: Level,
@@ -46,11 +46,11 @@ const BattlesSearchByDesigner = async (query, offset) => {
       'BattleType',
       'Started',
     ],
-    limit: 25,
+    limit: searchLimit(offset),
     order: [
       ['BattleIndex', 'DESC'],
     ],
-    offset: parseInt(offset, 10),
+    offset: searchOffset(offset),
     include: [
       {
         model: Level,

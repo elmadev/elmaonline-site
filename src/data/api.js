@@ -69,6 +69,8 @@ export const Besttime = data =>
 export const Records = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/records`);
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
+export const LevelsSearch = data =>
+  api.get(`levelpack/searchLevel/${data.q}/${data.offset}`);
 export const BattlesSearchByFilename = data =>
   api.get(`battle/search/byFilename/${data.q}/${data.offset}`);
 export const BattlesSearchByDesigner = data =>
@@ -81,3 +83,5 @@ export const ReplaysSearchByDriven = data =>
   api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
 export const ReplaysSearchByLevel = data =>
   api.get(`replay/search/byLevel/${data.q}/${data.offset}`);
+export const ReplaysSearchByFilename = data =>
+  api.get(`replay/search/byFilename/${data.q}/${data.offset}`);

@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import express from 'express';
 import { Op } from 'sequelize';
-import { like } from 'utils/database';
+import { like, searchLimit, searchOffset } from 'utils/database';
 import { Team, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -15,11 +15,11 @@ const PlayersSearch = async (query, offset) => {
       'TeamIndex',
       'Country',
     ],
-    limit: 25,
+    limit: searchLimit(offset),
     order: [
       ['Kuski', 'ASC'],
     ],
-    offset: parseInt(offset, 10),
+    offset: searchOffset(offset),
     include: [
       {
         model: Team,
@@ -34,11 +34,11 @@ const PlayersSearch = async (query, offset) => {
 const TeamsSearch = async (query, offset) => {
   const get = await Team.findAll({
     where: { Team: { [Op.like]: `${like(query)}%` } },
-    limit: 25,
+    limit: searchLimit(offset),
     order: [
       ['Team', 'ASC'],
     ],
-    offset: parseInt(offset, 10),
+    offset: searchOffset(offset),
   });
   return get;
 };
@@ -51,7 +51,7 @@ router
     const teams = await TeamsSearch(req.params.query, req.params.offset);
     res.json(teams);
   })
-  .get('/search/:query/:offset/', async (req, res) => {
+  .get('/search/:query/:offset', async (req, res) => {
     const players = await PlayersSearch(
       req.params.query,
       req.params.offset,

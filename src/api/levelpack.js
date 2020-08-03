@@ -1,6 +1,6 @@
 import express from 'express';
 import { forEach } from 'lodash';
-import { like } from 'utils/database';
+import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -156,6 +156,33 @@ const getPacksByQuery = async query => {
   );
 };
 
+const getLevelsByQuery = async (query, offset) => {
+  const levels = await Level.findAll({
+    attributes: [
+      'LevelIndex',
+      'LevelName',
+      'CRC',
+      'LongName',
+      'Apples',
+      'Killers',
+      'Flowers',
+      'Locked',
+      'SiteLock',
+      'Hidden',
+    ],
+    offset: searchOffset(offset),
+    where: {
+      LevelName: {
+        [Op.like]: `${like(query)}%`,
+      },
+      Locked: 0,
+    },
+    limit: searchLimit(offset),
+    order: [['LevelName', 'ASC']],
+  });
+  return levels;
+};
+
 const totalTimes = times => {
   const tts = [];
   forEach(times, level => {
@@ -210,6 +237,10 @@ router
   .get('/search/:query', async (req, res) => {
     const packs = await getPacksByQuery(req.params.query);
     res.json(packs);
+  })
+  .get('/searchLevel/:query/:offset', async (req, res) => {
+    const levs = await getLevelsByQuery(req.params.query, req.params.offset);
+    res.json(levs);
   });
 
 export default router;

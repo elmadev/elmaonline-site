@@ -126,6 +126,11 @@ export const resolvers = {
             model: Kuski,
             as: 'DrivenByData',
           },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
         ],
       });
       return replay;
