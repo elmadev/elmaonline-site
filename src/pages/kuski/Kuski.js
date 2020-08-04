@@ -8,6 +8,8 @@ import styled from 'styled-components';
 
 import Flag from 'components/Flag';
 import ReplaysBy from 'components/ReplaysBy';
+import AchievementsCups from 'components/AchievementsCups';
+import Header from 'components/Header';
 
 import PlayedBattles from './PlayedBattles';
 import KuskiHeader from './KuskiHeader';
@@ -97,7 +99,8 @@ class Kuski extends React.Component {
           </div>
         )}
         {tab === 3 && (
-          <>
+          <SubContainer>
+            <Header h3>Rights</Header>
             <Rights>
               {getKuskiByName.RPlay === 1 && (
                 <img src={RPlay} alt="RPlay" title="Play" />
@@ -145,7 +148,9 @@ class Kuski extends React.Component {
                 <img src={RAdmin} alt="RAdmin" title="Admin" />
               )}
             </Rights>
-          </>
+            <Header h3>Cup achievements</Header>
+            <AchievementsCups KuskiIndex={getKuskiByName.KuskiIndex} />
+          </SubContainer>
         )}
       </div>
     );
@@ -159,6 +164,10 @@ const Rights = styled.div`
   img {
     padding: 8px;
   }
+`;
+
+const SubContainer = styled.div`
+  margin-left: 8px;
 `;
 
 Kuski.propTypes = {
