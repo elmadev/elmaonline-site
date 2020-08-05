@@ -51,7 +51,7 @@
     "easy-peasy": "^3.3.0",
     "elmajs": "^1.1.2",
     "express": "^4.16.4",
-    "express-fileupload": "^1.1.4",
+    "express-fileupload": "^1.1.9",
     "express-graphql": "^0.8.0",
     "express-session": "1.16.1",
     "flag-icon-css": "^3.3.0",
