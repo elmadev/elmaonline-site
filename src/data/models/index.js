@@ -71,6 +71,11 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+AllFinished.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -125,6 +130,11 @@ LevelPackLevel.hasMany(Besttime, {
 Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+Besttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
 });
 
 Besttime.belongsTo(WeeklyWRs, {

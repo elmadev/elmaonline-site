@@ -13,6 +13,7 @@ import Header from 'components/Header';
 
 import PlayedBattles from './PlayedBattles';
 import KuskiHeader from './KuskiHeader';
+import LatestTimes from './LatestTimes';
 import kuskiQuery from './kuski.graphql';
 import s from './Kuski.css';
 
@@ -70,9 +71,10 @@ class Kuski extends React.Component {
         </div>
         <Tabs value={tab} onChange={(e, t) => this.setState({ tab: t })}>
           <Tab label="Played Battles" />
+          <Tab label="Latest times" />
           <Tab label="Replays Uploaded" />
           <Tab label="Replays Driven" />
-          <Tab label="Rights" />
+          <Tab label="Info" />
         </Tabs>
         {tab === 0 && (
           <div style={{ maxWidth: '100%', overflow: 'auto' }}>
@@ -81,7 +83,8 @@ class Kuski extends React.Component {
             </div>
           </div>
         )}
-        {tab === 1 && (
+        {tab === 1 && <LatestTimes KuskiIndex={getKuskiByName.KuskiIndex} />}
+        {tab === 2 && (
           <div style={{ maxWidth: '100%', overflow: 'auto' }}>
             <div className={s.recentBattles}>
               <ReplaysBy
@@ -91,14 +94,14 @@ class Kuski extends React.Component {
             </div>
           </div>
         )}
-        {tab === 2 && (
+        {tab === 3 && (
           <div style={{ maxWidth: '100%', overflow: 'auto' }}>
             <div className={s.recentBattles}>
               <ReplaysBy type="driven" KuskiIndex={getKuskiByName.KuskiIndex} />
             </div>
           </div>
         )}
-        {tab === 3 && (
+        {tab === 4 && (
           <SubContainer>
             <Header h3>Rights</Header>
             <Rights>
