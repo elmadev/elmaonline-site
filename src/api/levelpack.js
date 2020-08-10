@@ -212,11 +212,70 @@ const totalTimes = times => {
   return tts.filter(x => x.count === times.length);
 };
 
+const pointList = [
+  40,
+  30,
+  25,
+  22,
+  20,
+  18,
+  16,
+  14,
+  12,
+  11,
+  10,
+  9,
+  8,
+  7,
+  6,
+  5,
+  4,
+  3,
+  2,
+  1,
+];
+
+const kinglist = times => {
+  const points = [];
+  forEach(times, level => {
+    const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
+    let no = 0;
+    forEach(sortedTimes, data => {
+      const time = data.dataValues;
+      const findKuski = points.findIndex(x => x.KuskiIndex === time.KuskiIndex);
+      if (findKuski > -1) {
+        points[findKuski] = {
+          ...points[findKuski],
+          points: points[findKuski].points + pointList[no],
+          TimeIndex:
+            time.TimeIndex > points[findKuski].TimeIndex
+              ? time.TimeIndex
+              : points[findKuski].TimeIndex,
+        };
+      } else {
+        points.push({
+          KuskiData: time.KuskiData,
+          points: pointList[no],
+          KuskiIndex: time.KuskiIndex,
+          TimeIndex: time.TimeIndex,
+        });
+      }
+      no += 1;
+      if (no >= pointList.length) {
+        return false;
+      }
+      return true;
+    });
+  });
+  return points;
+};
+
 router
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
     const tts = totalTimes(data);
-    res.json(tts);
+    const points = kinglist(data);
+    res.json({ tts, points });
   })
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
     const getKuskiIndex = await getKuski(req.params.KuskiIndex);

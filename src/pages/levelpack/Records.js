@@ -5,12 +5,13 @@ import styled from 'styled-components';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
+import Loading from 'components/Loading';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const Records = ({ highlight, highlightWeeks, records }) => {
+const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
   const [level, selectLevel] = useState(-1);
 
   return (
@@ -23,6 +24,7 @@ const Records = ({ highlight, highlightWeeks, records }) => {
           <span>Kuski</span>
           <span>Time</span>
         </div>
+        {recordsLoading && <Loading />}
         {records.map(r => (
           <TimeRow
             to={`/levels/${r.LevelIndex}`}

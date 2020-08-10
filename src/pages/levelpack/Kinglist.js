@@ -2,15 +2,13 @@ import React, { useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from 'styled-components';
-
-import Time from 'components/Time';
 import Loading from 'components/Loading';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
-  const { totaltimes, totaltimesLoading, lastPack } = useStoreState(
+const Kinglist = ({ highlight, highlightWeeks, levelPackIndex }) => {
+  const { kinglist, totaltimesLoading, lastPack } = useStoreState(
     state => state.LevelPack,
   );
   const { getTotalTimes } = useStoreActions(actions => actions.LevelPack);
@@ -23,19 +21,19 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
 
   return (
     <>
-      <h2>Total Times</h2>
+      <h2>Kinglist</h2>
       <div className={s.levels}>
         <div className={s.tableHead}>
           <span>#</span>
           <span>Player</span>
-          <span>Total Time</span>
+          <span>Points</span>
           <span />
         </div>
         {totaltimesLoading && <Loading />}
-        {totaltimes.length > 0 && (
+        {kinglist.length > 0 && (
           <>
-            {totaltimes
-              .sort((a, b) => a.tt - b.tt)
+            {kinglist
+              .sort((a, b) => b.points - a.points)
               .map((r, no) => (
                 <TimeRow key={r.KuskiIndex}>
                   <span>{no + 1}</span>
@@ -43,7 +41,7 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
                   <TimeSpan
                     highlight={r.TimeIndex >= highlight[highlightWeeks]}
                   >
-                    <Time time={r.tt} />
+                    {r.points}
                   </TimeSpan>
                   <span />
                 </TimeRow>
@@ -67,4 +65,4 @@ const TimeRow = styled.div`
   padding: 10px;
 `;
 
-export default withStyles(s)(TotalTimes);
+export default withStyles(s)(Kinglist);

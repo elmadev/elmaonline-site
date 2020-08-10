@@ -7,6 +7,7 @@ import Link from 'components/Link';
 import Time from 'components/Time';
 import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
+import Loading from 'components/Loading';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
@@ -20,6 +21,7 @@ const Personal = ({
   timesError,
   setError,
   records,
+  setPersonalTimesLoading,
 }) => {
   const [level, selectLevel] = useState(-1);
   const levels = records.map(r => {
@@ -51,6 +53,7 @@ const Personal = ({
           </span>
           <span />
         </div>
+        {setPersonalTimesLoading && <Loading />}
         {levels.length !== 0 && (
           <>
             {levels.map(r => (
