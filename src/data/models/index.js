@@ -127,6 +127,12 @@ LevelPackLevel.hasMany(Besttime, {
   as: 'LevelBesttime',
 });
 
+LevelPackLevel.hasMany(BestMultitime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelMultiBesttime',
+});
+
 Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -141,6 +147,16 @@ Besttime.belongsTo(WeeklyWRs, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
   as: 'WeeklyWR',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex1',
+  as: 'Kuski1Data',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'Kuski2Data',
 });
 
 WeeklyBest.belongsTo(WeeklyWRs, {

@@ -7,6 +7,8 @@ import {
   PersonalAllFinished,
   Besttime,
   Records,
+  MultiRecords,
+  MultiBesttime,
 } from 'data/api';
 
 export default {
@@ -90,6 +92,16 @@ export default {
       actions.setLevelBesttimes(times.data);
     }
   }),
+  levelMultiBesttimes: [],
+  setLevelMultiBesttimes: action((state, payload) => {
+    state.levelMultiBesttimes = payload;
+  }),
+  getLevelMultiBesttimes: thunk(async (actions, payload) => {
+    const times = await MultiBesttime(payload);
+    if (times.ok) {
+      actions.setLevelMultiBesttimes(times.data);
+    }
+  }),
   records: [],
   recordsLoading: false,
   setRecords: action((state, payload) => {
@@ -105,5 +117,25 @@ export default {
       actions.setRecords(times.data);
     }
     actions.setRecordsLoading(false);
+  }),
+  multiRecords: [],
+  multiRecordsLoading: false,
+  lastMultiName: '',
+  setMultiRecords: action((state, payload) => {
+    state.multiRecords = payload;
+  }),
+  setMultiRecordsLoading: action((state, payload) => {
+    state.multiRecordsLoading = payload;
+  }),
+  setLastMultiName: action((state, payload) => {
+    state.lastMultiName = payload;
+  }),
+  getMultiRecords: thunk(async (actions, payload) => {
+    actions.setMultiRecordsLoading(true);
+    const times = await MultiRecords(payload);
+    if (times.ok) {
+      actions.setMultiRecords(times.data);
+    }
+    actions.setMultiRecordsLoading(false);
   }),
 };

@@ -18,6 +18,7 @@ import Records from './Records';
 import TotalTimes from './TotalTimes';
 import Personal from './Personal';
 import Kinglist from './Kinglist';
+import MultiRecords from './MultiRecords';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
@@ -85,6 +86,7 @@ const LevelPack = ({ name }) => {
                 <Tab label="Total Times" />
                 <Tab label="King list" />
                 <Tab label="Personal" />
+                <Tab label="Multi records" />
               </Tabs>
               <div className={s.levelPackName}>
                 <span className={s.shortName}>
@@ -159,6 +161,13 @@ const LevelPack = ({ name }) => {
                   highlightWeeks={highlightWeeks}
                   records={records}
                   setPersonalTimesLoading={setPersonalTimesLoading}
+                />
+              )}
+              {tab === 4 && (
+                <MultiRecords
+                  name={name}
+                  highlight={highlight}
+                  highlightWeeks={highlightWeeks}
                 />
               )}
             </>

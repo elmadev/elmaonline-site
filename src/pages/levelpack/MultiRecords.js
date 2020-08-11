@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
@@ -11,21 +12,32 @@ import LevelPopup from './LevelPopup';
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
+const Records = ({ highlight, highlightWeeks, name }) => {
   const [level, selectLevel] = useState(-1);
+  const { multiRecords, multiRecordsLoading, lastMultiName } = useStoreState(
+    state => state.LevelPack,
+  );
+  const { getMultiRecords } = useStoreActions(actions => actions.LevelPack);
+
+  useEffect(() => {
+    if (lastMultiName !== name) {
+      getMultiRecords(name);
+    }
+  }, [name]);
 
   return (
     <>
       <h2>Levels</h2>
-      <div className={s.levels}>
+      <div className={s.multis}>
         <div className={s.tableHead}>
           <span>Filename</span>
           <span>Level name</span>
           <span>Kuski</span>
+          <span>Kuski</span>
           <span>Time</span>
         </div>
-        {recordsLoading && <Loading />}
-        {records.map(r => (
+        {multiRecordsLoading && <Loading />}
+        {multiRecords.map(r => (
           <TimeRow
             to={`/levels/${r.LevelIndex}`}
             key={r.LevelIndex}
@@ -37,17 +49,29 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
           >
             <span>{r.Level.LevelName}</span>
             <span>{r.Level.LongName}</span>
-            {r.LevelBesttime.length > 0 ? (
+            {r.LevelMultiBesttime.length > 0 ? (
               <>
                 <span>
-                  <Kuski kuskiData={r.LevelBesttime[0].KuskiData} team flag />
+                  <Kuski
+                    kuskiData={r.LevelMultiBesttime[0].Kuski1Data}
+                    team
+                    flag
+                  />
+                </span>
+                <span>
+                  <Kuski
+                    kuskiData={r.LevelMultiBesttime[0].Kuski2Data}
+                    team
+                    flag
+                  />
                 </span>
                 <TimeSpan
                   highlight={
-                    r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
+                    r.LevelMultiBesttime[0].TimeIndex >=
+                    highlight[highlightWeeks]
                   }
                 >
-                  <Time time={r.LevelBesttime[0].Time} />
+                  <Time time={r.LevelMultiBesttime[0].Time} />
                 </TimeSpan>
               </>
             ) : (
@@ -61,10 +85,14 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
         <TimeRow>
           <span />
           <span />
+          <span />
           <span>Total Time</span>
           <span>
             <Time
-              time={records.reduce((a, b) => a + b.LevelBesttime[0].Time, 0)}
+              time={multiRecords.reduce(
+                (a, b) => a + b.LevelMultiBesttime[0].Time,
+                0,
+              )}
             />
           </span>
         </TimeRow>
@@ -76,6 +104,7 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
           close={() => {
             selectLevel(-1);
           }}
+          multi
         />
       )}
     </>

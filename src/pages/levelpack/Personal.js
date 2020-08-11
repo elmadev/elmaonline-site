@@ -82,6 +82,16 @@ const Personal = ({
                 <span />
               </TimeRow>
             ))}
+            <TimeRow>
+              <span />
+              <span>Total Time</span>
+              <span>
+                <Time
+                  time={levels.reduce((a, b) => a + b.LevelBesttime[0].Time, 0)}
+                />
+              </span>
+              <span />
+            </TimeRow>
           </>
         )}
       </div>

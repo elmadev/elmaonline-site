@@ -87,6 +87,8 @@ export const PersonalTimes = data =>
   api.get(`levelpack/${data.name}/personal/${data.PersonalKuskiIndex}`);
 export const Records = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/records`);
+export const MultiRecords = LevelPackName =>
+  api.get(`levelpack/${LevelPackName}/multirecords`);
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
 export const LevelsSearch = data =>
   api.get(`levelpack/searchLevel/${data.q}/${data.offset}`);
@@ -96,6 +98,8 @@ export const Besttime = data =>
   api.get(`besttime/${data.levelId}/${data.limit}`);
 export const PersonalLatestPRs = data =>
   api.get(`besttime/latest/${data.KuskiIndex}/${data.limit}`);
+export const MultiBesttime = data =>
+  api.get(`besttime/multi/${data.levelId}/${data.limit}`);
 
 // battles
 export const BattlesSearchByFilename = data =>

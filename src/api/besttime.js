@@ -1,5 +1,5 @@
 import express from 'express';
-import { Besttime, Kuski, Team, Level } from '../data/models';
+import { Besttime, Kuski, Team, Level, BestMultitime } from '../data/models';
 
 const router = express.Router();
 
@@ -13,6 +13,39 @@ const getTimes = async (LevelIndex, limit) => {
         model: Kuski,
         attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+    ],
+  });
+  return times;
+};
+
+const getMultiTimes = async (LevelIndex, limit) => {
+  const times = await BestMultitime.findAll({
+    where: { LevelIndex },
+    order: [['Time', 'ASC']],
+    limit: parseInt(limit, 10),
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski1Data',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski2Data',
         include: [
           {
             model: Team,
@@ -49,6 +82,10 @@ router
   })
   .get('/latest/:KuskiIndex/:limit', async (req, res) => {
     const data = await getLatest(req.params.KuskiIndex, req.params.limit);
+    res.json(data);
+  })
+  .get('/multi/:LevelIndex/:limit', async (req, res) => {
+    const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
   });
 

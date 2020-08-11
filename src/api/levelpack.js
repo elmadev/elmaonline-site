@@ -9,6 +9,7 @@ import {
   LevelPack,
   Level,
   Team,
+  BestMultitime,
 } from '../data/models';
 
 const router = express.Router();
@@ -39,6 +40,57 @@ const getRecords = async LevelPackName => {
             model: Kuski,
             attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+                attributes: ['Team'],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelName', 'LongName'],
+      },
+    ],
+  });
+  return times;
+};
+
+const getMultiRecords = async LevelPackName => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  const times = await LevelPackLevel.findAll({
+    where: { LevelPackIndex: packInfo.LevelPackIndex },
+    order: [['LevelPackLevelIndex', 'ASC']],
+    include: [
+      {
+        model: BestMultitime,
+        as: 'LevelMultiBesttime',
+        attributes: ['MultiTimeIndex', 'Time', 'KuskiIndex1', 'KuskiIndex2'],
+        order: [['Time', 'ASC'], ['MultiTimeIndex', 'ASC']],
+        limit: 1,
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'Kuski1Data',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+                attributes: ['Team'],
+              },
+            ],
+          },
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'Kuski2Data',
             include: [
               {
                 model: Team,
@@ -291,6 +343,10 @@ router
   })
   .get('/:LevelPackName/records', async (req, res) => {
     const records = await getRecords(req.params.LevelPackName);
+    res.json(records);
+  })
+  .get('/:LevelPackName/multirecords', async (req, res) => {
+    const records = await getMultiRecords(req.params.LevelPackName);
     res.json(records);
   })
   .get('/search/:query', async (req, res) => {
