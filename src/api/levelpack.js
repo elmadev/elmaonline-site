@@ -1,5 +1,6 @@
 import express from 'express';
 import { forEach } from 'lodash';
+import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
 import {
@@ -53,11 +54,11 @@ const getRecords = async LevelPackName => {
       {
         model: Level,
         as: 'Level',
-        attributes: ['LevelName', 'LongName'],
+        attributes: ['LevelName', 'LongName', 'Hidden'],
       },
     ],
   });
-  return times;
+  return times.filter(t => !t.Level.Hidden);
 };
 
 const getMultiRecords = async LevelPackName => {
@@ -104,11 +105,11 @@ const getMultiRecords = async LevelPackName => {
       {
         model: Level,
         as: 'Level',
-        attributes: ['LevelName', 'LongName'],
+        attributes: ['LevelName', 'LongName', 'Hidden'],
       },
     ],
   });
-  return times;
+  return times.filter(t => !t.Level.Hidden);
 };
 
 const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
@@ -135,11 +136,11 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
       {
         model: Level,
         as: 'Level',
-        attributes: ['LevelName', 'LongName'],
+        attributes: ['LevelName', 'LongName', 'Hidden'],
       },
     ],
   });
-  return times;
+  return times.filter(t => !t.Level.Hidden);
 };
 
 const getTimes = async LevelPackIndex => {
@@ -158,6 +159,11 @@ const getTimes = async LevelPackIndex => {
             as: 'KuskiData',
           },
         ],
+      },
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['Hidden'],
       },
     ],
   });
@@ -238,28 +244,30 @@ const getLevelsByQuery = async (query, offset) => {
 const totalTimes = times => {
   const tts = [];
   forEach(times, level => {
-    forEach(level.LevelBesttime, time => {
-      const findKuski = tts.findIndex(x => x.KuskiIndex === time.KuskiIndex);
-      if (findKuski > -1) {
-        tts[findKuski] = {
-          ...tts[findKuski],
-          tt: tts[findKuski].tt + time.Time,
-          count: tts[findKuski].count + 1,
-          TimeIndex:
-            time.TimeIndex > tts[findKuski].TimeIndex
-              ? time.TimeIndex
-              : tts[findKuski].TimeIndex,
-        };
-      } else {
-        tts.push({
-          KuskiData: time.KuskiData,
-          tt: time.Time,
-          KuskiIndex: time.KuskiIndex,
-          count: 1,
-          TimeIndex: time.TimeIndex,
-        });
-      }
-    });
+    if (!level.Level.Hidden) {
+      forEach(level.LevelBesttime, time => {
+        const findKuski = tts.findIndex(x => x.KuskiIndex === time.KuskiIndex);
+        if (findKuski > -1) {
+          tts[findKuski] = {
+            ...tts[findKuski],
+            tt: tts[findKuski].tt + time.Time,
+            count: tts[findKuski].count + 1,
+            TimeIndex:
+              time.TimeIndex > tts[findKuski].TimeIndex
+                ? time.TimeIndex
+                : tts[findKuski].TimeIndex,
+          };
+        } else {
+          tts.push({
+            KuskiData: time.KuskiData,
+            tt: time.Time,
+            KuskiIndex: time.KuskiIndex,
+            count: 1,
+            TimeIndex: time.TimeIndex,
+          });
+        }
+      });
+    }
   });
   return tts.filter(x => x.count === times.length);
 };
@@ -290,36 +298,45 @@ const pointList = [
 const kinglist = times => {
   const points = [];
   forEach(times, level => {
-    const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
-    let no = 0;
-    forEach(sortedTimes, data => {
-      const time = data.dataValues;
-      const findKuski = points.findIndex(x => x.KuskiIndex === time.KuskiIndex);
-      if (findKuski > -1) {
-        points[findKuski] = {
-          ...points[findKuski],
-          points: points[findKuski].points + pointList[no],
-          TimeIndex:
-            time.TimeIndex > points[findKuski].TimeIndex
-              ? time.TimeIndex
-              : points[findKuski].TimeIndex,
-        };
-      } else {
-        points.push({
-          KuskiData: time.KuskiData,
-          points: pointList[no],
-          KuskiIndex: time.KuskiIndex,
-          TimeIndex: time.TimeIndex,
-        });
-      }
-      no += 1;
-      if (no >= pointList.length) {
-        return false;
-      }
-      return true;
-    });
+    if (!level.Level.Hidden) {
+      const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
+      let no = 0;
+      forEach(sortedTimes, data => {
+        const time = data.dataValues;
+        const findKuski = points.findIndex(
+          x => x.KuskiIndex === time.KuskiIndex,
+        );
+        if (findKuski > -1) {
+          points[findKuski] = {
+            ...points[findKuski],
+            points: points[findKuski].points + pointList[no],
+            TimeIndex:
+              time.TimeIndex > points[findKuski].TimeIndex
+                ? time.TimeIndex
+                : points[findKuski].TimeIndex,
+          };
+        } else {
+          points.push({
+            KuskiData: time.KuskiData,
+            points: pointList[no],
+            KuskiIndex: time.KuskiIndex,
+            TimeIndex: time.TimeIndex,
+          });
+        }
+        no += 1;
+        if (no >= pointList.length) {
+          return false;
+        }
+        return true;
+      });
+    }
   });
   return points;
+};
+
+const AddLevelPack = async data => {
+  const NewPack = await LevelPack.create(data);
+  return NewPack;
 };
 
 router
@@ -356,6 +373,18 @@ router
   .get('/searchLevel/:query/:offset', async (req, res) => {
     const levs = await getLevelsByQuery(req.params.query, req.params.offset);
     res.json(levs);
+  })
+  .post('/add', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const add = await AddLevelPack({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      res.json(add);
+    } else {
+      res.sendStatus(401);
+    }
   });
 
 export default router;

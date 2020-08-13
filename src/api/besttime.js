@@ -3,10 +3,20 @@ import { Besttime, Kuski, Team, Level, BestMultitime } from '../data/models';
 
 const router = express.Router();
 
+const levelInfo = async LevelIndex => {
+  const lev = await Level.findOne({
+    where: { LevelIndex },
+    attributes: ['Hidden', 'Locked'],
+  });
+  return lev;
+};
+
 const getTimes = async (LevelIndex, limit) => {
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Hidden) return [];
   const times = await Besttime.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC']],
+    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
     limit: parseInt(limit, 10),
     include: [
       {
@@ -26,9 +36,11 @@ const getTimes = async (LevelIndex, limit) => {
 };
 
 const getMultiTimes = async (LevelIndex, limit) => {
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Hidden) return [];
   const times = await BestMultitime.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC']],
+    order: [['Time', 'ASC'], ['MultiTimeIndex', 'ASC']],
     limit: parseInt(limit, 10),
     include: [
       {
@@ -67,12 +79,21 @@ const getLatest = async (KuskiIndex, limit) => {
       {
         model: Level,
         as: 'LevelData',
-        attributes: ['LevelName'],
+        attributes: ['LevelName', 'Hidden'],
       },
     ],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
-  return times.filter(t => t.LevelData !== null);
+  return times.filter(t => {
+    if (t.LevelData) {
+      if (t.LevelData.Hidden) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  });
 };
 
 router

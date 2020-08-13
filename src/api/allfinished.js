@@ -5,6 +5,14 @@ import { AllFinished, Level } from '../data/models';
 
 const router = express.Router();
 
+const levelInfo = async LevelIndex => {
+  const lev = await Level.findOne({
+    where: { LevelIndex },
+    attributes: ['Hidden', 'Locked'],
+  });
+  return lev;
+};
+
 const getHighlights = async () => {
   const week = await AllFinished.findOne({
     where: { Driven: { [Op.lt]: format(subWeeks(new Date(), 1), 't') } },
@@ -26,9 +34,11 @@ const getHighlights = async () => {
 };
 
 const getTimes = async (LevelIndex, KuskiIndex, limit) => {
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
-    order: [['Time', 'ASC']],
+    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
@@ -44,12 +54,21 @@ const getLatest = async (KuskiIndex, limit) => {
       {
         model: Level,
         as: 'LevelData',
-        attributes: ['LevelName'],
+        attributes: ['LevelName', 'Hidden'],
       },
     ],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
-  return times.filter(t => t.LevelData !== null);
+  return times.filter(t => {
+    if (t.LevelData) {
+      if (t.LevelData.Hidden) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  });
 };
 
 router

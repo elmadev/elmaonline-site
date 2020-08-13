@@ -8,6 +8,7 @@ import KuskiMap from 'pages/map/store';
 import LevelPack from 'pages/levelpack/store';
 import Search from 'pages/search/store';
 import Kuski from 'pages/kuski/store';
+import LevelsAdd from 'pages/levels-add/store';
 
 export default {
   ReplayComments,
@@ -20,6 +21,7 @@ export default {
   LevelPack,
   Search,
   Kuski,
+  LevelsAdd,
   test: {
     derp: 'hi',
   },
