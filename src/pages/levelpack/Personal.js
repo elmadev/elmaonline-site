@@ -8,6 +8,7 @@ import Time from 'components/Time';
 import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
 import Loading from 'components/Loading';
+import { recordsTT } from 'utils/calcs';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
@@ -82,16 +83,14 @@ const Personal = ({
                 <span />
               </TimeRow>
             ))}
-            <TimeRow>
+            <TTRow>
               <span />
               <span>Total Time</span>
               <span>
-                <Time
-                  time={levels.reduce((a, b) => a + b.LevelBesttime[0].Time, 0)}
-                />
+                <Time time={recordsTT(levels, 'LevelBesttime')} />
               </span>
               <span />
-            </TimeRow>
+            </TTRow>
           </>
         )}
       </div>
@@ -116,6 +115,15 @@ const Personal = ({
 };
 
 const TimeRow = styled(Link)`
+  background: ${p => (p.selected ? '#219653' : 'transparent')};
+  color: ${p => (p.selected ? '#fff' : 'inherit')};
+  :hover {
+    background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
+    color: ${p => (p.selected ? '#fff' : 'inherit')};
+  }
+`;
+
+const TTRow = styled.div`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
   :hover {
