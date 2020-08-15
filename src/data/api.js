@@ -101,6 +101,7 @@ export const LevelPackAddLevel = data =>
   api.post('levelpack/admin/addLevel', data);
 export const LevelPackSortLevel = data =>
   api.post('levelpack/admin/sortLevel', data);
+export const LevelPackSort = data => api.post('levelpack/admin/sort', data);
 
 // besttime
 export const Besttime = data =>

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -14,9 +14,24 @@ import Loading from 'components/Loading';
 const Admin = ({ records, LevelPack }) => {
   const [search, setSearch] = useState('');
   const { levelsFound, adminLoading } = useStoreState(state => state.LevelPack);
-  const { deleteLevel, searchLevel, addLevel, sortLevel } = useStoreActions(
-    actions => actions.LevelPack,
-  );
+  const {
+    deleteLevel,
+    searchLevel,
+    addLevel,
+    sortLevel,
+    sortPack,
+  } = useStoreActions(actions => actions.LevelPack);
+
+  useEffect(() => {
+    const emptySort = records.filter(r => r.Sort === '');
+    if (emptySort.length > 0) {
+      sortPack({
+        LevelPackIndex: LevelPack.LevelPackIndex,
+        levels: records,
+        name: LevelPack.LevelPackName,
+      });
+    }
+  }, []);
 
   const onDragEnd = result => {
     if (

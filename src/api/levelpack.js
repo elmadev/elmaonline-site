@@ -1,6 +1,7 @@
 import express from 'express';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
+import { eachSeries } from 'neo-async';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
 import { firstEntry, lastEntry, inBetween } from 'utils/sort';
@@ -412,6 +413,7 @@ const SortLevel = async data => {
       data.destination.index === 0
         ? data.destination.index
         : data.destination.index - 1;
+    const midIndex = data.destination.index;
     const afterIndex =
       data.destination.index === data.levels.length - 1
         ? data.destination.index
@@ -420,12 +422,12 @@ const SortLevel = async data => {
     if (data.source.index > data.destination.index) {
       Sort = inBetween(
         data.levels[beforeIndex].Sort,
-        data.levels[data.destination.index].Sort,
+        data.levels[midIndex].Sort,
         -1,
       );
     } else {
       Sort = inBetween(
-        data.levels[data.destination.index].Sort,
+        data.levels[midIndex].Sort,
         data.levels[afterIndex].Sort,
         1,
       );
@@ -436,6 +438,35 @@ const SortLevel = async data => {
         where: { LevelPackIndex: data.LevelPackIndex, LevelIndex },
       },
     );
+    return true;
+  }
+  return false;
+};
+
+const SortPackUpdate = async (data, done) => {
+  await LevelPackLevel.update(
+    { Sort: data.Sort },
+    { where: { LevelPackLevelIndex: data.LevelPackLevelIndex } },
+  );
+  done();
+};
+
+const SortPack = async data => {
+  const pack = await LevelPack.findOne({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
+  if (pack.KuskiIndex === data.KuskiIndex) {
+    const updateBulk = [];
+    let Sort = '';
+    forEach(data.levels, l => {
+      if (!Sort) {
+        Sort = firstEntry();
+      } else {
+        Sort = lastEntry(Sort);
+      }
+      updateBulk.push({ LevelPackLevelIndex: l.LevelPackLevelIndex, Sort });
+    });
+    await eachSeries(updateBulk, SortPackUpdate);
     return true;
   }
   return false;
@@ -528,6 +559,22 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const sort = await SortLevel({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      if (sort) {
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0, error: 'This is not your level pack' });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/admin/sort', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const sort = await SortPack({
         ...req.body,
         KuskiIndex: auth.userid,
       });

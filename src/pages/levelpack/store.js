@@ -13,6 +13,7 @@ import {
   LevelsSearchAll,
   LevelPackAddLevel,
   LevelPackSortLevel,
+  LevelPackSort,
 } from 'data/api';
 
 export default {
@@ -172,6 +173,15 @@ export default {
   sortLevel: thunk(async (actions, payload) => {
     actions.setAdminLoading(true);
     const sort = await LevelPackSortLevel(payload);
+    if (sort.ok) {
+      actions.getRecords(payload.name);
+    } else {
+      actions.setAdminLoading(false);
+    }
+  }),
+  sortPack: thunk(async (actions, payload) => {
+    actions.setAdminLoading(true);
+    const sort = await LevelPackSort(payload);
     if (sort.ok) {
       actions.getRecords(payload.name);
     } else {
