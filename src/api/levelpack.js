@@ -3,6 +3,7 @@ import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
+import { firstEntry, lastEntry, inBetween } from 'utils/sort';
 import {
   Besttime,
   LevelPackLevel,
@@ -28,7 +29,7 @@ const getRecords = async LevelPackName => {
   });
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
-    order: [['LevelPackLevelIndex', 'ASC']],
+    order: [['Sort', 'ASC'], ['LevelPackLevelIndex', 'ASC']],
     include: [
       {
         model: Besttime,
@@ -241,6 +242,31 @@ const getLevelsByQuery = async (query, offset) => {
   return levels;
 };
 
+const getLevelsByQueryAll = async query => {
+  const levels = await Level.findAll({
+    attributes: [
+      'LevelIndex',
+      'LevelName',
+      'CRC',
+      'LongName',
+      'Apples',
+      'Killers',
+      'Flowers',
+      'Locked',
+      'SiteLock',
+      'Hidden',
+    ],
+    where: {
+      LevelName: {
+        [Op.like]: `${like(query)}%`,
+      },
+    },
+    limit: 100,
+    order: [['LevelName', 'ASC']],
+  });
+  return levels;
+};
+
 const totalTimes = times => {
   const tts = [];
   forEach(times, level => {
@@ -339,6 +365,82 @@ const AddLevelPack = async data => {
   return NewPack;
 };
 
+const DeleteLevel = async data => {
+  const pack = await LevelPack.findOne({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
+  if (pack.KuskiIndex === data.KuskiIndex) {
+    await LevelPackLevel.destroy({
+      where: {
+        LevelIndex: data.LevelIndex,
+        LevelPackIndex: data.LevelPackIndex,
+      },
+    });
+    return true;
+  }
+  return false;
+};
+
+const AddLevel = async data => {
+  const pack = await LevelPack.findOne({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
+  if (pack.KuskiIndex === data.KuskiIndex) {
+    let Sort = '';
+    if (data.levels.length > 0) {
+      Sort = lastEntry(data.levels[data.levels.length - 1].Sort);
+    } else {
+      Sort = firstEntry();
+    }
+    await LevelPackLevel.create({
+      LevelPackIndex: data.LevelPackIndex,
+      LevelIndex: data.LevelIndex,
+      Sort,
+    });
+    return true;
+  }
+  return false;
+};
+
+const SortLevel = async data => {
+  const pack = await LevelPack.findOne({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
+  if (pack.KuskiIndex === data.KuskiIndex) {
+    const { LevelIndex } = data.levels[data.source.index];
+    const beforeIndex =
+      data.destination.index === 0
+        ? data.destination.index
+        : data.destination.index - 1;
+    const afterIndex =
+      data.destination.index === data.levels.length - 1
+        ? data.destination.index
+        : data.destination.index + 1;
+    let Sort = '';
+    if (data.source.index > data.destination.index) {
+      Sort = inBetween(
+        data.levels[beforeIndex].Sort,
+        data.levels[data.destination.index].Sort,
+        -1,
+      );
+    } else {
+      Sort = inBetween(
+        data.levels[data.destination.index].Sort,
+        data.levels[afterIndex].Sort,
+        1,
+      );
+    }
+    await LevelPackLevel.update(
+      { Sort },
+      {
+        where: { LevelPackIndex: data.LevelPackIndex, LevelIndex },
+      },
+    );
+    return true;
+  }
+  return false;
+};
+
 router
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
@@ -370,6 +472,10 @@ router
     const packs = await getPacksByQuery(req.params.query);
     res.json(packs);
   })
+  .get('/searchLevel/:query', async (req, res) => {
+    const levs = await getLevelsByQueryAll(req.params.query);
+    res.json(levs);
+  })
   .get('/searchLevel/:query/:offset', async (req, res) => {
     const levs = await getLevelsByQuery(req.params.query, req.params.offset);
     res.json(levs);
@@ -382,6 +488,54 @@ router
         KuskiIndex: auth.userid,
       });
       res.json(add);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/admin/deleteLevel', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const del = await DeleteLevel({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      if (del) {
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0, error: 'This is not your level pack' });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/admin/addLevel', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const add = await AddLevel({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      if (add) {
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0, error: 'This is not your level pack' });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/admin/sortLevel', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const sort = await SortLevel({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      if (sort) {
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0, error: 'This is not your level pack' });
+      }
     } else {
       res.sendStatus(401);
     }

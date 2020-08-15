@@ -92,7 +92,15 @@ export const MultiRecords = LevelPackName =>
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
 export const LevelsSearch = data =>
   api.get(`levelpack/searchLevel/${data.q}/${data.offset}`);
+export const LevelsSearchAll = data =>
+  api.get(`levelpack/searchLevel/${data.q}`);
 export const AddLevelPack = data => api.post('levelpack/add', data);
+export const LevelPackDeleteLevel = data =>
+  api.post('levelpack/admin/deleteLevel', data);
+export const LevelPackAddLevel = data =>
+  api.post('levelpack/admin/addLevel', data);
+export const LevelPackSortLevel = data =>
+  api.post('levelpack/admin/sortLevel', data);
 
 // besttime
 export const Besttime = data =>

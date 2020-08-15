@@ -12,13 +12,14 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { nick } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 import { Number } from 'components/Selectors';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
 import Personal from './Personal';
 import Kinglist from './Kinglist';
 import MultiRecords from './MultiRecords';
+import Admin from './Admin';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
@@ -30,6 +31,7 @@ const GET_LEVELPACK = gql`
       LevelPackLongName
       LevelPackName
       LevelPackDesc
+      KuskiIndex
       KuskiData {
         Kuski
       }
@@ -87,6 +89,7 @@ const LevelPack = ({ name }) => {
                 <Tab label="King list" />
                 <Tab label="Personal" />
                 <Tab label="Multi records" />
+                {nickId() === getLevelPack.KuskiIndex && <Tab label="Admin" />}
               </Tabs>
               <div className={s.levelPackName}>
                 <span className={s.shortName}>
@@ -169,6 +172,9 @@ const LevelPack = ({ name }) => {
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
                 />
+              )}
+              {tab === 5 && (
+                <Admin records={records} LevelPack={getLevelPack} />
               )}
             </>
           );

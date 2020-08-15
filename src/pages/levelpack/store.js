@@ -9,6 +9,10 @@ import {
   Records,
   MultiRecords,
   MultiBesttime,
+  LevelPackDeleteLevel,
+  LevelsSearchAll,
+  LevelPackAddLevel,
+  LevelPackSortLevel,
 } from 'data/api';
 
 export default {
@@ -117,6 +121,7 @@ export default {
       actions.setRecords(times.data);
     }
     actions.setRecordsLoading(false);
+    actions.setAdminLoading(false);
   }),
   multiRecords: [],
   multiRecordsLoading: false,
@@ -137,5 +142,40 @@ export default {
       actions.setMultiRecords(times.data);
     }
     actions.setMultiRecordsLoading(false);
+  }),
+  deleteLevel: thunk(async (actions, payload) => {
+    const del = await LevelPackDeleteLevel(payload);
+    if (del.ok) {
+      actions.getRecords(payload.name);
+    }
+  }),
+  levelsFound: [],
+  adminLoading: false,
+  setLevelsFound: action((state, payload) => {
+    state.levelsFound = payload;
+  }),
+  setAdminLoading: action((state, payload) => {
+    state.adminLoading = payload;
+  }),
+  searchLevel: thunk(async (actions, payload) => {
+    const levs = await LevelsSearchAll(payload);
+    if (levs.ok) {
+      actions.setLevelsFound(levs.data);
+    }
+  }),
+  addLevel: thunk(async (actions, payload) => {
+    const add = await LevelPackAddLevel(payload);
+    if (add.ok) {
+      actions.getRecords(payload.name);
+    }
+  }),
+  sortLevel: thunk(async (actions, payload) => {
+    actions.setAdminLoading(true);
+    const sort = await LevelPackSortLevel(payload);
+    if (sort.ok) {
+      actions.getRecords(payload.name);
+    } else {
+      actions.setAdminLoading(false);
+    }
   }),
 };
