@@ -61,7 +61,7 @@ const Cups = props => {
           }}
         />
       )}
-      {tab === 1 && <Events events={events} setEvent={openEvent} />}
+      {tab === 1 && <Events cup={cup} events={events} setEvent={openEvent} />}
       {tab === 2 && <Standings events={events} cup={cup} />}
       {tab === 3 && (
         <RulesInfo

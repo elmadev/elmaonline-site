@@ -68,6 +68,8 @@ export const GenerateEvent = data =>
     `cups/${data.CupGroupIndex}/event/${data.event.CupIndex}/generate`,
     data.event,
   );
+export const SubmitInterview = data =>
+  api.post(`cups/${data.CupGroupIndex}/event/${data.CupIndex}/interview`, data);
 
 // kuski map
 export const KuskiMap = () => api.get('kuskimap');

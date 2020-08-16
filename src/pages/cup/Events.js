@@ -28,7 +28,7 @@ const GetWinner = times => {
 };
 
 const Cups = props => {
-  const { events, setEvent } = props;
+  const { events, setEvent, cup } = props;
   const [openEvent, setOpenEvent] = useState(-1);
   const [tab, setTab] = useState(0);
 
@@ -113,7 +113,7 @@ const Cups = props => {
             </PlayerContainer>
           )}
           {tab === 2 && events[openEvent].EndTime < format(new Date(), 't') && (
-            <Interviews event={events[openEvent]} />
+            <Interviews cup={cup} event={events[openEvent]} />
           )}
         </Grid>
       )}
