@@ -175,7 +175,7 @@ const getUnstarted = async () => {
 
 const unlockLevel = async (indices, done) => {
   await Level.update(
-    { Hidden: 1, Locked: 0 },
+    { Hidden: 1, Locked: 0, ForceHide: 1 },
     { where: { LevelIndex: indices.LevelIndex } },
   );
   await SiteCup.update(

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { formatDistance, format } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
-import Link from 'components/Link';
 import CupResults from 'components/CupResults';
 import Kuski from 'components/Kuski';
 import Today from '@material-ui/icons/Today';
@@ -53,7 +52,7 @@ const Cups = props => {
               <By>
                 <EventLink
                   highlight={i === openEvent}
-                  to={`/dl/level/${e.LevelIndex}`}
+                  href={`/dl/level/${e.LevelIndex}`}
                 >
                   {e.Level.LevelName}
                 </EventLink>{' '}
@@ -127,7 +126,7 @@ const Cups = props => {
   );
 };
 
-const EventLink = styled(Link)`
+const EventLink = styled.a`
   color: ${p => (p.highlight ? 'white' : '#219653')};
 `;
 
