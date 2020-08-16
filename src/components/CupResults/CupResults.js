@@ -4,9 +4,10 @@ import Time from 'components/Time';
 import DerpTable from 'components/Table/DerpTable';
 import DerpTableCell from 'components/Table/DerpTableCell';
 import TableRow from '@material-ui/core/TableRow';
+import { zeroPad } from 'utils/time';
 
 const CupResults = props => {
-  const { results } = props;
+  const { results, ShortName, eventNo } = props;
 
   return (
     <Container>
@@ -19,7 +20,18 @@ const CupResults = props => {
             <DerpTableCell>{no + 1}.</DerpTableCell>
             <DerpTableCell>{r.KuskiData.Kuski}</DerpTableCell>
             <DerpTableCell>
-              <Time time={r.Time} apples={-1} />
+              {r.Replay ? (
+                <a
+                  href={`/dl/cupreplay/${r.CupTimeIndex}/${ShortName}${zeroPad(
+                    eventNo,
+                    2,
+                  )}${r.KuskiData.Kuski.substring(0, 6)}`}
+                >
+                  <Time time={r.Time} apples={-1} />
+                </a>
+              ) : (
+                <Time time={r.Time} apples={-1} />
+              )}
             </DerpTableCell>
             <DerpTableCell right>
               {r.Points} point{r.Points > 1 ? 's' : ''}

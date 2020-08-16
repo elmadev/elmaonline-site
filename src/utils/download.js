@@ -1,9 +1,17 @@
-import { Battle, Level, LevelPackLevel, LevelPack } from 'data/models';
+import {
+  Battle,
+  Level,
+  LevelPackLevel,
+  LevelPack,
+  SiteCupTime,
+  SiteCup,
+} from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
 import generate from 'nanoid/generate';
 import fs from 'fs';
 import archiver from 'archiver';
+import { isBefore } from 'date-fns';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -24,6 +32,42 @@ export function getReplayByBattleId(battleId) {
         });
       } else {
         reject(new Error('replay not found'));
+      }
+    });
+  });
+}
+
+const getReplayDataByCupTimeId = async CupTimeIndex => {
+  const replayData = await SiteCupTime.findOne({
+    attributes: ['RecData'],
+    where: { CupTimeIndex },
+    include: [
+      {
+        model: SiteCup,
+        as: 'CupData',
+        attributes: ['EndTime'],
+      },
+    ],
+  });
+  return replayData;
+};
+
+export function getReplayByCupTimeId(cupTimeId, filename) {
+  return new Promise((resolve, reject) => {
+    getReplayDataByCupTimeId(cupTimeId).then(data => {
+      if (data !== null) {
+        if (isBefore(new Date(data.dataValues.EndTime), new Date())) {
+          reject(new Error('Event not over'));
+        } else if (data.dataValues.RecData) {
+          resolve({
+            file: data.dataValues.RecData,
+            filename: `${filename}.rec`,
+          });
+        } else {
+          reject(new Error('Replay data not found'));
+        }
+      } else {
+        reject(new Error('Replay not found'));
       }
     });
   });

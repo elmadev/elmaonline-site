@@ -225,6 +225,11 @@ SiteCupTime.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+SiteCupTime.belongsTo(SiteCup, {
+  foreignKey: 'CupIndex',
+  as: 'CupData',
+});
+
 SiteCupBlog.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

@@ -72,7 +72,13 @@ const getCupEvents = async CupGroupIndex => {
       },
       {
         model: SiteCupTime,
-        attributes: ['KuskiIndex', 'Time', 'TimeExists', 'CupTimeIndex'],
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'TimeExists',
+          'CupTimeIndex',
+          'Replay',
+        ],
         as: 'CupTimes',
         required: false,
         where: { TimeExists: 1 },

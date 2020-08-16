@@ -103,7 +103,13 @@ const Cups = props => {
               <Tab label="Interviews" />
             )}
           </Tabs>
-          {tab === 0 && <CupResults results={events[openEvent].CupTimes} />}
+          {tab === 0 && (
+            <CupResults
+              ShortName={cup.ShortName}
+              eventNo={openEvent + 1}
+              results={events[openEvent].CupTimes}
+            />
+          )}
           {tab === 1 && events[openEvent].StartTime < format(new Date(), 't') && (
             <PlayerContainer>
               <Recplayer

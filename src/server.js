@@ -38,7 +38,12 @@ import Html from 'components/Html';
 import createApolloClient from 'core/createApolloClient';
 import schema from 'data/schema';
 import configureStore from 'store/configureStore';
-import { getReplayByBattleId, getLevel, getLevelPack } from 'utils/download';
+import {
+  getReplayByBattleId,
+  getLevel,
+  getLevelPack,
+  getReplayByCupTimeId,
+} from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
 import {
@@ -140,6 +145,27 @@ discord();
 app.get('/dl/battlereplay/:id', async (req, res, next) => {
   try {
     const { file, filename } = await getReplayByBattleId(req.params.id);
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/cupreplay/:id/:filename', async (req, res, next) => {
+  try {
+    const { file, filename } = await getReplayByCupTimeId(
+      req.params.id,
+      req.params.filename,
+    );
     const readStream = new stream.PassThrough();
     readStream.end(file);
     res.set({
