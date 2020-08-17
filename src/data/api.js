@@ -124,3 +124,4 @@ export const PlayersSearch = data =>
   api.get(`player/search/${data.q}/${data.offset}`);
 export const TeamsSearch = data =>
   api.get(`player/searchTeam/${data.q}/${data.offset}`);
+export const UserInfo = KuskiIndex => api.get(`player/${KuskiIndex}`);

@@ -53,6 +53,7 @@ export const resolvers = {
           RecFileName: {
             [sequelize.Op.like]: `${like(Search)}%`,
           },
+          Unlisted: 0,
         },
         limit: 25,
         order: [['RecFileName', 'ASC']],
