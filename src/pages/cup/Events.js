@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { formatDistance, format } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
-import Link from 'components/Link';
 import CupResults from 'components/CupResults';
 import Kuski from 'components/Kuski';
 import Today from '@material-ui/icons/Today';
@@ -28,7 +27,7 @@ const GetWinner = times => {
 };
 
 const Cups = props => {
-  const { events, setEvent } = props;
+  const { events, setEvent, cup } = props;
   const [openEvent, setOpenEvent] = useState(-1);
   const [tab, setTab] = useState(0);
 
@@ -53,7 +52,7 @@ const Cups = props => {
               <By>
                 <EventLink
                   highlight={i === openEvent}
-                  to={`/dl/level/${e.LevelIndex}`}
+                  href={`/dl/level/${e.LevelIndex}`}
                 >
                   {e.Level.LevelName}
                 </EventLink>{' '}
@@ -103,7 +102,13 @@ const Cups = props => {
               <Tab label="Interviews" />
             )}
           </Tabs>
-          {tab === 0 && <CupResults results={events[openEvent].CupTimes} />}
+          {tab === 0 && (
+            <CupResults
+              ShortName={cup.ShortName}
+              eventNo={openEvent + 1}
+              results={events[openEvent].CupTimes}
+            />
+          )}
           {tab === 1 && events[openEvent].StartTime < format(new Date(), 't') && (
             <PlayerContainer>
               <Recplayer
@@ -113,7 +118,7 @@ const Cups = props => {
             </PlayerContainer>
           )}
           {tab === 2 && events[openEvent].EndTime < format(new Date(), 't') && (
-            <Interviews event={events[openEvent]} />
+            <Interviews cup={cup} event={events[openEvent]} />
           )}
         </Grid>
       )}
@@ -121,7 +126,7 @@ const Cups = props => {
   );
 };
 
-const EventLink = styled(Link)`
+const EventLink = styled.a`
   color: ${p => (p.highlight ? 'white' : '#219653')};
 `;
 

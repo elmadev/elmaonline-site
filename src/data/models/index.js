@@ -71,6 +71,11 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+AllFinished.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -111,10 +116,21 @@ LevelPackLevel.belongsTo(Level, {
   as: 'Level',
 });
 
+LevelPackLevel.belongsTo(LevelPack, {
+  foreignKey: 'LevelPackIndex',
+  as: 'LevelPack',
+});
+
 LevelPackLevel.hasMany(Besttime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
   as: 'LevelBesttime',
+});
+
+LevelPackLevel.hasMany(BestMultitime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelMultiBesttime',
 });
 
 Besttime.belongsTo(Kuski, {
@@ -122,10 +138,25 @@ Besttime.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Besttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 Besttime.belongsTo(WeeklyWRs, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
   as: 'WeeklyWR',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex1',
+  as: 'Kuski1Data',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'Kuski2Data',
 });
 
 WeeklyBest.belongsTo(WeeklyWRs, {
@@ -192,6 +223,11 @@ SiteCup.hasMany(SiteCupTime, {
 SiteCupTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+SiteCupTime.belongsTo(SiteCup, {
+  foreignKey: 'CupIndex',
+  as: 'CupData',
 });
 
 SiteCupBlog.belongsTo(Kuski, {

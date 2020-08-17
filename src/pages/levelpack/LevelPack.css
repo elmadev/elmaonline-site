@@ -28,6 +28,12 @@
   width: 100%;
 }
 
+.multis {
+  padding-bottom: 200px;
+  display: table;
+  width: 100%;
+}
+
 .tableHead {
   font-weight: 500;
 }
@@ -39,7 +45,20 @@
   padding: 10px;
 }
 
+.multis > * {
+  display: table-row;
+  color: inherit;
+  font-size: 14px;
+  padding: 10px;
+}
+
 .levels > * > span {
+  display: table-cell;
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.multis > * > span {
   display: table-cell;
   padding: 10px;
   border-bottom: 1px solid #eaeaea;
@@ -54,6 +73,22 @@
 }
 
 .levels > * > span:nth-child(3) {
+  width: 180px;
+}
+
+.multis > * > span:nth-child(1) {
+  width: 70px;
+}
+
+.multis > * > span:nth-child(2) {
+  width: 300px;
+}
+
+.multis > * > span:nth-child(3) {
+  width: 180px;
+}
+
+.multis > * > span:nth-child(4) {
   width: 180px;
 }
 

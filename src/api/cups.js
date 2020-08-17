@@ -72,7 +72,13 @@ const getCupEvents = async CupGroupIndex => {
       },
       {
         model: SiteCupTime,
-        attributes: ['KuskiIndex', 'Time', 'TimeExists', 'CupTimeIndex'],
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'TimeExists',
+          'CupTimeIndex',
+          'Replay',
+        ],
         as: 'CupTimes',
         required: false,
         where: { TimeExists: 1 },
@@ -169,7 +175,7 @@ const getUnstarted = async () => {
 
 const unlockLevel = async (indices, done) => {
   await Level.update(
-    { Hidden: 1, Locked: 0 },
+    { Hidden: 1, Locked: 0, ForceHide: 1 },
     { where: { LevelIndex: indices.LevelIndex } },
   );
   await SiteCup.update(
@@ -177,6 +183,14 @@ const unlockLevel = async (indices, done) => {
     { where: { CupIndex: indices.CupIndex } },
   );
   done();
+};
+
+const AddInterview = async data => {
+  await SiteCup.update(
+    { [`${data.type}Interview`]: data.text },
+    { where: { CupIndex: data.CupIndex } },
+  );
+  return true;
 };
 
 router
@@ -333,6 +347,55 @@ router
     eachSeries(toUnlock, unlockLevel, () => {
       res.json({ data });
     });
+  })
+  .post('/:CupGroupIndex/event/:CupIndex/interview', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const cupData = await getCupEvents(req.params.CupGroupIndex);
+      const eventData = cupData.filter(
+        c => c.CupIndex === parseInt(req.params.CupIndex, 10),
+      );
+      if (eventData.length > 0) {
+        let add = false;
+        if (
+          req.body.type === 'Designer' &&
+          auth.userid === eventData[0].Designer
+        ) {
+          add = true;
+        } else if (req.body.type === 'FirstPlace') {
+          if (eventData[0].CupTimes.length > 0) {
+            if (auth.userid === eventData[0].CupTimes[0].KuskiIndex) {
+              add = true;
+            }
+          }
+        } else if (req.body.type === 'SecondPlace') {
+          if (eventData[0].CupTimes.length > 1) {
+            if (auth.userid === eventData[0].CupTimes[1].KuskiIndex) {
+              add = true;
+            }
+          }
+        } else if (req.body.type === 'ThirdPlace') {
+          if (eventData[0].CupTimes.length > 2) {
+            if (auth.userid === eventData[0].CupTimes[2].KuskiIndex) {
+              add = true;
+            }
+          }
+        }
+        if (add) {
+          await AddInterview({
+            ...req.body,
+            KuskiIndex: auth.userid,
+          });
+          res.json({ success: 1 });
+        } else {
+          res.json({ success: 0, error: 'Not eligable to add interview' });
+        }
+      } else {
+        res.json({ success: 0, error: 'No events found' });
+      }
+    } else {
+      res.sendStatus(401);
+    }
   });
 
 export default router;

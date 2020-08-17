@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { format, formatDistance } from 'date-fns';
-import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import Paper from '@material-ui/core/Paper';
@@ -27,9 +26,7 @@ const CupResults = props => {
                   Event {eventNo + 1} by <Kuski kuskiData={c.KuskiData} />
                 </EventHeader>
                 <EventInfo>
-                  <Link to={`/dl/level/${c.LevelIndex}`}>
-                    {c.Level.LevelName}
-                  </Link>
+                  <a href={`/dl/level/${c.LevelIndex}`}>{c.Level.LevelName}</a>
                 </EventInfo>
                 <EventInfo>
                   Deadline:{' '}

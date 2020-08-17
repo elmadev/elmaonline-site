@@ -52,6 +52,11 @@ const routes = {
       load: () => import(/* webpackChunkName: 'levels' */ './pages/levels'),
     },
     {
+      path: '/levels/add',
+      load: () =>
+        import(/* webpackChunkName: 'levels-add' */ './pages/levels-add'),
+    },
+    {
       path: '/levels/:id',
       load: () => import(/* webpackChunkName: 'level' */ './pages/level'),
     },

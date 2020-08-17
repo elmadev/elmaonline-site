@@ -1,4 +1,6 @@
 import express from 'express';
+import { Op } from 'sequelize';
+import { like, searchLimit, searchOffset } from 'utils/database';
 import { Replay, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -21,10 +23,12 @@ const getReplayByDrivenBy = async KuskiIndex => {
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'UploadedByData',
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
         as: 'DrivenByData',
       },
     ],
@@ -43,6 +47,91 @@ const getReplayByUploadedBy = async KuskiIndex => {
       },
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return data;
+};
+
+const getReplaysSearchDriven = async (query, offset) => {
+  const data = await Replay.findAll({
+    limit: searchLimit(offset),
+    offset: searchOffset(offset),
+    order: [['Uploaded', 'DESC']],
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+        where: { Kuski: { [Op.like]: `${like(query)}%` } },
+      },
+    ],
+  });
+  return data;
+};
+
+const getReplaysSearchLevel = async (query, offset) => {
+  const data = await Replay.findAll({
+    limit: searchLimit(offset),
+    offset: searchOffset(offset),
+    order: [['ReplayTime', 'ASC']],
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+        where: { LevelName: { [Op.like]: `${like(query)}%` } },
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return data;
+};
+
+const getReplaysSearchFilename = async (query, offset) => {
+  const replays = await Replay.findAll({
+    offset: searchOffset(offset),
+    where: {
+      RecFileName: {
+        [Op.like]: `${like(query)}%`,
+      },
+    },
+    limit: searchLimit(offset),
+    order: [['RecFileName', 'ASC']],
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
         as: 'UploadedByData',
       },
       {
@@ -51,7 +140,7 @@ const getReplayByUploadedBy = async KuskiIndex => {
       },
     ],
   });
-  return data;
+  return replays;
 };
 
 router
@@ -68,6 +157,27 @@ router
   })
   .get('/uploaded_by/:KuskiIndex', async (req, res) => {
     const data = await getReplayByUploadedBy(req.params.KuskiIndex);
+    res.json(data);
+  })
+  .get('/search/byDriven/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchDriven(
+      req.params.query,
+      req.params.offset,
+    );
+    res.json(data);
+  })
+  .get('/search/byLevel/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchLevel(
+      req.params.query,
+      req.params.offset,
+    );
+    res.json(data);
+  })
+  .get('/search/byFilename/:query/:offset', async (req, res) => {
+    const data = await getReplaysSearchFilename(
+      req.params.query,
+      req.params.offset,
+    );
     res.json(data);
   });
 

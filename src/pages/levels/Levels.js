@@ -1,8 +1,12 @@
 import React from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
+import styled from 'styled-components';
 import withStyles from 'isomorphic-style-loader/withStyles';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 import Link from 'components/Link';
+import history from 'utils/history';
 import s from './Levels.css';
 
 const GET_LEVELPACKS = gql`
@@ -73,8 +77,23 @@ const Levels = () => {
             ));
         }}
       </Query>
+      <FabCon>
+        <Fab
+          color="primary"
+          aria-label="Add"
+          onClick={() => history.push(`/levels/add`)}
+        >
+          <AddIcon />
+        </Fab>
+      </FabCon>
     </div>
   );
 };
+
+const FabCon = styled.div`
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+`;
 
 export default withStyles(s)(Levels);

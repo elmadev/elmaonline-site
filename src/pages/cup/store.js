@@ -9,6 +9,7 @@ import {
   EditEvent,
   DeleteEvent,
   GenerateEvent,
+  SubmitInterview,
 } from 'data/api';
 
 export default {
@@ -71,6 +72,12 @@ export default {
     if (generate.ok) {
       actions.getCup(payload.last);
       actions.setUpdated('Event results generated');
+    }
+  }),
+  sendInterview: thunk(async (actions, payload) => {
+    const send = await SubmitInterview(payload);
+    if (send.ok) {
+      actions.getCup(payload.ShortName);
     }
   }),
 };

@@ -83,7 +83,11 @@ const Dashboard = props => {
             Last Event
           </Headline>
           {events[lastEvent] && (
-            <CupResults results={events[lastEvent].CupTimes.slice(0, 5)} />
+            <CupResults
+              ShortName={cup.ShortName}
+              eventNo={lastEvent + 1}
+              results={events[lastEvent].CupTimes.slice(0, 5)}
+            />
           )}
           <Headline link onClick={() => openStandings()}>
             Standings

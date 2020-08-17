@@ -33,13 +33,17 @@ const GET_LEVEL = gql`
   }
 `;
 
-const LevelPopup = ({ levelId, KuskiIndex, close, highlight }) => {
-  const { personalAllFinished, levelBesttimes } = useStoreState(
-    state => state.LevelPack,
-  );
-  const { getPersonalAllFinished, getLevelBesttimes } = useStoreActions(
-    actions => actions.LevelPack,
-  );
+const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
+  const {
+    personalAllFinished,
+    levelBesttimes,
+    levelMultiBesttimes,
+  } = useStoreState(state => state.LevelPack);
+  const {
+    getPersonalAllFinished,
+    getLevelBesttimes,
+    getLevelMultiBesttimes,
+  } = useStoreActions(actions => actions.LevelPack);
   const [timesLimit, setTimesLimit] = useState(10);
 
   useEffect(() => {
@@ -50,11 +54,15 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight }) => {
           KuskiIndex,
           limit: timesLimit,
         });
+      } else if (multi) {
+        getLevelMultiBesttimes({ levelId, limit: timesLimit });
       } else {
         getLevelBesttimes({ levelId, limit: timesLimit });
       }
     }
   }, [levelId, timesLimit]);
+
+  const times = multi ? levelMultiBesttimes : levelBesttimes;
 
   return (
     <div className={s.levelPopup}>
@@ -85,21 +93,43 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight }) => {
                 <div className={s.levelTimes}>
                   <div className={s.tableHead}>
                     <span>#</span>
-                    {!KuskiIndex && <span>Kuski</span>}
+                    {!KuskiIndex && !multi && <span>Kuski</span>}
+                    {multi && (
+                      <>
+                        <span>Kuski</span>
+                        <span>Kuski</span>
+                      </>
+                    )}
                     <span>Time</span>
                   </div>
                   {!KuskiIndex ? (
                     <>
-                      {levelBesttimes.map((t, i) => {
+                      {times.map((t, i) => {
                         return (
                           <div key={t.TimeIndex}>
                             <span>{i + 1}.</span>
-                            <span>
-                              <Kuski kuskiData={t.KuskiData} team flag />
-                            </span>
-                            <TimeSpan highlight={t.TimeIndex >= highlight}>
-                              <Time time={t.Time} />
-                            </TimeSpan>
+                            {multi ? (
+                              <>
+                                <span>
+                                  <Kuski kuskiData={t.Kuski1Data} team flag />
+                                </span>
+                                <span>
+                                  <Kuski kuskiData={t.Kuski2Data} team flag />
+                                </span>
+                                <TimeSpan highlight={t.TimeIndex >= highlight}>
+                                  <Time time={t.Time} />
+                                </TimeSpan>
+                              </>
+                            ) : (
+                              <>
+                                <span>
+                                  <Kuski kuskiData={t.KuskiData} team flag />
+                                </span>
+                                <TimeSpan highlight={t.TimeIndex >= highlight}>
+                                  <Time time={t.Time} />
+                                </TimeSpan>
+                              </>
+                            )}
                           </div>
                         );
                       })}

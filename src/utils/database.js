@@ -16,6 +16,22 @@ export function log(func, query, benchmark) {
   }
 }
 
-export function dummy() {
-  return true;
+export function like(text) {
+  return text.replace('_', '\\_').replace('*', '_');
+}
+
+export function searchLimit(offset) {
+  const offsetInt = parseInt(offset, 10);
+  if (offsetInt < 0) {
+    return 10000;
+  }
+  return 25;
+}
+
+export function searchOffset(offset) {
+  const offsetInt = parseInt(offset, 10);
+  if (offsetInt < 0) {
+    return Math.abs(offsetInt);
+  }
+  return offsetInt;
 }

@@ -1,9 +1,17 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
-import { AllFinished } from '../data/models';
+import { AllFinished, Level } from '../data/models';
 
 const router = express.Router();
+
+const levelInfo = async LevelIndex => {
+  const lev = await Level.findOne({
+    where: { LevelIndex },
+    attributes: ['Hidden', 'Locked'],
+  });
+  return lev;
+};
 
 const getHighlights = async () => {
   const week = await AllFinished.findOne({
@@ -26,13 +34,41 @@ const getHighlights = async () => {
 };
 
 const getTimes = async (LevelIndex, KuskiIndex, limit) => {
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
-    order: [['Time', 'ASC']],
+    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
-    limit: parseInt(limit, 10),
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
   return times;
+};
+
+const getLatest = async (KuskiIndex, limit) => {
+  const times = await AllFinished.findAll({
+    where: { KuskiIndex },
+    order: [['TimeIndex', 'DESC']],
+    attributes: ['TimeIndex', 'Time', 'Apples', 'Driven', 'LevelIndex'],
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'Hidden'],
+      },
+    ],
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+  });
+  return times.filter(t => {
+    if (t.LevelData) {
+      if (t.LevelData.Hidden) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  });
 };
 
 router
@@ -52,6 +88,10 @@ router
       req.params.KuskiIndex,
       req.params.limit,
     );
+    res.json(data);
+  })
+  .get('/:KuskiIndex/:limit', async (req, res) => {
+    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
     res.json(data);
   });
 

@@ -10,13 +10,15 @@ import Loading from 'components/Loading';
 import s from './LevelPack.css';
 
 const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
-  const { totaltimes, totaltimesLoading } = useStoreState(
+  const { totaltimes, totaltimesLoading, lastPack } = useStoreState(
     state => state.LevelPack,
   );
   const { getTotalTimes } = useStoreActions(actions => actions.LevelPack);
 
   useEffect(() => {
-    getTotalTimes(levelPackIndex);
+    if (lastPack !== levelPackIndex) {
+      getTotalTimes(levelPackIndex);
+    }
   }, [levelPackIndex]);
 
   return (

@@ -22,15 +22,15 @@ class KuskiHeader extends React.Component {
     return (
       <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
         <div className={s.statsContainer}>
-          <div className={s.lineThrough}>_42:31:09</div>
+          <div className={s.lineThrough}>42:31:09</div>
           <div className={s.statsTitle}>total time</div>
         </div>
         <div className={s.statsContainer}>
-          <div>_{playedAll}</div>
+          <div>{playedAll}</div>
           <div className={s.statsTitle}>battles played</div>
         </div>
         <div className={s.statsContainer}>
-          <div>_{winsAll}</div>
+          <div>{winsAll}</div>
           <div className={s.statsTitle}>battles won</div>
         </div>
       </div>

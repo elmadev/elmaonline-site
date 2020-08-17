@@ -79,6 +79,7 @@
     "query-string": "^6.4.2",
     "react": "16.8.6",
     "react-apollo": "^2.5.4",
+    "react-beautiful-dnd": "^13.0.0",
     "react-dom": "16.8.6",
     "react-dropzone": "^4.2.13",
     "react-google-recaptcha": "^2.0.1",

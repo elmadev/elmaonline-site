@@ -7,6 +7,8 @@ import Link from 'components/Link';
 import Time from 'components/Time';
 import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
+import Loading from 'components/Loading';
+import { recordsTT } from 'utils/calcs';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
@@ -19,8 +21,17 @@ const Personal = ({
   highlightWeeks,
   timesError,
   setError,
+  records,
+  setPersonalTimesLoading,
 }) => {
   const [level, selectLevel] = useState(-1);
+  const levels = records.map(r => {
+    const personal = times.filter(t => t.LevelIndex === r.LevelIndex);
+    if (personal.length > 0) {
+      return { ...r, LevelBesttime: personal[0].LevelBesttime };
+    }
+    return { ...r, LevelBesttime: [] };
+  });
 
   return (
     <>
@@ -43,9 +54,10 @@ const Personal = ({
           </span>
           <span />
         </div>
-        {times.length !== 0 && (
+        {setPersonalTimesLoading && <Loading />}
+        {levels.length !== 0 && (
           <>
-            {times.map(r => (
+            {levels.map(r => (
               <TimeRow
                 to={`/levels/${r.LevelIndex}`}
                 key={r.LevelIndex}
@@ -71,6 +83,14 @@ const Personal = ({
                 <span />
               </TimeRow>
             ))}
+            <TTRow>
+              <span />
+              <span>Total Time</span>
+              <span>
+                <Time time={recordsTT(levels, 'LevelBesttime')} />
+              </span>
+              <span />
+            </TTRow>
           </>
         )}
       </div>
@@ -95,6 +115,15 @@ const Personal = ({
 };
 
 const TimeRow = styled(Link)`
+  background: ${p => (p.selected ? '#219653' : 'transparent')};
+  color: ${p => (p.selected ? '#fff' : 'inherit')};
+  :hover {
+    background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
+    color: ${p => (p.selected ? '#fff' : 'inherit')};
+  }
+`;
+
+const TTRow = styled.div`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
   :hover {
