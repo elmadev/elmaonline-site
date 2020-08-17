@@ -152,7 +152,10 @@ const generate = async (event, cup) => {
     where: { LevelIndex: event.LevelIndex },
     order: [['TimeIndex', 'ASC']],
   });
-  const generatedTimes = await generateEvent(event, cup, getTimes);
+  const getCupTimes = await SiteCupTime.findAll({
+    where: { CupIndex: event.CupIndex },
+  });
+  const generatedTimes = await generateEvent(event, cup, getTimes, getCupTimes);
   await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
   await eachSeries(generatedTimes.updateBulk, generateUpdate);
   await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });

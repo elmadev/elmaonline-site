@@ -161,14 +161,14 @@ export const calculateStandings = (events, cup) => {
   return standings.sort((a, b) => b.Points - a.Points);
 };
 
-export const generateEvent = (event, cup, times) => {
+export const generateEvent = (event, cup, times, cuptimes) => {
   const insertBulk = [];
   const updateBulk = [];
   // loop times and find finished runs
   forEach(times, t => {
     if (t.Finished === 'F' || (event.AppleBugs && t.Finished === 'B')) {
       if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
-        const exists = event.CupTimes.filter(
+        const exists = cuptimes.filter(
           c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
         );
         // update cup times if replay is uploaded

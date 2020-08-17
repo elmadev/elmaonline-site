@@ -7,14 +7,14 @@ const router = express.Router();
 
 const getReplayByReplayId = async ReplayIndex => {
   const data = await Replay.findAll({
-    where: { ReplayIndex },
+    where: { ReplayIndex, Unlisted: 0 },
   });
   return data;
 };
 
 const getReplayByDrivenBy = async KuskiIndex => {
   const data = await Replay.findAll({
-    where: { DrivenBy: KuskiIndex },
+    where: { DrivenBy: KuskiIndex, Unlisted: 0 },
     include: [
       {
         model: Level,
@@ -38,7 +38,7 @@ const getReplayByDrivenBy = async KuskiIndex => {
 
 const getReplayByUploadedBy = async KuskiIndex => {
   const data = await Replay.findAll({
-    where: { UploadedBy: KuskiIndex },
+    where: { UploadedBy: KuskiIndex, Unlisted: 0 },
     include: [
       {
         model: Level,
@@ -64,6 +64,7 @@ const getReplaysSearchDriven = async (query, offset) => {
   const data = await Replay.findAll({
     limit: searchLimit(offset),
     offset: searchOffset(offset),
+    where: { Unlisted: 0 },
     order: [['Uploaded', 'DESC']],
     include: [
       {
@@ -92,6 +93,7 @@ const getReplaysSearchLevel = async (query, offset) => {
     limit: searchLimit(offset),
     offset: searchOffset(offset),
     order: [['ReplayTime', 'ASC']],
+    where: { Unlisted: 0 },
     include: [
       {
         model: Level,
@@ -121,6 +123,7 @@ const getReplaysSearchFilename = async (query, offset) => {
       RecFileName: {
         [Op.like]: `${like(query)}%`,
       },
+      Unlisted: 0,
     },
     limit: searchLimit(offset),
     order: [['RecFileName', 'ASC']],
