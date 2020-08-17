@@ -43,9 +43,34 @@ const TeamsSearch = async (query, offset) => {
   return get;
 };
 
+const Player = async KuskiIndex => {
+  const data = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: [
+      'KuskiIndex',
+      'Kuski',
+      'TeamIndex',
+      'Country',
+      'Email',
+    ],
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team', 'Locked'],
+      },
+    ],
+  });
+  return data;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
+  })
+  .get('/:KuskiIndex', async (req, res) => {
+    const data = await Player(req.params.KuskiIndex);
+    res.json(data);
   })
   .get('/searchTeam/:query/:offset', async(req, res) => {
     const teams = await TeamsSearch(req.params.query, req.params.offset);

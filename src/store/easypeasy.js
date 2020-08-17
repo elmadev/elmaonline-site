@@ -9,6 +9,7 @@ import LevelPack from 'pages/levelpack/store';
 import Search from 'pages/search/store';
 import Kuski from 'pages/kuski/store';
 import LevelsAdd from 'pages/levels-add/store';
+import Settings from 'pages/settings/store';
 
 export default {
   ReplayComments,
@@ -22,6 +23,7 @@ export default {
   Search,
   Kuski,
   LevelsAdd,
+  Settings,
   test: {
     derp: 'hi',
   },
