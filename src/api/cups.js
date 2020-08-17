@@ -156,6 +156,12 @@ const generate = async (event, cup) => {
   await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
   await eachSeries(generatedTimes.updateBulk, generateUpdate);
   await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });
+  if (event.EndTime < format(new Date(), 't')) {
+    await Level.update(
+      { Hidden: 0, ForceHide: 0 },
+      { where: { LevelIndex: event.LevelIndex } },
+    );
+  }
   return {};
 };
 

@@ -9,7 +9,6 @@ import TextField from '@material-ui/core/TextField';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ListCell, ListContainer, ListHeader } from 'styles/List';
-import Loading from 'components/Loading';
 
 const Admin = ({ records, LevelPack }) => {
   const [search, setSearch] = useState('');
@@ -103,11 +102,7 @@ const Admin = ({ records, LevelPack }) => {
                     </Draggable>
                   ))}
                 </ListContainer>
-                {adminLoading && (
-                  <Overlay>
-                    <Loading />
-                  </Overlay>
-                )}
+                {adminLoading && <Overlay />}
                 {provided.placeholder}
               </div>
             )}
