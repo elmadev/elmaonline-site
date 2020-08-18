@@ -56,7 +56,10 @@ const getCup = async ShortName => {
   return data;
 };
 
-const getCupEvents = async CupGroupIndex => {
+const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
+  const cupGroup = await SiteCupGroup.findOne({
+    where: { CupGroupIndex },
+  });
   const data = await SiteCup.findAll({
     where: { CupGroupIndex },
     include: [
@@ -92,7 +95,7 @@ const getCupEvents = async CupGroupIndex => {
       },
     ],
   });
-  return filterResults(data);
+  return filterResults(data, cupGroup.KuskiIndex, KuskiIndex);
 };
 
 const editCup = async (CupGroupIndex, data) => {
@@ -224,7 +227,12 @@ router
     }
   })
   .get('/events/:CupGroupIndex', async (req, res) => {
-    const data = await getCupEvents(req.params.CupGroupIndex);
+    const auth = authContext(req);
+    let KuskiIndex = 0;
+    if (auth.auth) {
+      KuskiIndex = auth.userid;
+    }
+    const data = await getCupEvents(req.params.CupGroupIndex, KuskiIndex);
     res.json(data);
   })
   .post('/edit/:CupGroupIndex', async (req, res) => {
