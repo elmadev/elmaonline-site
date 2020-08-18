@@ -261,6 +261,7 @@ const getLevelsByQueryAll = async query => {
       LevelName: {
         [Op.like]: `${like(query)}%`,
       },
+      Locked: 0,
     },
     limit: 100,
     order: [['LevelName', 'ASC']],
@@ -386,6 +387,12 @@ const AddLevel = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
+  const level = await Level.findOne({
+    where: { LevelIndex: data.LevelIndex },
+  });
+  if (level.Locked) {
+    return 'Level is locked.';
+  }
   if (pack.KuskiIndex === data.KuskiIndex) {
     let Sort = '';
     if (data.levels.length > 0) {
@@ -398,9 +405,9 @@ const AddLevel = async data => {
       LevelIndex: data.LevelIndex,
       Sort,
     });
-    return true;
+    return '';
   }
-  return false;
+  return 'This is not your level pack';
 };
 
 const SortLevel = async data => {
@@ -547,9 +554,9 @@ router
         KuskiIndex: auth.userid,
       });
       if (add) {
-        res.json({ success: 1 });
+        res.json({ success: 0, error: add });
       } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
+        res.json({ success: 1 });
       }
     } else {
       res.sendStatus(401);
