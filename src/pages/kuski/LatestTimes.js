@@ -40,7 +40,7 @@ const LatestTimes = ({ KuskiIndex }) => {
             {latestTimes
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(r => (
-                <TableRow hover key={r.KuskiIndex}>
+                <TableRow hover key={`${r.LevelIndex}${r.Driven}`}>
                   <DerpTableCell>
                     <Level LevelData={r.LevelData} />
                   </DerpTableCell>
@@ -80,7 +80,7 @@ const LatestTimes = ({ KuskiIndex }) => {
                 pagePR * rowsPerPagePR + rowsPerPagePR,
               )
               .map(r => (
-                <TableRow hover key={r.KuskiIndex}>
+                <TableRow hover key={`${r.LevelIndex}${r.Time}`}>
                   <DerpTableCell>
                     <Level LevelData={r.LevelData} />
                   </DerpTableCell>
@@ -88,11 +88,11 @@ const LatestTimes = ({ KuskiIndex }) => {
                     <Time time={r.Time} />
                   </DerpTableCell>
                   <DerpTableCell>
-                    <LocalTime
+                    {/* <LocalTime
                       date={r.Driven}
                       format="ddd D MMM YYYY HH:mm:ss"
                       parse="X"
-                    />
+                    /> */}
                   </DerpTableCell>
                 </TableRow>
               ))}

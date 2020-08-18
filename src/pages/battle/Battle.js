@@ -143,7 +143,8 @@ class Battle extends React.Component {
                   </span>{' '}
                   battle in{' '}
                   <a href={`/dl/level/${getBattle.LevelIndex}`}>
-                    {getBattle.LevelData.LevelName}.lev
+                    {getBattle.LevelData ? getBattle.LevelData.LevelName : '?'}
+                    .lev
                   </a>{' '}
                   {getBattle.KuskiData.Kuski}
                   <div className={s.battleTimestamp}>

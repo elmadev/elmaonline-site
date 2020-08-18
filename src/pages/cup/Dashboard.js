@@ -24,7 +24,7 @@ const Dashboard = props => {
     let lastEndTime = 0;
     forEach(events, (e, i) => {
       if (e.EndTime < format(new Date(), 't')) {
-        if (e.EndTime >= lastEndTime) {
+        if (e.EndTime >= lastEndTime && e.Updated && e.ShowResults) {
           setLastEvent(i);
           lastEndTime = e.EndTime;
         }

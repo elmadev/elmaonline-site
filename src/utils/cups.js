@@ -54,7 +54,7 @@ export const points = [
   1,
 ];
 
-export const filterResults = events => {
+export const filterResults = (events, ownerId, loggedId) => {
   const filtered = [];
   // loop events
   forEach(events, (eventValues, eventIndex) => {
@@ -105,7 +105,16 @@ export const filterResults = events => {
         filteredResults[pos].Points = points[pos] ? points[pos] : 1;
       }
     });
-    filtered[eventIndex].CupTimes = filteredResults;
+    filtered[eventIndex].CupTimes = [];
+    if (filtered[eventIndex].EndTime < moment().format('X')) {
+      if (filtered[eventIndex].Updated) {
+        if (filtered[eventIndex].ShowResults) {
+          filtered[eventIndex].CupTimes = filteredResults;
+        } else if (ownerId === loggedId) {
+          filtered[eventIndex].CupTimes = filteredResults;
+        }
+      }
+    }
   });
   return filtered;
 };

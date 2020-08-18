@@ -15,15 +15,20 @@ const CupResults = props => {
       e.StartTime < format(new Date(), 't'),
   );
 
+  const getEventNumber = event => {
+    const index = events.findIndex(e => e.CupIndex === event.CupIndex);
+    return index + 1;
+  };
+
   return (
     <Container>
-      {currentEvents.map((c, eventNo) => (
+      {currentEvents.map(c => (
         <>
           {c.EndTime > format(new Date(), 't') &&
             c.StartTime < format(new Date(), 't') && (
               <Paper>
                 <EventHeader>
-                  Event {eventNo + 1} by <Kuski kuskiData={c.KuskiData} />
+                  Event {getEventNumber(c)} by <Kuski kuskiData={c.KuskiData} />
                 </EventHeader>
                 <EventInfo>
                   <a href={`/dl/level/${c.LevelIndex}`}>{c.Level.LevelName}</a>
