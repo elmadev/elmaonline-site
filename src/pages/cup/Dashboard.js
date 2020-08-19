@@ -14,13 +14,13 @@ import CupCurrent from 'components/CupCurrent';
 
 const Dashboard = props => {
   const { events, openEvent, openStandings, cup } = props;
-  const [standings, setStandings] = useState([]);
+  const [standings, setStandings] = useState({});
   const [lastEvent, setLastEvent] = useState(-1);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    setStandings(calculateStandings(events, cup));
+    setStandings(calculateStandings(events, cup, true));
     let lastEndTime = 0;
     forEach(events, (e, i) => {
       if (e.EndTime < format(new Date(), 't')) {
@@ -92,20 +92,22 @@ const Dashboard = props => {
           <Headline link onClick={() => openStandings()}>
             Standings
           </Headline>
-          <DerpTable
-            headers={['#', 'Player', 'Points']}
-            length={standings.length}
-          >
-            {standings.slice(0, 5).map((r, no) => (
-              <TableRow hover key={r.KuskiIndex}>
-                <DerpTableCell>{no + 1}.</DerpTableCell>
-                <DerpTableCell>{r.Kuski}</DerpTableCell>
-                <DerpTableCell right>
-                  {r.Points} point{r.Points > 1 ? 's' : ''}
-                </DerpTableCell>
-              </TableRow>
-            ))}
-          </DerpTable>
+          {standings.player && (
+            <DerpTable
+              headers={['#', 'Player', 'Points']}
+              length={standings.player.length}
+            >
+              {standings.player.slice(0, 5).map((r, no) => (
+                <TableRow hover key={r.KuskiIndex}>
+                  <DerpTableCell>{no + 1}.</DerpTableCell>
+                  <DerpTableCell>{r.Kuski}</DerpTableCell>
+                  <DerpTableCell right>
+                    {r.Points} point{r.Points > 1 ? 's' : ''}
+                  </DerpTableCell>
+                </TableRow>
+              ))}
+            </DerpTable>
+          )}
         </Grid>
       </Grid>
     </Container>

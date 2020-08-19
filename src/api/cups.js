@@ -12,6 +12,7 @@ import {
   Level,
   SiteCupTime,
   SiteCupBlog,
+  Team,
   Time,
 } from '../data/models';
 
@@ -88,8 +89,15 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski'],
+            attributes: ['Kuski', 'TeamIndex', 'Country'],
             as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                attributes: ['Team'],
+                as: 'TeamData',
+              },
+            ],
           },
         ],
       },
