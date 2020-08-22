@@ -70,6 +70,12 @@ export const GenerateEvent = data =>
   );
 export const SubmitInterview = data =>
   api.post(`cups/${data.CupGroupIndex}/event/${data.CupIndex}/interview`, data);
+export const MyReplays = CupGroupIndex =>
+  api.get(`cups/${CupGroupIndex}/myreplays`);
+export const UpdateReplay = data =>
+  api.post(`cups/${data.CupGroupIndex}/updatereplay`, data);
+export const TeamReplays = CupGroupIndex =>
+  api.get(`cups/${CupGroupIndex}/teamreplays`);
 
 // kuski map
 export const KuskiMap = () => api.get('kuskimap');

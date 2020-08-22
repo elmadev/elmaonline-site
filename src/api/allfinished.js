@@ -1,6 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
+import { authContext } from 'utils/auth';
 import { AllFinished, Level } from '../data/models';
 
 const router = express.Router();
@@ -33,9 +34,9 @@ const getHighlights = async () => {
   return { week, twoweek, threeweek, fourweek };
 };
 
-const getTimes = async (LevelIndex, KuskiIndex, limit) => {
+const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   const lev = await levelInfo(LevelIndex);
-  if (lev.Hidden) return [];
+  if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
     order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
@@ -83,10 +84,16 @@ router
     ]);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
+    const auth = authContext(req);
+    let LoggedIn = 0;
+    if (auth.auth) {
+      LoggedIn = auth.userid;
+    }
     const data = await getTimes(
       req.params.LevelIndex,
       req.params.KuskiIndex,
       req.params.limit,
+      LoggedIn,
     );
     res.json(data);
   })

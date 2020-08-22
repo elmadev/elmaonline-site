@@ -119,11 +119,16 @@ export const filterResults = (events, ownerId, loggedId) => {
   return filtered;
 };
 
-export const calculateStandings = (events, cup) => {
-  const standings = [];
+export const calculateStandings = (events, cup, simple) => {
+  let standings = [];
   let skipStandings = [];
+  const teamStandings = [];
+  const nationStandings = [];
   forEach(events, event => {
+    const teamEntries = {};
+    const nationEntries = {};
     forEach(event.CupTimes, time => {
+      // player standings
       let existsIndex = -1;
       const exists = standings.filter((x, i) => {
         if (x.KuskiIndex === time.KuskiIndex) {
@@ -148,6 +153,45 @@ export const calculateStandings = (events, cup) => {
           AllPoints: [...standings[existsIndex].AllPoints, time.Points],
         };
       }
+      // team standings
+      if (time.KuskiData.TeamIndex && !simple) {
+        const existsTeam = teamStandings.findIndex(
+          x => x.TeamIndex === time.KuskiData.TeamIndex,
+        );
+        if (existsTeam === -1) {
+          teamStandings.push({
+            TeamIndex: time.KuskiData.TeamIndex,
+            Points: time.Points,
+            Team: time.KuskiData.TeamData.Team,
+          });
+          teamEntries[time.KuskiData.TeamIndex] = 1;
+        } else if (teamEntries[time.KuskiData.TeamIndex] < 3) {
+          teamStandings[existsTeam] = {
+            ...teamStandings[existsTeam],
+            Points: teamStandings[existsTeam].Points + time.Points,
+          };
+          teamEntries[time.KuskiData.TeamIndex] += 1;
+        }
+      }
+      // nation standings
+      if (!simple) {
+        const existsNation = nationStandings.findIndex(
+          x => x.Country === time.KuskiData.Country,
+        );
+        if (existsNation === -1) {
+          nationStandings.push({
+            Country: time.KuskiData.Country,
+            Points: time.Points,
+          });
+          nationEntries[time.KuskiData.Country] = 1;
+        } else if (nationEntries[time.KuskiData.Country] < 3) {
+          nationStandings[existsNation] = {
+            ...nationStandings[existsNation],
+            Points: nationStandings[existsNation].Points + time.Points,
+          };
+          nationEntries[time.KuskiData.TeamIndex] += 1;
+        }
+      }
     });
   });
   if (cup.Skips) {
@@ -165,9 +209,13 @@ export const calculateStandings = (events, cup) => {
       }
       return { ...s, AllPoints, Points };
     });
-    return skipStandings.sort((a, b) => b.Points - a.Points);
+    standings = skipStandings;
   }
-  return standings.sort((a, b) => b.Points - a.Points);
+  return {
+    player: standings.sort((a, b) => b.Points - a.Points),
+    team: teamStandings.sort((a, b) => b.Points - a.Points),
+    nation: nationStandings.sort((a, b) => b.Points - a.Points),
+  };
 };
 
 export const generateEvent = (event, cup, times, cuptimes) => {

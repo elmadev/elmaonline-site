@@ -11,7 +11,7 @@ import { forEach } from 'lodash';
 import generate from 'nanoid/generate';
 import fs from 'fs';
 import archiver from 'archiver';
-import { isBefore } from 'date-fns';
+import { isAfter } from 'date-fns';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -39,25 +39,36 @@ export function getReplayByBattleId(battleId) {
 
 const getReplayDataByCupTimeId = async CupTimeIndex => {
   const replayData = await SiteCupTime.findOne({
-    attributes: ['RecData'],
+    attributes: ['RecData', 'Code'],
     where: { CupTimeIndex },
     include: [
       {
         model: SiteCup,
         as: 'CupData',
-        attributes: ['EndTime'],
+        attributes: ['EndTime', 'ShowResults'],
       },
     ],
   });
   return replayData;
 };
 
-export function getReplayByCupTimeId(cupTimeId, filename) {
+export function getReplayByCupTimeId(cupTimeId, filename, code = '') {
   return new Promise((resolve, reject) => {
     getReplayDataByCupTimeId(cupTimeId).then(data => {
       if (data !== null) {
-        if (isBefore(new Date(data.dataValues.EndTime), new Date())) {
-          reject(new Error('Event not over'));
+        if (
+          isAfter(new Date(data.dataValues.CupData.EndTime * 1000), new Date())
+        ) {
+          if (code === data.dataValues.Code) {
+            resolve({
+              file: data.dataValues.RecData,
+              filename: `${filename}.rec`,
+            });
+          } else {
+            reject(new Error('Event not over'));
+          }
+        } else if (!data.dataValues.CupData.ShowResults) {
+          reject(new Error('Event not public'));
         } else if (data.dataValues.RecData) {
           resolve({
             file: data.dataValues.RecData,

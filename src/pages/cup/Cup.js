@@ -10,6 +10,8 @@ import RulesInfo from './RulesInfo';
 import Blog from './Blog';
 import Admin from './Admin';
 import Dashboard from './Dashboard';
+import Personal from './Personal';
+import Team from './Team';
 
 const Cups = props => {
   const { ShortName } = props;
@@ -47,6 +49,8 @@ const Cups = props => {
         <Tab label="Standings" />
         <Tab label="Rules & Info" />
         <Tab label="Blog" />
+        {nickId() > 0 && <Tab label="Personal" />}
+        {nickId() > 0 && <Tab label="Team" />}
         {nickId() === cup.KuskiIndex && <Tab label="Admin" />}
       </Tabs>
       <CupName>{cup.CupName}</CupName>
@@ -85,7 +89,9 @@ const Cups = props => {
           }}
         />
       )}
-      {tab === 5 && (
+      {tab === 5 && <Personal />}
+      {tab === 6 && <Team />}
+      {tab === 7 && (
         <Admin
           closeUpdated={() => setUpdated('')}
           updated={updated}

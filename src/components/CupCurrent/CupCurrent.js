@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { format, formatDistance } from 'date-fns';
 import LocalTime from 'components/LocalTime';
@@ -23,7 +23,7 @@ const CupResults = props => {
   return (
     <Container>
       {currentEvents.map(c => (
-        <>
+        <Fragment key={c.Level.LevelName}>
           {c.EndTime > format(new Date(), 't') &&
             c.StartTime < format(new Date(), 't') && (
               <Paper>
@@ -49,7 +49,7 @@ const CupResults = props => {
                 </EventInfo>
               </Paper>
             )}
-        </>
+        </Fragment>
       ))}
     </Container>
   );

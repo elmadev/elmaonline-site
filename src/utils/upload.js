@@ -59,12 +59,24 @@ const CreateOrUpdateCuptime = async (
   RecData,
   Code,
   ReplayInfo,
+  share,
+  Comment,
 ) => {
   const cuptime = await SiteCupTime.findOne({
     where: { CupIndex, KuskiIndex, Time },
   });
+  let ShareReplay = 0;
+  if (share === 'true') {
+    ShareReplay = 1;
+  }
   if (cuptime) {
-    await cuptime.update({ Replay: 1, RecData, Code });
+    await cuptime.update({
+      Replay: 1,
+      RecData,
+      Code,
+      ShareReplay,
+      Comment,
+    });
     return true;
   }
   if (ReplayInfo.finished) {
@@ -75,6 +87,8 @@ const CreateOrUpdateCuptime = async (
       CupIndex,
       Time,
       Code,
+      ShareReplay,
+      Comment,
     });
   } else {
     await SiteCupTime.create({
@@ -84,6 +98,8 @@ const CreateOrUpdateCuptime = async (
       CupIndex,
       Time: 999900 + (100 - ReplayInfo.apples),
       Code,
+      ShareReplay,
+      Comment,
     });
   }
   return true;
@@ -202,7 +218,13 @@ export function uploadReplayS3(replayFile, folder, filename) {
   });
 }
 
-export function uploadCupReplay(replayFile, filename, kuskiId) {
+export function uploadCupReplay(
+  replayFile,
+  filename,
+  kuskiId,
+  ShareReplay,
+  Comment,
+) {
   return new Promise(resolve => {
     const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 16);
     const fileDir = `.${config.publicFolder}/temp/${uuid}-${filename}`;
@@ -238,6 +260,8 @@ export function uploadCupReplay(replayFile, filename, kuskiId) {
                         data,
                         uuid,
                         replayData,
+                        ShareReplay,
+                        Comment,
                       ).then(() => {
                         resolve({
                           CupIndex,

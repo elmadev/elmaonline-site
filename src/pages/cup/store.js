@@ -10,6 +10,10 @@ import {
   DeleteEvent,
   GenerateEvent,
   SubmitInterview,
+  MyReplays,
+  UpdateReplay,
+  PersonalAllFinished,
+  TeamReplays,
 } from 'data/api';
 
 export default {
@@ -78,6 +82,42 @@ export default {
     const send = await SubmitInterview(payload);
     if (send.ok) {
       actions.getCup(payload.ShortName);
+    }
+  }),
+  myReplays: [],
+  myTimes: [],
+  setMyReplays: action((state, payload) => {
+    state.myReplays = payload;
+  }),
+  setMyTimes: action((state, payload) => {
+    state.myTimes = payload;
+  }),
+  getMyReplays: thunk(async (actions, payload) => {
+    const recs = await MyReplays(payload);
+    if (recs.ok) {
+      actions.setMyReplays(recs.data);
+    }
+  }),
+  updateReplay: thunk(async (actions, payload) => {
+    const update = await UpdateReplay(payload);
+    if (update.ok) {
+      actions.getMyReplays(payload.CupGroupIndex);
+    }
+  }),
+  getMyTimes: thunk(async (actions, payload) => {
+    const times = await PersonalAllFinished(payload);
+    if (times.ok) {
+      actions.setMyTimes(times.data);
+    }
+  }),
+  teamReplays: [],
+  setTeamReplays: action((state, payload) => {
+    state.teamReplays = payload;
+  }),
+  getTeamReplays: thunk(async (actions, payload) => {
+    const recs = await TeamReplays(payload);
+    if (recs.ok) {
+      actions.setTeamReplays(recs.data);
     }
   }),
 };

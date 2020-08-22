@@ -20,7 +20,7 @@ class Time extends React.Component {
     const { apples, thousands } = this.props;
     // for cup results
     if (time >= 999900 && time <= 999999 && apples === -1) {
-      return `${time - 999900} apple${apples !== 1 ? `s` : ``}`;
+      return `${1000000 - time} apple${1000000 - time !== 1 ? `s` : ``}`;
     }
     if (time === 0) {
       return `${apples} apple${apples !== 1 ? `s` : ``}`;
