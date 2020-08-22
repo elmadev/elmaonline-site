@@ -181,6 +181,28 @@ app.get('/dl/cupreplay/:id/:filename', async (req, res, next) => {
   }
 });
 
+app.get('/dl/cupreplay/:id/:filename/:code', async (req, res, next) => {
+  try {
+    const { file, filename } = await getReplayByCupTimeId(
+      req.params.id,
+      req.params.filename,
+      req.params.code,
+    );
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
 app.get('/dl/level/:id', async (req, res, next) => {
   try {
     const { file, filename } = await getLevel(req.params.id);
@@ -323,6 +345,8 @@ app.post('/upload/:type', async (req, res) => {
         replayFile,
         req.body.filename,
         getAuth.userid,
+        req.body.share,
+        req.body.comment,
       );
       res.json(result);
     } else {

@@ -213,6 +213,94 @@ const AddInterview = async data => {
   return true;
 };
 
+const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
+  const player = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: ['TeamIndex', 'KuskiIndex'],
+  });
+  const recs = await SiteCup.findAll({
+    where: { CupGroupIndex },
+    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex'],
+    include: [
+      {
+        model: SiteCupTime,
+        as: 'CupTimes',
+        attributes: [
+          'CupTimeIndex',
+          'CupIndex',
+          'KuskiIndex',
+          'TimeIndex',
+          'Time',
+          'Replay',
+          'Code',
+          'ShareReplay',
+          'Comment',
+          'TimeExists',
+        ],
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+            attributes: ['Kuski', 'Country', 'TeamIndex'],
+            where: { TeamIndex: player.TeamIndex },
+          },
+        ],
+      },
+    ],
+  });
+  return recs;
+};
+
+const MyReplays = async (CupGroupIndex, KuskiIndex) => {
+  const recs = await SiteCup.findAll({
+    where: { CupGroupIndex },
+    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex'],
+    include: [
+      {
+        model: SiteCupTime,
+        as: 'CupTimes',
+        attributes: [
+          'CupTimeIndex',
+          'CupIndex',
+          'KuskiIndex',
+          'TimeIndex',
+          'Time',
+          'Replay',
+          'Code',
+          'ShareReplay',
+          'Comment',
+          'TimeExists',
+        ],
+        where: { KuskiIndex },
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+            attributes: ['Kuski', 'Country'],
+          },
+        ],
+      },
+    ],
+  });
+  return recs;
+};
+
+const UpdateReplay = async data => {
+  const getRec = await SiteCupTime.findOne({
+    where: { CupTimeIndex: data.CupTimeIndex },
+  });
+  if (getRec.KuskiIndex === data.KuskiIndex) {
+    if (data.field === 'ShareReplay') {
+      await SiteCupTime.update(
+        { ShareReplay: data.value === 'true' ? 1 : 0 },
+        { where: { CupTimeIndex: data.CupTimeIndex } },
+      );
+    }
+    return true;
+  }
+  return false;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -418,6 +506,38 @@ router
       } else {
         res.json({ success: 0, error: 'No events found' });
       }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/:CupGroupIndex/myreplays', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const recs = await MyReplays(req.params.CupGroupIndex, auth.userid);
+      res.json(recs);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/:CupGroupIndex/updatereplay', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const update = await UpdateReplay({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      if (update) {
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0, error: 'Not your replay' });
+      }
+    }
+  })
+  .get('/:CupGroupIndex/teamreplays', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const recs = await TeamReplays(req.params.CupGroupIndex, auth.userid);
+      res.json(recs);
     } else {
       res.sendStatus(401);
     }
