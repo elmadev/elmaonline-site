@@ -218,6 +218,7 @@ const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
     where: { KuskiIndex },
     attributes: ['TeamIndex', 'KuskiIndex'],
   });
+  if (player.TeamIndex <= 0) return [];
   const recs = await SiteCup.findAll({
     where: { CupGroupIndex },
     attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex'],
