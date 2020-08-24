@@ -54,7 +54,7 @@ const Cups = props => {
                   highlight={i === openEvent}
                   href={`/dl/level/${e.LevelIndex}`}
                 >
-                  {e.Level.LevelName}
+                  {e.Level ? e.Level.LevelName : ''}
                 </EventLink>{' '}
                 by <Kuski kuskiData={e.KuskiData} />
               </By>
@@ -73,14 +73,29 @@ const Cups = props => {
                 />
               </div>
               <div>
-                {e.EndTime > format(new Date(), 't') ? (
-                  <>
-                    <Timer />{' '}
-                    {formatDistance(new Date(e.EndTime * 1000), new Date(), {
-                      addSuffix: true,
-                    })}
-                  </>
-                ) : (
+                {e.EndTime > format(new Date(), 't') &&
+                  e.StartTime < format(new Date(), 't') && (
+                    <>
+                      <Timer /> Deadline{' '}
+                      {formatDistance(new Date(e.EndTime * 1000), new Date(), {
+                        addSuffix: true,
+                      })}
+                    </>
+                  )}
+                {e.EndTime > format(new Date(), 't') &&
+                  e.StartTime > format(new Date(), 't') && (
+                    <>
+                      <Timer /> Starts{' '}
+                      {formatDistance(
+                        new Date(e.StartTime * 1000),
+                        new Date(),
+                        {
+                          addSuffix: true,
+                        },
+                      )}
+                    </>
+                  )}
+                {e.EndTime < format(new Date(), 't') && (
                   <>
                     <CheckBox />
                     {GetWinner(e.CupTimes)}

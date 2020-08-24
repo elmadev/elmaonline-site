@@ -182,6 +182,7 @@ const addCup = async data => {
 };
 
 const getKuski = async k => {
+  if (!k) return false;
   const findKuski = await Kuski.findOne({
     where: { Kuski: k },
     attributes: ['KuskiIndex', 'Kuski'],
