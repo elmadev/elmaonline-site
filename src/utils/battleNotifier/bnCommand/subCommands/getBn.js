@@ -14,7 +14,7 @@ const getBn = async ({ user, store }) => {
 
     const configString = userConfigFormatter.toString(userConfig);
     response = `${user} your current config is **${status}**\n(*${toggleStatus}*)\n\n${configString}`;
-  } catch {
+  } catch (error) {
     response = responses.configNotFound;
   }
 

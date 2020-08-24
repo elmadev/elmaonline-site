@@ -1,11 +1,15 @@
-const fs = require('fs').promises;
+const fs = require('fs');
+const util = require('util');
+
+fs.readFileAsync = util.promisify(fs.readFile);
+fs.writeFileAsync = util.promisify(fs.writeFile);
 
 const readJsonFile = async path => {
   let result = {};
   try {
-    const fileHandle = await fs.readFile(path);
+    const fileHandle = await fs.readFileAsync(path);
     result = JSON.parse(fileHandle.toString());
-  } catch {
+  } catch (error) {
     result = {};
   }
 
@@ -13,7 +17,7 @@ const readJsonFile = async path => {
 };
 
 const writeJsonFile = async (fileName, data) => {
-  await fs.writeFile(fileName, JSON.stringify(data));
+  await fs.writeFileAsync(fileName, JSON.stringify(data));
 };
 
 const createBnStore = path => {
