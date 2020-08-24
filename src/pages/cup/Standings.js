@@ -5,6 +5,7 @@ import DerpTableCell from 'components/Table/DerpTableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Header from 'components/Header';
+import Kuski from 'components/Kuski';
 import { calculateStandings } from 'utils/cups';
 
 const Standings = props => {
@@ -28,7 +29,9 @@ const Standings = props => {
               {standings.player.map((r, no) => (
                 <TableRow hover key={r.KuskiIndex}>
                   <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>{r.Kuski}</DerpTableCell>
+                  <DerpTableCell>
+                    <Kuski kuskiData={r.KuskiData} team flag />
+                  </DerpTableCell>
                   <DerpTableCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
                   </DerpTableCell>

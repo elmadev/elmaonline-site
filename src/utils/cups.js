@@ -124,9 +124,11 @@ export const calculateStandings = (events, cup, simple) => {
   let skipStandings = [];
   const teamStandings = [];
   const nationStandings = [];
+  let teamEntries = {};
+  let nationEntries = {};
   forEach(events, event => {
-    const teamEntries = {};
-    const nationEntries = {};
+    teamEntries = {};
+    nationEntries = {};
     forEach(event.CupTimes, time => {
       // player standings
       let existsIndex = -1;
@@ -142,6 +144,7 @@ export const calculateStandings = (events, cup, simple) => {
           KuskiIndex: time.KuskiIndex,
           Points: time.Points,
           Kuski: time.KuskiData.Kuski,
+          KuskiData: time.KuskiData,
           Events: 1,
           AllPoints: [time.Points],
         });
@@ -165,12 +168,19 @@ export const calculateStandings = (events, cup, simple) => {
             Team: time.KuskiData.TeamData.Team,
           });
           teamEntries[time.KuskiData.TeamIndex] = 1;
-        } else if (teamEntries[time.KuskiData.TeamIndex] < 3) {
+        } else if (
+          teamEntries[time.KuskiData.TeamIndex] < 3 ||
+          !teamEntries[time.KuskiData.TeamIndex]
+        ) {
           teamStandings[existsTeam] = {
             ...teamStandings[existsTeam],
             Points: teamStandings[existsTeam].Points + time.Points,
           };
-          teamEntries[time.KuskiData.TeamIndex] += 1;
+          if (teamEntries[time.KuskiData.TeamIndex]) {
+            teamEntries[time.KuskiData.TeamIndex] += 1;
+          } else {
+            teamEntries[time.KuskiData.TeamIndex] = 1;
+          }
         }
       }
       // nation standings
@@ -184,12 +194,19 @@ export const calculateStandings = (events, cup, simple) => {
             Points: time.Points,
           });
           nationEntries[time.KuskiData.Country] = 1;
-        } else if (nationEntries[time.KuskiData.Country] < 3) {
+        } else if (
+          nationEntries[time.KuskiData.Country] < 3 ||
+          !nationEntries[time.KuskiData.Country]
+        ) {
           nationStandings[existsNation] = {
             ...nationStandings[existsNation],
             Points: nationStandings[existsNation].Points + time.Points,
           };
-          nationEntries[time.KuskiData.TeamIndex] += 1;
+          if (nationEntries[time.KuskiData.TeamIndex]) {
+            nationEntries[time.KuskiData.TeamIndex] += 1;
+          } else {
+            nationEntries[time.KuskiData.Country] = 1;
+          }
         }
       }
     });

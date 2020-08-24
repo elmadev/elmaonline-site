@@ -161,7 +161,7 @@ const Admin = props => {
             <TableRow hover key={e.CupIndex}>
               <DerpTableCell>
                 <ClickToEdit
-                  value={e.KuskiData.Kuski}
+                  value={e.KuskiData ? e.KuskiData.Kuski : 'Unknown'}
                   update={v => editEvent(e.CupIndex, { Designer: v })}
                 >
                   <Kuski kuskiData={e.KuskiData} />

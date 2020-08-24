@@ -3,6 +3,7 @@ import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { format } from 'date-fns';
+import moment from 'moment';
 import { filterResults, generateEvent } from 'utils/cups';
 import { zeroPad } from 'utils/time';
 import {
@@ -66,6 +67,63 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
     include: [
       {
         model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'Level',
+      },
+      {
+        model: SiteCupTime,
+        attributes: [
+          'CupTimeIndex',
+          'KuskiIndex',
+          'Time',
+          'TimeExists',
+          'CupTimeIndex',
+          'Replay',
+        ],
+        as: 'CupTimes',
+        required: false,
+        where: { TimeExists: 1 },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'TeamIndex', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                attributes: ['Team'],
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+  return filterResults(data, cupGroup.KuskiIndex, KuskiIndex);
+};
+
+const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
+  const cupGroup = await SiteCupGroup.findOne({
+    where: { CupGroupIndex },
+  });
+  const data = await SiteCup.findAll({
+    where: { CupGroupIndex, CupIndex },
+    include: [
+      {
+        model: Kuski,
         attributes: ['Kuski'],
         as: 'KuskiData',
       },
@@ -124,6 +182,7 @@ const addCup = async data => {
 };
 
 const getKuski = async k => {
+  if (!k) return false;
   const findKuski = await Kuski.findOne({
     where: { Kuski: k },
     attributes: ['KuskiIndex', 'Kuski'],
@@ -302,6 +361,63 @@ const UpdateReplay = async data => {
   return false;
 };
 
+const Replay = async CupTimeIndex => {
+  const rec = await SiteCupTime.findOne({
+    where: { CupTimeIndex },
+    attributes: [
+      'CupIndex',
+      'TimeIndex',
+      'CupTimeIndex',
+      'Time',
+      'TimeExists',
+      'Replay',
+    ],
+    include: [
+      {
+        model: SiteCup,
+        as: 'CupData',
+        attributes: [
+          'LevelIndex',
+          'Designer',
+          'CupGroupIndex',
+          'EndTime',
+          'Updated',
+          'ShowResults',
+        ],
+        include: [
+          {
+            model: Level,
+            as: 'Level',
+            attributes: ['LevelName'],
+          },
+        ],
+      },
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski', 'Country', 'TeamIndex'],
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+    ],
+  });
+  if (rec.CupData) {
+    if (rec.CupData.EndTime < moment().format('X')) {
+      if (rec.CupData.Updated) {
+        if (rec.CupData.ShowResults) {
+          return rec;
+        }
+      }
+    }
+  }
+  return {};
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -330,6 +446,19 @@ router
       KuskiIndex = auth.userid;
     }
     const data = await getCupEvents(req.params.CupGroupIndex, KuskiIndex);
+    res.json(data);
+  })
+  .get('/event/:CupGroupIndex/:CupIndex', async (req, res) => {
+    const auth = authContext(req);
+    let KuskiIndex = 0;
+    if (auth.auth) {
+      KuskiIndex = auth.userid;
+    }
+    const data = await getCupEvent(
+      req.params.CupGroupIndex,
+      req.params.CupIndex,
+      KuskiIndex,
+    );
     res.json(data);
   })
   .post('/edit/:CupGroupIndex', async (req, res) => {
@@ -542,6 +671,10 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .get('/time/:CupTimeIndex', async (req, res) => {
+    const rec = await Replay(req.params.CupTimeIndex);
+    res.json(rec);
   });
 
 export default router;

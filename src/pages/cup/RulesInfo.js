@@ -78,7 +78,7 @@ const RulesInfo = props => {
               that others can see different styles etc. Uploaded replays
               won&apos;t be shared until the over. If you win and haven&apos;t
               yet uploaded your replay, you have 24 hours after the deadline to
-              do so.
+              do so. All deadlines are shown in your local timezone.
             </Text>
           </Paper>
           <Header>Hiding of times</Header>

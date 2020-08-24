@@ -215,6 +215,11 @@ SiteCup.belongsTo(Level, {
   as: 'Level',
 });
 
+SiteCup.belongsTo(SiteCupGroup, {
+  foreignKey: 'CupGroupIndex',
+  as: 'CupGroup',
+});
+
 SiteCup.hasMany(SiteCupTime, {
   foreignKey: 'CupIndex',
   as: 'CupTimes',
