@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Paper from '@material-ui/core/Paper';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Recplayer from 'components/Recplayer';
@@ -138,9 +137,7 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
             </ListContainer>
           </Paper>
         </Left>
-        <Right>
-          <Paper />
-        </Right>
+        <Right />
       </PaperCon>
       <Paper>
         {/* <AddComment
@@ -153,6 +150,13 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
     </Container>
   );
 };
+
+const Paper = styled.div`
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e2e3e4;
+  border-radius: 4px;
+`;
 
 const Left = styled.div`
   flex: 2;
