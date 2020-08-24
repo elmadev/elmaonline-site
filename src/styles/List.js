@@ -34,3 +34,24 @@ const Header = styled.div`
   padding: 10px;
   font-weight: 600;
 `;
+
+export const ListRow = ({ children, selected, onClick }) => {
+  return (
+    <Row
+      pointer={onClick}
+      selected={selected}
+      onClick={() => onClick && onClick()}
+    >
+      {children}
+    </Row>
+  );
+};
+
+const Row = styled.div`
+  display: table-row;
+  background: ${p => (p.selected ? '#f5f5f5' : 'transparent')};
+  cursor: ${p => (p.pointer ? 'pointer' : 'auto')};
+  :hover {
+    background: #ededed;
+  }
+`;

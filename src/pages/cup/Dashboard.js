@@ -14,6 +14,7 @@ import { calculateStandings } from 'utils/cups';
 import CupResults from 'components/CupResults';
 import Dropzone from 'components/Dropzone';
 import Time from 'components/Time';
+import Kuski from 'components/Kuski';
 import CupCurrent from 'components/CupCurrent';
 
 const Dashboard = props => {
@@ -167,7 +168,9 @@ const Dashboard = props => {
               {standings.player.slice(0, 5).map((r, no) => (
                 <TableRow hover key={r.KuskiIndex}>
                   <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>{r.Kuski}</DerpTableCell>
+                  <DerpTableCell>
+                    <Kuski kuskiData={r.KuskiData} team flag />
+                  </DerpTableCell>
                   <DerpTableCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
                   </DerpTableCell>

@@ -142,6 +142,7 @@ export const calculateStandings = (events, cup, simple) => {
           KuskiIndex: time.KuskiIndex,
           Points: time.Points,
           Kuski: time.KuskiData.Kuski,
+          KuskiData: time.KuskiData,
           Events: 1,
           AllPoints: [time.Points],
         });

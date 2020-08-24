@@ -66,6 +66,11 @@ const routes = {
         import(/* webpackChunkName: 'levelpack' */ './pages/levelpack'),
     },
     {
+      path: '/r/cup/:index/:filename',
+      load: () =>
+        import(/* webpackChunkName: 'cupreplay' */ './pages/cupreplay'),
+    },
+    {
       path: '/r/:uuid',
       load: () => import(/* webpackChunkName: 'replay' */ './pages/replay'),
     },

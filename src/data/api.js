@@ -47,6 +47,8 @@ export const Cups = () => api.get('cups');
 export const Cup = shortName => api.get(`cups/${shortName}`);
 export const CupEvents = cupGroupIndex =>
   api.get(`cups/events/${cupGroupIndex}`);
+export const CupEvent = data =>
+  api.get(`cups/event/${data.cupGroupIndex}/${data.cupIndex}`);
 export const UpdateCup = (cupGroupIndex, data) =>
   api.post(`cups/edit/${cupGroupIndex}`, data);
 export const UpdateCupBlog = data => api.post(`cups/blog/add`, data);
@@ -76,6 +78,7 @@ export const UpdateReplay = data =>
   api.post(`cups/${data.CupGroupIndex}/updatereplay`, data);
 export const TeamReplays = CupGroupIndex =>
   api.get(`cups/${CupGroupIndex}/teamreplays`);
+export const CupReplay = CupTimeIndex => api.get(`cups/time/${CupTimeIndex}`);
 
 // kuski map
 export const KuskiMap = () => api.get('kuskimap');
