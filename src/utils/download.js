@@ -200,10 +200,12 @@ const zipEventRecs = (recs, filename) => {
   return new Promise(resolve => {
     const recData = [];
     const recDataIterator = async (rec, done) => {
-      recData.push({
-        file: rec.RecData,
-        filename: `${filename}${rec.KuskiData.Kuski}.rec`,
-      });
+      if (rec.Replay) {
+        recData.push({
+          file: rec.RecData,
+          filename: `${filename}${rec.KuskiData.Kuski}.rec`,
+        });
+      }
       done();
     };
     eachSeries(recs, recDataIterator, async () => {
