@@ -5,6 +5,7 @@ import {
   LevelPack,
   SiteCupTime,
   SiteCup,
+  Kuski,
 } from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
@@ -12,6 +13,7 @@ import generate from 'nanoid/generate';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
+import { filterResults } from 'utils/cups';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -186,6 +188,73 @@ export const getLevelPack = async name => {
   if (levels) {
     if (levels.Levels.length > 0) {
       const zip = await zipLevelPack(levels.Levels);
+      const fileData = fs.readFileSync(zip);
+      fs.unlink(zip, () => {});
+      return fileData;
+    }
+  }
+  return false;
+};
+
+const zipEventRecs = (recs, filename) => {
+  return new Promise(resolve => {
+    const recData = [];
+    const recDataIterator = async (rec, done) => {
+      recData.push({
+        file: rec.RecData,
+        filename: `${filename}${rec.KuskiData.Kuski}.rec`,
+      });
+      done();
+    };
+    eachSeries(recs, recDataIterator, async () => {
+      const zip = await zipFiles(recData);
+      resolve(zip);
+    });
+  });
+};
+
+const getCupEvent = async CupIndex => {
+  const data = await SiteCup.findAll({
+    where: { CupIndex },
+    include: [
+      {
+        model: SiteCupTime,
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'TimeExists',
+          'CupTimeIndex',
+          'Replay',
+          'RecData',
+        ],
+        as: 'CupTimes',
+        required: false,
+        where: { TimeExists: 1 },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'TeamIndex', 'Country'],
+            as: 'KuskiData',
+          },
+        ],
+      },
+    ],
+  });
+  return filterResults(data);
+};
+
+export const getEventReplays = async (CupIndex, filename) => {
+  const event = await SiteCup.findOne({
+    where: { CupIndex },
+  });
+  if (
+    isAfter(new Date(), event.dataValues.EndTime) &&
+    event.dataValues.Updated &&
+    event.dataValues.ShowResults
+  ) {
+    const recs = await getCupEvent(CupIndex);
+    if (recs.length > 0) {
+      const zip = await zipEventRecs(recs[0].CupTimes, filename);
       const fileData = fs.readFileSync(zip);
       fs.unlink(zip, () => {});
       return fileData;

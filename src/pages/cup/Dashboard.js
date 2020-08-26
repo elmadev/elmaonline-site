@@ -61,7 +61,7 @@ const Dashboard = props => {
       response.json().then(json => {
         if (json.error) {
           setError(json.error);
-        } else if (json.finished) {
+        } else if (json.Finished) {
           setSuccess(
             <>
               Replay uploaded, time: <Time time={json.Time} />
@@ -152,6 +152,7 @@ const Dashboard = props => {
           </Headline>
           {events[lastEvent] && (
             <CupResults
+              CupIndex={events[lastEvent].CupIndex}
               ShortName={cup.ShortName}
               eventNo={lastEvent + 1}
               results={events[lastEvent].CupTimes.slice(0, 5)}

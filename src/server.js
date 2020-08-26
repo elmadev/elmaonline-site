@@ -43,6 +43,7 @@ import {
   getLevel,
   getLevelPack,
   getReplayByCupTimeId,
+  getEventReplays,
 } from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
@@ -236,6 +237,36 @@ app.get('/dl/pack/:name', async (req, res, next) => {
       next({
         status: 403,
         msg: 'Level pack does not exist.',
+      });
+    }
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
+  try {
+    const zipData = await getEventReplays(
+      req.params.event,
+      req.params.filename,
+    );
+    if (zipData) {
+      const readStream = new stream.PassThrough();
+      readStream.end(zipData);
+      res.set({
+        'Content-disposition': `attachment; filename=${
+          req.params.filename
+        }-all-recs.zip`,
+        'Content-Type': 'application/octet-stream',
+      });
+      readStream.pipe(res);
+    } else {
+      next({
+        status: 403,
+        msg: 'Event does not exist or is not over.',
       });
     }
   } catch (e) {
