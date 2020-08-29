@@ -2,7 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import Header from 'components/Header';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
+import Drawer from '@material-ui/core/Drawer';
+import Info from '@material-ui/icons/Info';
 import Feedback from 'components/Feedback';
 import { nickId } from 'utils/nick';
 import { useStoreState, useStoreActions } from 'easy-peasy';
@@ -21,6 +26,11 @@ const Settings = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordAgain, setNewPasswordAgain] = useState('');
+  const [tab, setTab] = useState(0);
+  const [info, openInfo] = useState(false);
+  const [locked, setLocked] = useState(
+    userInfo.TeamData ? userInfo.TeamData.Locked === 1 : 0,
+  );
 
   useEffect(() => {
     const KuskiIndex = nickId();
@@ -34,78 +44,160 @@ const Settings = () => {
       setNick(userInfo.Kuski);
       setTeam(userInfo.TeamData ? userInfo.TeamData.Team : '');
       setEmail(userInfo.Email);
+      setLocked(userInfo.TeamData ? userInfo.TeamData.Locked === 1 : 0);
     }
   }, [userInfo]);
 
   return (
-    <Container>
-      {nickId() > 0 ? (
-        <Grid container spacing={0}>
-          <Grid item xs={12} sm={6}>
-            <Header h1>Change user info</Header>
-            <Setting
-              label={['Nick']}
-              update={() => updateUserInfo({ Value: [nick], Field: 'Kuski' })}
-              value={[nick]}
-              setValue={v => setNick(v)}
-            />
-            <Setting
-              label={['Team']}
-              update={() => updateUserInfo({ Value: [team], Field: 'Team' })}
-              value={[team]}
-              setValue={v => setTeam(v)}
-            />
-            <Setting
-              label={['Email']}
-              update={() => updateUserInfo({ Value: [email], Field: 'Email' })}
-              value={[email]}
-              setValue={v => setEmail(v)}
-            />
-            <Setting
-              password
-              label={['Old password', 'New password', 'New password again']}
-              update={() =>
-                updateUserInfo({
-                  Value: [oldPassword, newPassword, newPasswordAgain],
-                  Field: 'Password',
-                })
-              }
-              value={[oldPassword, newPassword, newPasswordAgain]}
-              setValue={(value, index) => {
-                if (index === 0) {
-                  setOldPassword(value);
-                }
-                if (index === 1) {
-                  setNewPassword(value);
-                }
-                if (index === 2) {
-                  setNewPasswordAgain(value);
-                }
-              }}
-            />
-          </Grid>
-        </Grid>
-      ) : (
-        <div>Log in to change settings.</div>
-      )}
-      <Feedback
-        open={error !== ''}
-        text={error}
-        type="error"
-        close={() => setError('')}
-      />
-      <Feedback
-        open={message !== ''}
-        text={message}
-        type="success"
-        close={() => setMessage('')}
-      />
-    </Container>
+    <>
+      <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+        <Tab label="User info" />
+        <Tab label="Team" />
+        <Tab label="Ignore" />
+        <Tab label="Notifications" />
+      </Tabs>
+      <Container>
+        {nickId() > 0 ? (
+          <>
+            {tab === 0 && (
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6}>
+                  <Setting
+                    label={['Nick']}
+                    update={() =>
+                      updateUserInfo({ Value: [nick], Field: 'Kuski' })
+                    }
+                    value={[nick]}
+                    setValue={v => setNick(v)}
+                  />
+                  <Setting
+                    label={['Team']}
+                    update={() =>
+                      updateUserInfo({ Value: [team], Field: 'Team' })
+                    }
+                    value={[team]}
+                    setValue={v => setTeam(v)}
+                  />
+                  <Setting
+                    label={['Email']}
+                    update={() =>
+                      updateUserInfo({ Value: [email], Field: 'Email' })
+                    }
+                    value={[email]}
+                    setValue={v => setEmail(v)}
+                  />
+                  <Setting
+                    password
+                    label={[
+                      'Old password',
+                      'New password',
+                      'New password again',
+                    ]}
+                    update={() =>
+                      updateUserInfo({
+                        Value: [oldPassword, newPassword, newPasswordAgain],
+                        Field: 'Password',
+                      })
+                    }
+                    value={[oldPassword, newPassword, newPasswordAgain]}
+                    setValue={(value, index) => {
+                      if (index === 0) {
+                        setOldPassword(value);
+                      }
+                      if (index === 1) {
+                        setNewPassword(value);
+                      }
+                      if (index === 2) {
+                        setNewPasswordAgain(value);
+                      }
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            )}
+            {tab === 1 && (
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6}>
+                  <Paper>
+                    <PaperCon>
+                      <Checkbox
+                        checked={locked}
+                        onChange={() =>
+                          updateUserInfo({
+                            Value: locked ? [0] : [1],
+                            Field: 'Locked',
+                          })
+                        }
+                        value="Locked"
+                        color="primary"
+                      />
+                      <Text>Lock team</Text>
+                      <OpenInfo onClick={() => openInfo(!info)}>
+                        <Info />
+                      </OpenInfo>
+                    </PaperCon>
+                  </Paper>
+                </Grid>
+              </Grid>
+            )}
+          </>
+        ) : (
+          <div>Log in to change settings.</div>
+        )}
+        <Feedback
+          open={error !== ''}
+          text={error}
+          type="error"
+          close={() => setError('')}
+        />
+        <Feedback
+          open={message !== ''}
+          text={message}
+          type="success"
+          close={() => setMessage('')}
+        />
+        <Drawer anchor="bottom" open={info} onClose={() => openInfo(false)}>
+          <InfoBox onClick={() => openInfo(false)}>
+            <ul>
+              <li>
+                If a team is locked it&apos;s not possible for anyone to join
+                the team
+              </li>
+              <li>All team members can lock and unlock the team</li>
+            </ul>
+          </InfoBox>
+        </Drawer>
+      </Container>
+    </>
   );
 };
 
 const Container = styled.div`
   padding: 20px;
+`;
+
+const InfoBox = styled.div`
+  padding: 8px;
+`;
+
+const PaperCon = styled.div`
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+`;
+
+const OpenInfo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4px;
+  cursor: pointer;
+`;
+
+const Text = styled.div`
+  align-self: center;
 `;
 
 export default Settings;

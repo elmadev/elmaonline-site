@@ -108,6 +108,10 @@ const UpdatePassword = async (Password, KuskiIndex) => {
   await Kuski.update({ Password }, { where: { KuskiIndex } });
 };
 
+const UpdateLocked = async (TeamIndex, Locked) => {
+  await Team.update({ Locked }, { where: { TeamIndex } });
+};
+
 const Player = async KuskiIndex => {
   const data = await Kuski.findOne({
     where: { KuskiIndex },
@@ -299,6 +303,14 @@ router
         if (!error) {
           await UpdatePassword(pass, auth.userid);
           message = 'Password has been updated.';
+        }
+      } else if (req.body.Field === 'Locked') {
+        const playerInfo = await Player(auth.userid);
+        await UpdateLocked(playerInfo.TeamIndex, req.body.Value[0]);
+        if (req.body.Value[0]) {
+          message = 'Team has been locked.';
+        } else {
+          message = 'Team has been unlocked.';
         }
       }
       if (error) {
