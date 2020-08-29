@@ -13,6 +13,7 @@ import Kuski from 'pages/kuski/store';
 import LevelsAdd from 'pages/levels-add/store';
 import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
+import Teams from 'pages/teams/store';
 
 export default {
   ReplayComments,
@@ -27,6 +28,7 @@ export default {
   Kuski,
   LevelsAdd,
   Settings,
+  Teams,
   Replay,
   Page: {
     sideBarVisible: true,

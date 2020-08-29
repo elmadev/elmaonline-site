@@ -11,6 +11,7 @@ import LevelPack from './levelpack';
 import Besttime from './besttime';
 import Battle from './battle';
 import Player from './player';
+import Teams from './teams';
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router
   .use('/levelpack', LevelPack)
   .use('/besttime', Besttime)
   .use('/battle', Battle)
-  .use('/player', Player);
+  .use('/player', Player)
+  .use('/teams', Teams);
 
 export default router;

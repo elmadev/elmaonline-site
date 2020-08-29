@@ -84,7 +84,7 @@ class Kuskis extends React.Component {
                 filter: e.target.value,
               });
             }}
-            placeholder="Search"
+            placeholder="Filter"
           />
         </div>
         <div className={s.kuskiList}>

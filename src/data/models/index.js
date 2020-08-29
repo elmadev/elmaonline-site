@@ -102,6 +102,11 @@ Kuski.belongsTo(Team, {
   as: 'TeamData',
 });
 
+Team.hasMany(Kuski, {
+  foreignKey: 'TeamIndex',
+  as: 'Members',
+});
+
 LevelPack.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

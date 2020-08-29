@@ -54,6 +54,9 @@ const SideBar = () => {
           <Link to="/kuskis" onClick={onNavigation}>
             Kuskis
           </Link>
+          <Link to="/teams" onClick={onNavigation}>
+            Teams
+          </Link>
           <Link to="/cups" onClick={onNavigation}>
             Cups
           </Link>
