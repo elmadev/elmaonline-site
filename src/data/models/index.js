@@ -30,6 +30,7 @@ import SiteCupTime from './SiteCupTime';
 import SiteCupBlog from './SiteCupBlog';
 import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
+import Ignored from './Ignored';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -131,6 +132,11 @@ LevelPackLevel.hasMany(BestMultitime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
   as: 'LevelMultiBesttime',
+});
+
+Ignored.belongsTo(Kuski, {
+  foreignKey: 'IgnoredKuskiIndex',
+  as: 'KuskiData',
 });
 
 Besttime.belongsTo(Kuski, {
@@ -292,4 +298,5 @@ export {
   SiteCupBlog,
   KuskiMap,
   SiteSetting,
+  Ignored,
 }; // add the data model here as well so it exports

@@ -5,19 +5,29 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
+import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Info from '@material-ui/icons/Info';
+import Header from 'components/Header';
 import Feedback from 'components/Feedback';
 import { nickId } from 'utils/nick';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Setting from './Setting';
 
 const Settings = () => {
-  const { userInfo, error, message } = useStoreState(state => state.Settings);
-  const { getUserInfo, updateUserInfo, setError, setMessage } = useStoreActions(
-    actions => actions.Settings,
+  const { userInfo, error, message, ignored } = useStoreState(
+    state => state.Settings,
   );
+  const {
+    getUserInfo,
+    updateUserInfo,
+    setError,
+    setMessage,
+    ignore,
+    getIgnored,
+    unignore,
+  } = useStoreActions(actions => actions.Settings);
   const [nick, setNick] = useState(userInfo.Kuski ? userInfo.Kuski : '');
   const [team, setTeam] = useState(
     userInfo.TeamData ? userInfo.TeamData.Team : '',
@@ -31,11 +41,13 @@ const Settings = () => {
   const [locked, setLocked] = useState(
     userInfo.TeamData ? userInfo.TeamData.Locked === 1 : 0,
   );
+  const [ignoreNick, setIgnoreNick] = useState('');
 
   useEffect(() => {
     const KuskiIndex = nickId();
     if (KuskiIndex > 0) {
       getUserInfo(KuskiIndex);
+      getIgnored();
     }
   }, []);
 
@@ -47,6 +59,11 @@ const Settings = () => {
       setLocked(userInfo.TeamData ? userInfo.TeamData.Locked === 1 : 0);
     }
   }, [userInfo]);
+
+  const ignoreKuski = i => {
+    setIgnoreNick('');
+    ignore(i);
+  };
 
   return (
     <>
@@ -140,6 +157,33 @@ const Settings = () => {
                 </Grid>
               </Grid>
             )}
+            {tab === 2 && (
+              <Grid container spacing={16}>
+                <Grid item xs={12} sm={6}>
+                  <Header h2>Chat ignore a player</Header>
+                  <Setting
+                    label={['Ignore nick']}
+                    update={() => ignoreKuski(ignoreNick)}
+                    value={[ignoreNick]}
+                    setValue={v => setIgnoreNick(v)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Header h2>Currently ignored</Header>
+                  <Paper>
+                    <PaperCon>
+                      {ignored.map(i => (
+                        <IgnoreCon
+                          onClick={() => unignore(i.IgnoredKuskiIndex)}
+                        >
+                          <Remove /> {i.KuskiData.Kuski}
+                        </IgnoreCon>
+                      ))}
+                    </PaperCon>
+                  </Paper>
+                </Grid>
+              </Grid>
+            )}
           </>
         ) : (
           <div>Log in to change settings.</div>
@@ -198,6 +242,15 @@ const OpenInfo = styled.div`
 
 const Text = styled.div`
   align-self: center;
+`;
+
+const Remove = styled(RemoveCircle)`
+  font-size: 12px;
+`;
+
+const IgnoreCon = styled.div`
+  margin-top: 4px;
+  cursor: pointer;
 `;
 
 export default Settings;

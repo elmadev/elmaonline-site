@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { UserInfo, UpdateUserInfo } from 'data/api';
+import { UserInfo, UpdateUserInfo, Ignored, Ignore, Unignore } from 'data/api';
 
 export default {
   userInfo: '',
@@ -30,6 +30,28 @@ export default {
       } else {
         actions.setError(update.data.message);
       }
+    }
+  }),
+  ignored: [],
+  setIgnored: action((state, payload) => {
+    state.ignored = payload;
+  }),
+  getIgnored: thunk(async actions => {
+    const get = await Ignored();
+    if (get.ok) {
+      actions.setIgnored(get.data);
+    }
+  }),
+  ignore: thunk(async (actions, payload) => {
+    const addIgnore = await Ignore(payload);
+    if (addIgnore.ok) {
+      actions.getIgnored();
+    }
+  }),
+  unignore: thunk(async (actions, payload) => {
+    const removeIgonre = await Unignore(payload);
+    if (removeIgonre.ok) {
+      actions.getIgnored();
     }
   }),
 };
