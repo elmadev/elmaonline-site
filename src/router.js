@@ -48,6 +48,14 @@ const routes = {
       load: () => import(/* webpackChunkName: 'kuski' */ './pages/kuski'),
     },
     {
+      path: '/teams',
+      load: () => import(/* webpackChunkName: 'teams' */ './pages/teams'),
+    },
+    {
+      path: '/team/:name',
+      load: () => import(/* webpackChunkName: 'team' */ './pages/team'),
+    },
+    {
       path: '/levels',
       load: () => import(/* webpackChunkName: 'levels' */ './pages/levels'),
     },

@@ -54,7 +54,7 @@ export const points = [
   1,
 ];
 
-export const filterResults = (events, ownerId, loggedId) => {
+export const filterResults = (events, ownerId = 0, loggedId = 0) => {
   const filtered = [];
   // loop events
   forEach(events, (eventValues, eventIndex) => {
@@ -110,7 +110,7 @@ export const filterResults = (events, ownerId, loggedId) => {
       if (filtered[eventIndex].Updated) {
         if (filtered[eventIndex].ShowResults) {
           filtered[eventIndex].CupTimes = filteredResults;
-        } else if (ownerId === loggedId) {
+        } else if (ownerId && ownerId === loggedId) {
           filtered[eventIndex].CupTimes = filteredResults;
         }
       }
@@ -267,10 +267,10 @@ export const generateEvent = (event, cup, times, cuptimes) => {
       // find apple results
     } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E')) {
       if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
-        const exists = event.CupTimes.filter(
+        const exists = cuptimes.filter(
           c =>
             c.KuskiIndex === t.KuskiIndex &&
-            c.Time === 999900 + (100 - t.apples),
+            c.Time === 999900 + (100 - t.Apples),
         );
         // insert only if replay uploaded
         if (exists.length > 0) {

@@ -1,8 +1,9 @@
 import express from 'express';
 import generate from 'nanoid/generate';
 import crypto from 'crypto';
-import { Team, Kuski } from 'data/models';
+import { Team, Kuski, SiteSetting } from 'data/models';
 import { confirmMail, resetMail } from 'utils/email';
+import { authContext } from 'utils/auth';
 
 const router = express.Router();
 
@@ -67,7 +68,7 @@ const ResetPasswordConfirm = async (Email, ConfirmCode) => {
   return findReset;
 };
 
-const UpdatePassword = async (ConfirmCode, Password) => {
+const UpdatePasswordConfirm = async (ConfirmCode, Password) => {
   let findReset = false;
   findReset = await Kuski.findOne({
     where: { ConfirmCode },
@@ -84,6 +85,53 @@ const UpdatePassword = async (ConfirmCode, Password) => {
 const validateEmail = e => {
   const re = /\S+@\S+\.\S+/;
   return re.test(e);
+};
+
+const nickRequest = async (nick, KuskiIndex) => {
+  const r = await SiteSetting.create({
+    SettingName: 'ChangeNick',
+    Setting: nick,
+    KuskiIndex,
+  });
+  return r;
+};
+
+const UpdateTeam = async (TeamIndex, KuskiIndex) => {
+  await Kuski.update({ TeamIndex }, { where: { KuskiIndex } });
+};
+
+const UpdateEmail = async (Email, KuskiIndex) => {
+  await Kuski.update({ Email }, { where: { KuskiIndex } });
+};
+
+const UpdatePassword = async (Password, KuskiIndex) => {
+  await Kuski.update({ Password }, { where: { KuskiIndex } });
+};
+
+const UpdateLocked = async (TeamIndex, Locked) => {
+  await Team.update({ Locked }, { where: { TeamIndex } });
+};
+
+const Player = async KuskiIndex => {
+  const data = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: [
+      'KuskiIndex',
+      'Kuski',
+      'TeamIndex',
+      'Country',
+      'Email',
+      'Password',
+    ],
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team', 'Locked'],
+      },
+    ],
+  });
+  return data;
 };
 
 router
@@ -167,11 +215,112 @@ router
       .createHash('md5')
       .update(newPassword)
       .digest('hex');
-    const reset = await UpdatePassword(req.body.confirmCode, newMd5);
+    const reset = await UpdatePasswordConfirm(req.body.confirmCode, newMd5);
     if (reset) {
       res.json({ success: true, newPassword });
     } else {
       res.json({ success: false });
+    }
+  })
+  .post('/update', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      let message = '';
+      let error = false;
+      // nick
+      if (req.body.Field === 'Kuski') {
+        const kuskiData = await getKuskiData(req.body.Value[0]);
+        if (req.body.Value[0].length > 15) {
+          message = 'Nick is too long. Maximum number of characters is 15.';
+          error = true;
+        } else if (kuskiData.length > 0) {
+          message = 'Nickname is already taken.';
+          error = true;
+        } else {
+          await nickRequest(req.body.Value[0], auth.userid);
+          message =
+            'Nick change has been requested, now awaiting moderator approval, you will be notified.';
+        }
+        // team
+      } else if (req.body.Field === 'Team') {
+        let TeamIndex = 0;
+        if (req.body.Value[0] !== '') {
+          const teamData = await getTeamData(req.body.Value[0]);
+          if (teamData.length > 0) {
+            if (teamData[0].dataValues.Locked) {
+              message = 'Team is locked';
+              error = true;
+            } else {
+              TeamIndex = teamData[0].dataValues.TeamIndex;
+            }
+          } else {
+            const addTeam = await createTeam({ Team: req.body.Value[0] });
+            TeamIndex = addTeam.TeamIndex;
+          }
+        }
+        if (!error) {
+          await UpdateTeam(TeamIndex, auth.userid);
+          message = `Team updated to ${req.body.Value[0]}`;
+        }
+        // email
+      } else if (req.body.Field === 'Email') {
+        if (!validateEmail(req.body.Value[0])) {
+          message = 'Invalid email address.';
+          error = true;
+        } else {
+          const emails = await checkEmail(req.body.Value[0]);
+          if (emails.length > 0) {
+            message = 'Email is already taken.';
+            error = true;
+          }
+        }
+        if (!error) {
+          await UpdateEmail(req.body.Value[0], auth.userid);
+          message = `Email updated to ${req.body.Value[0]}`;
+        }
+        // password
+      } else if (req.body.Field === 'Password') {
+        const old = crypto
+          .createHash('md5')
+          .update(req.body.Value[0])
+          .digest('hex');
+        const pass = crypto
+          .createHash('md5')
+          .update(req.body.Value[1])
+          .digest('hex');
+        const passAgain = crypto
+          .createHash('md5')
+          .update(req.body.Value[2])
+          .digest('hex');
+        const playerInfo = await Player(auth.userid);
+        if (old !== playerInfo.Password) {
+          message = 'Old password does not match.';
+          error = true;
+        } else if (pass !== passAgain) {
+          message = 'Password again does not match.';
+          error = true;
+        }
+        if (!error) {
+          await UpdatePassword(pass, auth.userid);
+          message = 'Password has been updated.';
+        }
+      } else if (req.body.Field === 'Locked') {
+        const playerInfo = await Player(auth.userid);
+        await UpdateLocked(playerInfo.TeamIndex, req.body.Value[0]);
+        if (req.body.Value[0]) {
+          message = 'Team has been locked.';
+        } else {
+          message = 'Team has been unlocked.';
+        }
+      }
+      if (error) {
+        res.json({ success: 0, message });
+      } else {
+        const info = await Player(auth.userid);
+        res.json({ success: 1, info, message });
+      }
+    } else {
+      res.sendStatus(401);
     }
   });
 

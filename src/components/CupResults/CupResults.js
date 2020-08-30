@@ -13,7 +13,7 @@ const goToReplay = (index, filename) => {
 };
 
 const CupResults = props => {
-  const { results, ShortName, eventNo } = props;
+  const { results, ShortName, eventNo, CupIndex } = props;
 
   return (
     <Container>
@@ -61,9 +61,27 @@ const CupResults = props => {
           </TableRow>
         ))}
       </DerpTable>
+      <Download>
+        <Dl
+          href={`/dl/eventrecs/${CupIndex}/${ShortName}${zeroPad(eventNo, 2)}`}
+        >
+          All replays
+        </Dl>
+      </Download>
     </Container>
   );
 };
+
+const Download = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const Dl = styled.a`
+  margin-top: 4px;
+  margin-right: 4px;
+  margin-bottom: 16px;
+`;
 
 const Container = styled.div``;
 

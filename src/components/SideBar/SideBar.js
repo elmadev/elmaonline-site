@@ -54,6 +54,9 @@ const SideBar = () => {
           <Link to="/kuskis" onClick={onNavigation}>
             Kuskis
           </Link>
+          <Link to="/teams" onClick={onNavigation}>
+            Teams
+          </Link>
           <Link to="/cups" onClick={onNavigation}>
             Cups
           </Link>
@@ -62,6 +65,9 @@ const SideBar = () => {
           </Link>
           <Link to="/map" onClick={onNavigation}>
             Map
+          </Link>
+          <Link to="/settings" onClick={onNavigation}>
+            Settings
           </Link>
           <Link to="/help" onClick={onNavigation}>
             Help

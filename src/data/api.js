@@ -134,3 +134,11 @@ export const PlayersSearch = data =>
 export const TeamsSearch = data =>
   api.get(`player/searchTeam/${data.q}/${data.offset}`);
 export const UserInfo = KuskiIndex => api.get(`player/${KuskiIndex}`);
+export const UpdateUserInfo = data => api.post(`register/update`, data);
+export const Ignore = Kuski => api.post(`player/ignore/${Kuski}`);
+export const Ignored = () => api.get('player/ignored');
+export const Unignore = KuskiIndex => api.post(`player/unignore/${KuskiIndex}`);
+
+// teams
+export const Teams = () => api.get('teams');
+export const TeamMembers = Team => api.get(`teams/${Team}`);

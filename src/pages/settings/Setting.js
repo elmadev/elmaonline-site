@@ -4,13 +4,14 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-const Setting = ({ value, label, setValue, update }) => {
+const Setting = ({ value, label, setValue, update, password }) => {
   return (
     <Container>
       <Paper>
         <PaperCon>
           {label.map((l, i) => (
             <TextField
+              type={password ? 'password' : 'text'}
               key={l}
               id="outlined-name"
               label={l}

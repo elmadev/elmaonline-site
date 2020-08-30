@@ -77,11 +77,17 @@ export const resolvers = {
   RootQuery: {
     async getKuskis() {
       const kuskis = await Kuski.findAll({
-        attributes: ['Kuski', 'Country', 'KuskiIndex', 'TeamIndex'],
+        attributes: [
+          'Kuski',
+          'Country',
+          'KuskiIndex',
+          'TeamIndex',
+          'Confirmed',
+        ],
         include: [{ model: Team, as: 'TeamData' }],
         order: [['Kuski', 'ASC']],
       });
-      return kuskis;
+      return kuskis.filter(k => k.Confirmed);
     },
     async getKuskiById(parent, { KuskiIndex }) {
       const kuski = await Kuski.findOne({
