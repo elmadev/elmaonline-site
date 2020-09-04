@@ -118,6 +118,7 @@ const config = {
               '@babel/plugin-proposal-class-properties',
               '@babel/plugin-syntax-dynamic-import',
               ['@babel/plugin-proposal-decorators', { legacy: true }],
+              'babel-plugin-styled-components',
             ],
           ],
         },

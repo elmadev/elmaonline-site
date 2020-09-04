@@ -496,7 +496,7 @@ app.get('*', async (req, res, next) => {
     const materialUICss = sheetsRegistry.toString();
     const styledStyles = styledSheet
       .getStyleTags()
-      .replace('<style data-styled data-styled-version="5.0.0">', '');
+      .replace('<style data-styled="true" data-styled-version="5.2.0">', '');
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
@@ -523,7 +523,7 @@ app.get('*', async (req, res, next) => {
       google: config.google,
     };
 
-    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line
+    const html = ReactDOMServer.renderToString(<Html {...data} />); // eslint-disable-line
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {
