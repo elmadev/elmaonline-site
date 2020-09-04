@@ -395,8 +395,8 @@ const AddLevel = async data => {
   }
   if (pack.KuskiIndex === data.KuskiIndex) {
     let Sort = '';
-    if (data.levels.length > 0) {
-      Sort = lastEntry(data.levels[data.levels.length - 1].Sort);
+    if (data.levels > 0) {
+      Sort = lastEntry(data.last.Sort);
     } else {
       Sort = firstEntry();
     }
