@@ -5,10 +5,10 @@ import { nickId } from 'utils/nick';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
+import Header from 'components/Header';
+import { ListRow, ListCell } from 'styles/List';
 import { points } from 'utils/cups';
 
 const RulesInfo = props => {
@@ -25,7 +25,7 @@ const RulesInfo = props => {
     <Container>
       <Grid container spacing={24}>
         <Grid item xs={12} sm={6}>
-          <Header>Cup description</Header>
+          <Header h2>Cup description</Header>
           <Paper>
             <Text dangerouslySetInnerHTML={{ __html: description }} />
             {nickId() === owner && (
@@ -65,7 +65,7 @@ const RulesInfo = props => {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Header>How to play cups</Header>
+          <Header h2>How to play cups</Header>
           <Paper>
             <Text>
               If you want to participate in a cup, the only thing you have to do
@@ -81,7 +81,9 @@ const RulesInfo = props => {
               do so. All deadlines are shown in your local timezone.
             </Text>
           </Paper>
-          <Header>Hiding of times</Header>
+          <Header h2 top>
+            Hiding of times
+          </Header>
           <Paper>
             <Text>
               During an event the given level will have its &quot;Hidden&quot;
@@ -96,20 +98,22 @@ const RulesInfo = props => {
               anywhere.
             </Text>
           </Paper>
-          <Header>Points awarded</Header>
+          <Header h2 top>
+            Points awarded
+          </Header>
           <DerpTable headers={['#', 'Points']} length={points.length}>
             {points.map((p, no) => (
-              <TableRow hover key={p}>
-                <DerpTableCell>{no + 1}.</DerpTableCell>
-                <DerpTableCell right>
+              <ListRow key={p}>
+                <ListCell>{no + 1}.</ListCell>
+                <ListCell right>
                   {p} point{p > 1 ? 's' : ''}
-                </DerpTableCell>
-              </TableRow>
+                </ListCell>
+              </ListRow>
             ))}
-            <TableRow hover key="51">
-              <DerpTableCell>51...</DerpTableCell>
-              <DerpTableCell right>1 point</DerpTableCell>
-            </TableRow>
+            <ListRow hover key="51">
+              <ListCell>51...</ListCell>
+              <ListCell right>1 point</ListCell>
+            </ListRow>
           </DerpTable>
         </Grid>
       </Grid>
@@ -118,11 +122,6 @@ const RulesInfo = props => {
 };
 
 const Container = styled.div`
-  padding: 8px;
-`;
-
-const Header = styled.div`
-  font-weight: bold;
   padding: 8px;
 `;
 

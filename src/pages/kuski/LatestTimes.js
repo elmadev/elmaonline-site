@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { ListRow, ListCell } from 'styles/List';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
 import LocalTime from 'components/LocalTime';
@@ -40,21 +39,21 @@ const LatestTimes = ({ KuskiIndex }) => {
             {latestTimes
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(r => (
-                <TableRow hover key={`${r.LevelIndex}${r.Driven}`}>
-                  <DerpTableCell>
+                <ListRow key={`${r.LevelIndex}${r.Driven}`}>
+                  <ListCell>
                     <Level LevelData={r.LevelData} />
-                  </DerpTableCell>
-                  <DerpTableCell>
+                  </ListCell>
+                  <ListCell>
                     <Time time={r.Time} />
-                  </DerpTableCell>
-                  <DerpTableCell>
+                  </ListCell>
+                  <ListCell>
                     <LocalTime
                       date={r.Driven}
                       format="ddd D MMM YYYY HH:mm:ss"
                       parse="X"
                     />
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
           </DerpTable>
         )}
@@ -80,21 +79,21 @@ const LatestTimes = ({ KuskiIndex }) => {
                 pagePR * rowsPerPagePR + rowsPerPagePR,
               )
               .map(r => (
-                <TableRow hover key={`${r.LevelIndex}${r.Time}`}>
-                  <DerpTableCell>
+                <ListRow key={`${r.LevelIndex}${r.Time}`}>
+                  <ListCell>
                     <Level LevelData={r.LevelData} />
-                  </DerpTableCell>
-                  <DerpTableCell>
+                  </ListCell>
+                  <ListCell>
                     <Time time={r.Time} />
-                  </DerpTableCell>
-                  <DerpTableCell>
+                  </ListCell>
+                  <ListCell>
                     {/* <LocalTime
                       date={r.Driven}
                       format="ddd D MMM YYYY HH:mm:ss"
                       parse="X"
                     /> */}
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
           </DerpTable>
         )}

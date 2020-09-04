@@ -297,6 +297,7 @@ const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
           'Comment',
           'TimeExists',
         ],
+        where: { ShareReplay: 1 },
         include: [
           {
             model: Kuski,

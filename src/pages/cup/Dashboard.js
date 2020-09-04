@@ -4,11 +4,9 @@ import { format } from 'date-fns';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import Header from 'components/Header';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import { calculateStandings } from 'utils/cups';
 import CupResults from 'components/CupResults';
@@ -16,6 +14,8 @@ import Dropzone from 'components/Dropzone';
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
 import CupCurrent from 'components/CupCurrent';
+import { Paper } from 'styles/Paper';
+import { ListRow, ListCell } from 'styles/List';
 
 const Dashboard = props => {
   const { events, openEvent, openStandings, cup } = props;
@@ -79,13 +79,8 @@ const Dashboard = props => {
   return (
     <Container>
       <Grid container spacing={16}>
-        <Grid item xs={12} sm={12}>
-          <Description dangerouslySetInnerHTML={{ __html: cup.Description }} />
-        </Grid>
-      </Grid>
-      <Grid container spacing={16}>
         <Grid item xs={12} sm={6}>
-          <Headline>Upload</Headline>
+          <Header h2>Upload</Header>
           <DropContainer>
             <Dropzone
               filetype=".rec"
@@ -95,29 +90,27 @@ const Dashboard = props => {
               login
             />
             {file && (
-              <>
-                <Paper style={{ marginTop: '8px' }}>
-                  <UploadInput>
-                    {file.name}
-                    <Checkbox
-                      color="primary"
-                      checked={share}
-                      onChange={() => setShare(!share)}
-                    />
-                    Share replay with team
-                  </UploadInput>
-                  <UploadInput>
-                    <TextField
-                      id="Comment"
-                      label="Comment"
-                      margin="normal"
-                      fullWidth
-                      type="text"
-                      value={comment}
-                      onChange={e => setComment(e.target.value)}
-                    />
-                  </UploadInput>
-                </Paper>
+              <Paper highlight style={{ marginTop: '8px' }}>
+                <UploadInput>
+                  {file.name}
+                  <Checkbox
+                    color="primary"
+                    checked={share}
+                    onChange={() => setShare(!share)}
+                  />
+                  Share replay with team
+                </UploadInput>
+                <UploadInput>
+                  <TextField
+                    id="Comment"
+                    label="Comment"
+                    margin="normal"
+                    fullWidth
+                    type="text"
+                    value={comment}
+                    onChange={e => setComment(e.target.value)}
+                  />
+                </UploadInput>
                 <Buttons>
                   <Button
                     onClick={() => {
@@ -140,16 +133,18 @@ const Dashboard = props => {
                     Upload
                   </Button>
                 </Buttons>
-              </>
+              </Paper>
             )}
           </DropContainer>
-          <Headline>Current Event</Headline>
+          <Header h2 top>
+            Current Event
+          </Header>
           <CupCurrent events={events} />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Headline link onClick={() => openEvent(lastEvent)}>
+          <Header h2 onClick={() => openEvent(lastEvent)}>
             Last Event
-          </Headline>
+          </Header>
           {events[lastEvent] && (
             <CupResults
               CupIndex={events[lastEvent].CupIndex}
@@ -158,24 +153,24 @@ const Dashboard = props => {
               results={events[lastEvent].CupTimes.slice(0, 5)}
             />
           )}
-          <Headline link onClick={() => openStandings()}>
+          <Header h2 onClick={() => openStandings()}>
             Standings
-          </Headline>
+          </Header>
           {standings.player && (
             <DerpTable
-              headers={['#', 'Player', 'Points']}
+              headers={['#', 'Player', { t: 'Points', r: true, w: 'auto' }]}
               length={standings.player.length}
             >
               {standings.player.slice(0, 5).map((r, no) => (
-                <TableRow hover key={r.KuskiIndex}>
-                  <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>
+                <ListRow key={r.KuskiIndex}>
+                  <ListCell>{no + 1}.</ListCell>
+                  <ListCell>
                     <Kuski kuskiData={r.KuskiData} team flag />
-                  </DerpTableCell>
-                  <DerpTableCell right>
+                  </ListCell>
+                  <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
             </DerpTable>
           )}
@@ -186,8 +181,7 @@ const Dashboard = props => {
 };
 
 const Buttons = styled.div`
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 8px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -208,17 +202,6 @@ const DropContainer = styled.div`
 const Container = styled.div`
   padding-left: 8px;
   padding-right: 8px;
-`;
-
-const Description = styled.div`
-  padding-bottom: 12px;
-`;
-
-const Headline = styled.div`
-  font-weight: bold;
-  padding: 8px;
-  color: ${props => (props.link ? '#219653' : 'auto')};
-  cursor: ${props => (props.link ? 'pointer' : 'auto')};
 `;
 
 export default Dashboard;

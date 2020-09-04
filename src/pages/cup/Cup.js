@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import styled from 'styled-components';
+import Grid from '@material-ui/core/Grid';
+import Header from 'components/Header';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { nickId } from 'utils/nick';
 import Events from './Events';
@@ -53,7 +55,18 @@ const Cups = props => {
         {nickId() > 0 && <Tab label="Team" />}
         {nickId() === cup.KuskiIndex && <Tab label="Admin" />}
       </Tabs>
-      <CupName>{cup.CupName}</CupName>
+      <CupName>
+        <Grid container spacing={16}>
+          <Grid item xs={12} sm={4}>
+            <Header h1>{cup.CupName}</Header>
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <Description
+              dangerouslySetInnerHTML={{ __html: cup.Description }}
+            />
+          </Grid>
+        </Grid>
+      </CupName>
       {tab === 0 && (
         <Dashboard
           cup={cup}
@@ -132,10 +145,12 @@ const Cups = props => {
 };
 
 const CupName = styled.div`
-  font-weight: 500;
-  color: #219653;
-  font-size: 22px;
   padding: 8px;
+`;
+
+const Description = styled.div`
+  padding-bottom: 8px;
+  padding-top: 8px;
 `;
 
 export default Cups;

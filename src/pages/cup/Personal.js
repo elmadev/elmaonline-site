@@ -55,7 +55,9 @@ const Personal = () => {
             </div>
             {myReplays.map((e, i) => (
               <Fragment key={e.CupIndex}>
-                <Header h3>Event {i + 1}</Header>
+                <Header h3 top>
+                  Event {i + 1}
+                </Header>
                 {e.CupTimes.filter(t => t.Replay).map(replay => (
                   <ReplayCon key={replay.CupTimeIndex}>
                     <Checkbox
@@ -98,7 +100,9 @@ const Personal = () => {
             </div>
             {myTimes && (
               <>
-                <Header h3>Time (Driven)</Header>
+                <Header h3 top>
+                  Time (Driven)
+                </Header>
                 {myTimes.map(t => (
                   <ReplayCon key={t.TimeIndex}>
                     <div>

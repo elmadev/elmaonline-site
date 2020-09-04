@@ -3,11 +3,6 @@ import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -15,8 +10,8 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Paper from '@material-ui/core/Paper';
-
+import { Paper } from 'styles/Paper';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Recplayer from 'components/Recplayer';
 import { BattleType } from 'components/Names';
 import Time from 'components/Time';
@@ -233,77 +228,62 @@ class Battle extends React.Component {
         <div className={s.levelStatsContainer}>
           <Paper>
             {getBattle.Results && (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      style={{
-                        width: 1,
-                      }}
+              <ListContainer>
+                <ListHeader>
+                  <ListCell right width={30}>
+                    #
+                  </ListCell>
+                  <ListCell width={200}>Kuski</ListCell>
+                  <ListCell right width={200}>
+                    Time
+                  </ListCell>
+                  <ListCell>
+                    <Select
+                      value={extra}
+                      onChange={e => this.setState({ extra: e.target.value })}
+                      name="extra"
+                      displayEmpty
                     >
-                      #
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: 200,
-                      }}
-                    >
-                      Kuski
-                    </TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>
-                      <Select
-                        value={extra}
-                        onChange={e => this.setState({ extra: e.target.value })}
-                        name="extra"
-                        displayEmpty
-                      >
-                        <MenuItem value="" disabled>
-                          Extra
-                        </MenuItem>
-                        <MenuItem value="RankingAll">Ranking (all)</MenuItem>
-                        <MenuItem value="RankingType">Ranking (type)</MenuItem>
-                        <MenuItem value="RankingIncreaseAll">
-                          Ranking Increase (all)
-                        </MenuItem>
-                        <MenuItem value="RankingIncreaseType">
-                          Ranking Increase (type)
-                        </MenuItem>
-                      </Select>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <Query
-                    query={GET_BATTLE_TIMES}
-                    variables={{ id: BattleIndex }}
-                  >
-                    {({ data: { getBattleTimes }, loading }) => {
-                      if (loading) return null;
-                      return [...getBattleTimes]
-                        .sort(sortResults(getBattle.BattleType))
-                        .map((r, i) => (
-                          <TableRow key={r.KuskiIndex}>
-                            <TableCell>{i + 1}.</TableCell>
-                            <TableCell>
-                              <Kuski kuskiData={r.KuskiData} flag team />
-                              {getBattle.Multi === 1 && (
-                                <>
-                                  {' '}
-                                  & <Kuski kuskiData={r.KuskiData2} flag team />
-                                </>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Time time={r.Time} apples={r.Apples} />
-                            </TableCell>
-                            <TableCell>{this.getExtra(r.KuskiIndex)}</TableCell>
-                          </TableRow>
-                        ));
-                    }}
-                  </Query>
-                </TableBody>
-              </Table>
+                      <MenuItem value="" disabled>
+                        Extra
+                      </MenuItem>
+                      <MenuItem value="RankingAll">Ranking (all)</MenuItem>
+                      <MenuItem value="RankingType">Ranking (type)</MenuItem>
+                      <MenuItem value="RankingIncreaseAll">
+                        Ranking Increase (all)
+                      </MenuItem>
+                      <MenuItem value="RankingIncreaseType">
+                        Ranking Increase (type)
+                      </MenuItem>
+                    </Select>
+                  </ListCell>
+                </ListHeader>
+                <Query query={GET_BATTLE_TIMES} variables={{ id: BattleIndex }}>
+                  {({ data: { getBattleTimes }, loading }) => {
+                    if (loading) return null;
+                    return [...getBattleTimes]
+                      .sort(sortResults(getBattle.BattleType))
+                      .map((r, i) => (
+                        <ListRow key={r.KuskiIndex}>
+                          <ListCell width={30}>{i + 1}.</ListCell>
+                          <ListCell width={200}>
+                            <Kuski kuskiData={r.KuskiData} flag team />
+                            {getBattle.Multi === 1 && (
+                              <>
+                                {' '}
+                                & <Kuski kuskiData={r.KuskiData2} flag team />
+                              </>
+                            )}
+                          </ListCell>
+                          <ListCell right width={200}>
+                            <Time time={r.Time} apples={r.Apples} />
+                          </ListCell>
+                          <ListCell>{this.getExtra(r.KuskiIndex)}</ListCell>
+                        </ListRow>
+                      ));
+                  }}
+                </Query>
+              </ListContainer>
             )}
           </Paper>
         </div>

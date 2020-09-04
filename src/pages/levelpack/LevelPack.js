@@ -7,7 +7,7 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CloseIcon from '@material-ui/icons/Close';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import OutsideClickHandler from 'react-outside-click-handler';

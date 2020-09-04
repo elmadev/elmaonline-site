@@ -25,7 +25,9 @@ const Team = () => {
             <div>List of all team replays that has been set to shared.</div>
             {teamReplays.map((e, i) => (
               <Fragment key={e.CupIndex}>
-                <Header h3>Event {i + 1}</Header>
+                <Header h3 top>
+                  Event {i + 1}
+                </Header>
                 {e.CupTimes.filter(t => t.Replay).map(replay => (
                   <ReplayCon key={replay.CupTimeIndex}>
                     <Rec

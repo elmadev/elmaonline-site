@@ -63,7 +63,9 @@ const Personal = ({
                 key={r.LevelIndex}
                 onClick={e => {
                   e.preventDefault();
-                  selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
+                  if (r.LevelBesttime.length > 0) {
+                    selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
+                  }
                 }}
                 selected={level === r.LevelIndex}
               >

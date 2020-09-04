@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { format, formatDistance } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import Timer from '@material-ui/icons/Timer';
 
 const CupResults = props => {
@@ -23,7 +23,7 @@ const CupResults = props => {
   return (
     <Container>
       {currentEvents.map(c => (
-        <Fragment key={c.Level.LevelName}>
+        <Fragment key={`${c.CupIndex}${c.StartTime}`}>
           {c.EndTime > format(new Date(), 't') &&
             c.StartTime < format(new Date(), 't') && (
               <Paper>
@@ -31,7 +31,11 @@ const CupResults = props => {
                   Event {getEventNumber(c)} by <Kuski kuskiData={c.KuskiData} />
                 </EventHeader>
                 <EventInfo>
-                  <a href={`/dl/level/${c.LevelIndex}`}>{c.Level.LevelName}</a>
+                  {c.Level && (
+                    <a href={`/dl/level/${c.LevelIndex}`}>
+                      {c.Level.LevelName}
+                    </a>
+                  )}
                 </EventInfo>
                 <EventInfo>
                   Deadline:{' '}

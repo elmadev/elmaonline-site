@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Header from 'components/Header';

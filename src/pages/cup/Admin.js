@@ -4,12 +4,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import Field from 'components/Field';
 import Checkbox from '@material-ui/core/Checkbox';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
@@ -17,8 +15,10 @@ import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
+import Header from 'components/Header';
 import { points } from 'utils/cups';
 import { format } from 'date-fns';
+import { ListRow, ListCell } from 'styles/List';
 
 const schema = yup.object().shape({
   LevelIndex: yup.number().min(1),
@@ -66,8 +66,8 @@ const Admin = props => {
     <Container>
       <Grid container spacing={16}>
         <Grid item xs={12} sm={6}>
+          <Header h2>Add event</Header>
           <Paper>
-            <Header>Add event</Header>
             <form {...formal.getFormProps()}>
               <Field
                 label="Level Index"
@@ -96,8 +96,8 @@ const Admin = props => {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
+          <Header h2>How to add events</Header>
           <Paper>
-            <Header>How to add events</Header>
             <ol>
               <li>
                 Play level in EOL locked (turn lock new levels on in
@@ -116,7 +116,11 @@ const Admin = props => {
                 timezone (UTC).
               </li>
             </ol>
-            <Header>Editing events</Header>
+          </Paper>
+          <Header h2 top>
+            Editing events
+          </Header>
+          <Paper>
             <ul>
               <li>
                 To edit Designer or LevelIndex click on the in the table below
@@ -144,7 +148,9 @@ const Admin = props => {
           </Paper>
         </Grid>
       </Grid>
-      <Header>Events</Header>
+      <Header h2 top>
+        Events
+      </Header>
       <Paper>
         <DerpTable
           headers={[
@@ -158,30 +164,30 @@ const Admin = props => {
           length={points.length}
         >
           {events.map(e => (
-            <TableRow hover key={e.CupIndex}>
-              <DerpTableCell>
+            <ListRow hover key={e.CupIndex}>
+              <ListCell>
                 <ClickToEdit
                   value={e.KuskiData ? e.KuskiData.Kuski : 'Unknown'}
                   update={v => editEvent(e.CupIndex, { Designer: v })}
                 >
                   <Kuski kuskiData={e.KuskiData} />
                 </ClickToEdit>
-              </DerpTableCell>
-              <DerpTableCell>
+              </ListCell>
+              <ListCell>
                 <LocalTime
                   date={e.StartTime}
                   format="ddd D MMM YYYY HH:mm"
                   parse="X"
                 />
-              </DerpTableCell>
-              <DerpTableCell>
+              </ListCell>
+              <ListCell>
                 <LocalTime
                   date={e.EndTime}
                   format="ddd D MMM YYYY HH:mm"
                   parse="X"
                 />
-              </DerpTableCell>
-              <DerpTableCell>
+              </ListCell>
+              <ListCell>
                 <Checkbox
                   checked={e.ShowResults === 1}
                   onChange={() =>
@@ -191,16 +197,16 @@ const Admin = props => {
                   }
                   value="ShowResults"
                 />
-              </DerpTableCell>
-              <DerpTableCell>
+              </ListCell>
+              <ListCell>
                 <ClickToEdit
                   value={e.LevelIndex}
                   update={v => editLevelIndex(e.CupIndex, v)}
                 >
                   {e.LevelIndex}
                 </ClickToEdit>
-              </DerpTableCell>
-              <DerpTableCell>
+              </ListCell>
+              <ListCell>
                 {e.Updated === 0 && e.StartTime < format(new Date(), 't') && (
                   <Button variant="contained" onClick={() => generateEvent(e)}>
                     Generate
@@ -209,8 +215,8 @@ const Admin = props => {
                 <Button variant="contained" onClick={() => deleteEvent(e)}>
                   Delete
                 </Button>
-              </DerpTableCell>
-            </TableRow>
+              </ListCell>
+            </ListRow>
           ))}
         </DerpTable>
       </Paper>
@@ -231,11 +237,6 @@ const Admin = props => {
 };
 
 const Container = styled.div`
-  padding: 8px;
-`;
-
-const Header = styled.div`
-  font-weight: bold;
   padding: 8px;
 `;
 

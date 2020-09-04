@@ -519,10 +519,14 @@ const Search = ({
             {teams.length !== 0 && (
               <>
                 {teams.map(v => (
-                  <div key={v.Team} className={s.resultLink}>
+                  <Link
+                    key={v.Team}
+                    className={s.resultLink}
+                    to={`team/${v.Team}`}
+                  >
                     <div className={s.resultMainData}>{v.Team}</div>
                     <div className={s.resultSecondaryData} />
-                  </div>
+                  </Link>
                 ))}
                 <button
                   className={s.loadMore}

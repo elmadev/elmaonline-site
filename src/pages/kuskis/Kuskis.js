@@ -117,7 +117,7 @@ class Kuskis extends React.Component {
                         className={s.kuskiRow}
                         key={k.KuskiIndex}
                       >
-                        <Kuski kuskiData={k} flag team />
+                        <Kuski kuskiData={k} flag team noLink />
                       </Link>
                     ))}
                   </div>
