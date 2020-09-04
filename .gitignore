@@ -31,3 +31,6 @@ events/*
 
 # User uploaded files
 public/replays/
+
+# Battle Notifier
+*.store.json

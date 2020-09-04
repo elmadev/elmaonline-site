@@ -2,8 +2,13 @@ import Discord from 'discord.js';
 import moment from 'moment';
 import { forEach } from 'lodash';
 import config from '../config';
+import createBN from './battleNotifier';
 
 const client = new Discord.Client();
+const battleNotifier = createBN({
+  bnStorePath: config.discord.bnStorePath,
+  client,
+});
 
 export function discord() {
   client.once('ready', () => {
@@ -154,13 +159,21 @@ export function discordBestmultitime(content) {
   }
 }
 
-export function discordBattlestart(content) {
+const battleToString = battle => {
   let text = `${config.discord.icons.started} **`;
-  text += battleIn(content.battleType, content.level);
-  text += `${cripple(content)} started by ${content.designer},`;
-  text += ` ${content.durationMinutes} mins**\n`;
-  text += `More info: <${config.discord.url}battles/${content.battleIndex}>`;
+  text += battleIn(battle.battleType, battle.level);
+  text += `${cripple(battle)} started by ${battle.designer},`;
+  text += ` ${battle.durationMinutes} mins**\n`;
+  text += `More info: <${config.discord.url}battles/${battle.battleIndex}>`;
+  return text;
+};
+
+export async function discordBattlestart(content) {
+  const battleString = battleToString(content);
+  const text = `${config.discord.icons.started} **${battleString}`;
   sendMessage(config.discord.channels.battle, text);
+
+  battleNotifier.notifyBattle(content, battleString);
 }
 
 export function discordBattlequeue(content) {
@@ -209,3 +222,33 @@ export function discordBattleresults(content) {
   text += '```\n';
   sendMessage(config.discord.channels.battle, text);
 }
+
+/* Battle Notifier */
+
+const spacesRegexp = / +/;
+
+const parseUserMessage = ({ message, commandPrefix }) => {
+  const args = message.content
+    .slice(commandPrefix.length)
+    .trim()
+    .split(spacesRegexp);
+  const commandName = args.shift().toLowerCase();
+  return { commandName, args };
+};
+
+client.on('message', async message => {
+  const commandPrefix = config.discord.prefix;
+  const isPrefixedMessage = message.content.startsWith(commandPrefix);
+  const isBotMessage = message.author.bot;
+  if (!isPrefixedMessage || isBotMessage) return;
+
+  const { commandName, args } = parseUserMessage({ message, commandPrefix });
+
+  if (commandName !== battleNotifier.commandName) return;
+
+  try {
+    await battleNotifier.handleMessage({ message, args });
+  } catch (error) {
+    message.reply('There was an error trying to execute that command!');
+  }
+});
