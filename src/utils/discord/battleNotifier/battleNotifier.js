@@ -9,7 +9,7 @@ const battleNotifier = ({ bnStorePath, client }) => {
     const userIds = await getSubscribedUserIds({ battle, store });
     Promise.all(
       userIds.map(async userId => {
-        const user = await client.fetchUser(userId);
+        const user = await client.users.fetch(userId);
         await user.send(message);
       }),
     );
