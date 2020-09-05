@@ -13,7 +13,7 @@ const readUserMessage = async ({ channel, user }) => {
   try {
     const messages = await channel.awaitMessages(sameAuthorFilter, {
       time: replyTimeout,
-      maxMatches: 1,
+      max: 1,
       errors: ['time'],
     });
     return messages.first();

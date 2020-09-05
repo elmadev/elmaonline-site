@@ -47,7 +47,7 @@
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "date-fns": "^2.12.0",
-    "discord.js": "^11.5.0",
+    "discord.js": "^12.3.1",
     "easy-peasy": "^3.3.0",
     "elmajs": "^1.1.2",
     "express": "^4.16.4",
@@ -225,6 +225,7 @@
     "render": "babel-node tools/run render",
     "serve": "babel-node tools/run runServer",
     "start": "babel-node tools/run start",
-    "commit": "npx git-cz"
+    "commit": "npx git-cz",
+    "discord": "node ./src/utils/discord/discordTester.js"
   }
 }
