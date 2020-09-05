@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
@@ -13,12 +13,18 @@ const SideBar = () => {
   );
   const onNavigation = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 1000) {
-      hideSideBar(); // eslint-disable-line
+      hideSideBar();
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1000) {
+      hideSideBar();
+    }
+  }, []);
+
   const onToggle = () => {
-    toggleSideBar(); // eslint-disable-line
+    toggleSideBar();
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 10);

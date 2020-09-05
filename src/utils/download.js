@@ -6,6 +6,7 @@ import {
   SiteCupTime,
   SiteCup,
   Kuski,
+  SiteCupGroup,
 } from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
@@ -13,7 +14,7 @@ import generate from 'nanoid/generate';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
-import { filterResults } from 'utils/cups';
+import { filterResults, admins } from 'utils/cups';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -245,15 +246,27 @@ const getCupEvent = async CupIndex => {
   return filterResults(data);
 };
 
-export const getEventReplays = async (CupIndex, filename) => {
+export const getEventReplays = async (CupIndex, filename, auth) => {
   const event = await SiteCup.findOne({
     where: { CupIndex },
   });
+  const cupGroup = await SiteCupGroup.findOne({
+    where: { CupGroupIndex: event.CupGroupIndex },
+  });
+  let allow = false;
   if (
     isAfter(new Date(), event.dataValues.EndTime) &&
     event.dataValues.Updated &&
     event.dataValues.ShowResults
   ) {
+    allow = true;
+  } else if (auth.auth) {
+    const a = admins(cupGroup);
+    if (a.length > 0 && a.indexOf(auth.userid) > -1) {
+      allow = true;
+    }
+  }
+  if (allow) {
     const recs = await getCupEvent(CupIndex);
     if (recs.length > 0) {
       const zip = await zipEventRecs(recs[0].CupTimes, filename);

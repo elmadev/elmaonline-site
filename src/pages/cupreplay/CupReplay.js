@@ -7,6 +7,7 @@ import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import { Level } from 'components/Names';
 import Link from 'components/Link';
+import { Paper } from 'styles/Paper';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 import historyRefresh from 'utils/historyRefresh';
 /* import { Level } from 'components/Names';
@@ -150,13 +151,6 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
     </Container>
   );
 };
-
-const Paper = styled.div`
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #e2e3e4;
-  border-radius: 4px;
-`;
 
 const Left = styled.div`
   flex: 2;

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';

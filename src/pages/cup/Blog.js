@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { format } from 'date-fns';
+import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import { nickId } from 'utils/nick';
 
 const Standings = props => {
-  const { items, addEntry, cup } = props;
+  const { items, addEntry, cup, owner } = props;
   const [newBlog, setNewBlog] = useState('');
   const [newHeadline, setNewHeadline] = useState('');
 
@@ -36,9 +37,9 @@ const Standings = props => {
 
   return (
     <Container>
-      {nickId() === cup.KuskiIndex && (
+      {owner.length > 0 && owner.indexOf(nickId()) > -1 && (
         <>
-          <Headline>Add new blog entry</Headline>
+          <Header h2>Add new blog entry</Header>
           <TextField
             id="outlined-name"
             label="Headline"
@@ -67,7 +68,9 @@ const Standings = props => {
         .sort((a, b) => b.Written - a.Written)
         .map(i => (
           <>
-            <Headline>{i.Headline}</Headline>
+            <Header h2 top>
+              {i.Headline}
+            </Header>
             <SubHeadline>
               by <Kuski kuskiData={i.KuskiData} /> at{' '}
               <LocalTime
@@ -90,14 +93,7 @@ const Container = styled.div`
   padding-right: 8px;
 `;
 
-const Headline = styled.div`
-  font-weight: bold;
-  padding: 8px;
-  padding-bottom: 0;
-`;
-
 const SubHeadline = styled.div`
-  padding-left: 8px;
   padding-bottom: 8px;
 `;
 

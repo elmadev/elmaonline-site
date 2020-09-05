@@ -94,7 +94,8 @@ async function onLocationChange(location, action) {
       history.replace(route.redirect);
       return;
     }
-    const renderReactApp = isInitialRender ? ReactDOM.hydrate : ReactDOM.render;
+    // if isInitialRender was originally ReactDom.hydrate but that is giving issues with styled-components
+    const renderReactApp = isInitialRender ? ReactDOM.render : ReactDOM.render;
     appInstance = renderReactApp(
       <MuiThemeProvider theme={muiTheme}>
         <StyleContext.Provider value={{ insertCss }}>

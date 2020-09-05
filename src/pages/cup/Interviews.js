@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Paper from '@material-ui/core/Paper';
+import { Paper } from 'styles/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useStoreActions } from 'easy-peasy';
@@ -190,44 +190,48 @@ const Interviews = props => {
           </Paper>
         </>
       )}
-      <Headline>Designer: {event.KuskiData.Kuski}</Headline>
-      <Paper>
-        <Text>{event.DesignerInterview}</Text>
-        {nickId() === event.Designer && (
-          <>
-            <Button
-              variant="contained"
-              onClick={() => {
-                openDesigner(!designerEdit);
-                setDesigner(event.DesignerInterview);
-              }}
-            >
-              Submit Interview
-            </Button>
-            {designerEdit && (
+      {event.KuskiData && (
+        <>
+          <Headline>Designer: {event.KuskiData.Kuski}</Headline>
+          <Paper>
+            <Text>{event.DesignerInterview}</Text>
+            {nickId() === event.Designer && (
               <>
-                <TextField
-                  id="outlined-name"
-                  label="Write Interview"
-                  value={designer}
-                  onChange={e => setDesigner(e.target.value)}
-                  margin="normal"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                />
                 <Button
                   variant="contained"
-                  color="primary"
-                  onClick={() => saveDesigner()}
+                  onClick={() => {
+                    openDesigner(!designerEdit);
+                    setDesigner(event.DesignerInterview);
+                  }}
                 >
-                  Save
+                  Submit Interview
                 </Button>
+                {designerEdit && (
+                  <>
+                    <TextField
+                      id="outlined-name"
+                      label="Write Interview"
+                      value={designer}
+                      onChange={e => setDesigner(e.target.value)}
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => saveDesigner()}
+                    >
+                      Save
+                    </Button>
+                  </>
+                )}
               </>
             )}
-          </>
-        )}
-      </Paper>
+          </Paper>
+        </>
+      )}
     </Container>
   );
 };

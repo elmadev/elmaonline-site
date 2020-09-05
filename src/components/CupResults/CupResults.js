@@ -3,10 +3,9 @@ import styled from 'styled-components';
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
 import { zeroPad } from 'utils/time';
 import history from 'utils/history';
+import { ListRow, ListCell } from 'styles/List';
 
 const goToReplay = (index, filename) => {
   history.push(`/r/cup/${index}/${filename}`);
@@ -18,13 +17,16 @@ const CupResults = props => {
   return (
     <Container>
       <DerpTable
-        headers={['#', 'Player', 'Time/Rec', 'Points']}
+        headers={[
+          '#',
+          'Player',
+          'Time/Rec',
+          { t: 'Points', r: true, w: 'auto' },
+        ]}
         length={results.length}
       >
         {results.map((r, no) => (
-          <TableRow
-            style={{ cursor: 'pointer' }}
-            hover
+          <ListRow
             key={r.KuskiIndex}
             onClick={() => {
               goToReplay(
@@ -36,11 +38,11 @@ const CupResults = props => {
               );
             }}
           >
-            <DerpTableCell>{no + 1}.</DerpTableCell>
-            <DerpTableCell>
+            <ListCell>{no + 1}.</ListCell>
+            <ListCell>
               <Kuski kuskiData={r.KuskiData} team flag />
-            </DerpTableCell>
-            <DerpTableCell>
+            </ListCell>
+            <ListCell>
               {r.Replay ? (
                 <a
                   href={`/dl/cupreplay/${r.CupTimeIndex}/${ShortName}${zeroPad(
@@ -54,11 +56,11 @@ const CupResults = props => {
               ) : (
                 <Time time={r.Time} apples={-1} />
               )}
-            </DerpTableCell>
-            <DerpTableCell right>
+            </ListCell>
+            <ListCell right>
               {r.Points} point{r.Points > 1 ? 's' : ''}
-            </DerpTableCell>
-          </TableRow>
+            </ListCell>
+          </ListRow>
         ))}
       </DerpTable>
       <Download>

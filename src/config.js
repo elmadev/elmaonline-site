@@ -93,5 +93,7 @@ module.exports = {
       results: '',
       ended: '',
     },
+    prefix: '!',
+    bnStorePath: 'bn.store.json',
   },
 };

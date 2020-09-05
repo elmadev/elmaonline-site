@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { ListRow, ListCell } from 'styles/List';
 import Grid from '@material-ui/core/Grid';
 import Header from 'components/Header';
 import Kuski from 'components/Kuski';
@@ -27,15 +26,15 @@ const Standings = props => {
               length={standings.player.length}
             >
               {standings.player.map((r, no) => (
-                <TableRow hover key={r.KuskiIndex}>
-                  <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>
+                <ListRow key={r.KuskiIndex}>
+                  <ListCell>{no + 1}.</ListCell>
+                  <ListCell>
                     <Kuski kuskiData={r.KuskiData} team flag />
-                  </DerpTableCell>
-                  <DerpTableCell right>
+                  </ListCell>
+                  <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
             </DerpTable>
           )}
@@ -50,30 +49,32 @@ const Standings = props => {
               length={standings.team.length}
             >
               {standings.team.map((r, no) => (
-                <TableRow hover key={r.Team}>
-                  <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>{r.Team}</DerpTableCell>
-                  <DerpTableCell right>
+                <ListRow key={r.Team}>
+                  <ListCell>{no + 1}.</ListCell>
+                  <ListCell>{r.Team}</ListCell>
+                  <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
             </DerpTable>
           )}
-          <Header h2>Nations</Header>
+          <Header h2 top>
+            Nations
+          </Header>
           {standings.team && (
             <DerpTable
               headers={['#', 'Nation', 'Points']}
               length={standings.nation.length}
             >
               {standings.nation.map((r, no) => (
-                <TableRow hover key={r.Country}>
-                  <DerpTableCell>{no + 1}.</DerpTableCell>
-                  <DerpTableCell>{r.Country}</DerpTableCell>
-                  <DerpTableCell right>
+                <ListRow key={r.Country}>
+                  <ListCell>{no + 1}.</ListCell>
+                  <ListCell>{r.Country}</ListCell>
+                  <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
-                  </DerpTableCell>
-                </TableRow>
+                  </ListCell>
+                </ListRow>
               ))}
             </DerpTable>
           )}

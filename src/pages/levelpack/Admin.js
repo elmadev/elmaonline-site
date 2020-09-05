@@ -151,7 +151,8 @@ const Admin = ({ records, LevelPack }) => {
                       LevelIndex: l.LevelIndex,
                       LevelPackIndex: LevelPack.LevelPackIndex,
                       name: LevelPack.LevelPackName,
-                      levels: records,
+                      levels: records.length,
+                      last: records[records.length - 1],
                     })
                   }
                 />

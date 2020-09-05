@@ -1,11 +1,16 @@
-import Discord from 'discord.js';
-import moment from 'moment';
-import { forEach } from 'lodash';
-import config from '../config';
+const Discord = require('discord.js');
+const moment = require('moment');
+const { forEach } = require('lodash');
+const config = require('../../config');
+const createBN = require('./battleNotifier');
 
 const client = new Discord.Client();
+const battleNotifier = createBN({
+  bnStorePath: config.discord.bnStorePath,
+  client,
+});
 
-export function discord() {
+function discord() {
   client.once('ready', () => {
     client.user.setPresence({
       status: 'online',
@@ -34,9 +39,9 @@ export function discord() {
   });
 }
 
-export function sendMessage(channel, message) {
+function sendMessage(channel, message) {
   if (config.discord.token) {
-    client.channels.get(channel).send(message);
+    client.channels.cache.get(channel).send(message);
   }
 }
 
@@ -122,7 +127,7 @@ const cripple = content => {
   return '';
 };
 
-export function discordChatline(content) {
+function discordChatline(content) {
   const ts = moment(content.timestamp, 'YYYY-MM-DD HH:mm:ss UTC').format(
     'HH:mm:ss',
   );
@@ -132,7 +137,7 @@ export function discordChatline(content) {
   );
 }
 
-export function discordBesttime(content) {
+function discordBesttime(content) {
   if (!content.battleIndex) {
     let text = `${formatLevel(content.level)}:`;
     text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
@@ -143,7 +148,7 @@ export function discordBesttime(content) {
   }
 }
 
-export function discordBestmultitime(content) {
+function discordBestmultitime(content) {
   if (!content.battleIndex) {
     sendMessage(
       config.discord.channels.times,
@@ -154,16 +159,24 @@ export function discordBestmultitime(content) {
   }
 }
 
-export function discordBattlestart(content) {
+const battleToString = battle => {
   let text = `${config.discord.icons.started} **`;
-  text += battleIn(content.battleType, content.level);
-  text += `${cripple(content)} started by ${content.designer},`;
-  text += ` ${content.durationMinutes} mins**\n`;
-  text += `More info: <${config.discord.url}battles/${content.battleIndex}>`;
+  text += battleIn(battle.battleType, battle.level);
+  text += `${cripple(battle)} started by ${battle.designer},`;
+  text += ` ${battle.durationMinutes} mins**\n`;
+  text += `More info: <${config.discord.url}battles/${battle.battleIndex}>`;
+  return text;
+};
+
+async function discordBattlestart(content) {
+  const battleString = battleToString(content);
+  const text = `${config.discord.icons.started} **${battleString}`;
   sendMessage(config.discord.channels.battle, text);
+
+  battleNotifier.notifyBattle(content, battleString);
 }
 
-export function discordBattlequeue(content) {
+function discordBattlequeue(content) {
   if (content.queue.length > 0) {
     let text = `${config.discord.icons.queue} **Queue:`;
     content.queue.map(q => {
@@ -181,7 +194,7 @@ export function discordBattlequeue(content) {
   }
 }
 
-export function discordBattleEnd(content) {
+function discordBattleEnd(content) {
   if (content.aborted) {
     let text = `${config.discord.icons.ended} **`;
     text += `${battleIn(content.battleType, content.level)}${cripple(
@@ -191,7 +204,7 @@ export function discordBattleEnd(content) {
   }
 }
 
-export function discordBattleresults(content) {
+function discordBattleresults(content) {
   let text = `${config.discord.icons.results} **`;
   text += battleIn(content.battleType, content.level);
   text += `${cripple(content)} by ${content.designer} over**\n`;
@@ -209,3 +222,45 @@ export function discordBattleresults(content) {
   text += '```\n';
   sendMessage(config.discord.channels.battle, text);
 }
+
+/* Battle Notifier */
+
+const spacesRegexp = / +/;
+
+const parseUserMessage = ({ message, commandPrefix }) => {
+  const args = message.content
+    .slice(commandPrefix.length)
+    .trim()
+    .split(spacesRegexp);
+  const commandName = args.shift().toLowerCase();
+  return { commandName, args };
+};
+
+client.on('message', async message => {
+  const commandPrefix = config.discord.prefix;
+  const isPrefixedMessage = message.content.startsWith(commandPrefix);
+  const isBotMessage = message.author.bot;
+  if (!isPrefixedMessage || isBotMessage) return;
+
+  const { commandName, args } = parseUserMessage({ message, commandPrefix });
+
+  if (commandName !== battleNotifier.commandName) return;
+
+  try {
+    await battleNotifier.handleMessage({ message, args });
+  } catch (error) {
+    message.reply('There was an error trying to execute that command!');
+  }
+});
+
+module.exports = {
+  discord,
+  sendMessage,
+  discordChatline,
+  discordBesttime,
+  discordBestmultitime,
+  discordBattlestart,
+  discordBattlequeue,
+  discordBattleEnd,
+  discordBattleresults,
+};

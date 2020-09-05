@@ -29,7 +29,7 @@ export default {
   }),
   getCup: thunk(async (actions, payload) => {
     const getCup = await Cup(payload);
-    if (getCup.ok) {
+    if (getCup.ok && getCup.data) {
       actions.setCupGroup({ cup: getCup.data, last: payload });
       const getCupEvents = await CupEvents(getCup.data.CupGroupIndex);
       if (getCupEvents.ok) {
