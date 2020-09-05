@@ -1,6 +1,17 @@
 import { forEach, has } from 'lodash';
 import moment from 'moment';
 
+export const admins = cup => {
+  let a = [cup.KuskiIndex];
+  if (cup.ReadAccess) {
+    a = [
+      cup.KuskiIndex,
+      ...cup.ReadAccess.split('-').map(r => parseInt(r, 10)),
+    ];
+  }
+  return a;
+};
+
 export const points = [
   100,
   85,
@@ -54,7 +65,7 @@ export const points = [
   1,
 ];
 
-export const filterResults = (events, ownerId = 0, loggedId = 0) => {
+export const filterResults = (events, ownerId = [], loggedId = 0) => {
   const filtered = [];
   // loop events
   forEach(events, (eventValues, eventIndex) => {
@@ -110,7 +121,7 @@ export const filterResults = (events, ownerId = 0, loggedId = 0) => {
       if (filtered[eventIndex].Updated) {
         if (filtered[eventIndex].ShowResults) {
           filtered[eventIndex].CupTimes = filteredResults;
-        } else if (ownerId && ownerId === loggedId) {
+        } else if (ownerId.length > 0 && ownerId.indexOf(loggedId) > -1) {
           filtered[eventIndex].CupTimes = filteredResults;
         }
       }

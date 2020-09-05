@@ -28,7 +28,7 @@ const RulesInfo = props => {
           <Header h2>Cup description</Header>
           <Paper>
             <Text dangerouslySetInnerHTML={{ __html: description }} />
-            {nickId() === owner && (
+            {owner.length > 0 && owner.indexOf(nickId()) > -1 && (
               <>
                 <Button
                   variant="contained"

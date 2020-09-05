@@ -4,7 +4,7 @@ import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { format } from 'date-fns';
 import moment from 'moment';
-import { filterResults, generateEvent } from 'utils/cups';
+import { filterResults, generateEvent, admins } from 'utils/cups';
 import { zeroPad } from 'utils/time';
 import {
   SiteCupGroup,
@@ -112,7 +112,7 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, cupGroup.KuskiIndex, KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex);
 };
 
 const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
@@ -161,7 +161,7 @@ const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, cupGroup.KuskiIndex, KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex);
 };
 
 const editCup = async (CupGroupIndex, data) => {
@@ -434,6 +434,7 @@ router
       const add = await addCup({
         ...req.body,
         KuskiIndex: auth.userid,
+        ReadAccess: '',
       });
       res.json(add);
     } else {
@@ -466,7 +467,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.params.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         await editCup(req.params.CupGroupIndex, {
           ...req.body,
         });
@@ -482,7 +486,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.body.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         const insert = await addCupBlog({
           ...req.body,
           KuskiIndex: auth.userid,
@@ -499,7 +506,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.params.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         const kuski = await getKuski(req.body.Designer);
         const insert = await addEvent({
           CupGroupIndex: req.params.CupGroupIndex,
@@ -523,7 +533,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.params.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         let kuski;
         if (req.body.Designer) {
           kuski = await getKuski(req.body.Designer);
@@ -548,7 +561,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.params.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         await DeleteEvent(req.body);
         res.json({ success: true });
       } else {
@@ -562,7 +578,10 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const data = await getCupById(req.params.CupGroupIndex);
-      if (data.dataValues.KuskiIndex === auth.userid) {
+      if (
+        admins(data.dataValues).length > 0 &&
+        admins(data.dataValues).indexOf(auth.userid) > -1
+      ) {
         await generate(req.body, data.dataValues);
         res.json({ success: true });
       } else {

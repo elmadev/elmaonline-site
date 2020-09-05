@@ -252,6 +252,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
     const zipData = await getEventReplays(
       req.params.event,
       req.params.filename,
+      authContext(req),
     );
     if (zipData) {
       const readStream = new stream.PassThrough();

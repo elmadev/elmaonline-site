@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Header from 'components/Header';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { nickId } from 'utils/nick';
+import { admins } from 'utils/cups';
 import Events from './Events';
 import Standings from './Standings';
 import RulesInfo from './RulesInfo';
@@ -53,7 +54,9 @@ const Cups = props => {
         <Tab label="Blog" />
         {nickId() > 0 && <Tab label="Personal" />}
         {nickId() > 0 && <Tab label="Team" />}
-        {nickId() === cup.KuskiIndex && <Tab label="Admin" />}
+        {admins(cup).length > 0 && admins(cup).indexOf(nickId()) > -1 && (
+          <Tab label="Admin" />
+        )}
       </Tabs>
       <CupName>
         <Grid container spacing={16}>
@@ -83,7 +86,7 @@ const Cups = props => {
       {tab === 3 && (
         <RulesInfo
           description={cup.Description}
-          owner={cup.KuskiIndex}
+          owner={admins(cup)}
           updateDesc={newDesc => {
             update({
               CupGroupIndex: cup.CupGroupIndex,
@@ -96,6 +99,7 @@ const Cups = props => {
       {tab === 4 && (
         <Blog
           cup={cup}
+          owner={admins(cup)}
           items={cup.CupBlog}
           addEntry={newBlog => {
             addNewBlog({ data: newBlog, shortName: cup.ShortName });

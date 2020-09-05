@@ -170,7 +170,7 @@ const Admin = props => {
                   value={e.KuskiData ? e.KuskiData.Kuski : 'Unknown'}
                   update={v => editEvent(e.CupIndex, { Designer: v })}
                 >
-                  <Kuski kuskiData={e.KuskiData} />
+                  <Kuski noLink kuskiData={e.KuskiData} />
                 </ClickToEdit>
               </ListCell>
               <ListCell>

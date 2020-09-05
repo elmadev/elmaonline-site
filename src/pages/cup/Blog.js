@@ -10,7 +10,7 @@ import Kuski from 'components/Kuski';
 import { nickId } from 'utils/nick';
 
 const Standings = props => {
-  const { items, addEntry, cup } = props;
+  const { items, addEntry, cup, owner } = props;
   const [newBlog, setNewBlog] = useState('');
   const [newHeadline, setNewHeadline] = useState('');
 
@@ -37,7 +37,7 @@ const Standings = props => {
 
   return (
     <Container>
-      {nickId() === cup.KuskiIndex && (
+      {owner.length > 0 && owner.indexOf(nickId()) > -1 && (
         <>
           <Header h2>Add new blog entry</Header>
           <TextField
