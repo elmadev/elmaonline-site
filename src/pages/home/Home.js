@@ -16,6 +16,7 @@ import Welcome from 'components/Welcome';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
+import CupWidget from 'components/CupWidget';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toLocalTime } from 'utils/time';
@@ -152,9 +153,14 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Login />
-            <Header h2>Upload Replays</Header>
+            <CupWidget ShortName="WC8" />
+            <Header h2 top>
+              Upload Replays
+            </Header>
             <Upload onUpload={() => refetch()} filetype=".rec" />
-            <Header h2>Latest Replays</Header>
+            <Header h2 top>
+              Latest Replays
+            </Header>
             <Paper style={{ overflowX: 'auto' }}>
               <ListContainer>
                 <ListHeader>
