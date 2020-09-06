@@ -78,8 +78,10 @@ class Home extends React.Component {
                 <Welcome />
               </>
             )}
-            {currentBattle && <BattleCard battle={currentBattle} />}
-            <Header h2>Latest Battles</Header>
+            <CupWidget ShortName="WC8" />
+            <Header h2 top>
+              Latest Battles
+            </Header>
             <Paper style={{ overflowX: 'auto' }}>
               <ListContainer>
                 <ListHeader>
@@ -153,7 +155,7 @@ class Home extends React.Component {
           </Grid>
           <Grid item xs={12} sm={5}>
             <Login />
-            <CupWidget ShortName="WC8" />
+            {currentBattle && <BattleCard battle={currentBattle} />}
             <Header h2 top>
               Upload Replays
             </Header>

@@ -52,10 +52,16 @@ class Upload extends React.Component {
 
   onDrop(files) {
     const fileInfo = {};
+    let error = '';
+    let unlisted = false;
+    if (files[0].name.substring(0, 2) === 'wc') {
+      error = 'It looks like you are uploading a World Cup replay, to participate upload it from the cup page NOT here.';
+      unlisted = true;
+    }
     files.forEach((file, index) => {
       fileInfo[file.name] = {
         name: file.name,
-        unlisted: false,
+        unlisted,
         tas: false,
         bug: false,
         nitro: false,
@@ -69,7 +75,7 @@ class Upload extends React.Component {
     this.setState({
       fileInfo,
       files,
-      error: '',
+      error,
       duplicate: false,
       duplicateReplayIndex: 0,
       uploaded: [],
