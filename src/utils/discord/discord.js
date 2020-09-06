@@ -3,6 +3,7 @@ const moment = require('moment');
 const { forEach } = require('lodash');
 const config = require('../../config');
 const createBN = require('./battleNotifier');
+const logger = require('./logger');
 
 const client = new Discord.Client();
 const battleNotifier = createBN({
@@ -249,6 +250,13 @@ client.on('message', async message => {
     await battleNotifier.handleMessage({ message, args });
   } catch (error) {
     message.reply('There was an error trying to execute that command!');
+    logger.log({
+      userName: message.author.username,
+      userId: message.author.id,
+      action: commandName,
+      message: error.message || error,
+      stack: error.stack,
+    });
   }
 });
 
