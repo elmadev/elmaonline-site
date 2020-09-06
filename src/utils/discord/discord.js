@@ -170,8 +170,7 @@ const battleToString = battle => {
 
 async function discordBattlestart(content) {
   const battleString = battleToString(content);
-  const text = `${config.discord.icons.started} **${battleString}`;
-  sendMessage(config.discord.channels.battle, text);
+  sendMessage(config.discord.channels.battle, battleString);
 
   battleNotifier.notifyBattle(content, battleString);
 }
