@@ -13,4 +13,5 @@ module.exports = {
     configNotFound:
       'You have no configuration set yet, please use `!bn` to start receiving battle notifications.',
   },
+  bnAdminIds: ['219518470767902722'],
 };
