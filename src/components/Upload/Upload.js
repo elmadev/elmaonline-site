@@ -54,7 +54,7 @@ class Upload extends React.Component {
     const fileInfo = {};
     let error = '';
     let unlisted = false;
-    if (files[0].name.substring(0, 2) === 'wc') {
+    if (files[0].name.substring(0, 2).toLowerCase() === 'wc') {
       error = 'It looks like you are uploading a World Cup replay, to participate upload it from the cup page NOT here.';
       unlisted = true;
     }

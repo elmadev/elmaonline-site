@@ -6,6 +6,22 @@ import TextField from '@material-ui/core/TextField';
 import { useStoreActions } from 'easy-peasy';
 import { nickId } from 'utils/nick';
 
+const defaultPlayer = `What was your first impression of the level, and did that change over time when you played it?
+
+Tell us about the style finding and höyling process.
+
+Were you surprised by your own and/or other's results?
+
+What are your expectations and goals for the rest of the cup?
+`;
+
+const defaultDesigner = `What was the idea of this level?
+
+Were you surprised by the winning replay and style?
+
+Tell us about the designing process.
+`;
+
 const Interviews = props => {
   const { sendInterview } = useStoreActions(actions => actions.Cup);
   const { event, cup } = props;
@@ -85,7 +101,7 @@ const Interviews = props => {
                     <TextField
                       id="outlined-name"
                       label="Write Interview"
-                      value={firstPlace}
+                      value={firstPlace || defaultPlayer}
                       onChange={e => setFirstPlace(e.target.value)}
                       margin="normal"
                       variant="outlined"
@@ -127,7 +143,7 @@ const Interviews = props => {
                     <TextField
                       id="outlined-name"
                       label="Write Interview"
-                      value={secondPlace}
+                      value={secondPlace || defaultPlayer}
                       onChange={e => setSecondPlace(e.target.value)}
                       margin="normal"
                       variant="outlined"
@@ -169,7 +185,7 @@ const Interviews = props => {
                     <TextField
                       id="outlined-name"
                       label="Write Interview"
-                      value={thirdPlace}
+                      value={thirdPlace || defaultPlayer}
                       onChange={e => setThirdPlace(e.target.value)}
                       margin="normal"
                       variant="outlined"
@@ -211,7 +227,7 @@ const Interviews = props => {
                     <TextField
                       id="outlined-name"
                       label="Write Interview"
-                      value={designer}
+                      value={designer || defaultDesigner}
                       onChange={e => setDesigner(e.target.value)}
                       margin="normal"
                       variant="outlined"
@@ -248,6 +264,7 @@ const Headline = styled.div`
 
 const Text = styled.div`
   padding: 8px;
+  white-space: pre;
 `;
 
 export default Interviews;
