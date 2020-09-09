@@ -24,18 +24,25 @@ const runTest = async ({ message, user, userConfig }) => {
 
   const battle = { battleType: battleTypes[0], designer: designers[0] };
 
-  const matches = battleMatchesUserConfig(battle, userConfig);
-  channel.send(
-    `Test: ${battle.battleType || keywords.any} battle started by ${
-      battle.designer
-    }`,
-  );
-  channel.send(
-    `${matches ? '🔔' : '🔕'} The battle ${
-      matches ? 'matches' : 'does not match'
-    } your configuration.`,
-  );
-  userMessage.react(emojis.ok);
+  if (battle.battleType && battle.designer) {
+    const matches = battleMatchesUserConfig(battle, userConfig);
+    channel.send(
+      `Test: ${battle.battleType || keywords.any} battle started by ${
+        battle.designer
+      }`,
+    );
+    channel.send(
+      `${matches ? '🔔' : '🔕'} The battle ${
+        matches ? 'matches' : 'does not match'
+      } your configuration.`,
+    );
+    userMessage.react(emojis.ok);
+  } else {
+    channel.send(
+      'Battle type or designer was incorrect, please use the format "Battle type by designer"',
+    );
+    userMessage.react(emojis.error);
+  }
 };
 
 const testBn = async ({ message, store }) => {
