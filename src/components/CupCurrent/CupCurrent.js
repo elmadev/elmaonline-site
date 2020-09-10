@@ -6,6 +6,8 @@ import Kuski from 'components/Kuski';
 import { Paper } from 'styles/Paper';
 import Timer from '@material-ui/icons/Timer';
 
+const eventSort = (a, b) => a.StartTime - b.StartTime;
+
 const CupResults = props => {
   const { events } = props;
 
@@ -16,7 +18,9 @@ const CupResults = props => {
   );
 
   const getEventNumber = event => {
-    const index = events.findIndex(e => e.CupIndex === event.CupIndex);
+    const index = events
+      .sort(eventSort)
+      .findIndex(e => e.CupIndex === event.CupIndex);
     return index + 1;
   };
 

@@ -12,6 +12,8 @@ import Time from 'components/Time';
 import { zeroPad } from 'utils/time';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
+const eventSort = (a, b) => a.StartTime - b.StartTime;
+
 const currentEventIndex = events => {
   let index = 0;
   forEach(events, e => {
@@ -53,7 +55,7 @@ const Personal = () => {
               means online verified (note that verification only happens after
               an event is done). Check box is for sharing replay with team.
             </div>
-            {myReplays.map((e, i) => (
+            {myReplays.sort(eventSort).map((e, i) => (
               <Fragment key={e.CupIndex}>
                 <Header h3 top>
                   Event {i + 1}
@@ -79,7 +81,7 @@ const Personal = () => {
                         6,
                       )}/${replay.Code}`}
                     >
-                      {replay.TimeExists && <>✓ </>}
+                      {replay.TimeExists === 1 && <>✓ </>}
                       <Time time={replay.Time} apples={-1} />
                     </Rec>
                     {replay.Comment !== '0' && replay.Comment !== '' && (

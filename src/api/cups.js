@@ -199,6 +199,15 @@ const EditEvent = async (CupIndex, data) => {
   await SiteCup.update(data, {
     where: { CupIndex },
   });
+  if (data.ShowResults) {
+    const event = SiteCup.findOne({ where: { CupIndex } });
+    if (event.EndTime < format(new Date(), 't') && event.Updated) {
+      await Level.update(
+        { Hidden: 0, ForceHide: 0 },
+        { where: { LevelIndex: event.LevelIndex } },
+      );
+    }
+  }
   return {};
 };
 
@@ -229,7 +238,7 @@ const generate = async (event, cup) => {
   await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
   await eachSeries(generatedTimes.updateBulk, generateUpdate);
   await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });
-  if (event.EndTime < format(new Date(), 't')) {
+  if (event.EndTime < format(new Date(), 't') && event.ShowResults) {
     await Level.update(
       { Hidden: 0, ForceHide: 0 },
       { where: { LevelIndex: event.LevelIndex } },
@@ -280,10 +289,11 @@ const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
   if (player.TeamIndex <= 0) return [];
   const recs = await SiteCup.findAll({
     where: { CupGroupIndex },
-    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex'],
+    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex', 'StartTime'],
     include: [
       {
         model: SiteCupTime,
+        required: false,
         as: 'CupTimes',
         attributes: [
           'CupTimeIndex',
@@ -315,10 +325,11 @@ const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
 const MyReplays = async (CupGroupIndex, KuskiIndex) => {
   const recs = await SiteCup.findAll({
     where: { CupGroupIndex },
-    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex'],
+    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex', 'StartTime'],
     include: [
       {
         model: SiteCupTime,
+        required: false,
         as: 'CupTimes',
         attributes: [
           'CupTimeIndex',

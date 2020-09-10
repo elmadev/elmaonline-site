@@ -1,4 +1,5 @@
-const replyTimeout = 120000;
+const replyMinutes = 5;
+const replyTimeout = replyMinutes * 60 * 1000;
 
 class TimeOutError extends Error {
   constructor(message) {
@@ -18,7 +19,9 @@ const readUserMessage = async ({ channel, user }) => {
     });
     return messages.first();
   } catch (error) {
-    throw new TimeOutError('⏳ Time ran out, please try again.');
+    throw new TimeOutError(
+      `⏳ You took to long to reply, please reply in under ${replyMinutes} minutes.`,
+    );
   }
 };
 

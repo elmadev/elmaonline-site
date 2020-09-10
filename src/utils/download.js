@@ -216,7 +216,7 @@ const zipEventRecs = (recs, filename) => {
   });
 };
 
-const getCupEvent = async CupIndex => {
+const getCupEvent = async (CupIndex, cupGroup, auth) => {
   const data = await SiteCup.findAll({
     where: { CupIndex },
     include: [
@@ -243,6 +243,9 @@ const getCupEvent = async CupIndex => {
       },
     ],
   });
+  if (auth.auth) {
+    return filterResults(data, admins(cupGroup), auth.userid);
+  }
   return filterResults(data);
 };
 
@@ -267,7 +270,7 @@ export const getEventReplays = async (CupIndex, filename, auth) => {
     }
   }
   if (allow) {
-    const recs = await getCupEvent(CupIndex);
+    const recs = await getCupEvent(CupIndex, cupGroup, auth);
     if (recs.length > 0) {
       const zip = await zipEventRecs(recs[0].CupTimes, filename);
       const fileData = fs.readFileSync(zip);

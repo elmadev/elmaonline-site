@@ -64,11 +64,16 @@ const CupResults = props => {
         ))}
       </DerpTable>
       <Download>
-        <Dl
-          href={`/dl/eventrecs/${CupIndex}/${ShortName}${zeroPad(eventNo, 2)}`}
-        >
-          All replays
-        </Dl>
+        {results.length > 0 && (
+          <Dl
+            href={`/dl/eventrecs/${CupIndex}/${ShortName}${zeroPad(
+              eventNo,
+              2,
+            )}`}
+          >
+            All replays
+          </Dl>
+        )}
       </Download>
     </Container>
   );
@@ -77,6 +82,7 @@ const CupResults = props => {
 const Download = styled.div`
   display: flex;
   justify-content: flex-end;
+  min-height: 42px;
 `;
 
 const Dl = styled.a`

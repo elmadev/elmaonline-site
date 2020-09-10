@@ -14,6 +14,8 @@ import Timer from '@material-ui/icons/Timer';
 import Recplayer from 'components/Recplayer';
 import Interviews from './Interviews';
 
+const eventSort = (a, b) => a.StartTime - b.StartTime;
+
 const GetWinner = times => {
   if (times.length > 0) {
     const ordered = times.sort((a, b) => a.Time - b.Time);
@@ -42,7 +44,7 @@ const Cups = props => {
   return (
     <Grid container spacing={0}>
       <Grid item xs={12} sm={6}>
-        {events.map((e, i) => (
+        {events.sort(eventSort).map((e, i) => (
           <EventContainer
             highlight={i === openEvent}
             onClick={() => setOpenEvent(i)}

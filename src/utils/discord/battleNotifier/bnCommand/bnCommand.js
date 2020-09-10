@@ -1,3 +1,4 @@
+const logger = require('../../logger');
 const {
   setBn,
   getBn,
@@ -24,7 +25,7 @@ module.exports = {
       if (!subCommand) {
         await setBn({ message, store });
       } else if (subCommand === 'get') {
-        await getBn({ user, store });
+        await getBn({ user, store, args });
       } else if (subCommand === 'on') {
         await toggleBn({ message, store, isOn: true });
       } else if (subCommand === 'off') {
@@ -44,6 +45,14 @@ module.exports = {
           ? error.message
           : 'Something went wrong, please try again.';
       user.send(errorMessage);
+
+      logger.log({
+        userName: user.username,
+        userId: user.id,
+        action: subCommand || 'set',
+        message: error.message || error,
+        stack: error.stack,
+      });
     }
   },
 };

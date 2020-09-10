@@ -8,6 +8,8 @@ import Time from 'components/Time';
 import { zeroPad } from 'utils/time';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
+const eventSort = (a, b) => a.StartTime - b.StartTime;
+
 const Team = () => {
   const { teamReplays, cup } = useStoreState(state => state.Cup);
   const { getTeamReplays } = useStoreActions(actions => actions.Cup);
@@ -23,7 +25,7 @@ const Team = () => {
           <Grid item xs={12} sm={6}>
             <Header h2>Team replays</Header>
             <div>List of all team replays that has been set to shared.</div>
-            {teamReplays.map((e, i) => (
+            {teamReplays.sort(eventSort).map((e, i) => (
               <Fragment key={e.CupIndex}>
                 <Header h3 top>
                   Event {i + 1}
@@ -38,7 +40,7 @@ const Team = () => {
                         6,
                       )}/${replay.Code}`}
                     >
-                      {replay.TimeExists && <>✓ </>}
+                      {replay.TimeExists === 1 && <>✓ </>}
                       <Time time={replay.Time} apples={-1} />
                     </Rec>
                     by {replay.KuskiData.Kuski}
