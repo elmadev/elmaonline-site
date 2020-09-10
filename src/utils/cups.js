@@ -213,8 +213,8 @@ export const calculateStandings = (events, cup, simple) => {
             ...nationStandings[existsNation],
             Points: nationStandings[existsNation].Points + time.Points,
           };
-          if (nationEntries[time.KuskiData.TeamIndex]) {
-            nationEntries[time.KuskiData.TeamIndex] += 1;
+          if (nationEntries[time.KuskiData.Country]) {
+            nationEntries[time.KuskiData.Country] += 1;
           } else {
             nationEntries[time.KuskiData.Country] = 1;
           }
