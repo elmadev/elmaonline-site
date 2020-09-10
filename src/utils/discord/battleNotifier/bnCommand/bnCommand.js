@@ -25,7 +25,7 @@ module.exports = {
       if (!subCommand) {
         await setBn({ message, store });
       } else if (subCommand === 'get') {
-        await getBn({ user, store });
+        await getBn({ user, store, args });
       } else if (subCommand === 'on') {
         await toggleBn({ message, store, isOn: true });
       } else if (subCommand === 'off') {

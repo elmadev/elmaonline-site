@@ -1,9 +1,9 @@
-const { keywords, responses } = require('../config');
-const userConfigFormatter = require('../userConfig').formatter({ keywords });
+const { keywords, responses } = require('../../config');
+const userConfigFormatter = require('../../userConfig').formatter({ keywords });
 
 const statusToString = isOn => (isOn ? 'ON' : 'OFF');
 
-const getBn = async ({ user, store }) => {
+const getUserConfig = async ({ user, store }) => {
   let response = '';
   try {
     const userConfig = await store.get(user.id);
@@ -21,4 +21,4 @@ const getBn = async ({ user, store }) => {
   await user.send(response);
 };
 
-module.exports = getBn;
+module.exports = getUserConfig;

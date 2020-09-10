@@ -56,6 +56,7 @@ const setBn = async ({ message, store }) => {
   const userConfig = userConfigParser.parse(userMessage.content);
 
   if (!isUserConfigEmpty(userConfig)) {
+    userConfig.username = user.username;
     await store.set(user.id, userConfig);
 
     const configString = userConfigFormatter.toString(userConfig);
