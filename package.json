@@ -70,7 +70,7 @@
     "mysql2": "^1.6.5",
     "nanoid": "^2.0.1",
     "neo-async": "^2.6.0",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "normalize.css": "^8.0.1",
     "passport": "^0.4.0",
     "passport-facebook": "^3.0.0",
