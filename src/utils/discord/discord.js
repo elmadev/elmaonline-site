@@ -6,10 +6,15 @@ const createBN = require('./battleNotifier');
 const logger = require('./logger');
 
 const client = new Discord.Client();
-const battleNotifier = createBN({
-  bnStorePath: config.discord.bnStorePath,
-  client,
-});
+
+const isProdEnv = process.env.NODE_ENV === 'production';
+const bnStorePath = isProdEnv
+  ? config.discord.bnStorePath
+  : './bn/bn.store.json';
+const battleNotifier = createBN({ bnStorePath, client });
+
+const bnLogsPath = isProdEnv ? config.discord.bnLogsPath : './bn/';
+logger.initialize(bnLogsPath);
 
 function discord() {
   client.once('ready', () => {

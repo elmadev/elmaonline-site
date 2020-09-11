@@ -1,6 +1,9 @@
 const { writeJsonFile, readJsonFile } = require('./jsonFs');
+const { createParentFolder } = require('../../fileUtils');
 
 const createBnStore = path => {
+  createParentFolder(path);
+
   const getAll = async () => {
     return readJsonFile(path);
   };

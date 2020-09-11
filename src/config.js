@@ -94,6 +94,7 @@ module.exports = {
       ended: '',
     },
     prefix: '!',
-    bnStorePath: 'bn.store.json',
+    bnStorePath: '../bn/bn.store.json',
+    bnLogsPath: '../bn/logs/',
   },
 };

@@ -1,13 +1,9 @@
-const fs = require('fs');
-const util = require('util');
-
-fs.readFileAsync = util.promisify(fs.readFile);
-fs.writeFileAsync = util.promisify(fs.writeFile);
+const { readFile, writeFile } = require('../../fileUtils');
 
 const readJsonFile = async path => {
   let result = {};
   try {
-    const fileHandle = await fs.readFileAsync(path);
+    const fileHandle = await readFile(path);
     result = JSON.parse(fileHandle.toString());
   } catch (error) {
     result = {};
@@ -16,8 +12,8 @@ const readJsonFile = async path => {
   return result;
 };
 
-const writeJsonFile = async (fileName, data) => {
-  await fs.writeFileAsync(fileName, JSON.stringify(data));
+const writeJsonFile = async (path, data) => {
+  await writeFile(path, JSON.stringify(data));
 };
 
 module.exports = {
