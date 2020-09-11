@@ -33,4 +33,5 @@ events/*
 public/replays/
 
 # Battle Notifier
+bn/
 *.store.json
