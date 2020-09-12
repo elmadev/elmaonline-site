@@ -13,7 +13,7 @@ const getUserConfig = async ({ user, store }) => {
     const toggleStatus = `to turn it ${oppositeStatus} use "!bn ${oppositeStatus}"`;
 
     const configString = userConfigFormatter.toString(userConfig);
-    response = `${user} your current config is **${status}**\n(*${toggleStatus}*)\n\n${configString}`;
+    response = `Your current config is **${status}**\n(*${toggleStatus}*)\n\n${configString}`;
   } catch (error) {
     response = responses.configNotFound;
   }

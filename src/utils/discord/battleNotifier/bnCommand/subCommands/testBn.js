@@ -1,5 +1,4 @@
 const { battleMatchesUserConfig } = require('../../notifyBattle');
-const { readUserMessage, redirectToDMChannel } = require('../messageUtils');
 
 const { emojis, keywords, responses } = require('../config');
 const bnBattleTypes = require('../bnBattleTypes');
@@ -12,12 +11,9 @@ const testBnMessage =
   'Please write a battle type and designer to test:\n*(First Finish by Markku)*';
 
 const runTest = async ({ message, user, userConfig }) => {
-  const channel = await redirectToDMChannel({
-    message,
-    redirectMessage: testBnMessage,
-  });
+  const { channel } = await message.send(testBnMessage);
 
-  const userMessage = await readUserMessage({ channel, user });
+  const userMessage = await channel.readUserMessage(user);
   const { battleTypes, designers } = userConfigParser.parseInputLine(
     userMessage.content,
   );
@@ -45,12 +41,12 @@ const runTest = async ({ message, user, userConfig }) => {
   }
 };
 
-const testBn = async ({ message, store }) => {
+const testBn = async ({ message, store, redirect }) => {
   const user = message.author;
 
   const userConfig = await store.get(message.author.id);
   if (userConfig) {
-    await runTest({ message, user, userConfig });
+    await runTest({ message, user, userConfig, redirect });
   } else {
     await user.send(responses.configNotFound);
   }

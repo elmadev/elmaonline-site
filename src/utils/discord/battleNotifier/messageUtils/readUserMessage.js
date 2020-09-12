@@ -8,7 +8,7 @@ class TimeOutError extends Error {
   }
 }
 
-const readUserMessage = async ({ channel, user }) => {
+const readUserMessage = channel => async user => {
   const sameAuthorFilter = msg => user.id === msg.author.id;
 
   try {
