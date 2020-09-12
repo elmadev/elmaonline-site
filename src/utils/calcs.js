@@ -1,4 +1,5 @@
 import { forEach } from 'lodash';
+import { customAlphabet } from 'nanoid';
 
 export const recordsTT = (levels, timeObj) => {
   let tt = 0;
@@ -14,6 +15,7 @@ export const recordsTT = (levels, timeObj) => {
   return tt;
 };
 
-export const dummy = () => {
-  return true;
+export const uuid = (length = 10) => {
+  const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', length);
+  return nanoid();
 };

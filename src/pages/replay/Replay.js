@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
-import Moment from 'react-moment';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -12,6 +11,7 @@ import { Paper } from 'styles/Paper';
 
 import Recplayer from 'components/Recplayer';
 import { Level } from 'components/Names';
+import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
 import Link from 'components/Link';
 import RecList from 'components/RecList';
@@ -157,9 +157,11 @@ class Replay extends React.Component {
                 {getReplayByUuid.UploadedByData
                   ? getReplayByUuid.UploadedByData.Kuski
                   : 'Unknown'}{' '}
-                <Moment parse="X" format="YYYY-MM-DD HH:mm:ss">
-                  {getReplayByUuid.Uploaded}
-                </Moment>
+                <LocalTime
+                  date={getReplayByUuid.Uploaded}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  parse="X"
+                />
               </div>
             </div>
             <ReplayRating ReplayIndex={getReplayByUuid.ReplayIndex} />

@@ -1,5 +1,5 @@
 import express from 'express';
-import generate from 'nanoid/generate';
+import { uuid } from 'utils/calcs';
 import crypto from 'crypto';
 import { Team, Kuski, SiteSetting } from 'data/models';
 import { confirmMail, resetMail } from 'utils/email';
@@ -172,7 +172,7 @@ router
         message,
       });
     } else {
-      const ConfirmCode = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+      const ConfirmCode = uuid();
       const data = await addKuski({
         Kuski: req.body.Kuski,
         Password: crypto
@@ -197,10 +197,7 @@ router
     }
   })
   .post('/resetconfirm', async (req, res) => {
-    const resetCode = `rez${generate(
-      '0123456789abcdefghijklmnopqrstuvwxyz',
-      7,
-    )}`;
+    const resetCode = `rez${uuid(7)}`;
     const reset = await ResetPasswordConfirm(req.body.Email, resetCode);
     if (reset) {
       await resetMail(reset.Kuski, reset.Email, resetCode);
@@ -210,7 +207,7 @@ router
     }
   })
   .post('/reset', async (req, res) => {
-    const newPassword = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+    const newPassword = uuid();
     const newMd5 = crypto
       .createHash('md5')
       .update(newPassword)
