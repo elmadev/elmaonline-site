@@ -1,6 +1,6 @@
 const { bnAdminIds } = require('../../config');
 const getUserConfig = require('./getUserConfig');
-const getAllUserConfigs = require('./getAllUserConfigs');
+const getStore = require('./getStore');
 const getLog = require('./getLog');
 
 const getBn = async ({ user, store, args }) => {
@@ -10,7 +10,7 @@ const getBn = async ({ user, store, args }) => {
   if (isBnAdmin && option === 'log') {
     await getLog({ user, date: args[2] });
   } else if (isBnAdmin && option === 'store') {
-    await getAllUserConfigs({ user, store });
+    await getStore({ user, store });
   } else {
     await getUserConfig({ user, store });
   }
