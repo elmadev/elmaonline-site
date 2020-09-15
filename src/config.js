@@ -94,7 +94,10 @@ module.exports = {
       ended: '',
     },
     prefix: '!',
-    bnStorePath: '../bn/bn.store.json',
-    bnLogsPath: '../bn/logs/',
+    bn: {
+      storePath: '../bn/bn.store.json',
+      logsPath: '../bn/logs/',
+      fallbackChannelId: '219884674330132480',
+    },
   },
 };

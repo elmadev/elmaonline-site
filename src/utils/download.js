@@ -10,7 +10,7 @@ import {
 } from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
-import generate from 'nanoid/generate';
+import { uuid } from 'utils/calcs';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
@@ -148,15 +148,15 @@ export function getLevel(id) {
 
 export const zipFiles = files => {
   return new Promise((resolve, reject) => {
-    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+    const fileUuid = uuid();
     const output = fs.createWriteStream(
-      `.${config.publicFolder}/temp/${uuid}.zip`,
+      `.${config.publicFolder}/temp/${fileUuid}.zip`,
     );
     const archive = archiver('zip', {
       zlib: { level: 9 },
     });
     output.on('close', () => {
-      resolve(`.${config.publicFolder}/temp/${uuid}.zip`);
+      resolve(`.${config.publicFolder}/temp/${fileUuid}.zip`);
     });
     archive.on('error', err => {
       reject(err);

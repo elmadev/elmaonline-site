@@ -10,8 +10,6 @@
 import path from 'path';
 import Promise from 'bluebird';
 import express from 'express';
-import session from 'express-session';
-import grant from 'grant-express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { graphql } from 'graphql';
@@ -88,13 +86,6 @@ app.use(fileUpload());
 //
 // Authentication
 // -----------------------------------------------------------------------------
-
-app.use(session({ secret: 'grant' }));
-app.use(
-  grant({
-    ...config.grant,
-  }),
-);
 
 if (__DEV__) {
   app.enable('trust proxy');

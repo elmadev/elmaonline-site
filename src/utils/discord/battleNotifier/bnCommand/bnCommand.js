@@ -7,7 +7,7 @@ const {
   aliasBn,
   testBn,
 } = require('./subCommands');
-const { TimeOutError } = require('./messageUtils');
+const { TimeOutError } = require('../messageUtils');
 const { emojis } = require('./config');
 
 const noCommandFound = async message => {

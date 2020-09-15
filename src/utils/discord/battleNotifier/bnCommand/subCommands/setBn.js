@@ -1,5 +1,3 @@
-const { readUserMessage, redirectToDMChannel } = require('../messageUtils');
-
 const { emojis, keywords } = require('../config');
 const bnBattleTypes = require('../bnBattleTypes');
 const {
@@ -42,17 +40,14 @@ const sendRequestMessage = async ({ message, store }) => {
   const redirectMessage = currentConfig
     ? getEditMessage(currentConfig)
     : firstConfigMessage;
-  return redirectToDMChannel({
-    message,
-    redirectMessage,
-  });
+  return message.send(redirectMessage);
 };
 
 const setBn = async ({ message, store }) => {
-  const channel = await sendRequestMessage({ message, store });
+  const { channel } = await sendRequestMessage({ message, store });
 
   const user = message.author;
-  const userMessage = await readUserMessage({ channel, user });
+  const userMessage = await channel.readUserMessage(user);
   const userConfig = userConfigParser.parse(userMessage.content);
 
   if (!isUserConfigEmpty(userConfig)) {
