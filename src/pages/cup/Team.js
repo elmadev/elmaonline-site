@@ -1,12 +1,14 @@
 /* eslint-disable react/no-danger */
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import styled from 'styled-components';
 import { nickId } from 'utils/nick';
 import Grid from '@material-ui/core/Grid';
 import Header from 'components/Header';
 import Time from 'components/Time';
-import { zeroPad } from 'utils/time';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import Recplayer from 'components/Recplayer';
+import { getPrivateCupRecUri } from 'utils/cups';
+import PreviewRecButton from 'components/PreviewRecButton';
 
 const eventSort = (a, b) => a.StartTime - b.StartTime;
 
@@ -14,9 +16,20 @@ const Team = () => {
   const { teamReplays, cup } = useStoreState(state => state.Cup);
   const { getTeamReplays } = useStoreActions(actions => actions.Cup);
 
+  const [previewRecIndex, setPreviewRecIndex] = useState(null);
+
   useEffect(() => {
     getTeamReplays(cup.CupGroupIndex);
   }, []);
+
+  const isPlayingPreview = CupTimeIndex => {
+    return CupTimeIndex === previewRecIndex;
+  };
+
+  const handlePreviewRecButtonClick = CupTimeIndex => {
+    const newIndex = isPlayingPreview(CupTimeIndex) ? null : CupTimeIndex;
+    setPreviewRecIndex(newIndex);
+  };
 
   return (
     <Container>
@@ -31,23 +44,45 @@ const Team = () => {
                   Event {i + 1}
                 </Header>
                 {e.CupTimes.filter(t => t.Replay).map(replay => (
-                  <ReplayCon key={replay.CupTimeIndex}>
-                    <Rec
-                      href={`/dl/cupreplay/${replay.CupTimeIndex}/${
-                        cup.ShortName
-                      }${zeroPad(i + 1, 2)}${replay.KuskiData.Kuski.substring(
-                        0,
-                        6,
-                      )}/${replay.Code}`}
-                    >
-                      {replay.TimeExists === 1 && <>✓ </>}
-                      <Time time={replay.Time} apples={-1} />
-                    </Rec>
-                    by {replay.KuskiData.Kuski}
-                    {replay.Comment !== '0' && replay.Comment !== '' && (
-                      <Desc>{replay.Comment}</Desc>
+                  <Fragment key={replay.CupTimeIndex}>
+                    <ReplayCon>
+                      <Rec
+                        href={getPrivateCupRecUri(
+                          replay.CupTimeIndex,
+                          cup.ShortName,
+                          replay.KuskiData.Kuski,
+                          replay.Code,
+                          i + 1,
+                        )}
+                      >
+                        {replay.TimeExists === 1 && <>✓ </>}
+                        <Time time={replay.Time} apples={-1} />
+                      </Rec>
+                      by {replay.KuskiData.Kuski}
+                      <PreviewRecButton
+                        isPlaying={isPlayingPreview(replay.CupTimeIndex)}
+                        setPreviewRecIndex={handlePreviewRecButtonClick}
+                        CupTimeIndex={replay.CupTimeIndex}
+                      />
+                      {replay.Comment !== '0' && replay.Comment !== '' && (
+                        <Desc>{replay.Comment}</Desc>
+                      )}
+                    </ReplayCon>
+                    {isPlayingPreview(replay.CupTimeIndex) && (
+                      <Recplayer
+                        rec={getPrivateCupRecUri(
+                          replay.CupTimeIndex,
+                          cup.ShortName,
+                          replay.KuskiData.Kuski,
+                          replay.Code,
+                          i + 1,
+                        )}
+                        lev={`/dl/level/${e.LevelIndex}`}
+                        height={400}
+                        controls
+                      />
                     )}
-                  </ReplayCon>
+                  </Fragment>
                 ))}
               </Fragment>
             ))}
