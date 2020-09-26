@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import styled from 'styled-components';
 import { nickId } from 'utils/nick';
 import { forEach } from 'lodash';
@@ -9,10 +9,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
-import { zeroPad } from 'utils/time';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import Recplayer from 'components/Recplayer';
+import { getPrivateCupRecUri } from 'utils/cups';
+import PreviewRecButton from 'components/PreviewRecButton';
 
-const eventSort = (a, b) => a.StartTime - b.StartTime;
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const currentEventIndex = events => {
   let index = 0;
@@ -35,6 +37,8 @@ const Personal = () => {
     actions => actions.Cup,
   );
 
+  const [previewRecIndex, setPreviewRecIndex] = useState(null);
+
   useEffect(() => {
     getMyReplays(cup.CupGroupIndex);
     getMyTimes({
@@ -43,6 +47,15 @@ const Personal = () => {
       limit: 10000,
     });
   }, []);
+
+  const isPlayingPreview = CupTimeIndex => {
+    return CupTimeIndex === previewRecIndex;
+  };
+
+  const handlePreviewRecButtonClick = CupTimeIndex => {
+    const newIndex = isPlayingPreview(CupTimeIndex) ? null : CupTimeIndex;
+    setPreviewRecIndex(newIndex);
+  };
 
   return (
     <Container>
@@ -61,33 +74,55 @@ const Personal = () => {
                   Event {i + 1}
                 </Header>
                 {e.CupTimes.filter(t => t.Replay).map(replay => (
-                  <ReplayCon key={replay.CupTimeIndex}>
-                    <Checkbox
-                      checked={replay.ShareReplay}
-                      onChange={() =>
-                        updateReplay({
-                          field: 'ShareReplay',
-                          value: replay.ShareReplay ? 'false' : 'true',
-                          CupGroupIndex: cup.CupGroupIndex,
-                          CupTimeIndex: replay.CupTimeIndex,
-                        })
-                      }
-                    />
-                    <Rec
-                      href={`/dl/cupreplay/${replay.CupTimeIndex}/${
-                        cup.ShortName
-                      }${zeroPad(i + 1, 2)}${replay.KuskiData.Kuski.substring(
-                        0,
-                        6,
-                      )}/${replay.Code}`}
-                    >
-                      {replay.TimeExists === 1 && <>✓ </>}
-                      <Time time={replay.Time} apples={-1} />
-                    </Rec>
-                    {replay.Comment !== '0' && replay.Comment !== '' && (
-                      <Desc>{replay.Comment}</Desc>
+                  <Fragment key={replay.CupTimeIndex}>
+                    <ReplayCon>
+                      <Checkbox
+                        checked={replay.ShareReplay}
+                        onChange={() =>
+                          updateReplay({
+                            field: 'ShareReplay',
+                            value: replay.ShareReplay ? 'false' : 'true',
+                            CupGroupIndex: cup.CupGroupIndex,
+                            CupTimeIndex: replay.CupTimeIndex,
+                          })
+                        }
+                      />
+                      <Rec
+                        href={getPrivateCupRecUri(
+                          replay.CupTimeIndex,
+                          cup.ShortName,
+                          replay.KuskiData.Kuski,
+                          replay.Code,
+                          i + 1,
+                        )}
+                      >
+                        {replay.TimeExists === 1 && <>✓ </>}
+                        <Time time={replay.Time} apples={-1} />
+                      </Rec>
+                      <PreviewRecButton
+                        isPlaying={isPlayingPreview(replay.CupTimeIndex)}
+                        setPreviewRecIndex={handlePreviewRecButtonClick}
+                        CupTimeIndex={replay.CupTimeIndex}
+                      />
+                      {replay.Comment !== '0' && replay.Comment !== '' && (
+                        <Desc>{replay.Comment}</Desc>
+                      )}
+                    </ReplayCon>
+                    {isPlayingPreview(replay.CupTimeIndex) && (
+                      <Recplayer
+                        rec={getPrivateCupRecUri(
+                          replay.CupTimeIndex,
+                          cup.ShortName,
+                          replay.KuskiData.Kuski,
+                          replay.Code,
+                          i + 1,
+                        )}
+                        lev={`/dl/level/${e.LevelIndex}`}
+                        height={400}
+                        controls
+                      />
                     )}
-                  </ReplayCon>
+                  </Fragment>
                 ))}
               </Fragment>
             ))}

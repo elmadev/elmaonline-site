@@ -96,7 +96,7 @@ const CreateOrUpdateCuptime = async (
       RecData,
       KuskiIndex,
       CupIndex,
-      Time: 999900 + (100 - ReplayInfo.apples),
+      Time: 9999000 + (1000 - ReplayInfo.apples),
       Code,
       ShareReplay,
       Comment,

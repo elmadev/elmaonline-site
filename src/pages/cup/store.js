@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
 import {
+  AllFinishedInRange,
   Cup,
   CupEvents,
   UpdateCup,
@@ -86,11 +87,15 @@ export default {
   }),
   myReplays: [],
   myTimes: [],
+  allFinished: [],
   setMyReplays: action((state, payload) => {
     state.myReplays = payload;
   }),
   setMyTimes: action((state, payload) => {
     state.myTimes = payload;
+  }),
+  setAllFinished: action((state, payload) => {
+    state.allFinished = payload;
   }),
   getMyReplays: thunk(async (actions, payload) => {
     const recs = await MyReplays(payload);
@@ -118,6 +123,12 @@ export default {
     const recs = await TeamReplays(payload);
     if (recs.ok) {
       actions.setTeamReplays(recs.data);
+    }
+  }),
+  getAllFinishedInRange: thunk(async (actions, payload) => {
+    const times = await AllFinishedInRange(payload);
+    if (times.ok) {
+      actions.setAllFinished(times.data);
     }
   }),
 };

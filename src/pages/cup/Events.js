@@ -13,8 +13,9 @@ import CheckBox from '@material-ui/icons/CheckBox';
 import Timer from '@material-ui/icons/Timer';
 import Recplayer from 'components/Recplayer';
 import Interviews from './Interviews';
+import Leaders from './Leaders';
 
-const eventSort = (a, b) => a.StartTime - b.StartTime;
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const GetWinner = times => {
   if (times.length > 0) {
@@ -118,6 +119,9 @@ const Cups = props => {
             {events[openEvent].EndTime < format(new Date(), 't') && (
               <Tab label="Interviews" />
             )}
+            {events[openEvent].EndTime < format(new Date(), 't') && (
+              <Tab label="Leaders" />
+            )}
           </Tabs>
           {tab === 0 && (
             <CupResults
@@ -137,6 +141,9 @@ const Cups = props => {
           )}
           {tab === 2 && events[openEvent].EndTime < format(new Date(), 't') && (
             <Interviews cup={cup} event={events[openEvent]} />
+          )}
+          {tab === 3 && events[openEvent].EndTime < format(new Date(), 't') && (
+            <Leaders event={events[openEvent]} />
           )}
         </Grid>
       )}
