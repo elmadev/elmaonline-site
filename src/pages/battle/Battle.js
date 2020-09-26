@@ -19,6 +19,7 @@ import Link from 'components/Link';
 import Chat from 'components/Chat';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
+import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 
 import s from './Battle.css';
@@ -111,19 +112,17 @@ class Battle extends React.Component {
 
     return (
       <div className={s.root}>
-        {
-          <div className={s.playerContainer}>
-            <div className={s.player}>
-              {isWindow && !(battleStatus(getBattle) === 'Queued') && (
-                <Recplayer
-                  rec={`/dl/battlereplay/${BattleIndex}`}
-                  lev={`/dl/level/${getBattle.LevelIndex}`}
-                  controls
-                />
-              )}
-            </div>
+        <div className={s.playerContainer}>
+          <div className={s.player}>
+            {isWindow && !(battleStatus(getBattle) === 'Queued') && (
+              <Recplayer
+                rec={`/dl/battlereplay/${BattleIndex}`}
+                lev={`/dl/level/${getBattle.LevelIndex}`}
+                controls
+              />
+            )}
           </div>
-        }
+        </div>
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
@@ -168,42 +167,7 @@ class Battle extends React.Component {
                   <Typography variant="body2">Leader history</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                  <div className={s.timeDevelopment}>
-                    {[...getAllBattleTimes]
-                      .reduce((acc, cur) => {
-                        if (
-                          acc.length < 1 ||
-                          acc[acc.length - 1].Time > cur.Time
-                        )
-                          acc.push(cur);
-                        return acc;
-                      }, [])
-                      .map((b, i, a) => (
-                        <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
-                          <span className={s.timeDiff}>
-                            {a.length > 1 && !a[i + 1] && 'Winner'}
-                            {a[i - 1] && (
-                              <span>
-                                {' '}
-                                -<Time time={a[i - 1].Time - b.Time} />
-                              </span>
-                            )}
-                            {a.length > 1 && !a[i - 1] && 'First finish'}
-                            {a.length === 1 && 'Only finish'}
-                          </span>
-                          <span className={s.timelineCell}>
-                            <span className={s.timelineMarker} />
-                            <span className={s.timelineLine} />
-                          </span>
-                          <span className={s.timeDevelopmentTime}>
-                            <Time time={b.Time} />
-                          </span>
-                          <span className={s.timeDevelopmentKuski}>
-                            {b.KuskiData.Kuski}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
+                  <LeaderHistory allFinished={getAllBattleTimes} />
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}

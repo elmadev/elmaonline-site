@@ -90,6 +90,8 @@ export const PersonalAllFinished = data =>
   api.get(`allfinished/${data.LevelIndex}/${data.KuskiIndex}/${data.limit}`);
 export const PersonalLatest = data =>
   api.get(`allfinished/${data.KuskiIndex}/${data.limit}`);
+export const AllFinishedInRange = data =>
+  api.get(`allfinished/ranged/${data.LevelIndex}/${data.from}/${data.to}`);
 
 // levelpack
 export const TotalTimes = LevelPackIndex =>
