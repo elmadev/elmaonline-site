@@ -264,7 +264,7 @@ const Headline = styled.div`
 
 const Text = styled.div`
   padding: 8px;
-  white-space: pre;
+  white-space: pre-wrap;
 `;
 
 export default Interviews;

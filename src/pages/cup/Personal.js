@@ -12,7 +12,7 @@ import Time from 'components/Time';
 import { zeroPad } from 'utils/time';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
-const eventSort = (a, b) => a.StartTime - b.StartTime;
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const currentEventIndex = events => {
   let index = 0;

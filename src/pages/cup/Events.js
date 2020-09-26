@@ -14,7 +14,7 @@ import Timer from '@material-ui/icons/Timer';
 import Recplayer from 'components/Recplayer';
 import Interviews from './Interviews';
 
-const eventSort = (a, b) => a.StartTime - b.StartTime;
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const GetWinner = times => {
   if (times.length > 0) {

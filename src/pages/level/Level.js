@@ -197,7 +197,7 @@ class Level extends React.Component {
                                 <Kuski kuskiData={i.KuskiData} team flag />
                               </TableCell>
                               <TableCell>
-                                {i.Finished === 1 ? (
+                                {i.Finished === 1 && sorted.length > 0 ? (
                                   <Kuski
                                     kuskiData={sorted[0].KuskiData}
                                     team
