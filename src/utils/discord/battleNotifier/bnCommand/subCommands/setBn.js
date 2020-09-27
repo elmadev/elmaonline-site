@@ -1,12 +1,12 @@
 const { emojis, keywords } = require('../config');
-const bnBattleTypes = require('../bnBattleTypes');
-const {
-  parser,
-  formatter,
-  isUserConfigEmpty,
-} = require('../userConfig/index.js');
+const { bnBattleTypes, bnBattleAttributes } = require('../../constants');
+const { parser, formatter, isUserConfigEmpty } = require('../../userConfig');
 
-const userConfigParser = parser({ bnBattleTypes, keywords });
+const userConfigParser = parser({
+  bnBattleTypes,
+  bnBattleAttributes,
+  keywords,
+});
 const userConfigFormatter = formatter({ keywords });
 
 const notesMessage = `*Note:*
@@ -27,9 +27,12 @@ Ignore any *by* Grob
 ${notesMessage}
 `;
 
+const editMessage = 'Please reply to edit your configuration, your current is:';
+const yourConfigMessage = 'Your configuration was saved as:';
+
 const getEditMessage = userConfig => {
   const configString = userConfigFormatter.toString(userConfig);
-  return `Please reply to edit your configuration, your current is:\n\n${configString}\n\n${notesMessage}`;
+  return `${editMessage}\n\n${configString}\n\n${notesMessage}`;
 };
 
 const setConfigErrorMessage =
@@ -55,7 +58,7 @@ const setBn = async ({ message, store }) => {
     await store.set(user.id, userConfig);
 
     const configString = userConfigFormatter.toString(userConfig);
-    channel.send(`Your configuration was saved as:\n\n${configString}`);
+    channel.send(`${yourConfigMessage}\n\n${configString}`);
     userMessage.react(emojis.ok);
   } else {
     channel.send(setConfigErrorMessage);
@@ -64,3 +67,10 @@ const setBn = async ({ message, store }) => {
 };
 
 module.exports = setBn;
+module.exports.messages = {
+  firstConfigMessage,
+  notesMessage,
+  editMessage,
+  yourConfigMessage,
+  setConfigErrorMessage,
+};

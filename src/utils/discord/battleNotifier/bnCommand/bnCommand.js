@@ -8,11 +8,11 @@ const {
   testBn,
 } = require('./subCommands');
 const { TimeOutError } = require('../messageUtils');
-const { emojis } = require('./config');
+const { emojis, messages } = require('./config');
 
 const noCommandFound = async message => {
   await message.react(emojis.notFound);
-  await message.channel.send('Use `!bn help` to see the available commands');
+  await message.channel.send(messages.seeAvailableCommands);
 };
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
       const errorMessage =
         error instanceof TimeOutError
           ? error.message
-          : 'Something went wrong, please try again.';
+          : `${messages.somethingWentWrong}\n${messages.seeAvailableCommands}`;
       user.send(errorMessage);
 
       logger.log({

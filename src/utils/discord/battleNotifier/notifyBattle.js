@@ -1,3 +1,5 @@
+const onlyWordsRegExp = /^\w+$/;
+
 const matchesValue = (array, value) => {
   const matchValue = value && value.toLowerCase();
   return (
@@ -5,13 +7,64 @@ const matchesValue = (array, value) => {
   );
 };
 
-const battleMatchesConfigItem = (battle, configItem) => {
-  const { designers, battleTypes } = configItem;
+const isSimpleLevelPattern = string => onlyWordsRegExp.test(string);
 
+const matchesLevelPatterns = (levelPatterns, level) => {
+  if (levelPatterns.length === 0) return true;
+
+  const matchesSome = levelPatterns.some(levelPattern => {
+    const useRegExp = !isSimpleLevelPattern(levelPattern);
+    if (useRegExp) {
+      return new RegExp(levelPattern).test(level);
+    }
+
+    const levelName = level ? level.toLowerCase() : '';
+    return levelName.startsWith(levelPattern.toLowerCase());
+  });
+
+  return matchesSome;
+};
+
+const matchesAttributes = (battleAttributes, battle) => {
+  return battleAttributes.every(attr => {
+    return battle[attr];
+  });
+};
+
+const matchesDurationRange = (
+  { minDuration, maxDuration },
+  durationMinutes,
+) => {
+  const matchesMin = minDuration === 0 || durationMinutes >= minDuration;
+  const macthesMax = maxDuration === 0 || durationMinutes <= maxDuration;
+  return matchesMin && macthesMax;
+};
+
+const battleMatchesConfigItem = (battle, configItem) => {
+  const {
+    designers,
+    battleTypes,
+    levelPatterns,
+    battleAttributes,
+    ...duration
+  } = configItem;
+
+  const matchesLevel = matchesLevelPatterns(levelPatterns, battle.level);
   const matchesDesigner = matchesValue(designers, battle.designer);
   const matchesBattleType = matchesValue(battleTypes, battle.battleType);
+  const matchesBattleAttributes = matchesAttributes(battleAttributes, battle);
+  const matchesDuration = matchesDurationRange(
+    duration,
+    battle.durationMinutes,
+  );
 
-  return matchesDesigner && matchesBattleType;
+  return (
+    matchesDesigner &&
+    matchesBattleType &&
+    matchesLevel &&
+    matchesBattleAttributes &&
+    matchesDuration
+  );
 };
 
 const battleMatchesConfigList = (battle, configList) =>
@@ -25,13 +78,13 @@ const getSubscribedUserIds = async ({ battle, store }) => {
   const userConfigsById = await store.getAll();
   const userConfigs = Object.entries(userConfigsById);
 
-  const userNames = userConfigs.reduce((acc, [userId, userConfig]) => {
-    const mentionUser =
+  const userIds = userConfigs.reduce((acc, [userId, userConfig]) => {
+    const isSubscribed =
       userConfig.isOn && battleMatchesUserConfig(battle, userConfig);
-    return mentionUser ? [...acc, userId] : acc;
+    return isSubscribed ? [...acc, userId] : acc;
   }, []);
 
-  return userNames;
+  return userIds;
 };
 
 module.exports = { getSubscribedUserIds, battleMatchesUserConfig };

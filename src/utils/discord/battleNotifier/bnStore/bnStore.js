@@ -1,5 +1,6 @@
 const { writeJsonFile, readJsonFile } = require('./jsonFs');
 const { createParentFolder } = require('../../fileUtils');
+const { UserConfig } = require('../userConfig');
 
 const createBnStore = path => {
   createParentFolder(path);
@@ -10,7 +11,8 @@ const createBnStore = path => {
 
   const get = async userId => {
     const bnStore = await getAll();
-    return bnStore[userId];
+    const storedConfig = bnStore[userId];
+    return UserConfig(storedConfig);
   };
 
   const set = async (userId, values) => {
@@ -18,6 +20,7 @@ const createBnStore = path => {
 
     const updatedAt = new Date().toISOString();
     const newConfig = {
+      isOn: true,
       createdAt: updatedAt,
       ...bnStore[userId],
       updatedAt,
