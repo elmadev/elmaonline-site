@@ -1,5 +1,5 @@
 const setBn = require('../setBn');
-const { emojis } = require('../../config');
+const { emojis, messages } = require('../../config');
 const { UserConfigLists } = require('../../../userConfig');
 const {
   mockStore,
@@ -17,6 +17,7 @@ const {
   yourConfigMessage,
   firstConfigMessage,
   setConfigErrorMessage,
+  writeBnHelpMessage,
 } = setBn.messages;
 
 let store;
@@ -60,8 +61,8 @@ describe('user replies with bad format message and config does not change', () =
   });
 });
 
-describe('user sets configuration for first time', () => {
-  test('new user sets configuration successfully', async () => {
+describe('user sets notifications for first time', () => {
+  test('new user sets notifications successfully', async () => {
     const author = mockUser('100', 'NewUser');
     const userReply = mockMessage({ content: 'ff by Markku' });
     const channel = mockChannel({ userReply });
@@ -96,7 +97,7 @@ describe('user sets configuration for first time', () => {
     /** Expect bot to reply with newly created user config */
     expect(channel.send).toBeCalledTimes(1);
     expect(channel.send).toBeCalledWith(
-      `${yourConfigMessage}\n\nFirst Finish by Markku`,
+      `${yourConfigMessage}\n\n\`\`\`First Finish by Markku\`\`\`\n${writeBnHelpMessage}`,
     );
 
     /** Expect bot to react with OK emoji to user message */
@@ -105,15 +106,17 @@ describe('user sets configuration for first time', () => {
   });
 });
 
-describe('user edits his current configuration', () => {
+describe('user edits his current notifications', () => {
   test('bot replies with current config and user sets new successfuly', async () => {
     const author = mockUser('1', 'Kopaka');
     const userReply = mockMessage({ content: 'ff by Markku' });
     const channel = mockChannel({ userReply });
     const message = mockMessage({ author, channel });
 
-    const currentConfig = `Normal, First Finish, Flag Tag by Bene, Sla, Spef`;
-    const expectedMessage = `${editMessage}\n\n${currentConfig}\n\n${notesMessage}`;
+    const currentConfig = 'Normal, First Finish, Flag Tag by Bene, Sla, Spef';
+    const expectedMessage = `${editMessage}\n\n\`\`\`${currentConfig}\`\`\`\n${
+      messages.userConfigFormat
+    }\n${notesMessage}`;
 
     await setBn({ message, store });
 
@@ -144,7 +147,7 @@ describe('user edits his current configuration', () => {
     /** Expect bot to reply with newly created user config */
     expect(channel.send).toBeCalledTimes(1);
     expect(channel.send).toBeCalledWith(
-      `${yourConfigMessage}\n\nFirst Finish by Markku`,
+      `${yourConfigMessage}\n\n\`\`\`First Finish by Markku\`\`\`\n${writeBnHelpMessage}`,
     );
 
     /** Expect bot to react with OK emoji to user message */

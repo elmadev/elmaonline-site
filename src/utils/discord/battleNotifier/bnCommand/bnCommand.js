@@ -5,6 +5,7 @@ const {
   toggleBn,
   helpBn,
   aliasBn,
+  rulesBn,
   testBn,
 } = require('./subCommands');
 const { TimeOutError } = require('../messageUtils');
@@ -34,6 +35,8 @@ module.exports = {
         await helpBn(user);
       } else if (subCommand === 'alias') {
         await aliasBn(user);
+      } else if (subCommand === 'rules') {
+        await rulesBn(user);
       } else if (subCommand === 'test') {
         await testBn({ message, store });
       } else {

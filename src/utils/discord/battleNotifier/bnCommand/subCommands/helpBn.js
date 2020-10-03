@@ -2,12 +2,12 @@ const helpMessage = `This is Battle Notifier 🔔 I'll send you a message to let
 
 Commands:
 \`\`\`
-!bn       - to save a new configuration
-!bn get   - to see your current configuration
+!bn       - to save new notifications
+!bn get   - to see your current notifications
 !bn on    - to turn notifications on 
 !bn off   - to turn notifications off
 !bn alias - show all battle type name aliases
-!bn test  - simulate a battle to test your configuration
+!bn test  - simulate a battle to test your notifications
 \`\`\`
 `;
 

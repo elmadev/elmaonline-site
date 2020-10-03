@@ -12,7 +12,7 @@ const formatValues = (values, separator, format = value => value) => {
   return cleanedValeus.map(value => format(value)).join(separator);
 };
 
-const isUserConfigEmpty = userConfig => {
+const areUserConfigListsEmpty = userConfig => {
   return (
     userConfig.notifyList.length === 0 && userConfig.ignoreList.length === 0
   );
@@ -91,7 +91,7 @@ const userConfigFormatter = ({ keywords }) => {
   const userConfigToString = userConfig => {
     let result = '';
 
-    const isEmpty = isUserConfigEmpty(userConfig);
+    const isEmpty = areUserConfigListsEmpty(userConfig);
     if (!isEmpty) {
       const notify = configListToString(userConfig.notifyList);
       const ignore = configListToString(userConfig.ignoreList, true);
@@ -105,4 +105,4 @@ const userConfigFormatter = ({ keywords }) => {
 };
 
 module.exports = userConfigFormatter;
-module.exports.isUserConfigEmpty = isUserConfigEmpty;
+module.exports.areUserConfigListsEmpty = areUserConfigListsEmpty;

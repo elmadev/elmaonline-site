@@ -12,7 +12,7 @@ const toggleStatusMessage = currentStatus => {
 };
 
 const noNotificationsSetMessage =
-  'No notifications set, please use `!bn` to set your configuration';
+  'No notifications set, please use `!bn` to set your notifications';
 
 const getUserConfig = async ({ user, store }) => {
   let response = '';

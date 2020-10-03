@@ -419,4 +419,34 @@ describe('test inputs combining all rules', () => {
     });
     expect(actual).toEqual(expected);
   });
+
+  test('parse set bn message example', () => {
+    const userInput = `Normal, First Finish, Flag Tag by any
+    Apple (see others, drunk) by Pab, Markku, Sla
+    Any Pob.lev, jbl.lev >20 by any
+    Ignore any by Grob`;
+    const actual = userConfigParser.parse(userInput);
+    const expected = UserConfigLists({
+      notifyList: [
+        {
+          battleTypes: ['Normal', 'First Finish', 'Flag Tag'],
+        },
+        {
+          battleTypes: ['Apple'],
+          battleAttributes: ['seeOthers', 'drunk'],
+          designers: ['Pab', 'Markku', 'Sla'],
+        },
+        {
+          levelPatterns: ['Pob', 'jbl'],
+          minDuration: 20,
+        },
+      ],
+      ignoreList: [
+        {
+          designers: ['Grob'],
+        },
+      ],
+    });
+    expect(actual).toEqual(expected);
+  });
 });

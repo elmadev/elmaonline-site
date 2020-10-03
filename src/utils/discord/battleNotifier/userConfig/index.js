@@ -7,7 +7,7 @@ module.exports = {
   parser: userConfigParser,
   formatter: userConfigFormatter,
   getBattleVariations,
-  isUserConfigEmpty: userConfigFormatter.isUserConfigEmpty,
+  areUserConfigListsEmpty: userConfigFormatter.areUserConfigListsEmpty,
   UserConfig,
   UserConfigLists,
 };

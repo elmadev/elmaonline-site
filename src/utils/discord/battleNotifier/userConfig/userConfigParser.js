@@ -69,9 +69,9 @@ const userConfigParser = ({ bnBattleTypes, bnBattleAttributes, keywords }) => {
 
   const parseLeftSide = input => {
     const [battleAttributes, noAttrInput] = extractBattleAttributes(input);
+    const { minDuration, maxDuration } = parseDurations(input);
     const [levelPatterns, noLevInput] = extractLevelPatterns(noAttrInput);
     const battleTypes = parseBattleVariations(noLevInput, bnBattleTypes);
-    const { minDuration, maxDuration } = parseDurations(input);
     return {
       battleTypes,
       levelPatterns,
@@ -122,7 +122,7 @@ const userConfigParser = ({ bnBattleTypes, bnBattleAttributes, keywords }) => {
     };
   };
 
-  const parseUserConfig = userInput => {
+  const parseUserConfigLists = userInput => {
     const notifyList = [];
     const ignoreList = [];
 
@@ -144,7 +144,7 @@ const userConfigParser = ({ bnBattleTypes, bnBattleAttributes, keywords }) => {
     };
   };
 
-  return { parse: parseUserConfig, parseInputLine };
+  return { parse: parseUserConfigLists, parseInputLine };
 };
 
 module.exports = userConfigParser;

@@ -16,7 +16,7 @@ const incorrectTestMessage =
 const testResultMessage = matches =>
   `${matches ? '🔔' : '🔕'} The battle ${
     matches ? 'matches' : 'does not match'
-  } your configuration.`;
+  } your notifications.`;
 
 const testBattleMessage = ({ battleType, designer, level }) => {
   const leftSide =
