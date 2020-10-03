@@ -3,6 +3,7 @@ const { messages } = require('../config');
 const rulesMessage = `Always write one line per rule, use \`!bn\` to set your notifications.
 
 ${messages.userConfigFormat}
+${messages.userConfigExample}
 Always use the word "by" to separate designers from everything else.
 
 **Ignore (optional).** Write "Ignore" at the beginning of a line to ignore (blacklist) that specific rule.

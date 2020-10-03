@@ -1,5 +1,5 @@
 const setBn = require('../setBn');
-const { emojis, messages } = require('../../config');
+const { emojis } = require('../../config');
 const { UserConfigLists } = require('../../../userConfig');
 const {
   mockStore,
@@ -13,7 +13,6 @@ const {
 
 const {
   editMessage,
-  notesMessage,
   yourConfigMessage,
   firstConfigMessage,
   setConfigErrorMessage,
@@ -114,9 +113,7 @@ describe('user edits his current notifications', () => {
     const message = mockMessage({ author, channel });
 
     const currentConfig = 'Normal, First Finish, Flag Tag by Bene, Sla, Spef';
-    const expectedMessage = `${editMessage}\n\n\`\`\`${currentConfig}\`\`\`\n${
-      messages.userConfigFormat
-    }\n${notesMessage}`;
+    const expectedMessage = editMessage(currentConfig);
 
     await setBn({ message, store });
 

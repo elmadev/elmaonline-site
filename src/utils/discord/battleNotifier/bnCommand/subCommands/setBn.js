@@ -18,26 +18,24 @@ const notesMessage = `*Note:*
 *Use the word* ***ignore*** *at the beginning of a line to ignore (blacklist) that specific rule.*
 *Use **>**xx or **<**xx to indicate a minimum and maximum battle duration in minutes.*`;
 
-const firstConfigMessage = `Please reply to this message to set your notifications, write one line per rule.\n\n${
-  messages.userConfigFormat
-}
-Example:
-\`\`\`
-Normal, First Finish, Flag Tag by any
-Apple (see others, drunk) by Pab, Markku, Sla
-Any Pob.lev, jbl.lev >20 by any
-Ignore any by Grob
-\`\`\`
-*With the example above you would get notified when a:*
+const exampleExplanationMessage = `*With the example above you would get notified when a:*
 *1. Normal, First Finish or Flag Tag battle is started by any player.*
 *2. Apple battle (with see others and drunk) is started by Pab, Markku or Sla.*
 *3. Any battle type in level starting with "Pob" (e.g. Pob0129) or "jbl" that is at least 20 minutes long.*
-*4. But Ignore when any battle is started by Grob.*
+*4. But Ignore when any battle is started by Grob.*`;
 
-${notesMessage}
-`;
+const setSharedMessage = `${messages.userConfigFormat}
+${messages.userConfigExample}
+${exampleExplanationMessage}
 
-const editMessage = 'Please reply to edit your notifications, your current is:';
+${notesMessage}`;
+
+const firstConfigMessage = `Please reply to this message to set your notifications, write one line per rule.
+
+${setSharedMessage}`;
+
+const editMessageTitle =
+  'Please reply to edit your notifications, write on line per rule.';
 const yourConfigMessage = 'Your notifications were saved as:';
 const writeBnHelpMessage =
   '*Write `!bn help` to see all commands (e g. `!bn off` to pause notifications).*';
@@ -47,11 +45,14 @@ const setSuccesfulMessage = userConfigValues => {
   return `${yourConfigMessage}\n\n\`\`\`${configString}\`\`\`\n${writeBnHelpMessage}`;
 };
 
+const editMessage = configString => `${editMessageTitle}
+
+Your current notifications:\`\`\`${configString}\`\`\`
+${setSharedMessage}`;
+
 const getEditMessage = userConfig => {
   const configString = userConfigFormatter.toString(userConfig);
-  return `${editMessage}\n\n\`\`\`${configString}\`\`\`\n${
-    messages.userConfigFormat
-  }\n${notesMessage}`;
+  return editMessage(configString);
 };
 
 const setConfigErrorMessage =
@@ -79,11 +80,11 @@ const setBn = async ({ message, store }) => {
     };
     await store.set(user.id, userConfigValues);
 
-    channel.send(setSuccesfulMessage(userConfigValues));
-    userMessage.react(emojis.ok);
+    await channel.send(setSuccesfulMessage(userConfigValues));
+    await userMessage.react(emojis.ok);
   } else {
-    channel.send(setConfigErrorMessage);
-    userMessage.react(emojis.error);
+    await channel.send(setConfigErrorMessage);
+    await userMessage.react(emojis.error);
   }
 };
 
@@ -91,8 +92,8 @@ module.exports = setBn;
 module.exports.messages = {
   firstConfigMessage,
   notesMessage,
-  editMessage,
   yourConfigMessage,
   setConfigErrorMessage,
   writeBnHelpMessage,
+  editMessage,
 };
