@@ -38,7 +38,7 @@ describe('with user in store', () => {
     expect(store.get).toHaveBeenCalledWith('1');
 
     const expectedConfig = 'Normal, First Finish, Flag Tag by Bene, Sla, Spef';
-    const expected = `${yourConfigMessage} **ON**\n(*to turn it off use "!bn off"*)\n\n${expectedConfig}`;
+    const expected = `${yourConfigMessage} **ON**\n(*to turn them off use \`!bn off\`*)\n\`\`\`${expectedConfig}\`\`\``;
     expect(user.send).toHaveBeenCalledTimes(1);
     expect(user.send).toHaveBeenCalledWith(expected);
   });

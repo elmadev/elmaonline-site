@@ -11,7 +11,7 @@ const userConfigParser = require('../../userConfig').parser({
 const testBnMessage =
   'Please write a battle type and designer to test:\n*(First Finish by Markku)*';
 const incorrectTestMessage =
-  'Battle type or designer was incorrect, please use the format "Battle type by designer"';
+  'Battle type or designer was incorrect, please use the format "Battle type by designer"\n\n*Write one battle type and designer. Optionally a level name pattern ending in `.lev`.*\n*Battle attributes and duration not yet supported for testing*.';
 
 const testResultMessage = matches =>
   `${matches ? '🔔' : '🔕'} The battle ${
@@ -19,9 +19,9 @@ const testResultMessage = matches =>
   } your notifications.`;
 
 const testBattleMessage = ({ battleType, designer, level }) => {
-  const leftSide =
+  const levelAndType =
     battleType && level ? `${level} ${battleType}` : level || battleType;
-  return `Test: ${leftSide} battle started by ${designer}`;
+  return `Test: ${levelAndType} battle started by ${designer}`;
 };
 
 const runTest = async ({ message, user, userConfig }) => {
@@ -43,12 +43,12 @@ const runTest = async ({ message, user, userConfig }) => {
   const canTestBattle = (battle.battleType || battle.level) && battle.designer;
   if (canTestBattle) {
     const matches = battleMatchesUserConfig(battle, userConfig);
-    channel.send(testBattleMessage(battle));
-    channel.send(testResultMessage(matches));
-    userMessage.react(emojis.ok);
+    await channel.send(testBattleMessage(battle));
+    await channel.send(testResultMessage(matches));
+    await userMessage.react(emojis.ok);
   } else {
-    channel.send(incorrectTestMessage);
-    userMessage.react(emojis.error);
+    await channel.send(incorrectTestMessage);
+    await userMessage.react(emojis.error);
   }
 };
 

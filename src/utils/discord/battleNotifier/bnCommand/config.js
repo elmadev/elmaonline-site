@@ -18,6 +18,6 @@ module.exports = {
     somethingWentWrong:
       'Something went wrong, please try again (write the command again).',
     userConfigFormat:
-      'In each line you can match the battle type, attributes, duration, level name and designer with the following format:\n```Battle types, level names ending in .lev (battle attributes between parentheses) >xx <xx by designers```',
+      'In each line you can match battle types, level names, attributes, duration and designers with the following format:\n```Battle types, level names ending in .lev (battle attributes between parentheses) >xx <xx by designers```',
   },
 };

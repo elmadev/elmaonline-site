@@ -5,10 +5,10 @@ const userConfigFormatter = require('../../../userConfig').formatter({
 
 const statusToString = isOn => (isOn ? 'ON' : 'OFF');
 
-const yourConfigMessage = 'Your current config is ';
+const yourConfigMessage = 'Your current notifications are ';
 const toggleStatusMessage = currentStatus => {
   const oppositeStatus = statusToString(!currentStatus).toLocaleLowerCase();
-  return `to turn it ${oppositeStatus} use "!bn ${oppositeStatus}"`;
+  return `to turn them ${oppositeStatus} use \`!bn ${oppositeStatus}\``;
 };
 
 const noNotificationsSetMessage =
@@ -24,7 +24,7 @@ const getUserConfig = async ({ user, store }) => {
 
     const configString = userConfigFormatter.toString(userConfig);
     if (configString) {
-      response = `${yourConfigMessage} **${status}**\n(*${toggleStatus}*)\n\n${configString}`;
+      response = `${yourConfigMessage} **${status}**\n(*${toggleStatus}*)\n\`\`\`${configString}\`\`\``;
     } else {
       response = noNotificationsSetMessage;
     }
