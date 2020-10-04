@@ -1,4 +1,4 @@
-const { responses } = require('../config');
+const { messages } = require('../config');
 
 const toggleBn = async ({ message, store, isOn }) => {
   const user = message.author;
@@ -6,10 +6,10 @@ const toggleBn = async ({ message, store, isOn }) => {
   if (userConfig) {
     await store.set(user.id, { isOn });
     await message.author.send(
-      `Your configuration is now ${isOn ? 'ON' : 'OFF'}`,
+      `Your notifications are now ${isOn ? 'ON' : 'OFF'}`,
     );
   } else {
-    user.send(responses.configNotFound);
+    user.send(messages.configNotFound);
   }
 };
 

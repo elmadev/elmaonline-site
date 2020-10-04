@@ -4,5 +4,6 @@ const getBn = require('./getBn');
 const aliasBn = require('./aliasBn');
 const helpBn = require('./helpBn');
 const toggleBn = require('./toggleBn');
+const rulesBn = require('./rulesBn');
 
-module.exports = { setBn, testBn, getBn, aliasBn, helpBn, toggleBn };
+module.exports = { setBn, testBn, getBn, aliasBn, helpBn, toggleBn, rulesBn };

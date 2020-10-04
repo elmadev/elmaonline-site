@@ -1,12 +1,21 @@
-const bnBattleTypes = require('../bnBattleTypes');
-const { getBattleTypeVariations } = require('../userConfig');
+const { bnBattleTypes, bnBattleAttributes } = require('../../constants');
+const { getBattleVariations } = require('../../userConfig');
+
+const codeBlock = code => `\`\`\`${code}\`\`\``;
 
 const aliasBn = async user => {
   const typeAliases = bnBattleTypes
-    .map(bnType => getBattleTypeVariations(bnType).join(', '))
+    .map(bnType => getBattleVariations(bnType).join(', '))
     .join('\n');
+
+  const attrAliases = bnBattleAttributes
+    .map(bnType => getBattleVariations(bnType).join(', '))
+    .join('\n');
+
   await user.send(
-    `This are all the possible aliases for battle types:\n*(can separate battle types and designer names by comma or spaces)*\n\`\`\`${typeAliases}\`\`\``,
+    `This are all the possible aliases for battle types and battle attributes:\n*(while setting your notifications, you can always separate values by comma or spaces)*\n\nBattle Types:${codeBlock(
+      typeAliases,
+    )}\nBattle Attributes:${codeBlock(attrAliases)}`,
   );
 };
 
