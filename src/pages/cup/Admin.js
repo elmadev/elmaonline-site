@@ -3,12 +3,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Button from '@material-ui/core/Button';
+import { Button, Checkbox, Grid } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
 import Field from 'components/Field';
-import Checkbox from '@material-ui/core/Checkbox';
 import DerpTable from 'components/Table/DerpTable';
-import Grid from '@material-ui/core/Grid';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Kuski from 'components/Kuski';
@@ -64,7 +62,7 @@ const Admin = props => {
 
   return (
     <Container>
-      <Grid container spacing={16}>
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Header h2>Add event</Header>
           <Paper>

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Tabs, Tab, Grid } from '@material-ui/core';
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid';
 import Header from 'components/Header';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { nickId } from 'utils/nick';
@@ -59,7 +57,7 @@ const Cups = props => {
         )}
       </Tabs>
       <CupName>
-        <Grid container spacing={16}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <Header h1>{cup.CupName}</Header>
           </Grid>

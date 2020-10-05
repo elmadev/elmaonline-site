@@ -2,7 +2,7 @@
 import React, { useEffect, Fragment, useState } from 'react';
 import styled from 'styled-components';
 import { nickId } from 'utils/nick';
-import Grid from '@material-ui/core/Grid';
+import { Grid } from '@material-ui/core';
 import Header from 'components/Header';
 import Time from 'components/Time';
 import { useStoreState, useStoreActions } from 'easy-peasy';

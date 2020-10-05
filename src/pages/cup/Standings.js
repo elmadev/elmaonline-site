@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import DerpTable from 'components/Table/DerpTable';
 import { ListRow, ListCell } from 'styles/List';
-import Grid from '@material-ui/core/Grid';
+import { Grid } from '@material-ui/core';
 import Header from 'components/Header';
 import Kuski from 'components/Kuski';
 import { calculateStandings } from 'utils/cups';

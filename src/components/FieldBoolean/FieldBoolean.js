@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import { FormControlLabel, Checkbox } from '@material-ui/core';
 
 export default function FieldBoolean({ onChange, value, label }) {
   return (

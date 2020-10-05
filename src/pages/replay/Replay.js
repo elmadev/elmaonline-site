@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
 
 import Recplayer from 'components/Recplayer';
@@ -70,8 +72,8 @@ class Replay extends React.Component {
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">
                   <>{getReplayByUuid.RecFileName}</>
                 </Typography>
               </ExpansionPanelSummary>
@@ -118,8 +120,8 @@ class Replay extends React.Component {
               </ExpansionPanelDetails>
             </ExpansionPanel>
             {/* <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body2">
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body1">
                   <React.Fragment>
                     <Level LevelData={getReplayByUuid.LevelData} />.lev
                   </React.Fragment>
@@ -133,8 +135,8 @@ class Replay extends React.Component {
               </ExpansionPanelDetails>
             </ExpansionPanel> */}
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">Other replays in level</Typography>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Other replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList

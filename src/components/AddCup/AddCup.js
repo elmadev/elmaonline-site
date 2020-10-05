@@ -4,7 +4,7 @@ import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Field from 'components/Field';
 import FieldBoolean from 'components/FieldBoolean';
-import Button from '@material-ui/core/Button';
+import { Button } from '@material-ui/core';
 import { nickId } from 'utils/nick';
 
 const schema = yup.object().shape({

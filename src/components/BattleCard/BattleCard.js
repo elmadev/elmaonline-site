@@ -1,11 +1,7 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-
+import { Card, CardContent, Typography, Grid } from '@material-ui/core';
 import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
@@ -28,12 +24,12 @@ const BattleCard = props => {
               <Header h2 nomargin>
                 <Level LevelData={battle.LevelData} />
               </Header>
-              <Typography variant="subtitle1" color="textSecondary">
+              <Typography variant="body1" color="textSecondary">
                 <Level long LevelData={battle.LevelData} />
               </Typography>
               <Typography
                 className={s.info}
-                variant="subtitle1"
+                variant="body1"
                 color="textSecondary"
               >
                 <div>

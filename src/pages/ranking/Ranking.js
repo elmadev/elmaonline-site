@@ -2,9 +2,7 @@ import React from 'react';
 import { compose } from 'react-apollo';
 import m from 'moment';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
+import { Tabs, Tab, Grid } from '@material-ui/core';
 
 import Header from 'components/Header';
 import RankingOverall from 'components/RankingTable/Overall';
@@ -60,7 +58,7 @@ class Ranking extends React.Component {
           <Tab label={`Daily (${year}/${month}/${day})`} />
         </Tabs>
         <div className={s.root}>
-          <Grid container spacing={24}>
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={8}>
               <Header>Ranking</Header>
               {tab === 0 && <RankingOverall battleType={battleType} />}

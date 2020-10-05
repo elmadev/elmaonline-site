@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
+import { Grid, TextField } from '@material-ui/core';
 import styled from 'styled-components';
-import DeleteIcon from '@material-ui/icons/Delete';
-import PlaylistAdd from '@material-ui/icons/PlaylistAdd';
-import DragHandle from '@material-ui/icons/DragHandle';
-import TextField from '@material-ui/core/TextField';
+import {
+  Delete as DeleteIcon,
+  PlaylistAdd,
+  DragHandle,
+} from '@material-ui/icons';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ListCell, ListContainer, ListHeader } from 'styles/List';

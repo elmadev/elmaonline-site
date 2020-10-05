@@ -5,11 +5,12 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CloseIcon from '@material-ui/icons/Close';
+import {
+  Settings as SettingsIcon,
+  Close as CloseIcon,
+} from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Tabs, Tab } from '@material-ui/core';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 import { nick, nickId } from 'utils/nick';
