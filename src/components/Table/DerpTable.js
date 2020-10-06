@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  TableRow,
+  TableFooter,
+  TablePagination,
+  CircularProgress,
+} from '@material-ui/core';
 import { Paper } from 'styles/Paper';
 import { ListContainer, ListHeader, ListCell } from 'styles/List';
 import PaginationActions from 'components/Table/PaginationActions';

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import history from 'utils/history';
 import styled from 'styled-components';
-import Button from '@material-ui/core/Button';
-import Info from '@material-ui/icons/Info';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
+import { Button, Drawer, Hidden } from '@material-ui/core';
+import { Info } from '@material-ui/icons';
 
 const SearchBar = () => {
   const [searchType, setType] = useState('');

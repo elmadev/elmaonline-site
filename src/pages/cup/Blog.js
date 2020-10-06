@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Paper } from 'styles/Paper';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import { TextField, Button } from '@material-ui/core';
 import { format } from 'date-fns';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';

@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
+import { Grid, Checkbox, Button, TextField } from '@material-ui/core';
 import Header from 'components/Header';
 import DerpTable from 'components/Table/DerpTable';
-import TextField from '@material-ui/core/TextField';
 import { calculateStandings } from 'utils/cups';
 import CupResults from 'components/CupResults';
 import Dropzone from 'components/Dropzone';
@@ -78,7 +75,7 @@ const Dashboard = props => {
 
   return (
     <Container>
-      <Grid container spacing={16}>
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Header h2>Upload</Header>
           <DropContainer>

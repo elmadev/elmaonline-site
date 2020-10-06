@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Select,
+  MenuItem,
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Recplayer from 'components/Recplayer';
@@ -126,8 +128,8 @@ class Battle extends React.Component {
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">Battle info</Typography>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div className={s.battleDescription}>
@@ -163,8 +165,8 @@ class Battle extends React.Component {
             </ExpansionPanel>
             {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
               <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Leader history</Typography>
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="body1">Leader history</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <LeaderHistory allFinished={getAllBattleTimes} />
@@ -173,8 +175,8 @@ class Battle extends React.Component {
             )}
             {!(battleStatus(getBattle) === 'Queued') && (
               <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Chat</Typography>
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="body1">Chat</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <Chat

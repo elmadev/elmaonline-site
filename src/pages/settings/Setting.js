@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import TextField from '@material-ui/core/TextField';
+import { TextField, Button } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
-import Button from '@material-ui/core/Button';
 
 const Setting = ({ value, label, setValue, update, password }) => {
   return (

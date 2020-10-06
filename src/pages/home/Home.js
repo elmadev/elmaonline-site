@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import m from 'moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Grid from '@material-ui/core/Grid';
+import { Grid } from '@material-ui/core';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import { Paper } from 'styles/Paper';
 import { Level, BattleType } from 'components/Names';
@@ -70,7 +70,7 @@ class Home extends React.Component {
         )[0];
     return (
       <div className={s.root}>
-        <Grid container spacing={24}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={7}>
             {nickId() === 0 && (
               <>

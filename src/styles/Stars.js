@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
+import { Star, StarBorder } from '@material-ui/icons';
 
 const ten = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

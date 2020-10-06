@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import { sortBy, filter } from 'lodash';
-import Checkbox from '@material-ui/core/Checkbox';
+import { Checkbox, FormControlLabel } from '@material-ui/core';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import querystring from 'querystring';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import RecListItem from 'components/RecListItem';
 import history from 'utils/history';

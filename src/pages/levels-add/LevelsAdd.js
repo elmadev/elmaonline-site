@@ -2,14 +2,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Button } from '@material-ui/core';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Field from 'components/Field';
 import Header from 'components/Header';
 import Link from 'components/Link';
 import { nickId } from 'utils/nick';
-import Button from '@material-ui/core/Button';
 
 const schema = yup.object().shape({
   LevelPackName: yup
@@ -40,7 +39,7 @@ const LevelsAdd = () => {
   );
   return (
     <Container>
-      <Grid container spacing={24}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <Header h1>Add level pack</Header>
           {addSuccess === '' ? (
