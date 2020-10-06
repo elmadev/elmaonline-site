@@ -24,6 +24,21 @@ const PlayersSearch = async (query, offset) => {
   return get;
 };
 
+const Players = async () => {
+  const get = await Kuski.findAll({
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
+    order: [['Kuski', 'ASC']],
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team'],
+      },
+    ],
+  });
+  return get;
+};
+
 const TeamsSearch = async (query, offset) => {
   const get = await Team.findAll({
     where: { Team: { [Op.like]: `${like(query)}%` } },
@@ -74,7 +89,8 @@ const RemoveIgnore = async (KuskiIndex, IgnoredKuskiIndex) => {
 
 router
   .get('/', async (req, res) => {
-    res.json({});
+    const data = await Players();
+    res.json(data);
   })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);

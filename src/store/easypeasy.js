@@ -14,6 +14,7 @@ import LevelsAdd from 'pages/levels-add/store';
 import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
 import Teams from 'pages/teams/store';
+import Kuskis from 'pages/kuskis/store';
 
 export default {
   ReplayComments,
@@ -23,6 +24,7 @@ export default {
   Cups,
   Cup,
   KuskiMap,
+  Kuskis,
   LevelPack,
   Search,
   Kuski,
