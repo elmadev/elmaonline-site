@@ -30,6 +30,7 @@ import SiteCupTime from './SiteCupTime';
 import SiteCupBlog from './SiteCupBlog';
 import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
+import Ignored from './Ignored';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -71,6 +72,11 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+AllFinished.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -94,6 +100,11 @@ Chat.belongsTo(Kuski, {
 Kuski.belongsTo(Team, {
   foreignKey: 'TeamIndex',
   as: 'TeamData',
+});
+
+Team.hasMany(Kuski, {
+  foreignKey: 'TeamIndex',
+  as: 'Members',
 });
 
 LevelPack.belongsTo(Kuski, {
@@ -122,15 +133,41 @@ LevelPackLevel.hasMany(Besttime, {
   as: 'LevelBesttime',
 });
 
+LevelPackLevel.hasMany(BestMultitime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelMultiBesttime',
+});
+
+Ignored.belongsTo(Kuski, {
+  foreignKey: 'IgnoredKuskiIndex',
+  as: 'KuskiData',
+});
+
 Besttime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+Besttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
 });
 
 Besttime.belongsTo(WeeklyWRs, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
   as: 'WeeklyWR',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex1',
+  as: 'Kuski1Data',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'Kuski2Data',
 });
 
 WeeklyBest.belongsTo(WeeklyWRs, {
@@ -189,6 +226,11 @@ SiteCup.belongsTo(Level, {
   as: 'Level',
 });
 
+SiteCup.belongsTo(SiteCupGroup, {
+  foreignKey: 'CupGroupIndex',
+  as: 'CupGroup',
+});
+
 SiteCup.hasMany(SiteCupTime, {
   foreignKey: 'CupIndex',
   as: 'CupTimes',
@@ -197,6 +239,11 @@ SiteCup.hasMany(SiteCupTime, {
 SiteCupTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+SiteCupTime.belongsTo(SiteCup, {
+  foreignKey: 'CupIndex',
+  as: 'CupData',
 });
 
 SiteCupBlog.belongsTo(Kuski, {
@@ -256,4 +303,5 @@ export {
   SiteCupBlog,
   KuskiMap,
   SiteSetting,
+  Ignored,
 }; // add the data model here as well so it exports

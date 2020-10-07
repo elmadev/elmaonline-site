@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import Button from '@material-ui/core/Button';
+import {
+  TextField,
+  FormControl,
+  Select,
+  OutlinedInput,
+  InputLabel,
+  Button,
+} from '@material-ui/core';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import ReCAPTCHA from 'react-google-recaptcha';
 

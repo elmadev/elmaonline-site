@@ -1,9 +1,20 @@
-import { Battle, Level, LevelPackLevel, LevelPack } from 'data/models';
+import {
+  Battle,
+  Level,
+  LevelPackLevel,
+  LevelPack,
+  SiteCupTime,
+  SiteCup,
+  Kuski,
+  SiteCupGroup,
+} from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
-import generate from 'nanoid/generate';
+import { uuid } from 'utils/calcs';
 import fs from 'fs';
 import archiver from 'archiver';
+import { isAfter } from 'date-fns';
+import { filterResults, admins } from 'utils/cups';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -24,6 +35,53 @@ export function getReplayByBattleId(battleId) {
         });
       } else {
         reject(new Error('replay not found'));
+      }
+    });
+  });
+}
+
+const getReplayDataByCupTimeId = async CupTimeIndex => {
+  const replayData = await SiteCupTime.findOne({
+    attributes: ['RecData', 'Code'],
+    where: { CupTimeIndex },
+    include: [
+      {
+        model: SiteCup,
+        as: 'CupData',
+        attributes: ['EndTime', 'ShowResults'],
+      },
+    ],
+  });
+  return replayData;
+};
+
+export function getReplayByCupTimeId(cupTimeId, filename, code = '') {
+  return new Promise((resolve, reject) => {
+    getReplayDataByCupTimeId(cupTimeId).then(data => {
+      if (data !== null) {
+        if (
+          isAfter(new Date(data.dataValues.CupData.EndTime * 1000), new Date())
+        ) {
+          if (code === data.dataValues.Code) {
+            resolve({
+              file: data.dataValues.RecData,
+              filename: `${filename}.rec`,
+            });
+          } else {
+            reject(new Error('Event not over'));
+          }
+        } else if (!data.dataValues.CupData.ShowResults) {
+          reject(new Error('Event not public'));
+        } else if (data.dataValues.RecData) {
+          resolve({
+            file: data.dataValues.RecData,
+            filename: `${filename}.rec`,
+          });
+        } else {
+          reject(new Error('Replay data not found'));
+        }
+      } else {
+        reject(new Error('Replay not found'));
       }
     });
   });
@@ -90,15 +148,15 @@ export function getLevel(id) {
 
 export const zipFiles = files => {
   return new Promise((resolve, reject) => {
-    const uuid = generate('0123456789abcdefghijklmnopqrstuvwxyz', 10);
+    const fileUuid = uuid();
     const output = fs.createWriteStream(
-      `.${config.publicFolder}/temp/${uuid}.zip`,
+      `.${config.publicFolder}/temp/${fileUuid}.zip`,
     );
     const archive = archiver('zip', {
       zlib: { level: 9 },
     });
     output.on('close', () => {
-      resolve(`.${config.publicFolder}/temp/${uuid}.zip`);
+      resolve(`.${config.publicFolder}/temp/${fileUuid}.zip`);
     });
     archive.on('error', err => {
       reject(err);
@@ -131,6 +189,90 @@ export const getLevelPack = async name => {
   if (levels) {
     if (levels.Levels.length > 0) {
       const zip = await zipLevelPack(levels.Levels);
+      const fileData = fs.readFileSync(zip);
+      fs.unlink(zip, () => {});
+      return fileData;
+    }
+  }
+  return false;
+};
+
+const zipEventRecs = (recs, filename) => {
+  return new Promise(resolve => {
+    const recData = [];
+    const recDataIterator = async (rec, done) => {
+      if (rec.Replay) {
+        recData.push({
+          file: rec.RecData,
+          filename: `${filename}${rec.KuskiData.Kuski}.rec`,
+        });
+      }
+      done();
+    };
+    eachSeries(recs, recDataIterator, async () => {
+      const zip = await zipFiles(recData);
+      resolve(zip);
+    });
+  });
+};
+
+const getCupEvent = async (CupIndex, cupGroup, auth) => {
+  const data = await SiteCup.findAll({
+    where: { CupIndex },
+    include: [
+      {
+        model: SiteCupTime,
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'TimeExists',
+          'CupTimeIndex',
+          'Replay',
+          'RecData',
+        ],
+        as: 'CupTimes',
+        required: false,
+        where: { TimeExists: 1 },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'TeamIndex', 'Country'],
+            as: 'KuskiData',
+          },
+        ],
+      },
+    ],
+  });
+  if (auth.auth) {
+    return filterResults(data, admins(cupGroup), auth.userid);
+  }
+  return filterResults(data);
+};
+
+export const getEventReplays = async (CupIndex, filename, auth) => {
+  const event = await SiteCup.findOne({
+    where: { CupIndex },
+  });
+  const cupGroup = await SiteCupGroup.findOne({
+    where: { CupGroupIndex: event.CupGroupIndex },
+  });
+  let allow = false;
+  if (
+    isAfter(new Date(), event.dataValues.EndTime) &&
+    event.dataValues.Updated &&
+    event.dataValues.ShowResults
+  ) {
+    allow = true;
+  } else if (auth.auth) {
+    const a = admins(cupGroup);
+    if (a.length > 0 && a.indexOf(auth.userid) > -1) {
+      allow = true;
+    }
+  }
+  if (allow) {
+    const recs = await getCupEvent(CupIndex, cupGroup, auth);
+    if (recs.length > 0) {
+      const zip = await zipEventRecs(recs[0].CupTimes, filename);
       const fileData = fs.readFileSync(zip);
       fs.unlink(zip, () => {});
       return fileData;

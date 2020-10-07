@@ -3,17 +3,15 @@ import styled from 'styled-components';
 import { formatDistance, format } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
-import Link from 'components/Link';
 import CupResults from 'components/CupResults';
 import Kuski from 'components/Kuski';
-import Today from '@material-ui/icons/Today';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
-import CheckBox from '@material-ui/icons/CheckBox';
-import Timer from '@material-ui/icons/Timer';
+import { Today, CheckBox, Timer } from '@material-ui/icons';
+import { Tabs, Tab, Grid } from '@material-ui/core';
 import Recplayer from 'components/Recplayer';
 import Interviews from './Interviews';
+import Leaders from './Leaders';
+
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const GetWinner = times => {
   if (times.length > 0) {
@@ -28,7 +26,7 @@ const GetWinner = times => {
 };
 
 const Cups = props => {
-  const { events, setEvent } = props;
+  const { events, setEvent, cup } = props;
   const [openEvent, setOpenEvent] = useState(-1);
   const [tab, setTab] = useState(0);
 
@@ -43,7 +41,7 @@ const Cups = props => {
   return (
     <Grid container spacing={0}>
       <Grid item xs={12} sm={6}>
-        {events.map((e, i) => (
+        {events.sort(eventSort).map((e, i) => (
           <EventContainer
             highlight={i === openEvent}
             onClick={() => setOpenEvent(i)}
@@ -51,12 +49,9 @@ const Cups = props => {
             <EventNo>{i + 1}.</EventNo>
             <RightSide>
               <By>
-                <EventLink
-                  highlight={i === openEvent}
-                  to={`/dl/level/${e.LevelIndex}`}
-                >
-                  {e.Level.LevelName}
-                </EventLink>{' '}
+                <a href={`/dl/level/${e.LevelIndex}`}>
+                  {e.Level ? e.Level.LevelName : ''}
+                </a>{' '}
                 by <Kuski kuskiData={e.KuskiData} />
               </By>
               <div>
@@ -74,14 +69,29 @@ const Cups = props => {
                 />
               </div>
               <div>
-                {e.EndTime > format(new Date(), 't') ? (
-                  <>
-                    <Timer />{' '}
-                    {formatDistance(new Date(e.EndTime * 1000), new Date(), {
-                      addSuffix: true,
-                    })}
-                  </>
-                ) : (
+                {e.EndTime > format(new Date(), 't') &&
+                  e.StartTime < format(new Date(), 't') && (
+                    <>
+                      <Timer /> Deadline{' '}
+                      {formatDistance(new Date(e.EndTime * 1000), new Date(), {
+                        addSuffix: true,
+                      })}
+                    </>
+                  )}
+                {e.EndTime > format(new Date(), 't') &&
+                  e.StartTime > format(new Date(), 't') && (
+                    <>
+                      <Timer /> Starts{' '}
+                      {formatDistance(
+                        new Date(e.StartTime * 1000),
+                        new Date(),
+                        {
+                          addSuffix: true,
+                        },
+                      )}
+                    </>
+                  )}
+                {e.EndTime < format(new Date(), 't') && (
                   <>
                     <CheckBox />
                     {GetWinner(e.CupTimes)}
@@ -102,8 +112,18 @@ const Cups = props => {
             {events[openEvent].EndTime < format(new Date(), 't') && (
               <Tab label="Interviews" />
             )}
+            {events[openEvent].EndTime < format(new Date(), 't') && (
+              <Tab label="Leaders" />
+            )}
           </Tabs>
-          {tab === 0 && <CupResults results={events[openEvent].CupTimes} />}
+          {tab === 0 && (
+            <CupResults
+              CupIndex={events[openEvent].CupIndex}
+              ShortName={cup.ShortName}
+              eventNo={openEvent + 1}
+              results={events[openEvent].CupTimes}
+            />
+          )}
           {tab === 1 && events[openEvent].StartTime < format(new Date(), 't') && (
             <PlayerContainer>
               <Recplayer
@@ -113,17 +133,16 @@ const Cups = props => {
             </PlayerContainer>
           )}
           {tab === 2 && events[openEvent].EndTime < format(new Date(), 't') && (
-            <Interviews event={events[openEvent]} />
+            <Interviews cup={cup} event={events[openEvent]} />
+          )}
+          {tab === 3 && events[openEvent].EndTime < format(new Date(), 't') && (
+            <Leaders event={events[openEvent]} />
           )}
         </Grid>
       )}
     </Grid>
   );
 };
-
-const EventLink = styled(Link)`
-  color: ${p => (p.highlight ? 'white' : '#219653')};
-`;
 
 const PlayerContainer = styled.div`
   display: flex;
@@ -143,6 +162,9 @@ const EventContainer = styled.div`
   cursor: pointer;
   background-color: ${props => (props.highlight ? '#219653' : 'transparent')};
   color: ${props => (props.highlight ? 'white' : 'black')};
+  a {
+    color: ${props => (props.highlight ? 'white' : '#219653')};
+  }
 `;
 
 const EventNo = styled.div`

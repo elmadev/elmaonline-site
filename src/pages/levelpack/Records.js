@@ -5,12 +5,14 @@ import styled from 'styled-components';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
+import Loading from 'components/Loading';
+import { recordsTT } from 'utils/calcs';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const Records = ({ highlight, highlightWeeks, records }) => {
+const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
   const [level, selectLevel] = useState(-1);
 
   return (
@@ -23,6 +25,7 @@ const Records = ({ highlight, highlightWeeks, records }) => {
           <span>Kuski</span>
           <span>Time</span>
         </div>
+        {recordsLoading && <Loading />}
         {records.map(r => (
           <TimeRow
             to={`/levels/${r.LevelIndex}`}
@@ -56,6 +59,14 @@ const Records = ({ highlight, highlightWeeks, records }) => {
             )}
           </TimeRow>
         ))}
+        <TTRow>
+          <span />
+          <span />
+          <span>Total Time</span>
+          <span>
+            <Time time={recordsTT(records, 'LevelBesttime')} />
+          </span>
+        </TTRow>
       </div>
       {level !== -1 && (
         <LevelPopup
@@ -71,6 +82,15 @@ const Records = ({ highlight, highlightWeeks, records }) => {
 };
 
 const TimeRow = styled(Link)`
+  background: ${p => (p.selected ? '#219653' : 'transparent')};
+  color: ${p => (p.selected ? '#fff' : 'inherit')};
+  :hover {
+    background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
+    color: ${p => (p.selected ? '#fff' : 'inherit')};
+  }
+`;
+
+const TTRow = styled.div`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
   :hover {

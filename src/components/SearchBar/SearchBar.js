@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import history from 'utils/history';
 import styled from 'styled-components';
-import Button from '@material-ui/core/Button';
-import Info from '@material-ui/icons/Info';
-import Drawer from '@material-ui/core/Drawer';
+import { Button, Drawer, Hidden } from '@material-ui/core';
+import { Info } from '@material-ui/icons';
 
 const SearchBar = () => {
   const [searchType, setType] = useState('');
@@ -13,11 +12,45 @@ const SearchBar = () => {
     <Container>
       {searchType === '' ? (
         <TypesContainer>
-          Search <Button onClick={() => setType('level')}>Level</Button>
-          <Button onClick={() => setType('battle')}>Battle</Button>
-          <Button onClick={() => setType('replay')}>Replay</Button>
-          <Button onClick={() => setType('player')}>Player</Button>
-          <Button onClick={() => setType('team')}>Team</Button>
+          <Hidden xsDown>
+            Search <Button onClick={() => setType('level')}>Level</Button>
+            <Button onClick={() => setType('battle')}>Battle</Button>
+            <Button onClick={() => setType('replay')}>Replay</Button>
+            <Button onClick={() => setType('player')}>Player</Button>
+            <Button onClick={() => setType('team')}>Team</Button>
+          </Hidden>
+          <Hidden smUp>
+            <Button
+              style={{ minWidth: '32px' }}
+              onClick={() => setType('level')}
+            >
+              Level
+            </Button>
+            <Button
+              style={{ minWidth: '32px' }}
+              onClick={() => setType('battle')}
+            >
+              Battle
+            </Button>
+            <Button
+              style={{ minWidth: '32px' }}
+              onClick={() => setType('replay')}
+            >
+              Replay
+            </Button>
+            <Button
+              style={{ minWidth: '32px' }}
+              onClick={() => setType('player')}
+            >
+              Player
+            </Button>
+            <Button
+              style={{ minWidth: '32px' }}
+              onClick={() => setType('team')}
+            >
+              Team
+            </Button>
+          </Hidden>
         </TypesContainer>
       ) : (
         <>
@@ -84,6 +117,9 @@ const TypesContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   padding-left: 8px;
+  @media (max-width: 460px) {
+    width: 100%;
+  }
 `;
 
 const Container = styled.div`

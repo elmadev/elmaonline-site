@@ -10,8 +10,6 @@
 import path from 'path';
 import Promise from 'bluebird';
 import express from 'express';
-import session from 'express-session';
-import grant from 'grant-express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { graphql } from 'graphql';
@@ -38,7 +36,13 @@ import Html from 'components/Html';
 import createApolloClient from 'core/createApolloClient';
 import schema from 'data/schema';
 import configureStore from 'store/configureStore';
-import { getReplayByBattleId, getLevel, getLevelPack } from 'utils/download';
+import {
+  getReplayByBattleId,
+  getLevel,
+  getLevelPack,
+  getReplayByCupTimeId,
+  getEventReplays,
+} from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
 import {
@@ -82,13 +86,6 @@ app.use(fileUpload());
 //
 // Authentication
 // -----------------------------------------------------------------------------
-
-app.use(session({ secret: 'grant' }));
-app.use(
-  grant({
-    ...config.grant,
-  }),
-);
 
 if (__DEV__) {
   app.enable('trust proxy');
@@ -155,6 +152,49 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
   }
 });
 
+app.get('/dl/cupreplay/:id/:filename', async (req, res, next) => {
+  try {
+    const { file, filename } = await getReplayByCupTimeId(
+      req.params.id,
+      req.params.filename,
+    );
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/cupreplay/:id/:filename/:code', async (req, res, next) => {
+  try {
+    const { file, filename } = await getReplayByCupTimeId(
+      req.params.id,
+      req.params.filename,
+      req.params.code,
+    );
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
 app.get('/dl/level/:id', async (req, res, next) => {
   try {
     const { file, filename } = await getLevel(req.params.id);
@@ -188,6 +228,37 @@ app.get('/dl/pack/:name', async (req, res, next) => {
       next({
         status: 403,
         msg: 'Level pack does not exist.',
+      });
+    }
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
+  try {
+    const zipData = await getEventReplays(
+      req.params.event,
+      req.params.filename,
+      authContext(req),
+    );
+    if (zipData) {
+      const readStream = new stream.PassThrough();
+      readStream.end(zipData);
+      res.set({
+        'Content-disposition': `attachment; filename=${
+          req.params.filename
+        }-all-recs.zip`,
+        'Content-Type': 'application/octet-stream',
+      });
+      readStream.pipe(res);
+    } else {
+      next({
+        status: 403,
+        msg: 'Event does not exist or is not over.',
       });
     }
   } catch (e) {
@@ -297,6 +368,8 @@ app.post('/upload/:type', async (req, res) => {
         replayFile,
         req.body.filename,
         getAuth.userid,
+        req.body.share,
+        req.body.comment,
       );
       res.json(result);
     } else {
@@ -415,7 +488,7 @@ app.get('*', async (req, res, next) => {
     const materialUICss = sheetsRegistry.toString();
     const styledStyles = styledSheet
       .getStyleTags()
-      .replace('<style data-styled data-styled-version="5.0.0">', '');
+      .replace('<style data-styled="true" data-styled-version="5.2.0">', '');
     data.styles = [
       { id: 'css', cssText: [...css].join('') },
       { id: 'materialUI', cssText: materialUICss },
@@ -442,7 +515,7 @@ app.get('*', async (req, res, next) => {
       google: config.google,
     };
 
-    const html = ReactDOMServer.renderToStaticMarkup(<Html {...data} />); // eslint-disable-line
+    const html = ReactDOMServer.renderToString(<Html {...data} />); // eslint-disable-line
     res.status(route.status || 200);
     res.send(`<!doctype html>${html}`);
   } catch (err) {

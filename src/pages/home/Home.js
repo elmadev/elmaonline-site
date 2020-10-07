@@ -3,14 +3,9 @@ import PropTypes from 'prop-types';
 import m from 'moment';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-
+import { Grid } from '@material-ui/core';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
+import { Paper } from 'styles/Paper';
 import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Upload from 'components/Upload';
@@ -21,6 +16,7 @@ import Welcome from 'components/Welcome';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
+import CupWidget from 'components/CupWidget';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toLocalTime } from 'utils/time';
@@ -74,7 +70,7 @@ class Home extends React.Component {
         )[0];
     return (
       <div className={s.root}>
-        <Grid container spacing={24}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={7}>
             {nickId() === 0 && (
               <>
@@ -82,118 +78,109 @@ class Home extends React.Component {
                 <Welcome />
               </>
             )}
-            {currentBattle && <BattleCard battle={currentBattle} />}
-            <Header h2>Latest Battles</Header>
+            <CupWidget ShortName="WC8" />
+            <Header h2 top>
+              Latest Battles
+            </Header>
             <Paper style={{ overflowX: 'auto' }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Started</TableCell>
-                    <TableCell>Designer</TableCell>
-                    <TableCell>Level</TableCell>
-                    <TableCell>Winner</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Duration</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
-                  {loading ? (
-                    <TableRow>
-                      <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    battleList.map(i => {
-                      const sortedResults = [...i.Results].sort(
-                        sortResults(i.BattleType),
-                      );
-                      return (
-                        <TableRow
-                          style={{
-                            cursor: 'pointer',
-                            backgroundColor: battleStatusBgColor(i),
-                          }}
-                          hover
-                          key={i.BattleIndex}
-                          onClick={() => {
-                            this.gotoBattle(i.BattleIndex);
-                          }}
-                        >
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            <Link to={`/battles/${i.BattleIndex}`}>
-                              <LocalTime
-                                date={i.Started}
-                                format="HH:mm:ss"
-                                parse="X"
-                              />
-                            </Link>
-                          </TableCell>
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            <Kuski kuskiData={i.KuskiData} team flag />
-                          </TableCell>
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            <Link to={`/dl/level/${i.LevelIndex}`}>
-                              <Level LevelData={i.LevelData} />
-                            </Link>
-                          </TableCell>
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            {i.Finished === 1 && sortedResults.length > 0 ? (
-                              <Kuski
-                                kuskiData={sortedResults[0].KuskiData}
-                                team
-                                flag
-                              />
-                            ) : (
-                              battleStatus(i)
-                            )}
-                          </TableCell>
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            <BattleType type={i.BattleType} />
-                          </TableCell>
-                          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                            {battleStatus(i) === 'Ongoing'
-                              ? this.remaining(i.Started, i.Duration)
-                              : i.Duration}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
+              <ListContainer>
+                <ListHeader>
+                  <ListCell>Started</ListCell>
+                  <ListCell>Designer</ListCell>
+                  <ListCell>Level</ListCell>
+                  <ListCell>Winner</ListCell>
+                  <ListCell>Type</ListCell>
+                  <ListCell>Duration</ListCell>
+                </ListHeader>
+                {/* iterate the data object here, loading is an object created automatically which will be true while loading the data */}
+                {loading ? (
+                  <ListRow>
+                    <ListCell>Loading...</ListCell>
+                  </ListRow>
+                ) : (
+                  battleList.map(i => {
+                    const sortedResults = [...i.Results].sort(
+                      sortResults(i.BattleType),
+                    );
+                    return (
+                      <ListRow
+                        bg={battleStatusBgColor(i)}
+                        key={i.BattleIndex}
+                        onClick={() => {
+                          this.gotoBattle(i.BattleIndex);
+                        }}
+                      >
+                        <ListCell>
+                          <Link to={`/battles/${i.BattleIndex}`}>
+                            <LocalTime
+                              date={i.Started}
+                              format="HH:mm:ss"
+                              parse="X"
+                            />
+                          </Link>
+                        </ListCell>
+                        <ListCell>
+                          <Kuski kuskiData={i.KuskiData} team flag />
+                        </ListCell>
+                        <ListCell>
+                          <Link to={`/dl/level/${i.LevelIndex}`}>
+                            <Level LevelData={i.LevelData} />
+                          </Link>
+                        </ListCell>
+                        <ListCell>
+                          {i.Finished === 1 && sortedResults.length > 0 ? (
+                            <Kuski
+                              kuskiData={sortedResults[0].KuskiData}
+                              team
+                              flag
+                            />
+                          ) : (
+                            battleStatus(i)
+                          )}
+                        </ListCell>
+                        <ListCell>
+                          <BattleType type={i.BattleType} />
+                        </ListCell>
+                        <ListCell>
+                          {battleStatus(i) === 'Ongoing'
+                            ? this.remaining(i.Started, i.Duration)
+                            : i.Duration}
+                        </ListCell>
+                      </ListRow>
+                    );
+                  })
+                )}
+              </ListContainer>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
             <Login />
-            <Header h2>Upload Replays</Header>
+            {currentBattle && <BattleCard battle={currentBattle} />}
+            <Header h2 top>
+              Upload Replays
+            </Header>
             <Upload onUpload={() => refetch()} filetype=".rec" />
-            <Header h2>Latest Replays</Header>
+            <Header h2 top>
+              Latest Replays
+            </Header>
             <Paper style={{ overflowX: 'auto' }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Replay</TableCell>
-                    <TableCell>Level</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>By</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell style={{ padding: '4px 10px 4px 10px' }}>
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    getReplays.map(i => (
-                      <RecListItem key={i.ReplayIndex} replay={i} />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+              <ListContainer>
+                <ListHeader>
+                  <ListCell>Replay</ListCell>
+                  <ListCell>Level</ListCell>
+                  <ListCell right>Time</ListCell>
+                  <ListCell>By</ListCell>
+                </ListHeader>
+                {loading ? (
+                  <ListRow>
+                    <ListCell>Loading...</ListCell>
+                  </ListRow>
+                ) : (
+                  getReplays.map(i => (
+                    <RecListItem key={i.ReplayIndex} replay={i} />
+                  ))
+                )}
+              </ListContainer>
             </Paper>
           </Grid>
         </Grid>

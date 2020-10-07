@@ -60,6 +60,11 @@ const Level = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    ForceHide: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['LevelIndex', 'LevelName'] }],

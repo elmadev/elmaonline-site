@@ -1,9 +1,18 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
-import { AllFinished } from '../data/models';
+import { authContext } from 'utils/auth';
+import { AllFinished, Level, Kuski } from '../data/models';
 
 const router = express.Router();
+
+const levelInfo = async LevelIndex => {
+  const lev = await Level.findOne({
+    where: { LevelIndex },
+    attributes: ['Hidden', 'Locked'],
+  });
+  return lev;
+};
 
 const getHighlights = async () => {
   const week = await AllFinished.findOne({
@@ -25,14 +34,67 @@ const getHighlights = async () => {
   return { week, twoweek, threeweek, fourweek };
 };
 
-const getTimes = async (LevelIndex, KuskiIndex, limit) => {
+const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
+  const lev = await levelInfo(LevelIndex);
+  if (!lev) return [];
+  if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
-    order: [['Time', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
-    limit: parseInt(limit, 10),
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
   return times;
+};
+
+const getTimesInRange = async (LevelIndex, from, to) => {
+  const lev = await levelInfo(LevelIndex);
+  if (!lev || lev.Hidden) {
+    return [];
+  }
+
+  const times = await AllFinished.findAll({
+    where: { LevelIndex, Driven: { [Op.lt]: to, [Op.gt]: from } },
+    order: [['Driven', 'ASC']],
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+    attributes: ['TimeIndex', 'Time', 'Driven'],
+  });
+  return times;
+};
+
+const getLatest = async (KuskiIndex, limit) => {
+  const times = await AllFinished.findAll({
+    where: { KuskiIndex },
+    order: [['TimeIndex', 'DESC']],
+    attributes: ['TimeIndex', 'Time', 'Apples', 'Driven', 'LevelIndex'],
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'Hidden'],
+      },
+    ],
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+  });
+  return times.filter(t => {
+    if (t.LevelData) {
+      if (t.LevelData.Hidden) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  });
 };
 
 router
@@ -47,11 +109,29 @@ router
     ]);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
+    const auth = authContext(req);
+    let LoggedIn = 0;
+    if (auth.auth) {
+      LoggedIn = auth.userid;
+    }
     const data = await getTimes(
       req.params.LevelIndex,
       req.params.KuskiIndex,
       req.params.limit,
+      LoggedIn,
     );
+    res.json(data);
+  })
+  .get('/ranged/:LevelIndex/:from/:to', async (req, res) => {
+    const data = await getTimesInRange(
+      req.params.LevelIndex,
+      req.params.from,
+      req.params.to,
+    );
+    res.json(data);
+  })
+  .get('/:KuskiIndex/:limit', async (req, res) => {
+    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
     res.json(data);
   });
 

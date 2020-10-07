@@ -5,18 +5,22 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CloseIcon from '@material-ui/icons/Close';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import {
+  Settings as SettingsIcon,
+  Close as CloseIcon,
+} from '@material-ui/icons';
+import { Paper } from 'styles/Paper';
+import { Tabs, Tab } from '@material-ui/core';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { nick } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 import { Number } from 'components/Selectors';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
 import Personal from './Personal';
+import Kinglist from './Kinglist';
+import MultiRecords from './MultiRecords';
+import Admin from './Admin';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
@@ -28,6 +32,7 @@ const GET_LEVELPACK = gql`
       LevelPackLongName
       LevelPackName
       LevelPackDesc
+      KuskiIndex
       KuskiData {
         Kuski
       }
@@ -44,9 +49,14 @@ const GET_LEVELPACK = gql`
 `;
 
 const LevelPack = ({ name }) => {
-  const { highlight, personalTimes, timesError, records } = useStoreState(
-    state => state.LevelPack,
-  );
+  const {
+    highlight,
+    personalTimes,
+    timesError,
+    records,
+    recordsLoading,
+    setPersonalTimesLoading,
+  } = useStoreState(state => state.LevelPack);
   const {
     getHighlight,
     getPersonalTimes,
@@ -77,7 +87,10 @@ const LevelPack = ({ name }) => {
               <Tabs value={tab} onChange={(e, t) => setTab(t)}>
                 <Tab label="Records" />
                 <Tab label="Total Times" />
+                <Tab label="King list" />
                 <Tab label="Personal" />
+                <Tab label="Multi records" />
+                {nickId() === getLevelPack.KuskiIndex && <Tab label="Admin" />}
               </Tabs>
               <div className={s.levelPackName}>
                 <span className={s.shortName}>
@@ -123,6 +136,7 @@ const LevelPack = ({ name }) => {
                   records={records}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
+                  recordsLoading={recordsLoading}
                 />
               )}
               {tab === 1 && (
@@ -133,6 +147,13 @@ const LevelPack = ({ name }) => {
                 />
               )}
               {tab === 2 && (
+                <Kinglist
+                  levelPackIndex={getLevelPack.LevelPackIndex}
+                  highlight={highlight}
+                  highlightWeeks={highlightWeeks}
+                />
+              )}
+              {tab === 3 && (
                 <Personal
                   timesError={timesError}
                   setError={e => setError(e)}
@@ -142,7 +163,19 @@ const LevelPack = ({ name }) => {
                   times={personalTimes}
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
+                  records={records}
+                  setPersonalTimesLoading={setPersonalTimesLoading}
                 />
+              )}
+              {tab === 4 && (
+                <MultiRecords
+                  name={name}
+                  highlight={highlight}
+                  highlightWeeks={highlightWeeks}
+                />
+              )}
+              {tab === 5 && (
+                <Admin records={records} LevelPack={getLevelPack} />
               )}
             </>
           );

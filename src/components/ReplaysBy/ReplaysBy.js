@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import RecListItem from 'components/RecListItem';
 
 const ReplaysBy = props => {
@@ -41,25 +37,21 @@ const ReplaysBy = props => {
   }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Replay</TableCell>
-          <TableCell>Level</TableCell>
-          <TableCell>Time</TableCell>
-          <TableCell>By</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {!replays ? (
-          <TableRow>
-            <TableCell style={{ padding: '4px 10px 4px 10px' }} />
-          </TableRow>
-        ) : (
-          replays.map(i => <RecListItem key={i.ReplayIndex} replay={i} />)
-        )}
-      </TableBody>
-    </Table>
+    <ListContainer>
+      <ListHeader>
+        <ListCell>Replay</ListCell>
+        <ListCell>Level</ListCell>
+        <ListCell right>Time</ListCell>
+        <ListCell>By</ListCell>
+      </ListHeader>
+      {!replays ? (
+        <ListRow>
+          <ListCell />
+        </ListRow>
+      ) : (
+        replays.map(i => <RecListItem key={i.ReplayIndex} replay={i} />)
+      )}
+    </ListContainer>
   );
 };
 
