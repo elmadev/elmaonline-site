@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import Flag from 'components/Flag';
 import ReplaysBy from 'components/ReplaysBy';
 import AchievementsCups from 'components/AchievementsCups';
+import AchievementsHacktober from 'components/AchievementsHacktober';
 import Header from 'components/Header';
 
 import PlayedBattles from './PlayedBattles';
@@ -150,8 +151,8 @@ class Kuski extends React.Component {
                 <img src={RAdmin} alt="RAdmin" title="Admin" />
               )}
             </Rights>
-            <Header h3>Cup achievements</Header>
             <AchievementsCups KuskiIndex={getKuskiByName.KuskiIndex} />
+            <AchievementsHacktober KuskiIndex={getKuskiByName.KuskiIndex} />
           </SubContainer>
         )}
       </div>

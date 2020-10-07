@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { has } from 'lodash';
+import Header from 'components/Header';
 import wc61st from '../../images/wc6/1st.png';
 import wc62nd from '../../images/wc6/2nd.png';
 import wc63rd from '../../images/wc6/3rd.png';
@@ -111,15 +112,18 @@ const a = {
 
 const AchievementsCups = ({ KuskiIndex }) => {
   return (
-    <Container>
+    <>
       {has(a, KuskiIndex) && (
         <>
-          {a[KuskiIndex].map(x => (
-            <img src={images[x]} alt={x} title={titles[x]} />
-          ))}
+          <Header h3>Cup achievements</Header>
+          <Container>
+            {a[KuskiIndex].map(x => (
+              <img src={images[x]} alt={x} title={titles[x]} />
+            ))}
+          </Container>
         </>
       )}
-    </Container>
+    </>
   );
 };
 
