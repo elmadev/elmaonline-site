@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDebounce } from 'use-debounce';
 import styled from 'styled-components';
 
 import Link from 'components/Link';
@@ -40,7 +41,8 @@ const Kuskis = () => {
   const { playerList } = useStoreState(state => state.Kuskis);
   const { getPlayers } = useStoreActions(actions => actions.Kuskis);
 
-  const [filter, setFilter] = useState('');
+  const [text, setText] = useState('');
+  const [filter] = useDebounce(text, 500);
   const [expanded, setExpanded] = useState([]);
 
   useEffect(() => {
@@ -67,9 +69,9 @@ const Kuskis = () => {
       <Filter>
         <input
           type="text"
-          value={filter}
+          value={text}
           onChange={e => {
-            setFilter(e.target.value);
+            setText(e.target.value);
           }}
           placeholder="Filter"
         />
