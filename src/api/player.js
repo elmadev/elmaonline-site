@@ -26,7 +26,7 @@ const PlayersSearch = async (query, offset) => {
 
 const Players = async () => {
   const get = await Kuski.findAll({
-    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Confirmed'],
     order: [['Kuski', 'ASC']],
     include: [
       {
@@ -36,7 +36,7 @@ const Players = async () => {
       },
     ],
   });
-  return get;
+  return get.filter(k => k.Confirmed);
 };
 
 const TeamsSearch = async (query, offset) => {
