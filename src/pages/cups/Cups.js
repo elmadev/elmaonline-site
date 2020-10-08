@@ -1,7 +1,6 @@
 import React, { useEffect, Fragment } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import { Typography, Grid } from '@material-ui/core';
 import styled from 'styled-components';
 import Link from 'components/Link';
 import AddCup from 'components/AddCup';
@@ -20,7 +19,7 @@ const Cups = () => {
 
   return (
     <Container>
-      <Grid container spacing={24}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={7}>
           <Typography variant="h3" gutterBottom>
             Ongoing Cups

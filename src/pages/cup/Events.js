@@ -5,12 +5,8 @@ import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
 import CupResults from 'components/CupResults';
 import Kuski from 'components/Kuski';
-import Today from '@material-ui/icons/Today';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
-import CheckBox from '@material-ui/icons/CheckBox';
-import Timer from '@material-ui/icons/Timer';
+import { Today, CheckBox, Timer } from '@material-ui/icons';
+import { Tabs, Tab, Grid } from '@material-ui/core';
 import Recplayer from 'components/Recplayer';
 import Interviews from './Interviews';
 import Leaders from './Leaders';
@@ -53,12 +49,9 @@ const Cups = props => {
             <EventNo>{i + 1}.</EventNo>
             <RightSide>
               <By>
-                <EventLink
-                  highlight={i === openEvent}
-                  href={`/dl/level/${e.LevelIndex}`}
-                >
+                <a href={`/dl/level/${e.LevelIndex}`}>
                   {e.Level ? e.Level.LevelName : ''}
-                </EventLink>{' '}
+                </a>{' '}
                 by <Kuski kuskiData={e.KuskiData} />
               </By>
               <div>
@@ -151,10 +144,6 @@ const Cups = props => {
   );
 };
 
-const EventLink = styled.a`
-  color: ${p => (p.highlight ? 'white' : '#219653')};
-`;
-
 const PlayerContainer = styled.div`
   display: flex;
   align-items: center;
@@ -173,6 +162,9 @@ const EventContainer = styled.div`
   cursor: pointer;
   background-color: ${props => (props.highlight ? '#219653' : 'transparent')};
   color: ${props => (props.highlight ? 'white' : 'black')};
+  a {
+    color: ${props => (props.highlight ? 'white' : '#219653')};
+  }
 `;
 
 const EventNo = styled.div`

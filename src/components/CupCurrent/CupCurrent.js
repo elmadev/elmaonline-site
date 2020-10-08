@@ -4,7 +4,7 @@ import { format, formatDistance } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import { Paper } from 'styles/Paper';
-import Timer from '@material-ui/icons/Timer';
+import { Timer } from '@material-ui/icons';
 
 const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 

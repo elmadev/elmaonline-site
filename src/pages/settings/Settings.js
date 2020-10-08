@@ -1,14 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Grid, Tabs, Tab, Checkbox, Drawer } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
-import RemoveCircle from '@material-ui/icons/RemoveCircle';
-import Checkbox from '@material-ui/core/Checkbox';
-import Drawer from '@material-ui/core/Drawer';
-import Info from '@material-ui/icons/Info';
+import { RemoveCircle, Info } from '@material-ui/icons';
 import Header from 'components/Header';
 import Feedback from 'components/Feedback';
 import { nickId } from 'utils/nick';
@@ -158,7 +153,7 @@ const Settings = () => {
               </Grid>
             )}
             {tab === 2 && (
-              <Grid container spacing={16}>
+              <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Header h2>Chat ignore a player</Header>
                   <Setting

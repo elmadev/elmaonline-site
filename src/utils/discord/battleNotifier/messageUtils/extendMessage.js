@@ -53,6 +53,8 @@ const extendUser = (user, fallbackChannel) => {
 const extendMessage = (message, fallbackChannel) => {
   return {
     ...message,
+    client: message.client,
+    react: message.react,
     send: extendMessageSend(message, fallbackChannel),
     author: extendUser(message.author, fallbackChannel),
   };

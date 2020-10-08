@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import Grid from '@material-ui/core/Grid';
+import { Grid, CircularProgress } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
 import Login from 'components/Login';
 import styled from 'styled-components';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Confirm = props => {
   const { confirmCode } = props;
@@ -21,7 +20,7 @@ const Confirm = props => {
 
   return (
     <Container>
-      <Grid container spacing={24}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
           {confirmSuccess === 1 && (
             <Paper>

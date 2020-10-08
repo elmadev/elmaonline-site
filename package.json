@@ -27,8 +27,8 @@
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/polyfill": "7.4.3",
     "@kevinwolf/formal-web": "^0.1.3",
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "apisauce": "^1.1.2",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
@@ -91,6 +91,7 @@
     "styled-components": "^5.2.0",
     "universal-cookie": "^4.0.3",
     "universal-router": "^9.0.1",
+    "use-debounce": "^5.0.1",
     "whatwg-fetch": "^3.4.1",
     "yup": "^0.29.3"
   },
@@ -102,6 +103,7 @@
     "@babel/preset-env": "7.4.3",
     "@babel/preset-flow": "7.0.0",
     "@babel/preset-react": "7.0.0",
+    "@types/jest": "^26.0.14",
     "assets-webpack-plugin": "^3.9.10",
     "autoprefixer": "^9.5.1",
     "babel-core": "^7.0.0-0",
@@ -123,6 +125,7 @@
     "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-flowtype": "^4.2.0",
     "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^24.0.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
@@ -174,7 +177,7 @@
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-dev-middleware": "^3.6.2",
     "webpack-hot-middleware": "^2.24.3",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^2.5.2"
   },
   "husky": {
     "hooks": {
@@ -218,6 +221,7 @@
     "serve": "babel-node tools/run runServer",
     "start": "babel-node tools/run start",
     "commit": "npx git-cz",
-    "discord": "node ./src/utils/discord/discordTester.js"
+    "discord": "node ./src/utils/discord/discordTester.js",
+    "discord:test": "jest --env=node ./src/utils/discord --watch"
   }
 }

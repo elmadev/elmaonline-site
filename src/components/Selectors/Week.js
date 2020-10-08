@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import m from 'moment';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Icon from '@material-ui/core/Icon';
+import {
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Icon,
+} from '@material-ui/core';
 
 class Week extends React.Component {
   constructor(props) {

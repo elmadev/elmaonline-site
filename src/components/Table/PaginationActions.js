@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import IconButton from '@material-ui/core/IconButton';
-import LastPageIcon from '@material-ui/icons/LastPage';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import { IconButton } from '@material-ui/core';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage,
+  FirstPage,
+} from '@material-ui/icons';
 
 class PaginationActions extends React.Component {
   handleFirstPageButtonClick = event => {
@@ -37,7 +39,7 @@ class PaginationActions extends React.Component {
           disabled={page === 0}
           aria-label="First Page"
         >
-          <FirstPageIcon />
+          <FirstPage />
         </IconButton>
         <IconButton
           onClick={this.handleBackButtonClick}
@@ -58,7 +60,7 @@ class PaginationActions extends React.Component {
           disabled={page >= Math.ceil(count / rowsPerPage) - 1}
           aria-label="Last Page"
         >
-          <LastPageIcon />
+          <LastPage />
         </IconButton>
       </div>
     );

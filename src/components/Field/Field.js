@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
+import { TextField } from '@material-ui/core';
 
 export default function Field({ date, id, label, error, value, ...props }) {
   let isError = false;

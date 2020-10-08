@@ -20,7 +20,7 @@ const readUserMessage = channel => async user => {
     return messages.first();
   } catch (error) {
     throw new TimeOutError(
-      `⏳ You took to long to reply, please reply in under ${replyMinutes} minutes.`,
+      `⏳ You took to long to reply to this message, please write the same command again and reply in under ${replyMinutes} minutes.`,
     );
   }
 };

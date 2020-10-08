@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql, compose } from 'react-apollo';
-import TablePagination from '@material-ui/core/TablePagination';
+import { TablePagination } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 

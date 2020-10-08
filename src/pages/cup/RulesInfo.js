@@ -2,9 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { nickId } from 'utils/nick';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import { TextField, Button, Grid } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
 import DerpTable from 'components/Table/DerpTable';
 import Header from 'components/Header';
@@ -23,7 +21,7 @@ const RulesInfo = props => {
 
   return (
     <Container>
-      <Grid container spacing={24}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <Header h2>Cup description</Header>
           <Paper>

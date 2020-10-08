@@ -450,7 +450,7 @@ const serverConfig = {
   externals: [
     './assets.json',
     nodeExternals({
-      whitelist: [reStyle, reImage],
+      allowlist: [reStyle, reImage],
     }),
   ],
 

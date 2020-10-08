@@ -1,8 +1,6 @@
 import React from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
+import { Close as CloseIcon } from '@material-ui/icons';
 
 const Feedback = props => {
   const { open, text, type, close } = props;
