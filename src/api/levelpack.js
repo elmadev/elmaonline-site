@@ -188,15 +188,18 @@ const getPacksByQuery = async query => {
       },
     ],
   });
+
+  const matchingLevels = await Level.findAll({
+    attributes: ['LevelName', 'LevelIndex'],
+    where: { LevelName: { [Op.like]: `${like(query)}%` } },
+  });
+
   const levels = await LevelPackLevel.findAll({
     attributes: ['LevelPackIndex', 'LevelIndex'],
+    where: {
+      LevelIndex: { [Op.in]: matchingLevels.map(lev => lev.LevelIndex) },
+    },
     include: [
-      {
-        model: Level,
-        as: 'Level',
-        attributes: ['LevelName', 'LongName', 'LevelIndex'],
-        where: { LevelName: { [Op.like]: `${like(query)}%` } },
-      },
       {
         model: LevelPack,
         as: 'LevelPack',
@@ -211,6 +214,7 @@ const getPacksByQuery = async query => {
       },
     ],
   });
+
   return [...packs, ...levels].filter(
     (v, i, a) => a.findIndex(x => x.LevelPackIndex === v.LevelPackIndex) === i,
   );
