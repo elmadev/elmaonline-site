@@ -32,12 +32,12 @@ const getFields = () => {
     Ranking: {
       type: DataType.DECIMAL(24, 20),
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: '1000.00000000000000000000',
     },
     Increase: {
       type: DataType.DECIMAL(24, 20),
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: '1000.00000000000000000000',
     },
     Points: {
       type: DataType.INTEGER,
