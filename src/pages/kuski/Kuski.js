@@ -69,7 +69,12 @@ class Kuski extends React.Component {
           </div>
           <KuskiHeader KuskiIndex={getKuskiByName.KuskiIndex} />
         </div>
-        <Tabs value={tab} onChange={(e, t) => this.setState({ tab: t })}>
+        <Tabs
+          variant="scrollable"
+          scrollButtons="auto"
+          value={tab}
+          onChange={(e, t) => this.setState({ tab: t })}
+        >
           <Tab label="Played Battles" />
           <Tab label="Latest times" />
           <Tab label="Replays Uploaded" />

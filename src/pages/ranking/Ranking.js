@@ -50,6 +50,8 @@ class Ranking extends React.Component {
         <Tabs
           value={tab}
           onChange={(e, value) => this.setState({ tab: value })}
+          variant="scrollable"
+          scrollButtons="auto"
         >
           <Tab label="Overall" />
           <Tab label={`Yearly (${year})`} />

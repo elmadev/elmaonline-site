@@ -24,6 +24,7 @@ module.exports = {
     'help',
     'ranking',
     'config',
+    'ui',
   ],
   types: {
     chore: {

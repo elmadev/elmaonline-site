@@ -237,7 +237,12 @@ class Level extends React.Component {
             {loading && <Loading />}
             {!loading && (
               <>
-                <Tabs value={tab} onChange={this.onTabClick}>
+                <Tabs
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  value={tab}
+                  onChange={this.onTabClick}
+                >
                   <Tab label="Best times" />
                   <Tab label="All times" />
                   {/* <Tab label="Best multi times" />

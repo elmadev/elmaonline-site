@@ -62,7 +62,12 @@ const Settings = () => {
 
   return (
     <>
-      <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        value={tab}
+        onChange={(e, value) => setTab(value)}
+      >
         <Tab label="User info" />
         <Tab label="Team" />
         <Tab label="Ignore" />
