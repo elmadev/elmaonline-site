@@ -84,8 +84,9 @@ const SearchBar = () => {
           <ul>
             <li>Press enter to search</li>
             <li>Press esc to reset input</li>
-            <li>Use * as wildcard for a single character</li>
-            <li>Search phrase will always be used in the start of a word</li>
+            <li>Use ? as wildcard for a single character</li>
+            <li>Use * as wildcard for multiple characters</li>
+            <li>By default there&apos;s a * wildcard at the end</li>
           </ul>
         </InfoBox>
       </Drawer>
