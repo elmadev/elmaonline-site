@@ -84,7 +84,12 @@ const LevelPack = ({ name }) => {
           if (error) return <div>something went wrong</div>;
           return (
             <>
-              <Tabs value={tab} onChange={(e, t) => setTab(t)}>
+              <Tabs
+                variant="scrollable"
+                scrollButtons="auto"
+                value={tab}
+                onChange={(e, t) => setTab(t)}
+              >
                 <Tab label="Records" />
                 <Tab label="Total Times" />
                 <Tab label="King list" />
