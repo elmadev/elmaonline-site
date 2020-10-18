@@ -2,18 +2,30 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import DerpTable from 'components/Table/DerpTable';
 import { ListRow, ListCell } from 'styles/List';
-import { Grid } from '@material-ui/core';
+import { Grid, IconButton } from '@material-ui/core';
 import Header from 'components/Header';
 import Kuski from 'components/Kuski';
 import { calculateStandings } from 'utils/cups';
+import Flag from 'components/Flag';
+import { AddCircleOutlineRounded } from '@material-ui/icons';
+import StandingsDetailedPopup from './StandingsDetailedPopup';
 
 const Standings = props => {
   const { events, cup } = props;
   const [standings, setStandings] = useState({});
+  const [standingsDetailedData, setStandingsDetailedData] = useState(null);
 
   useEffect(() => {
     setStandings(calculateStandings(events, cup, false));
   }, []);
+
+  const onKuskiRowClick = kuskiData => {
+    setStandingsDetailedData(kuskiData);
+  };
+
+  const closeStandingsDetailed = () => {
+    setStandingsDetailedData(null);
+  };
 
   return (
     <Grid container spacing={0}>
@@ -22,7 +34,7 @@ const Standings = props => {
           <Header h2>Players</Header>
           {standings.player && (
             <DerpTable
-              headers={['#', 'Player', 'Points']}
+              headers={['#', 'Player', 'Points', '']}
               length={standings.player.length}
             >
               {standings.player.map((r, no) => (
@@ -33,6 +45,15 @@ const Standings = props => {
                   </ListCell>
                   <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
+                  </ListCell>
+                  <ListCell right>
+                    <IconButton
+                      aria-label="details"
+                      onClick={() => onKuskiRowClick(r)}
+                      size="small"
+                    >
+                      <AddCircleOutlineRounded />
+                    </IconButton>
                   </ListCell>
                 </ListRow>
               ))}
@@ -70,13 +91,25 @@ const Standings = props => {
               {standings.nation.map((r, no) => (
                 <ListRow key={r.Country}>
                   <ListCell>{no + 1}.</ListCell>
-                  <ListCell>{r.Country}</ListCell>
+                  <ListCell>
+                    <span>
+                      <Flag nationality={r.Country} /> {r.Country}
+                    </span>
+                  </ListCell>
                   <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
                   </ListCell>
                 </ListRow>
               ))}
             </DerpTable>
+          )}
+
+          {standingsDetailedData && (
+            <StandingsDetailedPopup
+              data={standingsDetailedData}
+              events={events}
+              close={closeStandingsDetailed}
+            />
           )}
         </Container>
       </Grid>

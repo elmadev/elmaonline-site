@@ -141,7 +141,7 @@ export const calculateStandings = (events, cup, simple) => {
   forEach(events, event => {
     teamEntries = {};
     nationEntries = {};
-    forEach(event.CupTimes, time => {
+    forEach(event.CupTimes, (time, index) => {
       // player standings
       let existsIndex = -1;
       const exists = standings.filter((x, i) => {
@@ -151,6 +151,15 @@ export const calculateStandings = (events, cup, simple) => {
         }
         return false;
       });
+
+      const pointsDetailed = {
+        Points: time.Points,
+        LevelIndex: event.LevelIndex,
+        Position: index + 1,
+        TotalPlayers: event.CupTimes.length,
+        Skipped: false,
+      };
+
       if (exists.length === 0) {
         standings.push({
           KuskiIndex: time.KuskiIndex,
@@ -159,6 +168,7 @@ export const calculateStandings = (events, cup, simple) => {
           KuskiData: time.KuskiData,
           Events: 1,
           AllPoints: [time.Points],
+          AllPointsDetailed: [pointsDetailed],
         });
       } else {
         standings[existsIndex] = {
@@ -166,6 +176,10 @@ export const calculateStandings = (events, cup, simple) => {
           Points: standings[existsIndex].Points + time.Points,
           Events: standings[existsIndex].Events + 1,
           AllPoints: [...standings[existsIndex].AllPoints, time.Points],
+          AllPointsDetailed: [
+            ...standings[existsIndex].AllPointsDetailed,
+            pointsDetailed,
+          ],
         };
       }
       // team standings
@@ -229,14 +243,22 @@ export const calculateStandings = (events, cup, simple) => {
         return s;
       }
       const { AllPoints } = s;
-      let { Points } = s;
+      let { Points, AllPointsDetailed } = s;
       for (let i = 0; i < s.Events - (cup.Events - cup.Skips); i += 1) {
         const min = Math.min(...AllPoints);
         const removeIndex = AllPoints.findIndex(ap => ap === min);
         AllPoints.splice(removeIndex, 1);
         Points -= min;
+
+        const skippedLevel = AllPointsDetailed.find(apd => apd.Points === min);
+        AllPointsDetailed = AllPointsDetailed.map(apd => {
+          if (apd.LevelIndex === skippedLevel.LevelIndex) {
+            return { ...apd, Skipped: true };
+          }
+          return apd;
+        });
       }
-      return { ...s, AllPoints, Points };
+      return { ...s, AllPoints, Points, AllPointsDetailed };
     });
     standings = skipStandings;
   }
