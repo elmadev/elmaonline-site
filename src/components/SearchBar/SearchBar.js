@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import history from 'utils/history';
 import styled from 'styled-components';
-import { Button, Drawer, Hidden } from '@material-ui/core';
-import { Info } from '@material-ui/icons';
+import { Button, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Info, Cancel } from '@material-ui/icons';
 
 const SearchBar = () => {
   const [searchType, setType] = useState('');
@@ -74,6 +74,17 @@ const SearchBar = () => {
               }
             }}
           />
+          <Reset>
+            <IconButton
+              aria-label="reset"
+              onClick={() => {
+                setValue('');
+                setType('');
+              }}
+            >
+              <Cancel />
+            </IconButton>
+          </Reset>
           <OpenInfo onClick={() => openInfo(!info)}>
             <Info />
           </OpenInfo>
@@ -94,6 +105,17 @@ const SearchBar = () => {
   );
 };
 
+const Reset = styled.div`
+  position: absolute;
+  left: 536px;
+  top: 14px;
+  height: 24px;
+  button {
+    padding: 0;
+    position: absolute;
+  }
+`;
+
 const InfoBox = styled.div`
   padding: 8px;
 `;
@@ -107,6 +129,7 @@ const OpenInfo = styled.div`
 `;
 
 const TypesContainer = styled.div`
+  position: relative;
   height: 41px;
   margin-left: 8px 0;
   border: 0;

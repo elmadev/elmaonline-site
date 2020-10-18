@@ -46,7 +46,7 @@ const Standings = props => {
                   <ListCell right>
                     {r.Points} point{r.Points > 1 ? 's' : ''}
                   </ListCell>
-                  <ListCell right>
+                  <ListCell width={20} right>
                     <IconButton
                       aria-label="details"
                       onClick={() => onKuskiRowClick(r)}
