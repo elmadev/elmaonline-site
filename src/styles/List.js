@@ -15,6 +15,9 @@ const Cell = styled.span`
   border-bottom: 1px solid #eaeaea;
   width: ${p => (p.width ? `${p.width}px` : 'auto')};
   text-align: ${p => (p.right ? 'right' : 'left')};
+  button {
+    max-height: 20px;
+  }
 `;
 
 export const ListContainer = ({ children, chin, horizontalMargin, width }) => {

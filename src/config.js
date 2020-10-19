@@ -84,6 +84,7 @@ module.exports = {
     channels: {
       battle: '',
       times: '',
+      events: '',
     },
     apiAuth: '',
     url: 'https://test.elma.online/',
