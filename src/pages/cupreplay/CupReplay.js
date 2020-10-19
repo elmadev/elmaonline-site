@@ -10,6 +10,7 @@ import Link from 'components/Link';
 import { Paper } from 'styles/Paper';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 import historyRefresh from 'utils/historyRefresh';
+import Loading from 'components/Loading';
 /* import { Level } from 'components/Names';
 import RecList from 'components/RecList';
 import ReplayComments from 'components/ReplayComments';
@@ -46,14 +47,17 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
 
   useEffect(() => {
     if (replayLoaded) {
-      getOtherReplays({
-        cupGroupIndex: replay.CupData.CupGroupIndex,
-        cupIndex: replay.CupIndex,
-      });
+      if (replay.CupData) {
+        getOtherReplays({
+          cupGroupIndex: replay.CupData.CupGroupIndex,
+          cupIndex: replay.CupIndex,
+        });
+      }
     }
   }, [replayLoaded, ReplayIndex]);
 
-  if (!replayLoaded) return null;
+  if (!replayLoaded) return <Loading />;
+  if (!replay.CupData) return <div>Unable to load replay</div>;
 
   let others = [];
   if (otherReplays.length > 0) {
@@ -61,7 +65,10 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
       others = otherReplays[0].CupTimes.filter(t => t.Replay);
     }
   }
-  const recName = Filename.replace(replay.KuskiData.Kuski.substring(0, 6), '');
+  let recName = '';
+  if (replay.KuskiData) {
+    recName = Filename.replace(replay.KuskiData.Kuski.substring(0, 6), '');
+  }
 
   return (
     <Container>

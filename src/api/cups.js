@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import moment from 'moment';
 import { filterResults, generateEvent, admins } from 'utils/cups';
 import { zeroPad } from 'utils/time';
+import { sendMessage } from 'utils/discord';
+import config from '../config';
 import {
   SiteCupGroup,
   SiteCup,
@@ -626,6 +628,13 @@ router
     const auth = authContext(req);
     if (auth.auth) {
       const cupData = await getCupEvents(req.params.CupGroupIndex);
+      const eventSort = (a, b) => a.CupIndex - b.CupIndex;
+      const getEventNumber = event => {
+        const index = cupData
+          .sort(eventSort)
+          .findIndex(e => e.CupIndex === event.CupIndex);
+        return index + 1;
+      };
       const eventData = cupData.filter(
         c => c.CupIndex === parseInt(req.params.CupIndex, 10),
       );
@@ -660,6 +669,17 @@ router
             ...req.body,
             KuskiIndex: auth.userid,
           });
+          sendMessage(
+            config.discord.channels.events,
+            `:newspaper: Interview added for ${
+              req.body.ShortName
+            } cup event ${getEventNumber(eventData[0])} ${req.body.type
+              .replace(/([A-Z])/g, ' $1')
+              .trim()
+              .toLowerCase()}: <${config.discord.url}cup/${
+              req.body.ShortName
+            }>`,
+          );
           res.json({ success: 1 });
         } else {
           res.json({ success: 0, error: 'Not eligable to add interview' });
