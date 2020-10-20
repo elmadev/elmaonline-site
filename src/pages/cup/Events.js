@@ -43,6 +43,7 @@ const Cups = props => {
       <Grid item xs={12} sm={6}>
         {events.sort(eventSort).map((e, i) => (
           <EventContainer
+            key={e.CupIndex}
             highlight={i === openEvent}
             onClick={() => setOpenEvent(i)}
           >
