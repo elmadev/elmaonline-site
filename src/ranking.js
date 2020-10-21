@@ -434,7 +434,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYY'),
               'year',
-              5,
+              3,
             );
             CurrRank.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
@@ -458,7 +458,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMM'),
               'month',
-              16,
+              10,
             );
             CurrRank.month[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -484,7 +484,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYww'),
               'week',
-              24,
+              16,
             );
             CurrRank.week[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -510,7 +510,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMMDD'),
               'day',
-              24,
+              16,
             );
             CurrRank.day[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
