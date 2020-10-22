@@ -14,6 +14,7 @@ import {
   Battletime,
 } from './data/models';
 import { getBattleType } from './utils/battle';
+import config from './config';
 
 const getCurrentRankings = async () => {
   const rankingData = await Ranking.findAll();
@@ -232,6 +233,21 @@ const addRanking = (
   } else {
     newRanking.PlayedAll += 1;
   }
+  if (results.length >= 5) {
+    if (BATTLETYPES[periodType].indexOf(type) > -1) {
+      const Played5 = `Played5${type}`; // battles played with at least 5 players
+      if (!newRanking[Played5]) {
+        newRanking[Played5] = 1;
+      } else {
+        newRanking[Played5] += 1;
+      }
+    }
+    if (!newRanking.Played5All) {
+      newRanking.Played5All = 1;
+    } else {
+      newRanking.Played5All += 1;
+    }
+  }
 
   const Points = `Points${type}`; // battle experience points
   if (BATTLETYPES[periodType].indexOf(type) > -1) {
@@ -388,6 +404,8 @@ export function calcRankings(getBattleList, battleResults) {
               BattleType: RankingBattleType,
               Played:
                 newRankings.all[r.KuskiIndex][`Played${RankingBattleType}`],
+              Played5:
+                newRankings.all[r.KuskiIndex][`Played5${RankingBattleType}`],
               Ranking:
                 newRankings.all[r.KuskiIndex][`Ranking${RankingBattleType}`],
               Increase:
@@ -412,6 +430,7 @@ export function calcRankings(getBattleList, battleResults) {
               BattleIndex: result.battle.BattleIndex,
               BattleType: 'All',
               Played: newRankings.all[r.KuskiIndex].PlayedAll,
+              Played5: newRankings.all[r.KuskiIndex].Played5All,
               Ranking: newRankings.all[r.KuskiIndex].RankingAll,
               Increase:
                 newRankings.all[r.KuskiIndex].RankingAll - previousRanking,
@@ -783,6 +802,9 @@ export const deleteRanking = async () => {
 };
 
 export const updateRanking = async limit => {
+  if (!config.run.ranking) {
+    return false;
+  }
   const getCurrent = await getCurrentRankings();
   CurrRank = { all: {}, year: {}, month: {}, week: {}, day: {} };
   insertBulk = { all: [], year: [], month: [], week: [], day: [] };

@@ -4,7 +4,7 @@ import Model from '../sequelize';
 
 const BattleTypes = ['NM', 'All', 'FF', 'AP'];
 
-const Types = ['Played', 'Wins', 'Points', 'Ranking', 'Designed'];
+const Types = ['Played', 'Played5', 'Wins', 'Points', 'Ranking', 'Designed'];
 
 const getFields = () => {
   const fields = {

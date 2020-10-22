@@ -29,6 +29,11 @@ const getFields = () => {
       allowNull: false,
       defaultValue: 0,
     },
+    Played5: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     Ranking: {
       type: DataType.DECIMAL(24, 20),
       allowNull: false,
