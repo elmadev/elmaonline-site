@@ -23,7 +23,7 @@ export const resolvers = {
   RootQuery: {
     async getChatLines(parent, { start, end }) {
       const chatLines = await Chat.findAll({
-        limit: 200,
+        limit: 2048,
         order: [['ChatIndex', 'ASC']],
         include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
         where: {
