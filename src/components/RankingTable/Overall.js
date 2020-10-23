@@ -13,6 +13,11 @@ class RankingOverall extends React.Component {
       refetch: PropTypes.func.isRequired,
     }).isRequired,
     battleType: PropTypes.string.isRequired,
+    minPlayed: PropTypes.number,
+  };
+
+  static defaultProps = {
+    minPlayed: 10,
   };
 
   constructor(props) {
@@ -26,6 +31,7 @@ class RankingOverall extends React.Component {
   render() {
     const {
       battleType,
+      minPlayed,
       data: { loading, getRanking },
     } = this.props;
     const { page, rowsPerPage } = this.state;
@@ -34,9 +40,12 @@ class RankingOverall extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     const Played = `Played${battleType}`;
+    const FilteredRanking = getRanking
+      ? getRanking.filter(r => r[Played] > minPlayed)
+      : null;
     return (
       <>
-        {getRanking && (
+        {FilteredRanking && (
           <DerpTable
             headers={[
               '#',
@@ -47,7 +56,7 @@ class RankingOverall extends React.Component {
               'Designed',
               'Played',
             ]}
-            length={getRanking.length}
+            length={FilteredRanking.length}
             pagination
             loading={loading}
             onChangePage={nextPage => this.setState({ page: nextPage })}
@@ -58,10 +67,9 @@ class RankingOverall extends React.Component {
               })
             }
           >
-            {getRanking
-              .sort((a, b) => {
-                return b[Ranking] - a[Ranking];
-              })
+            {FilteredRanking.sort((a, b) => {
+              return b[Ranking] - a[Ranking];
+            })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((i, no) => {
                 return (

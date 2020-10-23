@@ -12,7 +12,16 @@ import PaginationActions from 'components/Table/PaginationActions';
 
 class DerpTable extends React.Component {
   static propTypes = {
-    headers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    headers: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          t: PropTypes.string,
+          r: PropTypes.bool,
+          w: PropTypes.string,
+        }),
+      ]),
+    ).isRequired,
     loading: PropTypes.bool,
     children: PropTypes.node.isRequired,
     length: PropTypes.number,
@@ -56,14 +65,14 @@ class DerpTable extends React.Component {
         <ListContainer>
           <ListHeader>
             {headers.map(h => (
-              <>
+              <React.Fragment key={h.t || h}>
                 {typeof h === 'string' && <ListCell key={h}>{h}</ListCell>}
                 {typeof h === 'object' && (
                   <ListCell key={h} right={h.r} width={h.w}>
                     {h.t}
                   </ListCell>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </ListHeader>
           {loading && <CircularProgress />}

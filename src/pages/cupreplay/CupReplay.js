@@ -54,7 +54,7 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
         });
       }
     }
-  }, [replayLoaded, ReplayIndex]);
+  }, [replay, replayLoaded, ReplayIndex]);
 
   if (!replayLoaded) return <Loading />;
   if (!replay.CupData) return <div>Unable to load replay</div>;
@@ -120,6 +120,7 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
                 <>
                   {others.map(t => (
                     <ListRow
+                      key={t.CupTimeIndex}
                       selected={t.CupTimeIndex === replay.CupTimeIndex}
                       onClick={() =>
                         goToReplay(

@@ -10,7 +10,14 @@ import RankingYear from 'components/RankingTable/Year';
 import RankingMonth from 'components/RankingTable/Month';
 import RankingWeek from 'components/RankingTable/Week';
 import RankingDay from 'components/RankingTable/Day';
-import { Year, Month, Week, Day, BattleTypes } from 'components/Selectors';
+import {
+  Year,
+  Month,
+  Week,
+  Day,
+  BattleTypes,
+  MinPlayed,
+} from 'components/Selectors';
 
 import s from './Ranking.css';
 
@@ -30,6 +37,8 @@ const formatPeriod = (type, year, month, week, day) => {
   return year;
 };
 
+const defaultMinPlayed = [10, 10, 5, 2, 1];
+
 class Ranking extends React.Component {
   constructor(props) {
     super(props);
@@ -40,11 +49,20 @@ class Ranking extends React.Component {
       week: parseInt(m().format('w'), 10),
       day: parseInt(m().format('D'), 10),
       battleType: 'All',
+      min: 10,
     };
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { tab } = this.state;
+    if (tab !== prevState.tab) {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ min: defaultMinPlayed[tab] });
+    }
+  }
+
   render() {
-    const { tab, year, month, week, day, battleType } = this.state;
+    const { tab, year, month, week, day, battleType, min } = this.state;
     return (
       <>
         <Tabs
@@ -63,26 +81,35 @@ class Ranking extends React.Component {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={8}>
               <Header>Ranking</Header>
-              {tab === 0 && <RankingOverall battleType={battleType} />}
+              {tab === 0 && (
+                <RankingOverall battleType={battleType} minPlayed={min} />
+              )}
               {tab === 1 && (
-                <RankingYear period={year} battleType={battleType} />
+                <RankingYear
+                  period={year}
+                  battleType={battleType}
+                  minPlayed={min}
+                />
               )}
               {tab === 2 && (
                 <RankingMonth
                   period={formatPeriod('month', year, month, week, day)}
                   battleType={battleType}
+                  minPlayed={min}
                 />
               )}
               {tab === 3 && (
                 <RankingWeek
                   period={formatPeriod('week', year, month, week, day)}
                   battleType={battleType}
+                  minPlayed={min}
                 />
               )}
               {tab === 4 && (
                 <RankingDay
                   period={formatPeriod('day', year, month, week, day)}
                   battleType={battleType}
+                  minPlayed={min}
                 />
               )}
             </Grid>
@@ -94,6 +121,7 @@ class Ranking extends React.Component {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   alignItems: 'center',
+                  marginBottom: '8px',
                 }}
               >
                 {tab > 0 && (
@@ -120,6 +148,7 @@ class Ranking extends React.Component {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   alignItems: 'center',
+                  marginBottom: '8px',
                 }}
               >
                 {tab === 4 && (
@@ -128,6 +157,20 @@ class Ranking extends React.Component {
                 <BattleTypes
                   periodType={tab}
                   typeUpdated={type => this.setState({ battleType: type })}
+                />
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                }}
+              >
+                <MinPlayed
+                  isUpdated={newMin => this.setState({ min: newMin })}
+                  min={min}
                 />
               </div>
             </Grid>

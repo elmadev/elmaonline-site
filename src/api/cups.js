@@ -291,7 +291,13 @@ const TeamReplays = async (CupGroupIndex, KuskiIndex) => {
   if (player.TeamIndex <= 0) return [];
   const recs = await SiteCup.findAll({
     where: { CupGroupIndex },
-    attributes: ['CupIndex', 'LevelIndex', 'CupGroupIndex', 'StartTime'],
+    attributes: [
+      'CupIndex',
+      'LevelIndex',
+      'CupGroupIndex',
+      'StartTime',
+      'EndTime',
+    ],
     include: [
       {
         model: SiteCupTime,
