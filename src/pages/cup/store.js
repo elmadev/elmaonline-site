@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { action, thunk } from 'easy-peasy';
+import { action, persist, thunk } from 'easy-peasy';
 import {
   AllFinishedInRange,
   Cup,
@@ -116,6 +116,18 @@ export default {
     }
   }),
   teamReplays: [],
+  teamOptions: persist(
+    {
+      showOngoing: false,
+      sortByTime: false,
+    },
+    {
+      storage: 'localStorage',
+    },
+  ),
+  setTeamOptions: action((state, payload) => {
+    state.teamOptions = payload;
+  }),
   setTeamReplays: action((state, payload) => {
     state.teamReplays = payload;
   }),
