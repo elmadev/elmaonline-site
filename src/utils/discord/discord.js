@@ -178,7 +178,15 @@ async function discordBattlestart(content) {
   const battleString = battleToString(content);
   sendMessage(config.discord.channels.battle, battleString);
 
-  battleNotifier.notifyBattle(content, battleString);
+  try {
+    await battleNotifier.notifyBattle(content, battleString);
+  } catch (error) {
+    logger.log({
+      action: 'discord-notify-battle',
+      message: error.message || error,
+      stack: error.stack,
+    });
+  }
 }
 
 function discordBattlequeue(content) {
