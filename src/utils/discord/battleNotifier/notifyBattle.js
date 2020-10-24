@@ -1,3 +1,5 @@
+const { UserConfig } = require('./userConfig');
+
 const onlyWordsRegExp = /^\w+$/;
 
 const matchesValue = (array, value) => {
@@ -76,9 +78,10 @@ const battleMatchesUserConfig = (battle, userConfig) =>
 
 const getSubscribedUserIds = async ({ battle, store }) => {
   const userConfigsById = await store.getAll();
-  const userConfigs = Object.entries(userConfigsById);
+  const storedConfigs = Object.entries(userConfigsById);
 
-  const userIds = userConfigs.reduce((acc, [userId, userConfig]) => {
+  const userIds = storedConfigs.reduce((acc, [userId, storedConfig]) => {
+    const userConfig = UserConfig(storedConfig);
     const isSubscribed =
       userConfig.isOn && battleMatchesUserConfig(battle, userConfig);
     return isSubscribed ? [...acc, userId] : acc;

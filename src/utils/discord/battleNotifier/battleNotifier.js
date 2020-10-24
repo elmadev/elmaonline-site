@@ -1,7 +1,17 @@
+const { DiscordAPIError } = require('discord.js');
 const createBnStore = require('./bnStore');
 const bnCommand = require('./bnCommand');
 const { getSubscribedUserIds } = require('./notifyBattle');
 const { extendMessage } = require('./messageUtils');
+const logger = require('../logger');
+
+const logNotifyUserError = error => {
+  logger.log({
+    action: 'notify-user-send',
+    message: error.message || error,
+    stack: error.stack,
+  });
+};
 
 const battleNotifier = ({ bnStorePath, client, fallbackChannelId }) => {
   const store = createBnStore(bnStorePath);
@@ -12,10 +22,17 @@ const battleNotifier = ({ bnStorePath, client, fallbackChannelId }) => {
     const dmBlockedUserIds = [];
     await Promise.all(
       userIds.map(async userId => {
-        const user = await client.users.fetch(userId);
-        await user.send(message).catch(() => {
-          dmBlockedUserIds.push(user);
-        });
+        let user;
+        try {
+          user = await client.users.fetch(userId);
+          await user.send(message);
+        } catch (error) {
+          if (error instanceof DiscordAPIError) {
+            dmBlockedUserIds.push(user);
+          } else {
+            logNotifyUserError(error);
+          }
+        }
       }),
     );
 

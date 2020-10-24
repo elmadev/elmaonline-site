@@ -564,4 +564,25 @@ describe('with result cases', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('test legacy configs', () => {
+    test('only battleTypes and designers defined works correctly', async () => {
+      const legacyConfig = {
+        createdAt: '2020-09-15T17:37:11.563Z',
+        updatedAt: '2020-09-15T19:37:39.237Z',
+        isOn: true,
+        notifyList: [{ battleTypes: ['Normal'], designers: [] }],
+        ignoreList: [],
+        username: 'ILKKA',
+      };
+      const store = mockStore({ '1': legacyConfig });
+      const battle = mockBattle({
+        battleType: 'Normal',
+        designer: 'Zero',
+      });
+      const actual = await getSubscribedUserIds({ battle, store });
+      const expected = ['1'];
+      expect(actual).toEqual(expected);
+    });
+  });
 });
