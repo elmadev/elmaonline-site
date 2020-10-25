@@ -54,6 +54,14 @@ const Team = () => {
     return startTime < now && now < endTime;
   };
 
+  const getEventNumber = CupIndex => {
+    const eventIndex = teamReplays
+      .sort(eventSort)
+      .findIndex(teamReplay => teamReplay.CupIndex === CupIndex);
+
+    return eventIndex + 1;
+  };
+
   if (!isRehydrated) {
     return 'Loading...';
   }
@@ -82,10 +90,10 @@ const Team = () => {
             {teamReplays
               .sort(eventSort)
               .filter(isOngoingFilter)
-              .map((e, i) => (
+              .map(e => (
                 <Fragment key={e.CupIndex}>
                   <Header h3 top>
-                    Event {i + 1}
+                    Event {getEventNumber(e.CupIndex)}
                   </Header>
                   {e.CupTimes.sort(sortByTime ? timeSort : kuskiSort)
                     .filter(t => t.Replay)
@@ -98,7 +106,7 @@ const Team = () => {
                               cup.ShortName,
                               replay.KuskiData.Kuski,
                               replay.Code,
-                              i + 1,
+                              getEventNumber(e.CupIndex),
                             )}
                           >
                             {replay.TimeExists === 1 && <>✓ </>}
@@ -121,7 +129,7 @@ const Team = () => {
                               cup.ShortName,
                               replay.KuskiData.Kuski,
                               replay.Code,
-                              i + 1,
+                              getEventNumber(e.CupIndex),
                             )}
                             lev={`/dl/level/${e.LevelIndex}`}
                             height={400}
