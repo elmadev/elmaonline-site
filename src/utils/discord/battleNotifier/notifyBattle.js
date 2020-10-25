@@ -1,6 +1,4 @@
-const { UserConfig } = require('./userConfig');
-
-const onlyWordsRegExp = /^\w+$/;
+const { UserConfig, isSimpleLevelPattern } = require('./userConfig');
 
 const matchesValue = (array, value) => {
   const matchValue = value && value.toLowerCase();
@@ -8,8 +6,6 @@ const matchesValue = (array, value) => {
     array.length === 0 || array.some(item => item.toLowerCase() === matchValue)
   );
 };
-
-const isSimpleLevelPattern = string => onlyWordsRegExp.test(string);
 
 const matchesLevelPatterns = (levelPatterns, level) => {
   if (levelPatterns.length === 0) return true;

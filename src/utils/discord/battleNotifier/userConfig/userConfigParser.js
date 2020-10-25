@@ -5,6 +5,9 @@ const moreThanOneSpaceRegexp = /\s\s+/g;
 const commasRegexp = /,/g;
 const getLevelPatternsRegexp = suffix => new RegExp(`^.*${suffix}$`, 'gi');
 
+const onlyWordsRegExp = /^\w+$/;
+const isSimpleLevelPattern = string => onlyWordsRegExp.test(string);
+
 const substringInBetween = (input, startChar, endChar) => {
   const startIndex = input.indexOf(startChar) + 1;
   const endIndex = input.indexOf(endChar, startChar);
@@ -21,7 +24,8 @@ const getPrefixedNumber = (input, prefix) => {
 };
 
 const isValidLevelPattern = input =>
-  Boolean(input) && input.length > 0 && input.length <= 8;
+  Boolean(input) &&
+  (!isSimpleLevelPattern(input) || (input.length > 0 && input.length <= 8));
 
 const userConfigParser = ({ bnBattleTypes, bnBattleAttributes, keywords }) => {
   const parseDesignersInput = input => {
@@ -148,3 +152,4 @@ const userConfigParser = ({ bnBattleTypes, bnBattleAttributes, keywords }) => {
 };
 
 module.exports = userConfigParser;
+module.exports.isSimpleLevelPattern = isSimpleLevelPattern;
