@@ -219,7 +219,7 @@ describe('test good inputs', () => {
     });
 
     test('level pattern with over 8 characters is ignored', () => {
-      const userInput = '*9chars??.lev by Markku';
+      const userInput = 'has9chars.lev by Markku';
       const actual = userConfigParser.parse(userInput);
       const expected = UserConfigLists({
         notifyList: [{ designers: ['Markku'] }],
@@ -229,7 +229,7 @@ describe('test good inputs', () => {
 
     test('mutiple level names, parses valid level names correctly', () => {
       const userInput =
-        'Pob*.lev *1.lev ??*.lev *9chars??.lev incorrect.lev by Markku';
+        'Pob*.lev *1.lev ??*.lev has9chars.lev incorrect.lev by Markku';
       const actual = userConfigParser.parse(userInput);
       const expected = UserConfigLists({
         notifyList: [
@@ -244,7 +244,7 @@ describe('test good inputs', () => {
 
     test('mutiple level names, types and designers, parses valid level names correctly', () => {
       const userInput =
-        'Normal Pob*.lev First *1.lev Finish ??*.lev Apple *9chars??.lev by Markku1 Markku2 Markku3';
+        'Normal Pob*.lev First *1.lev Finish ??*.lev Apple has9chars.lev by Markku1 Markku2 Markku3';
       const actual = userConfigParser.parse(userInput);
       const expected = UserConfigLists({
         notifyList: [
@@ -252,6 +252,20 @@ describe('test good inputs', () => {
             battleTypes: ['Normal', 'First Finish', 'Apple'],
             designers: ['Markku1', 'Markku2', 'Markku3'],
             levelPatterns: ['Pob*', '*1', '??*'],
+          },
+        ],
+      });
+      expect(actual).toEqual(expected);
+    });
+
+    test('long regexp level name pattern is parse correctly', () => {
+      const userInput = '[a-zA-Z]+0+1$.lev by Markku';
+      const actual = userConfigParser.parse(userInput);
+      const expected = UserConfigLists({
+        notifyList: [
+          {
+            designers: ['Markku'],
+            levelPatterns: ['[a-zA-Z]+0+1$'],
           },
         ],
       });

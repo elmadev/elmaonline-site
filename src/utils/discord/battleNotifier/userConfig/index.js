@@ -8,6 +8,7 @@ module.exports = {
   formatter: userConfigFormatter,
   getBattleVariations,
   areUserConfigListsEmpty: userConfigFormatter.areUserConfigListsEmpty,
+  isSimpleLevelPattern: userConfigParser.isSimpleLevelPattern,
   UserConfig,
   UserConfigLists,
 };
