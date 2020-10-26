@@ -145,3 +145,7 @@ export const Players = () => api.get('player/');
 // teams
 export const Teams = () => api.get('teams');
 export const TeamMembers = Team => api.get(`teams/${Team}`);
+
+// chat
+export const ChatLinesInRange = data =>
+  api.get(`chat/${data.KuskiIndex}/${data.from}/${data.to}`);
