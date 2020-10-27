@@ -1,25 +1,31 @@
-import React from 'react';
-import { graphql, compose } from 'react-apollo';
+import React, { useEffect } from 'react';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import LocalTime from 'components/LocalTime';
 
-import chatQuery from './chat.graphql';
 import s from './Chat.css';
 
-class Chat extends React.Component {
-  static propTypes = {
-    data: PropTypes.shape({
-      loading: PropTypes.bool.isRequired,
-      getChatLines: PropTypes.array,
-    }).isRequired,
+const Chat = props => {
+  const { KuskiIndex, start = 0, end = Math.round(Date.now() / 1000) } = props;
+
+  const { chatLines } = useStoreState(state => state.Chat);
+  const { getChatLines } = useStoreActions(actions => actions.Chat);
+
+  const opts = {
+    start,
+    end,
   };
 
-  colorMap = {};
+  if (KuskiIndex) opts.KuskiIndex = KuskiIndex;
 
-  colorPool = [
+  useEffect(() => {
+    getChatLines(opts);
+  }, []);
+
+  const colorMap = {};
+
+  const colorPool = [
     '#cb52e2',
     '#0075DC',
     '#993F00',
@@ -41,62 +47,39 @@ class Chat extends React.Component {
     '#990000',
   ];
 
-  colorIndex = 0;
+  let colorIndex = 0;
 
-  getColor = kuski => {
-    if (!this.colorMap[kuski]) {
-      this.colorMap[kuski] = this.colorPool[
-        this.colorIndex % this.colorPool.length
-      ];
-      this.colorIndex += 1;
+  const getColor = kuski => {
+    if (!colorMap[kuski]) {
+      colorMap[kuski] = colorPool[colorIndex % colorPool.length];
+      colorIndex += 1;
     }
-    return this.colorMap[kuski];
+    return colorMap[kuski];
   };
 
-  render() {
-    const {
-      data: { getChatLines, loading },
-    } = this.props;
+  if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
-    if (loading) return <span>Loading chat</span>;
-
-    if (!getChatLines) return null;
-    return (
-      <div className={s.chat}>
-        {getChatLines.map(l => (
-          <div className={s.chatLine} key={l.ChatIndex}>
-            <div className={s.timestamp}>
-              <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
-            </div>{' '}
-            <div className={s.message}>
-              <span className={s.kuski}>
-                &lt;
-                <span style={{ color: this.getColor(l.KuskiData.Kuski) }}>
-                  {l.KuskiData.Kuski}
-                </span>
-                &gt;
-              </span>{' '}
-              <span>{l.Text}</span>
-            </div>
+  return (
+    <div className={s.chat}>
+      {chatLines.map(l => (
+        <div className={s.chatLine} key={l.ChatIndex}>
+          <div className={s.timestamp}>
+            <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
+          </div>{' '}
+          <div className={s.message}>
+            <span className={s.kuski}>
+              &lt;
+              <span style={{ color: getColor(l.KuskiData.Kuski) }}>
+                {l.KuskiData.Kuski}
+              </span>
+              &gt;
+            </span>{' '}
+            <span>{l.Text}</span>
           </div>
-        ))}
-      </div>
-    );
-  }
-}
+        </div>
+      ))}
+    </div>
+  );
+};
 
-export default compose(
-  withStyles(s),
-  graphql(chatQuery, {
-    options: ownProps => ({
-      variables: {
-        start: moment(ownProps.start, 'X')
-          .utc()
-          .format(),
-        end: moment(ownProps.end, 'X')
-          .utc()
-          .format(),
-      },
-    }),
-  }),
-)(Chat);
+export default withStyles(s)(Chat);
