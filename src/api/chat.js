@@ -56,7 +56,6 @@ const getChatLines = async ({ KuskiIndex, start, end, offset }) => {
   return lines;
 };
 
-// TODO pagination
 router
   .get('/:start/:end/:offset', async (req, res) => {
     const data = await getChatLines({

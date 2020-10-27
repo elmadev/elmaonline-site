@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import withStyles from 'isomorphic-style-loader/withStyles';
-// import moment from 'moment';
 
 import LocalTime from 'components/LocalTime';
 
