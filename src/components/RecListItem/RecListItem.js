@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-
+import { ListCell, ListRow } from 'styles/List';
 import { Level } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
@@ -45,27 +43,23 @@ class RecListItem extends React.Component {
   render() {
     const { replay, selected, columns } = this.props;
     return (
-      <TableRow
-        hover
-        style={{ cursor: 'pointer' }}
+      <ListRow
         key={replay.ReplayIndex}
         onClick={() => this.handleOpenReplay(replay.UUID)}
         selected={selected}
       >
         {columns.indexOf('Replay') !== -1 && (
-          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+          <ListCell>
             <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
-          </TableCell>
+          </ListCell>
         )}
         {columns.indexOf('Level') !== -1 && (
-          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+          <ListCell>
             <Level LevelData={replay.LevelData} />
-          </TableCell>
+          </ListCell>
         )}
         {columns.indexOf('Time') !== -1 && (
-          <TableCell
-            style={{ padding: '4px 10px 4px 10px', textAlign: 'right' }}
-          >
+          <ListCell right>
             {replay.TAS === 1 && <span style={{ color: 'red' }}>(TAS) </span>}
             {replay.Finished === 0 && (
               <span style={{ color: 'gray' }}>(DNF) </span>
@@ -75,18 +69,18 @@ class RecListItem extends React.Component {
               <span style={{ color: 'blue' }}>(Mod) </span>
             )}
             <Time thousands time={replay.ReplayTime} />
-          </TableCell>
+          </ListCell>
         )}
         {columns.indexOf('By') !== -1 && (
-          <TableCell style={{ padding: '4px 10px 4px 10px' }}>
+          <ListCell>
             {replay.DrivenByData ? (
               <Kuski kuskiData={replay.DrivenByData} />
             ) : (
               <div>{replay.DrivenByText}</div>
             )}
-          </TableCell>
+          </ListCell>
         )}
-      </TableRow>
+      </ListRow>
     );
   }
 }

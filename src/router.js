@@ -48,8 +48,21 @@ const routes = {
       load: () => import(/* webpackChunkName: 'kuski' */ './pages/kuski'),
     },
     {
+      path: '/teams',
+      load: () => import(/* webpackChunkName: 'teams' */ './pages/teams'),
+    },
+    {
+      path: '/team/:name',
+      load: () => import(/* webpackChunkName: 'team' */ './pages/team'),
+    },
+    {
       path: '/levels',
       load: () => import(/* webpackChunkName: 'levels' */ './pages/levels'),
+    },
+    {
+      path: '/levels/add',
+      load: () =>
+        import(/* webpackChunkName: 'levels-add' */ './pages/levels-add'),
     },
     {
       path: '/levels/:id',
@@ -59,6 +72,11 @@ const routes = {
       path: '/levels/packs/:name',
       load: () =>
         import(/* webpackChunkName: 'levelpack' */ './pages/levelpack'),
+    },
+    {
+      path: '/r/cup/:index/:filename',
+      load: () =>
+        import(/* webpackChunkName: 'cupreplay' */ './pages/cupreplay'),
     },
     {
       path: '/r/:uuid',
@@ -83,6 +101,10 @@ const routes = {
     {
       path: '/help',
       load: () => import(/* webpackChunkName: 'help' */ './pages/help'),
+    },
+    {
+      path: '/settings',
+      load: () => import(/* webpackChunkName: 'settings' */ './pages/settings'),
     },
     {
       path: '/confirm/:confirmCode',

@@ -4,14 +4,7 @@ import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import { TextField, Card, CardContent, Typography, Checkbox, FormControlLabel, Button, Grid } from '@material-ui/core';
 import Dropzone from 'components/Dropzone';
 
 import Alert from 'components/Alert';
@@ -52,10 +45,16 @@ class Upload extends React.Component {
 
   onDrop(files) {
     const fileInfo = {};
+    let error = '';
+    let unlisted = false;
+    if (files[0].name.substring(0, 2).toLowerCase() === 'wc') {
+      error = 'It looks like you are uploading a World Cup replay, to participate upload it from the cup page NOT here.';
+      unlisted = true;
+    }
     files.forEach((file, index) => {
       fileInfo[file.name] = {
         name: file.name,
-        unlisted: false,
+        unlisted,
         tas: false,
         bug: false,
         nitro: false,
@@ -69,7 +68,7 @@ class Upload extends React.Component {
     this.setState({
       fileInfo,
       files,
-      error: '',
+      error,
       duplicate: false,
       duplicateReplayIndex: 0,
       uploaded: [],
@@ -249,8 +248,10 @@ class Upload extends React.Component {
                   duplicateReplayIndex: body.replayInfo[0].ReplayIndex,
                 });
               }
+            } else if (body.error && body.error.code) {
+              if (body.error.code === 'ENOENT' && body.error.errno === -2) this.setState({ error: 'Filename too long.'});
             } else {
-              this.setState({ error: body.error });
+              this.setState({ error: body.error.toString() });
             }
           } else {
             this.sendMutation(
@@ -312,7 +313,7 @@ class Upload extends React.Component {
                 <Card className={s.uploadCard} key={rec.name}>
                   <CardContent>
                     <Typography color="textSecondary">{rec.name}</Typography>
-                    <Grid container spacing={24}>
+                    <Grid container spacing={3}>
                       <Grid item xs={12} sm={6}>
                         <div>
                           <TextField

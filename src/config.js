@@ -84,6 +84,7 @@ module.exports = {
     channels: {
       battle: '',
       times: '',
+      events: '',
     },
     apiAuth: '',
     url: 'https://test.elma.online/',
@@ -92,6 +93,12 @@ module.exports = {
       queue: '',
       results: '',
       ended: '',
+    },
+    prefix: '!',
+    bn: {
+      storePath: '../bn/bn.store.json',
+      logsPath: '../bn/logs/',
+      fallbackChannelId: '219884674330132480',
     },
   },
 };

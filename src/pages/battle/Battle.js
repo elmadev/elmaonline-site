@@ -3,20 +3,17 @@ import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Paper from '@material-ui/core/Paper';
-
+import {
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Select,
+  MenuItem,
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
+import { Paper } from 'styles/Paper';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Recplayer from 'components/Recplayer';
 import { BattleType } from 'components/Names';
 import Time from 'components/Time';
@@ -24,6 +21,7 @@ import Link from 'components/Link';
 import Chat from 'components/Chat';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
+import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 
 import s from './Battle.css';
@@ -116,24 +114,22 @@ class Battle extends React.Component {
 
     return (
       <div className={s.root}>
-        {
-          <div className={s.playerContainer}>
-            <div className={s.player}>
-              {isWindow && !(battleStatus(getBattle) === 'Queued') && (
-                <Recplayer
-                  rec={`/dl/battlereplay/${BattleIndex}`}
-                  lev={`/dl/level/${getBattle.LevelIndex}`}
-                  controls
-                />
-              )}
-            </div>
+        <div className={s.playerContainer}>
+          <div className={s.player}>
+            {isWindow && !(battleStatus(getBattle) === 'Queued') && (
+              <Recplayer
+                rec={`/dl/battlereplay/${BattleIndex}`}
+                lev={`/dl/level/${getBattle.LevelIndex}`}
+                controls
+              />
+            )}
           </div>
-        }
+        </div>
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">Battle info</Typography>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div className={s.battleDescription}>
@@ -141,7 +137,11 @@ class Battle extends React.Component {
                   <span className={s.battleType}>
                     <BattleType type={getBattle.BattleType} />
                   </span>{' '}
-                  battle in {getBattle.LevelData.LevelName}.lev by{' '}
+                  battle in{' '}
+                  <a href={`/dl/level/${getBattle.LevelIndex}`}>
+                    {getBattle.LevelData ? getBattle.LevelData.LevelName : '?'}
+                    .lev
+                  </a>{' '}
                   {getBattle.KuskiData.Kuski}
                   <div className={s.battleTimestamp}>
                     Started{' '}
@@ -165,53 +165,18 @@ class Battle extends React.Component {
             </ExpansionPanel>
             {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
               <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Leader history</Typography>
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="body1">Leader history</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                  <div className={s.timeDevelopment}>
-                    {[...getAllBattleTimes]
-                      .reduce((acc, cur) => {
-                        if (
-                          acc.length < 1 ||
-                          acc[acc.length - 1].Time > cur.Time
-                        )
-                          acc.push(cur);
-                        return acc;
-                      }, [])
-                      .map((b, i, a) => (
-                        <div className={s.timeDevelopmentRow} key={b.TimeIndex}>
-                          <span className={s.timeDiff}>
-                            {a.length > 1 && !a[i + 1] && 'Winner'}
-                            {a[i - 1] && (
-                              <span>
-                                {' '}
-                                -<Time time={a[i - 1].Time - b.Time} />
-                              </span>
-                            )}
-                            {a.length > 1 && !a[i - 1] && 'First finish'}
-                            {a.length === 1 && 'Only finish'}
-                          </span>
-                          <span className={s.timelineCell}>
-                            <span className={s.timelineMarker} />
-                            <span className={s.timelineLine} />
-                          </span>
-                          <span className={s.timeDevelopmentTime}>
-                            <Time time={b.Time} />
-                          </span>
-                          <span className={s.timeDevelopmentKuski}>
-                            {b.KuskiData.Kuski}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
+                  <LeaderHistory allFinished={getAllBattleTimes} />
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}
             {!(battleStatus(getBattle) === 'Queued') && (
               <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body2">Chat</Typography>
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="body1">Chat</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <Chat
@@ -229,77 +194,62 @@ class Battle extends React.Component {
         <div className={s.levelStatsContainer}>
           <Paper>
             {getBattle.Results && (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      style={{
-                        width: 1,
-                      }}
+              <ListContainer>
+                <ListHeader>
+                  <ListCell right width={30}>
+                    #
+                  </ListCell>
+                  <ListCell width={200}>Kuski</ListCell>
+                  <ListCell right width={200}>
+                    Time
+                  </ListCell>
+                  <ListCell>
+                    <Select
+                      value={extra}
+                      onChange={e => this.setState({ extra: e.target.value })}
+                      name="extra"
+                      displayEmpty
                     >
-                      #
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: 200,
-                      }}
-                    >
-                      Kuski
-                    </TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>
-                      <Select
-                        value={extra}
-                        onChange={e => this.setState({ extra: e.target.value })}
-                        name="extra"
-                        displayEmpty
-                      >
-                        <MenuItem value="" disabled>
-                          Extra
-                        </MenuItem>
-                        <MenuItem value="RankingAll">Ranking (all)</MenuItem>
-                        <MenuItem value="RankingType">Ranking (type)</MenuItem>
-                        <MenuItem value="RankingIncreaseAll">
-                          Ranking Increase (all)
-                        </MenuItem>
-                        <MenuItem value="RankingIncreaseType">
-                          Ranking Increase (type)
-                        </MenuItem>
-                      </Select>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <Query
-                    query={GET_BATTLE_TIMES}
-                    variables={{ id: BattleIndex }}
-                  >
-                    {({ data: { getBattleTimes }, loading }) => {
-                      if (loading) return null;
-                      return [...getBattleTimes]
-                        .sort(sortResults(getBattle.BattleType))
-                        .map((r, i) => (
-                          <TableRow key={r.KuskiIndex}>
-                            <TableCell>{i + 1}.</TableCell>
-                            <TableCell>
-                              <Kuski kuskiData={r.KuskiData} flag team />
-                              {getBattle.Multi === 1 && (
-                                <>
-                                  {' '}
-                                  & <Kuski kuskiData={r.KuskiData2} flag team />
-                                </>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Time time={r.Time} apples={r.Apples} />
-                            </TableCell>
-                            <TableCell>{this.getExtra(r.KuskiIndex)}</TableCell>
-                          </TableRow>
-                        ));
-                    }}
-                  </Query>
-                </TableBody>
-              </Table>
+                      <MenuItem value="" disabled>
+                        Extra
+                      </MenuItem>
+                      <MenuItem value="RankingAll">Ranking (all)</MenuItem>
+                      <MenuItem value="RankingType">Ranking (type)</MenuItem>
+                      <MenuItem value="RankingIncreaseAll">
+                        Ranking Increase (all)
+                      </MenuItem>
+                      <MenuItem value="RankingIncreaseType">
+                        Ranking Increase (type)
+                      </MenuItem>
+                    </Select>
+                  </ListCell>
+                </ListHeader>
+                <Query query={GET_BATTLE_TIMES} variables={{ id: BattleIndex }}>
+                  {({ data: { getBattleTimes }, loading }) => {
+                    if (loading) return null;
+                    return [...getBattleTimes]
+                      .sort(sortResults(getBattle.BattleType))
+                      .map((r, i) => (
+                        <ListRow key={r.KuskiIndex}>
+                          <ListCell width={30}>{i + 1}.</ListCell>
+                          <ListCell width={200}>
+                            <Kuski kuskiData={r.KuskiData} flag team />
+                            {getBattle.Multi === 1 && (
+                              <>
+                                {' '}
+                                & <Kuski kuskiData={r.KuskiData2} flag team />
+                              </>
+                            )}
+                          </ListCell>
+                          <ListCell right width={200}>
+                            <Time time={r.Time} apples={r.Apples} />
+                          </ListCell>
+                          <ListCell>{this.getExtra(r.KuskiIndex)}</ListCell>
+                        </ListRow>
+                      ));
+                  }}
+                </Query>
+              </ListContainer>
             )}
           </Paper>
         </div>

@@ -42,6 +42,7 @@ query Battletime($BattleIndex: Int!) {
     TimeIndex
     Time
     Apples
+    Driven
     KuskiData {
       Kuski
       TeamData {

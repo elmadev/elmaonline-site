@@ -20,6 +20,11 @@ const LevelPackLevel = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Sort: {
+      type: DataType.STRING(255),
+      defaultValue: '',
+      allowNull: false,
+    },
   },
   {
     indexes: [{ fields: ['LevelIndex, LevelPackIndex'] }],

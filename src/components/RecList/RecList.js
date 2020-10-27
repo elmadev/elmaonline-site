@@ -2,14 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import { sortBy, filter } from 'lodash';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import querystring from 'querystring';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import RecListItem from 'components/RecListItem';
 import history from 'utils/history';
@@ -165,40 +160,35 @@ class RecList extends React.Component {
             label="Show Modded"
           />
         </div>
-        <Table
-          style={{
-            marginLeft: `${horizontalMargin}px`,
-            marginRight: `${horizontalMargin}px`,
-            width: `calc(100% - ${horizontalMargin * 2}px)`,
-          }}
+        <ListContainer
+          horizontalMargin={`${horizontalMargin}px`}
+          width={`calc(100% - ${horizontalMargin * 2}px)`}
         >
-          <TableHead>
-            <TableRow>
-              {columns.map(c => (
-                <TableCell key={c}>{c}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell>Loading...</TableCell>
-              </TableRow>
-            ) : (
-              sortBy(filter(getReplaysByLevelIndex, filterFunction), [
-                'ReplayTime',
-              ]).map(i => (
-                <RecListItem
-                  key={i.ReplayIndex}
-                  replay={i}
-                  openReplay={uuid => this.handleOpenReplay(uuid)}
-                  selected={this.isSelected(i.UUID)}
-                  columns={columns}
-                />
-              ))
-            )}
-          </TableBody>
-        </Table>
+          <ListHeader>
+            {columns.map(c => (
+              <ListCell key={c} right={c === 'Time'}>
+                {c}
+              </ListCell>
+            ))}
+          </ListHeader>
+          {loading ? (
+            <ListRow>
+              <ListCell>Loading...</ListCell>
+            </ListRow>
+          ) : (
+            sortBy(filter(getReplaysByLevelIndex, filterFunction), [
+              'ReplayTime',
+            ]).map(i => (
+              <RecListItem
+                key={i.ReplayIndex}
+                replay={i}
+                openReplay={uuid => this.handleOpenReplay(uuid)}
+                selected={this.isSelected(i.UUID)}
+                columns={columns}
+              />
+            ))
+          )}
+        </ListContainer>
       </>
     );
   }

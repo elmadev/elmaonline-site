@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import { Paper } from 'styles/Paper';
+import { Grid, Button } from '@material-ui/core';
 import Header from 'components/Header';
 
 const Welcome = () => {
@@ -21,7 +20,7 @@ const Welcome = () => {
   return (
     <>
       <Paper>
-        <Grid container spacing={8}>
+        <Grid container spacing={1}>
           <Grid item xs={12} sm={6}>
             <Text>
               Welcome to the Elasto Mania online website. Elma online is a patch

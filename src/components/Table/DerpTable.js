@@ -1,19 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Paper from '@material-ui/core/Paper';
+import {
+  TableRow,
+  TableFooter,
+  TablePagination,
+  CircularProgress,
+} from '@material-ui/core';
+import { Paper } from 'styles/Paper';
+import { ListContainer, ListHeader, ListCell } from 'styles/List';
 import PaginationActions from 'components/Table/PaginationActions';
 
 class DerpTable extends React.Component {
   static propTypes = {
-    headers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    headers: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          t: PropTypes.string,
+          r: PropTypes.bool,
+          w: PropTypes.string,
+        }),
+      ]),
+    ).isRequired,
     loading: PropTypes.bool,
     children: PropTypes.node.isRequired,
     length: PropTypes.number,
@@ -53,22 +61,25 @@ class DerpTable extends React.Component {
     } = this.props;
     const { page, rowsPerPage } = this.state;
     return (
-      <Paper style={{ width }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {headers.map(h => (
-                <TableCell key={h}>{h}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading && <CircularProgress />}
-            {!loading && children}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              {pagination && (
+      <Paper width={width}>
+        <ListContainer>
+          <ListHeader>
+            {headers.map(h => (
+              <React.Fragment key={h.t || h}>
+                {typeof h === 'string' && <ListCell key={h}>{h}</ListCell>}
+                {typeof h === 'object' && (
+                  <ListCell key={h} right={h.r} width={h.w}>
+                    {h.t}
+                  </ListCell>
+                )}
+              </React.Fragment>
+            ))}
+          </ListHeader>
+          {loading && <CircularProgress />}
+          {!loading && children}
+          {pagination && (
+            <TableFooter>
+              <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[10, 25, 50, 100]}
                   colSpan={headers.length}
@@ -88,10 +99,10 @@ class DerpTable extends React.Component {
                   }}
                   ActionsComponent={PaginationActions}
                 />
-              )}
-            </TableRow>
-          </TableFooter>
-        </Table>
+              </TableRow>
+            </TableFooter>
+          )}
+        </ListContainer>
       </Paper>
     );
   }

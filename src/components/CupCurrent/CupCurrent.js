@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { format, formatDistance } from 'date-fns';
-import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
-import Paper from '@material-ui/core/Paper';
-import Timer from '@material-ui/icons/Timer';
+import { Paper } from 'styles/Paper';
+import { Timer } from '@material-ui/icons';
+
+const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 
 const CupResults = props => {
   const { events } = props;
@@ -16,20 +17,29 @@ const CupResults = props => {
       e.StartTime < format(new Date(), 't'),
   );
 
+  const getEventNumber = event => {
+    const index = events
+      .sort(eventSort)
+      .findIndex(e => e.CupIndex === event.CupIndex);
+    return index + 1;
+  };
+
   return (
     <Container>
-      {currentEvents.map((c, eventNo) => (
-        <>
+      {currentEvents.map(c => (
+        <Fragment key={`${c.CupIndex}${c.StartTime}`}>
           {c.EndTime > format(new Date(), 't') &&
             c.StartTime < format(new Date(), 't') && (
               <Paper>
                 <EventHeader>
-                  Event {eventNo + 1} by <Kuski kuskiData={c.KuskiData} />
+                  Event {getEventNumber(c)} by <Kuski kuskiData={c.KuskiData} />
                 </EventHeader>
                 <EventInfo>
-                  <Link to={`/dl/level/${c.LevelIndex}`}>
-                    {c.Level.LevelName}
-                  </Link>
+                  {c.Level && (
+                    <a href={`/dl/level/${c.LevelIndex}`}>
+                      {c.Level.LevelName}
+                    </a>
+                  )}
                 </EventInfo>
                 <EventInfo>
                   Deadline:{' '}
@@ -47,7 +57,7 @@ const CupResults = props => {
                 </EventInfo>
               </Paper>
             )}
-        </>
+        </Fragment>
       ))}
     </Container>
   );

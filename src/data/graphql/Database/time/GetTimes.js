@@ -63,7 +63,7 @@ export const resolvers = {
 
       const times = await AllFinished.findAll({
         where: { LevelIndex },
-        order: [['Time', 'ASC']],
+        order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         include: [
           {
             model: Kuski,
@@ -81,19 +81,17 @@ export const resolvers = {
       return times;
     },
     async getBestTimes(parent, { LevelIndex, Limit }) {
-      // commented may be needed again for legacy times
-      /* const level = await Level.findOne({
+      const level = await Level.findOne({
         attributes: ['Hidden', 'Locked'],
         where: { LevelIndex },
       });
 
       if (level.Locked) return [];
-
-      const sourceModel = level.Hidden ? WeeklyBest : Besttime; */
+      if (level.Hidden) return [];
 
       const times = await Besttime.findAll({
         where: { LevelIndex },
-        order: [['Time', 'ASC']],
+        order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: Limit,
         include: [
           {

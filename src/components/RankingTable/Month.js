@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
-import TableRow from '@material-ui/core/TableRow';
-
 import Kuski from 'components/Kuski';
 import DerpTable from 'components/Table/DerpTable';
-import DerpTableCell from 'components/Table/DerpTableCell';
+import { ListRow, ListCell } from 'styles/List';
 
 import rankingQuery from './month.graphql';
 
@@ -16,19 +14,25 @@ class RankingMonth extends React.Component {
       refetch: PropTypes.func.isRequired,
     }).isRequired,
     battleType: PropTypes.string.isRequired,
+    minPlayed: PropTypes.number,
+  };
+
+  static defaultProps = {
+    minPlayed: 5,
   };
 
   constructor(props) {
     super(props);
     this.state = {
       page: 0,
-      rowsPerPage: 10,
+      rowsPerPage: 5,
     };
   }
 
   render() {
     const {
       battleType,
+      minPlayed,
       data: { loading, getRankingMonthly },
     } = this.props;
     const { page, rowsPerPage } = this.state;
@@ -37,9 +41,12 @@ class RankingMonth extends React.Component {
     const Wins = `Wins${battleType}`;
     const Designed = `Designed${battleType}`;
     const Played = `Played${battleType}`;
+    const FilteredRanking = getRankingMonthly
+      ? getRankingMonthly.filter(r => r[Played] > minPlayed)
+      : null;
     return (
       <>
-        {getRankingMonthly && (
+        {FilteredRanking && (
           <DerpTable
             headers={[
               '#',
@@ -50,7 +57,7 @@ class RankingMonth extends React.Component {
               'Designed',
               'Played',
             ]}
-            length={getRankingMonthly.length}
+            length={FilteredRanking.length}
             pagination
             loading={loading}
             onChangePage={nextPage => this.setState({ page: nextPage })}
@@ -61,28 +68,23 @@ class RankingMonth extends React.Component {
               })
             }
           >
-            {getRankingMonthly
-              .sort((a, b) => {
-                return b[Ranking] - a[Ranking];
-              })
+            {FilteredRanking.sort((a, b) => {
+              return b[Ranking] - a[Ranking];
+            })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((i, no) => {
                 return (
-                  <TableRow hover key={i.RankingMonthlyIndex}>
-                    <DerpTableCell>
-                      {no + 1 + page * rowsPerPage}.
-                    </DerpTableCell>
-                    <DerpTableCell>
+                  <ListRow key={i.RankingMonthlyIndex}>
+                    <ListCell>{no + 1 + page * rowsPerPage}.</ListCell>
+                    <ListCell>
                       <Kuski kuskiData={i.KuskiData} team flag />
-                    </DerpTableCell>
-                    <DerpTableCell>
-                      {parseFloat(i[Ranking]).toFixed(2)}
-                    </DerpTableCell>
-                    <DerpTableCell>{i[Points]}</DerpTableCell>
-                    <DerpTableCell>{i[Wins]}</DerpTableCell>
-                    <DerpTableCell>{i[Designed]}</DerpTableCell>
-                    <DerpTableCell>{i[Played]}</DerpTableCell>
-                  </TableRow>
+                    </ListCell>
+                    <ListCell>{parseFloat(i[Ranking]).toFixed(2)}</ListCell>
+                    <ListCell>{i[Points]}</ListCell>
+                    <ListCell>{i[Wins]}</ListCell>
+                    <ListCell>{i[Designed]}</ListCell>
+                    <ListCell>{i[Played]}</ListCell>
+                  </ListRow>
                 );
               })}
           </DerpTable>

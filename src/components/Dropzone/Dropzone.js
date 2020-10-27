@@ -14,7 +14,10 @@ const Dropzone = props => {
         width: '100%',
         height: 'auto',
         minHeight: '100px',
-        border: '2px dashed black',
+        border: '2px dashed rgba(0,0,0,0.3)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
       {(!login || nickId() !== 0) && (
@@ -24,29 +27,26 @@ const Dropzone = props => {
       )}
       {error && <ErrorText>{error}</ErrorText>}
       {success && <SuccessText>{success}</SuccessText>}
-      {login && nickId() === 0 && (
-        <LoginText>Please log in to upload</LoginText>
-      )}
+      {login && nickId() === 0 && <DropText>Please log in to upload</DropText>}
     </ReactDropzone>
   );
 };
 
 const DropText = styled.div`
   padding: 8px;
+  opacity: 0.7;
 `;
 
 const ErrorText = styled.div`
   padding: 8px;
   color: red;
+  opacity: 0.7;
 `;
 
 const SuccessText = styled.div`
   padding: 8px;
   color: green;
-`;
-
-const LoginText = styled.div`
-  padding: 8px;
+  opacity: 0.7;
 `;
 
 export default Dropzone;

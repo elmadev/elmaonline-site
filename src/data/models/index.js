@@ -32,6 +32,7 @@ import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
 import LegacyFinished from './LegacyFinished';
 import LegacyBesttime from './LegacyBesttime';
+import Ignored from './Ignored';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -73,6 +74,11 @@ AllFinished.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+AllFinished.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -98,6 +104,11 @@ Kuski.belongsTo(Team, {
   as: 'TeamData',
 });
 
+Team.hasMany(Kuski, {
+  foreignKey: 'TeamIndex',
+  as: 'Members',
+});
+
 LevelPack.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -113,10 +124,26 @@ LevelPackLevel.belongsTo(Level, {
   as: 'Level',
 });
 
+LevelPackLevel.belongsTo(LevelPack, {
+  foreignKey: 'LevelPackIndex',
+  as: 'LevelPack',
+});
+
 LevelPackLevel.hasMany(Besttime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
   as: 'LevelBesttime',
+});
+
+LevelPackLevel.hasMany(BestMultitime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelMultiBesttime',
+});
+
+Ignored.belongsTo(Kuski, {
+  foreignKey: 'IgnoredKuskiIndex',
+  as: 'KuskiData',
 });
 
 Besttime.belongsTo(Kuski, {
@@ -124,10 +151,25 @@ Besttime.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Besttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 Besttime.belongsTo(WeeklyWRs, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
   as: 'WeeklyWR',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex1',
+  as: 'Kuski1Data',
+});
+
+BestMultitime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex2',
+  as: 'Kuski2Data',
 });
 
 WeeklyBest.belongsTo(WeeklyWRs, {
@@ -186,6 +228,11 @@ SiteCup.belongsTo(Level, {
   as: 'Level',
 });
 
+SiteCup.belongsTo(SiteCupGroup, {
+  foreignKey: 'CupGroupIndex',
+  as: 'CupGroup',
+});
+
 SiteCup.hasMany(SiteCupTime, {
   foreignKey: 'CupIndex',
   as: 'CupTimes',
@@ -194,6 +241,11 @@ SiteCup.hasMany(SiteCupTime, {
 SiteCupTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+SiteCupTime.belongsTo(SiteCup, {
+  foreignKey: 'CupIndex',
+  as: 'CupData',
 });
 
 SiteCupBlog.belongsTo(Kuski, {
@@ -255,4 +307,5 @@ export {
   SiteSetting,
   LegacyFinished,
   LegacyBesttime,
+  Ignored,
 }; // add the data model here as well so it exports

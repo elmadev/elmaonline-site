@@ -1,19 +1,22 @@
 import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Tabs,
+  Tab,
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
+import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
+import { Paper } from 'styles/Paper';
 import withStyles from 'isomorphic-style-loader/withStyles';
 
 import Kuski from 'components/Kuski';
@@ -32,45 +35,37 @@ import s from './Level.css';
 
 const TimeTable = withStyles(s)(({ data, latestBattle }) => (
   <div>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell
-            style={{
-              width: 1,
-            }}
-          >
-            #
-          </TableCell>
-          <TableCell
-            style={{
-              width: 200,
-            }}
-          >
-            Kuski
-          </TableCell>
-          <TableCell>Time</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data &&
-          (!latestBattle ||
-            latestBattle.Finished === 1 ||
-            latestBattle.Aborted === 1) &&
-          data.map((t, i) => (
-            <TableRow key={t.TimeIndex}>
-              <TableCell>{i + 1}.</TableCell>
-              <TableCell>
-                {t.KuskiData.Kuski}{' '}
-                {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
-              </TableCell>
-              <TableCell>
-                <Time time={t.Time} />
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
+    <ListContainer>
+      <ListHeader>
+        <ListCell right width={30}>
+          #
+        </ListCell>
+        <ListCell width={200}>Kuski</ListCell>
+        <ListCell right width={200}>
+          Time
+        </ListCell>
+        <ListCell />
+      </ListHeader>
+      {data &&
+        (!latestBattle ||
+          latestBattle.Finished === 1 ||
+          latestBattle.Aborted === 1) &&
+        data.map((t, i) => (
+          <ListRow key={t.TimeIndex}>
+            <ListCell right width={30}>
+              {i + 1}.
+            </ListCell>
+            <ListCell width={200}>
+              {t.KuskiData.Kuski}{' '}
+              {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
+            </ListCell>
+            <ListCell width={200} right>
+              <Time time={t.Time} />
+            </ListCell>
+            <ListCell />
+          </ListRow>
+        ))}
+    </ListContainer>
   </div>
 ));
 
@@ -140,8 +135,8 @@ class Level extends React.Component {
             {loading && <Loading />}
             {!loading && (
               <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1">Level info</Typography>
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="body2">Level info</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div className={s.levelDescription}>
@@ -157,8 +152,8 @@ class Level extends React.Component {
               </ExpansionPanel>
             )}
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">Battles in level</Typography>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Battles in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails
                 style={{ paddingLeft: 0, paddingRight: 0 }}
@@ -204,7 +199,7 @@ class Level extends React.Component {
                                 <Kuski kuskiData={i.KuskiData} team flag />
                               </TableCell>
                               <TableCell>
-                                {i.Finished === 1 ? (
+                                {i.Finished === 1 && sorted.length > 0 ? (
                                   <Kuski
                                     kuskiData={sorted[0].KuskiData}
                                     team
@@ -224,8 +219,8 @@ class Level extends React.Component {
               </ExpansionPanelDetails>
             </ExpansionPanel>
             <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="body1">Replays in level</Typography>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Replays in level</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
                 <RecList
@@ -242,7 +237,12 @@ class Level extends React.Component {
             {loading && <Loading />}
             {!loading && (
               <>
-                <Tabs value={tab} onChange={this.onTabClick}>
+                <Tabs
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  value={tab}
+                  onChange={this.onTabClick}
+                >
                   <Tab label="Best times" />
                   <Tab label="All times" />
                   {/* <Tab label="Best multi times" />

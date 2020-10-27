@@ -14,6 +14,7 @@ import {
   Battletime,
 } from './data/models';
 import { getBattleType } from './utils/battle';
+import config from './config';
 
 const getCurrentRankings = async () => {
   const rankingData = await Ranking.findAll();
@@ -26,6 +27,18 @@ let Results = [];
 let CurrRank = { all: {}, year: {}, month: {}, week: {}, day: {} };
 let insertBulk = { all: [], year: [], month: [], week: [], day: [] };
 
+const hasPeriod = (length, period, array) => {
+  let hasPeriodBool = false;
+  forEach(array, (v, k) => {
+    if (k.substring(k.length - length, k.length) === period) {
+      hasPeriodBool = true;
+      return false;
+    }
+    return true;
+  });
+  return hasPeriodBool;
+};
+
 const getBattleResults = async (battleId, done) => {
   const data = await Battletime.findAll({
     where: { BattleIndex: battleId.dataValues.BattleIndex },
@@ -33,7 +46,7 @@ const getBattleResults = async (battleId, done) => {
   });
   Results.push({ battle: battleId.dataValues, result: data });
   const Year = moment(battleId.dataValues.Started).format('YYYY');
-  if (!has(CurrRank.year, Year)) {
+  if (!hasPeriod(4, Year, CurrRank.year)) {
     const rankingDataYearly = await RankingYearly.findAll({
       where: { Year },
     });
@@ -43,7 +56,7 @@ const getBattleResults = async (battleId, done) => {
     });
   }
   const Month = moment(battleId.dataValues.Started).format('YYYYMM');
-  if (!has(CurrRank.month, Year)) {
+  if (!hasPeriod(6, Month, CurrRank.month)) {
     const rankingDataMonthly = await RankingMonthly.findAll({
       where: { Month },
     });
@@ -53,22 +66,22 @@ const getBattleResults = async (battleId, done) => {
     });
   }
   const Week = moment(battleId.dataValues.Started).format('YYYYww');
-  if (!has(CurrRank.week, Week)) {
+  if (!hasPeriod(6, Week, CurrRank.week)) {
     const rankingDataWeekly = await RankingWeekly.findAll({
       where: { Week },
     });
     forEach(rankingDataWeekly, c => {
-      CurrRank.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Week}`] =
+      CurrRank.week[`${c.dataValues.KuskiIndex}-${c.dataValues.Week}`] =
         c.dataValues;
     });
   }
   const Day = moment(battleId.dataValues.Started).format('YYYYMMDD');
-  if (!has(CurrRank.day, Day)) {
+  if (!hasPeriod(8, Day, CurrRank.day)) {
     const rankingDataDaily = await RankingDaily.findAll({
       where: { Day },
     });
     forEach(rankingDataDaily, c => {
-      CurrRank.month[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
+      CurrRank.day[`${c.dataValues.KuskiIndex}-${c.dataValues.Day}`] =
         c.dataValues;
     });
   }
@@ -122,10 +135,16 @@ const skippedBattles = battle => {
   return false;
 };
 
-const ranking = (currentRanking, results, kuski, current, RankingDbTable) => {
+const ranking = (
+  currentRanking,
+  results,
+  kuski,
+  current,
+  RankingDbTable,
+  kValue = 1,
+) => {
   let updatedRanking = parseFloat(currentRanking);
   let beated = false;
-  const kValue = 1;
   const bValue = 800;
   forEach(results, r => {
     if (r.KuskiIndex === kuski) {
@@ -177,6 +196,7 @@ const addRanking = (
   designer,
   period,
   periodType,
+  kValue,
 ) => {
   let newRanking = { new: true };
   if (period) {
@@ -213,6 +233,21 @@ const addRanking = (
   } else {
     newRanking.PlayedAll += 1;
   }
+  if (results.length >= 5) {
+    if (BATTLETYPES[periodType].indexOf(type) > -1) {
+      const Played5 = `Played5${type}`; // battles played with at least 5 players
+      if (!newRanking[Played5]) {
+        newRanking[Played5] = 1;
+      } else {
+        newRanking[Played5] += 1;
+      }
+    }
+    if (!newRanking.Played5All) {
+      newRanking.Played5All = 1;
+    } else {
+      newRanking.Played5All += 1;
+    }
+  }
 
   const Points = `Points${type}`; // battle experience points
   if (BATTLETYPES[periodType].indexOf(type) > -1) {
@@ -239,6 +274,7 @@ const addRanking = (
       kuski,
       current,
       Ranking,
+      kValue,
     );
   }
   if (!newRanking.RankingAll) {
@@ -250,6 +286,7 @@ const addRanking = (
     kuski,
     current,
     'RankingAll',
+    kValue,
   );
 
   // if won battle
@@ -351,6 +388,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               '',
               'all',
+              3,
             );
             const RankingBattleType = getBattleType(result.battle);
             let previousRanking = 1000;
@@ -360,13 +398,14 @@ export function calcRankings(getBattleList, battleResults) {
                   CurrRank.all[r.KuskiIndex][`Ranking${RankingBattleType}`];
               }
             }
-            CurrRank.all[r.KuskiIndex] = newRankings.all[r.KuskiIndex];
             history.push({
               KuskiIndex: r.KuskiIndex,
               BattleIndex: result.battle.BattleIndex,
               BattleType: RankingBattleType,
               Played:
                 newRankings.all[r.KuskiIndex][`Played${RankingBattleType}`],
+              Played5:
+                newRankings.all[r.KuskiIndex][`Played5${RankingBattleType}`],
               Ranking:
                 newRankings.all[r.KuskiIndex][`Ranking${RankingBattleType}`],
               Increase:
@@ -391,6 +430,7 @@ export function calcRankings(getBattleList, battleResults) {
               BattleIndex: result.battle.BattleIndex,
               BattleType: 'All',
               Played: newRankings.all[r.KuskiIndex].PlayedAll,
+              Played5: newRankings.all[r.KuskiIndex].Played5All,
               Ranking: newRankings.all[r.KuskiIndex].RankingAll,
               Increase:
                 newRankings.all[r.KuskiIndex].RankingAll - previousRanking,
@@ -400,6 +440,7 @@ export function calcRankings(getBattleList, battleResults) {
               Position: place + 1,
               Started: moment(result.battle.Started).format('X'),
             });
+            CurrRank.all[r.KuskiIndex] = newRankings.all[r.KuskiIndex];
             // add ranking for year
             newRankings.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
@@ -412,6 +453,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYY'),
               'year',
+              3,
             );
             CurrRank.year[
               `${r.KuskiIndex}-${moment(result.battle.Started).format('YYYY')}`
@@ -435,6 +477,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMM'),
               'month',
+              10,
             );
             CurrRank.month[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -460,6 +503,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYww'),
               'week',
+              16,
             );
             CurrRank.week[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -485,6 +529,7 @@ export function calcRankings(getBattleList, battleResults) {
               result.battle.KuskiIndex,
               moment(result.battle.Started).format('YYYYMMDD'),
               'day',
+              16,
             );
             CurrRank.day[
               `${r.KuskiIndex}-${moment(result.battle.Started).format(
@@ -581,13 +626,16 @@ const updateOrCreateRanking = async (data, done) => {
   if (insertData.KuskiIndex) {
     if (has(insertData, 'new')) {
       delete insertData.new;
-      insertBulk.all.push(insertData);
+      insertBulk.all.push({ ...insertData, LastUpdated: moment().format('X') });
       done();
     } else {
       delete insertData.RankingIndex;
-      await Ranking.update(insertData, {
-        where: { KuskiIndex: insertData.KuskiIndex },
-      });
+      await Ranking.update(
+        { ...insertData, LastUpdated: moment().format('X') },
+        {
+          where: { KuskiIndex: insertData.KuskiIndex },
+        },
+      );
       done();
     }
   } else {
@@ -754,6 +802,9 @@ export const deleteRanking = async () => {
 };
 
 export const updateRanking = async limit => {
+  if (!config.run.ranking) {
+    return false;
+  }
   const getCurrent = await getCurrentRankings();
   CurrRank = { all: {}, year: {}, month: {}, week: {}, day: {} };
   insertBulk = { all: [], year: [], month: [], week: [], day: [] };
