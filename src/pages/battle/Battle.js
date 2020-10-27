@@ -180,14 +180,12 @@ class Battle extends React.Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <Chat
-                    start={Number(getBattle.Started)}
+                    start={getBattle.Started}
                     end={
                       Number(getBattle.Started) +
                       Number(getBattle.Duration * 60)
                     }
                   />
-                  Test:
-                  <Chat KuskiIndex={15} />
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}

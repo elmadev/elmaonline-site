@@ -8,20 +8,20 @@ import LocalTime from 'components/LocalTime';
 import s from './Chat.css';
 
 const Chat = props => {
-  const {
-    KuskiIndex = 'all', // 'all' will not filter by KuskiIndex
-    start = 0,
-    end = new Date().getSeconds(),
-  } = props;
+  const { KuskiIndex, start = 0, end = Math.round(Date.now() / 1000) } = props;
+
   const { chatLines } = useStoreState(state => state.Chat);
-  const { getChatLinesInRange } = useStoreActions(actions => actions.Chat);
+  const { getChatLines } = useStoreActions(actions => actions.Chat);
+
+  const opts = {
+    start,
+    end,
+  };
+
+  if (KuskiIndex) opts.KuskiIndex = KuskiIndex;
 
   useEffect(() => {
-    getChatLinesInRange({
-      KuskiIndex,
-      from: start, // moment(start, 'X').utc().format(),
-      to: end, // moment(end, 'X').utc().format()
-    });
+    getChatLines(opts);
   }, []);
 
   const colorMap = {};
@@ -58,7 +58,7 @@ const Chat = props => {
     return colorMap[kuski];
   };
 
-  if (!chatLines) return <span>No chat recorded</span>;
+  if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
   return (
     <div className={s.chat}>
