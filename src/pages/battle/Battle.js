@@ -180,11 +180,12 @@ class Battle extends React.Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <Chat
-                    start={getBattle.Started}
+                    start={Number(getBattle.Started)}
                     end={
                       Number(getBattle.Started) +
                       Number(getBattle.Duration * 60)
                     }
+                    paginated
                   />
                 </ExpansionPanelDetails>
               </ExpansionPanel>

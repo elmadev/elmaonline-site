@@ -1,27 +1,44 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import Typography from '@material-ui/core/Typography';
+import Pagination from '@material-ui/lab/Pagination';
 import withStyles from 'isomorphic-style-loader/withStyles';
 
 import LocalTime from 'components/LocalTime';
 
 import s from './Chat.css';
 
-const Chat = props => {
-  const { KuskiIndex, start = 0, end = Math.round(Date.now() / 1000) } = props;
+const CHAT_API_LIMIT = 100;
 
-  const { chatLines } = useStoreState(state => state.Chat);
-  const { getChatLines } = useStoreActions(actions => actions.Chat);
+const Chat = props => {
+  const {
+    KuskiIndex,
+    text,
+    start = 0,
+    end = Math.round(Date.now() / 1000),
+    paginated,
+    limit = CHAT_API_LIMIT,
+  } = props;
+
+  const { chatLines, chatLineCount, chatPage } = useStoreState(
+    state => state.Chat,
+  );
+  const { searchChat, setChatPage } = useStoreActions(actions => actions.Chat);
 
   const opts = {
+    KuskiIndex,
+    text,
     start,
     end,
+    limit,
+    offset: (chatPage - 1) * CHAT_API_LIMIT,
   };
 
-  if (KuskiIndex) opts.KuskiIndex = KuskiIndex;
-
   useEffect(() => {
-    getChatLines(opts);
-  }, []);
+    searchChat(opts);
+  }, [chatPage]);
+
+  if (!chatLineCount) return <span>No chat recorded during this time.</span>;
 
   const colorMap = {};
 
@@ -57,28 +74,48 @@ const Chat = props => {
     return colorMap[kuski];
   };
 
-  if (!chatLines.length) return <span>No chat recorded during this time.</span>;
+  const handlePageChange = (event, value) => {
+    setChatPage(value);
+  };
 
   return (
-    <div className={s.chat}>
-      {chatLines.map(l => (
-        <div className={s.chatLine} key={l.ChatIndex}>
-          <div className={s.timestamp}>
-            <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
-          </div>{' '}
-          <div className={s.message}>
-            <span className={s.kuski}>
-              &lt;
-              <span style={{ color: getColor(l.KuskiData.Kuski) }}>
-                {l.KuskiData.Kuski}
-              </span>
-              &gt;
-            </span>{' '}
-            <span>{l.Text}</span>
+    <>
+      <div className={s.chat}>
+        {chatLines.map(l => (
+          <div className={s.chatLine} key={l.ChatIndex}>
+            <div className={s.timestamp}>
+              <LocalTime date={l.Entered} format="HH:mm:ss" parse="X" />
+            </div>{' '}
+            <div className={s.message}>
+              <span className={s.kuski}>
+                &lt;
+                <span style={{ color: getColor(l.KuskiData.Kuski) }}>
+                  {l.KuskiData.Kuski}
+                </span>
+                &gt;
+              </span>{' '}
+              <span>{l.Text}</span>
+            </div>
           </div>
+        ))}
+        <div className={s.footer}>
+          {paginated && chatLineCount > CHAT_API_LIMIT && (
+            <Pagination
+              count={Math.ceil(chatLineCount / CHAT_API_LIMIT)}
+              size="small"
+              page={chatPage}
+              onChange={handlePageChange}
+            />
+          )}
+          <Typography variant="caption" display="block" gutterBottom>
+            {`${opts.offset + 1}-${Math.min(
+              chatLineCount,
+              CHAT_API_LIMIT * chatPage,
+            )} of ${chatLineCount}`}
+          </Typography>
         </div>
-      ))}
-    </div>
+      </div>
+    </>
   );
 };
 
