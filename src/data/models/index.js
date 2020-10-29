@@ -135,6 +135,12 @@ LevelPackLevel.hasMany(Besttime, {
   as: 'LevelBesttime',
 });
 
+LevelPackLevel.hasMany(LegacyBesttime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelLegacyBesttime',
+});
+
 LevelPackLevel.hasMany(BestMultitime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
@@ -143,6 +149,21 @@ LevelPackLevel.hasMany(BestMultitime, {
 
 Ignored.belongsTo(Kuski, {
   foreignKey: 'IgnoredKuskiIndex',
+  as: 'KuskiData',
+});
+
+LegacyBesttime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LegacyBesttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
+LegacyFinished.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 

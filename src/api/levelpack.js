@@ -13,6 +13,7 @@ import {
   Level,
   Team,
   BestMultitime,
+  LegacyBesttime,
 } from '../data/models';
 
 const router = express.Router();
@@ -118,13 +119,21 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['LevelPackLevelIndex', 'ASC']],
+    raw: true,
+    nest: true,
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
+        model: timeTable,
+        as: timeTableAlias,
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         where: { KuskiIndex },
         include: [
@@ -142,6 +151,13 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return { ...t, LevelBesttime: t.LevelLegacyBesttime };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 

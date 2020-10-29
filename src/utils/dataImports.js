@@ -149,6 +149,7 @@ export const legacyTimes = async (levelpacks, importStrategy) => {
               ? format(new Date(time.Driven * 1000), 'yyyy-MM-dd HH:mm:ss')
               : '0000-00-00 00:00:00',
           Source: 0,
+          TimeIndex: time.TimeIndex,
         });
       });
     });

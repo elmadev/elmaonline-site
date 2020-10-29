@@ -42,11 +42,11 @@ const Personal = ({
           <span>Level name</span>
           <span>
             <ClickToEdit
-              value={times.length > 0 ? times[0].LevelBesttime[0].Kuski : ''}
+              value={times.length > 0 ? times[0].LevelBesttime.Kuski : ''}
               update={newKuski => getTimes(newKuski)}
             >
               {times.length > 0 ? (
-                <Kuski kuskiData={times[0].LevelBesttime[0].KuskiData} flag />
+                <Kuski kuskiData={times[0].LevelBesttime.KuskiData} flag />
               ) : (
                 <span>None</span>
               )}
@@ -63,7 +63,7 @@ const Personal = ({
                 key={r.LevelIndex}
                 onClick={e => {
                   e.preventDefault();
-                  if (r.LevelBesttime.length > 0) {
+                  if (r.LevelBesttime) {
                     selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
                   }
                 }}
@@ -71,13 +71,13 @@ const Personal = ({
               >
                 <span>{r.Level.LevelName}</span>
                 <span>{r.Level.LongName}</span>
-                {r.LevelBesttime.length > 0 ? (
+                {r.LevelBesttime ? (
                   <TimeSpan
                     highlight={
-                      r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
+                      r.LevelBesttime.TimeIndex >= highlight[highlightWeeks]
                     }
                   >
-                    <Time time={r.LevelBesttime[0].Time} />
+                    <Time time={r.LevelBesttime.Time} />
                   </TimeSpan>
                 ) : (
                   <span />
@@ -103,7 +103,7 @@ const Personal = ({
           close={() => {
             selectLevel(-1);
           }}
-          KuskiIndex={times[0].LevelBesttime[0].KuskiIndex}
+          KuskiIndex={times[0].LevelBesttime.KuskiIndex}
         />
       )}
       <Feedback
