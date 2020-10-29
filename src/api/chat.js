@@ -1,10 +1,10 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import moment from 'moment';
+
 import { Chat, Kuski } from 'data/models';
 import { like, searchOffset } from 'utils/database';
-
-const CHAT_API_LIMIT = 100;
+import { CHAT_API_LIMIT } from 'constants/api';
 
 const router = express.Router();
 
@@ -23,18 +23,24 @@ const searchChat = async ({
   end = Math.round(Date.now() / 1000),
   limit,
   offset = 0,
+  order,
 }) => {
   const where = {};
 
   if (KuskiIndex) {
-    const kuski = await playerInfo(KuskiIndex);
-    if (!kuski || !kuski.Confirmed) {
-      return { count: 0, rows: [] };
+    if (typeof KuskiIndex === 'object') {
+      // Array of multiple kuskis
+      where.KuskiIndex = { [Op.or]: KuskiIndex };
+    } else {
+      const kuski = await playerInfo(KuskiIndex);
+      if (!kuski || !kuski.Confirmed) {
+        return { count: 0, rows: [] };
+      }
+      where.KuskiIndex = KuskiIndex;
     }
-    where.KuskiIndex = KuskiIndex;
   }
 
-  if (text) where.Text = { [Op.like]: `${like(text)}%` };
+  if (text) where.Text = { [Op.like]: `${like(text)}` };
 
   const dateTimeRange = [
     moment(start, 'X')
@@ -62,6 +68,8 @@ const searchChat = async ({
   };
 
   if (limit < CHAT_API_LIMIT) opts.limit = limit;
+
+  if (order === 'DESC') opts.order = [['ChatIndex', 'DESC']];
 
   const lines = await Chat.findAndCountAll(opts);
 

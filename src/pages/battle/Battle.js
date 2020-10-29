@@ -18,7 +18,7 @@ import Recplayer from 'components/Recplayer';
 import { BattleType } from 'components/Names';
 import Time from 'components/Time';
 import Link from 'components/Link';
-import Chat from 'components/Chat';
+import ChatView from 'components/ChatView';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
@@ -179,7 +179,7 @@ class Battle extends React.Component {
                   <Typography variant="body1">Chat</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                  <Chat
+                  <ChatView
                     start={Number(getBattle.Started)}
                     end={
                       Number(getBattle.Started) +
