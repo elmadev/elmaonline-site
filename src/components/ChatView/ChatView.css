@@ -21,6 +21,15 @@
 
 .timestamp {
   color: #7d7d7d;
-  width: 50px;
+  min-width: 50px;
   float: left;
+  margin-right: 5px;
+}
+
+.paginationWrapper {
+  text-align: center;
+}
+
+.pagination {
+  display: inline-block;
 }

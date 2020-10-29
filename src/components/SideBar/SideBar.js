@@ -72,6 +72,9 @@ const SideBar = () => {
           <Link to="/map" onClick={onNavigation}>
             Map
           </Link>
+          <Link to="/chat" onClick={onNavigation}>
+            Chat
+          </Link>
           <Link to="/settings" onClick={onNavigation}>
             Settings
           </Link>

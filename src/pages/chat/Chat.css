@@ -1,0 +1,23 @@
+.chat {
+  padding: 10px;
+}
+
+.chatFilters {
+  padding-bottom: 10px;
+}
+
+.switch {
+  min-width: 130px;
+}
+
+.paginationSpacer {
+  display: none;
+}
+
+.paginationToolbar {
+  justify-content: center;
+}
+
+.paginationRoot {
+  flex-wrap: wrap;
+}
