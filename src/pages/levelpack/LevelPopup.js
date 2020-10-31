@@ -106,7 +106,7 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
                     <>
                       {times.map((t, i) => {
                         return (
-                          <div key={t.TimeIndex}>
+                          <div key={t.KuskiData.Kuski}>
                             <span>{i + 1}.</span>
                             {multi ? (
                               <>

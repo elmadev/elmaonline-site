@@ -102,6 +102,11 @@ const updateLegacyLevel = async (LevelIndex, done) => {
   done();
 };
 
+const updateLegacyPack = async (LevelPackIndex, done) => {
+  await LevelPack.update({ Legacy: 1 }, { where: { LevelPackIndex } });
+  done();
+};
+
 const skint = json => {
   const times = [];
   forEach(json.default, s => {
@@ -135,8 +140,10 @@ const insertBesttime = times => {
 export const legacyTimes = async (levelpacks, importStrategy) => {
   const packs = await getPacks(levelpacks);
   const updateBulk = [];
+  const updatePacks = [];
   const insertLegacyBesttimeEOL = [];
   forEach(packs, pack => {
+    updatePacks.push(pack.LevelPackIndex);
     forEach(pack.Levels, level => {
       updateBulk.push(level.LevelIndex);
       forEach(level.LevelBesttime, time => {
@@ -191,12 +198,14 @@ export const legacyTimes = async (levelpacks, importStrategy) => {
     async () => {
       await insertBesttime(insertToLegacyBesttime);
       eachSeries(updateBulk, updateLegacyLevel, () => {
-        return {
-          insertLegacyBesttimeBulk: insertLegacyBesttimeEOL.length,
-          updateBulk: updateBulk.length,
-          finished: finished.length,
-          besttime: besttime.length,
-        };
+        eachSeries(updatePacks, updateLegacyPack, () => {
+          return {
+            insertLegacyBesttimeBulk: insertLegacyBesttimeEOL.length,
+            updateBulk: updateBulk.length,
+            finished: finished.length,
+            besttime: besttime.length,
+          };
+        });
       });
     },
   );

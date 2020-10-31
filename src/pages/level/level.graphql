@@ -13,6 +13,7 @@ query Level($LevelIndex: Int!) {
   getLevel(LevelIndex: $LevelIndex) {
     LevelName
     LongName
+    Legacy
   }
   getBattlesForLevel(LevelIndex: $LevelIndex) {
     BattleIndex

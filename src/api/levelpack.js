@@ -27,15 +27,22 @@ const getKuski = async k => {
 
 const getRecords = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
+    attributes: ['LevelPackIndex', 'Legacy'],
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['Sort', 'ASC'], ['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
+        model: timeTable,
+        as: timeTableAlias,
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: 1,
@@ -61,6 +68,16 @@ const getRecords = async LevelPackName => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 
@@ -128,8 +145,6 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['LevelPackLevelIndex', 'ASC']],
-    raw: true,
-    nest: true,
     include: [
       {
         model: timeTable,
@@ -155,20 +170,32 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
     return times
       .filter(t => !t.Level.Hidden)
       .map(t => {
-        return { ...t, LevelBesttime: t.LevelLegacyBesttime };
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
       });
   }
   return times.filter(t => !t.Level.Hidden);
 };
 
 const getTimes = async LevelPackIndex => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackIndex },
+  });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex },
     attributes: ['LevelIndex'],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
+        model: timeTable,
+        as: timeTableAlias,
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         include: [
           {
@@ -185,6 +212,14 @@ const getTimes = async LevelPackIndex => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times.map(t => {
+      return {
+        ...t.dataValues,
+        LevelBesttime: t.dataValues.LevelLegacyBesttime,
+      };
+    });
+  }
   return times;
 };
 
