@@ -15,6 +15,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 
 import { nick, nickId } from 'utils/nick';
 import { Number } from 'components/Selectors';
+import FieldBoolean from 'components/FieldBoolean';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
 import Personal from './Personal';
@@ -56,15 +57,17 @@ const LevelPack = ({ name }) => {
     records,
     recordsLoading,
     setPersonalTimesLoading,
+    settings: { highlightWeeks, showLegacyIcon },
   } = useStoreState(state => state.LevelPack);
   const {
     getHighlight,
     getPersonalTimes,
     setError,
     getRecords,
+    setHighlightWeeks,
+    toggleShowLegacyIcon,
   } = useStoreActions(actions => actions.LevelPack);
   const [openSettings, setOpenSettings] = useState(false);
-  const [highlightWeeks, setHighlightWeeks] = useState(1);
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
@@ -130,6 +133,13 @@ const LevelPack = ({ name }) => {
                           numbers={[0, 1, 2, 3, 4]}
                         />
                       </SettingItem>
+                      <SettingItem>
+                        <FieldBoolean
+                          value={showLegacyIcon}
+                          label="Show icon on legacy times"
+                          onChange={() => toggleShowLegacyIcon()}
+                        />
+                      </SettingItem>
                     </Paper>
                   </OutsideClickHandler>
                 ) : (
@@ -142,6 +152,7 @@ const LevelPack = ({ name }) => {
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
                   recordsLoading={recordsLoading}
+                  showLegacyIcon={showLegacyIcon}
                 />
               )}
               {tab === 1 && (
@@ -170,6 +181,7 @@ const LevelPack = ({ name }) => {
                   highlightWeeks={highlightWeeks}
                   records={records}
                   setPersonalTimesLoading={setPersonalTimesLoading}
+                  showLegacyIcon={showLegacyIcon}
                 />
               )}
               {tab === 4 && (

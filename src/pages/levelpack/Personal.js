@@ -8,6 +8,7 @@ import ClickToEdit from 'components/ClickToEdit';
 import Feedback from 'components/Feedback';
 import Loading from 'components/Loading';
 import { recordsTT } from 'utils/calcs';
+import LegacyIcon from 'styles/LegacyIcon';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
@@ -22,6 +23,7 @@ const Personal = ({
   setError,
   records,
   setPersonalTimesLoading,
+  showLegacyIcon,
 }) => {
   const [level, selectLevel] = useState(-1);
   const levels = records.map(r => {
@@ -80,7 +82,14 @@ const Personal = ({
                 ) : (
                   <span />
                 )}
-                <span />
+                {r.LevelBesttime[0].Source !== undefined ? (
+                  <LegacyIcon
+                    source={r.LevelBesttime[0].Source}
+                    show={showLegacyIcon}
+                  />
+                ) : (
+                  <span />
+                )}
               </TimeRow>
             ))}
             <TTRow>
@@ -102,6 +111,7 @@ const Personal = ({
             selectLevel(-1);
           }}
           KuskiIndex={times[0].LevelBesttime[0].KuskiIndex}
+          showLegacyIcon={showLegacyIcon}
         />
       )}
       <Feedback

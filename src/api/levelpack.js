@@ -32,9 +32,11 @@ const getRecords = async LevelPackName => {
   });
   let timeTable = Besttime;
   let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
   if (packInfo.Legacy) {
     timeTable = LegacyBesttime;
     timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
@@ -43,7 +45,7 @@ const getRecords = async LevelPackName => {
       {
         model: timeTable,
         as: timeTableAlias,
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        attributes,
         order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: 1,
         include: [
@@ -138,9 +140,11 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   });
   let timeTable = Besttime;
   let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
   if (packInfo.Legacy) {
     timeTable = LegacyBesttime;
     timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
@@ -149,7 +153,7 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
       {
         model: timeTable,
         as: timeTableAlias,
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        attributes,
         where: { KuskiIndex },
         include: [
           {

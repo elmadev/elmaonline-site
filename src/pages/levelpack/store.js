@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { action, thunk } from 'easy-peasy';
+import { action, thunk, persist } from 'easy-peasy';
 import {
   Highlight,
   TotalTimes,
@@ -26,6 +26,19 @@ export default {
     if (highlights.ok) {
       actions.setHighlight(highlights.data);
     }
+  }),
+  settings: persist(
+    {
+      highlightWeeks: 1,
+      showLegacyIcon: true,
+    },
+    { storage: 'localStorage' },
+  ),
+  setHighlightWeeks: action((state, payload) => {
+    state.settings.highlightWeeks = payload;
+  }),
+  toggleShowLegacyIcon: action(state => {
+    state.settings.showLegacyIcon = !state.settings.showLegacyIcon;
   }),
   totaltimes: [],
   kinglist: [],

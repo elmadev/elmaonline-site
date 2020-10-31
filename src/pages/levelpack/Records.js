@@ -6,12 +6,19 @@ import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
 import { recordsTT } from 'utils/calcs';
+import LegacyIcon from 'styles/LegacyIcon';
 import LevelPopup from './LevelPopup';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
 
-const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
+const Records = ({
+  highlight,
+  highlightWeeks,
+  records,
+  recordsLoading,
+  showLegacyIcon,
+}) => {
   const [level, selectLevel] = useState(-1);
 
   return (
@@ -23,6 +30,8 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
           <span>Level name</span>
           <span>Kuski</span>
           <span>Time</span>
+          {records.length > 0 &&
+            records[0].LevelBesttime[0].Source !== undefined && <span />}
         </div>
         {recordsLoading && <Loading />}
         {records.map(r => (
@@ -48,6 +57,12 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
                 >
                   <Time time={r.LevelBesttime[0].Time} />
                 </TimeSpan>
+                {r.LevelBesttime[0].Source !== undefined && (
+                  <LegacyIcon
+                    source={r.LevelBesttime[0].Source}
+                    show={showLegacyIcon}
+                  />
+                )}
               </>
             ) : (
               <>
@@ -73,6 +88,7 @@ const Records = ({ highlight, highlightWeeks, records, recordsLoading }) => {
           close={() => {
             selectLevel(-1);
           }}
+          showLegacyIcon={showLegacyIcon}
         />
       )}
     </>

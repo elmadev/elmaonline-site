@@ -51,7 +51,7 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   if (lev.Legacy) {
     const legacyTimes = await LegacyFinished.findAll({
       where: { LevelIndex, KuskiIndex },
-      attributes: ['Time', 'Driven'],
+      attributes: ['Time', 'Driven', 'Source'],
       limit: timeLimit > 10000 ? 10000 : timeLimit,
     });
     return [...times, ...legacyTimes]

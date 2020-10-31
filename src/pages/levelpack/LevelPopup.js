@@ -8,6 +8,7 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Link from 'components/Link';
+import LegacyIcon from 'styles/LegacyIcon';
 
 // eslint-disable-next-line css-modules/no-unused-class
 import s from './LevelPack.css';
@@ -33,7 +34,14 @@ const GET_LEVEL = gql`
   }
 `;
 
-const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
+const LevelPopup = ({
+  levelId,
+  KuskiIndex,
+  close,
+  highlight,
+  multi,
+  showLegacyIcon,
+}) => {
   const {
     personalAllFinished,
     levelBesttimes,
@@ -101,6 +109,11 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
                       </>
                     )}
                     <span>Time</span>
+                    {times.length > 0 && times[0].Source !== undefined && (
+                      <span />
+                    )}
+                    {personalAllFinished.length > 0 &&
+                      personalAllFinished[0].Source !== undefined && <span />}
                   </div>
                   {!KuskiIndex ? (
                     <>
@@ -128,6 +141,12 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
                                 <TimeSpan highlight={t.TimeIndex >= highlight}>
                                   <Time time={t.Time} />
                                 </TimeSpan>
+                                {t.Source !== undefined && (
+                                  <LegacyIcon
+                                    source={t.Source}
+                                    show={showLegacyIcon}
+                                  />
+                                )}
                               </>
                             )}
                           </div>
@@ -138,11 +157,17 @@ const LevelPopup = ({ levelId, KuskiIndex, close, highlight, multi }) => {
                     <>
                       {personalAllFinished.map((t, i) => {
                         return (
-                          <div key={t.TimeIndex}>
+                          <div key={`${t.TimeIndex}${t.Time}`}>
                             <span>{i + 1}.</span>
                             <TimeSpan highlight={t.TimeIndex >= highlight}>
                               <Time time={t.Time} />
                             </TimeSpan>
+                            {t.Source !== undefined && (
+                              <LegacyIcon
+                                source={t.Source}
+                                show={showLegacyIcon}
+                              />
+                            )}
                           </div>
                         );
                       })}
