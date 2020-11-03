@@ -39,6 +39,11 @@ const LegacyBesttime = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    TimeIndex: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

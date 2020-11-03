@@ -11,10 +11,13 @@ import {
   LegacyFinished,
   LegacyBesttime,
   Besttime,
+  Country,
+  Team,
 } from '../data/models';
 import * as kuskiMapData from '../data/json/kuskimap.json';
 import * as skintPRsData from '../data/json/skintatious_PRs.json';
 import * as skintNonPRsData from '../data/json/skintatious_nonPRs.json';
+import * as skintKuskis from '../data/json/skintatious_kuskis.json';
 
 const addMarker = async Data => {
   let newMarker = false;
@@ -107,17 +110,73 @@ const updateLegacyPack = async (LevelPackIndex, done) => {
   done();
 };
 
-const skint = json => {
-  const times = [];
-  forEach(json.default, s => {
-    times.push({
-      LevelIndex: s.LevelIndex,
-      KuskiIndex: s.KuskiIndex,
-      Time: s.Time,
-      Driven: s.Driven,
-      Source: 3,
+const createKuski = async (k, strategy) => {
+  const kuskiData = await Kuski.findOne({ where: { Kuski: k } });
+  if (kuskiData) {
+    return kuskiData.KuskiIndex;
+  }
+  let kuskiInfo = [];
+  if (strategy === 'skint') {
+    kuskiInfo = skintKuskis.default.filter(x => x.Kuski === k);
+  }
+  if (kuskiInfo.length > 0) {
+    let nation = 'XX';
+    const countryInfo = await Country.findOne({
+      where: { Iso3: kuskiInfo[0].Country },
     });
-  });
+    if (countryInfo) {
+      nation = countryInfo.Iso;
+    }
+    let TeamIndex = 0;
+    if (kuskiInfo[0].Team !== 'NULL') {
+      const teamInfo = await Team.findOne({
+        where: { Team: kuskiInfo[0].Team },
+      });
+      if (teamInfo) {
+        TeamIndex = teamInfo.TeamIndex;
+      }
+    }
+    const insert = await Kuski.create({
+      Kuski: k,
+      ConfirmCode: 'legacy',
+      Country: nation,
+      TeamIndex,
+    });
+    return insert.KuskiIndex;
+  }
+  return 0;
+};
+
+const skint = async json => {
+  const times = [];
+  const newKuskis = {};
+  eachSeries(
+    json.default,
+    async (time, done) => {
+      let kuskiId = time.KuskiIndex;
+      if (kuskiId === 0) {
+        if (newKuskis[time.Kuski.toLowerCase()]) {
+          kuskiId = newKuskis[time.Kuski.toLowerCase()];
+        } else {
+          kuskiId = await createKuski(time.Kuski, 'skint');
+          newKuskis[time.Kuski.toLowerCase()] = kuskiId;
+        }
+      }
+      if (kuskiId !== 0) {
+        times.push({
+          LevelIndex: time.LevelIndex,
+          KuskiIndex: kuskiId,
+          Time: time.Time,
+          Driven: time.Driven,
+          Source: 3,
+        });
+      }
+      done();
+    },
+    () => {
+      return times;
+    },
+  );
   return times;
 };
 
