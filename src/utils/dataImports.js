@@ -147,37 +147,38 @@ const createKuski = async (k, strategy) => {
   return 0;
 };
 
-const skint = async json => {
-  const times = [];
-  const newKuskis = {};
-  eachSeries(
-    json.default,
-    async (time, done) => {
-      let kuskiId = time.KuskiIndex;
-      if (kuskiId === 0) {
-        if (newKuskis[time.Kuski.toLowerCase()]) {
-          kuskiId = newKuskis[time.Kuski.toLowerCase()];
-        } else {
-          kuskiId = await createKuski(time.Kuski, 'skint');
-          newKuskis[time.Kuski.toLowerCase()] = kuskiId;
+const skint = json => {
+  return new Promise(resolve => {
+    const times = [];
+    const newKuskis = {};
+    eachSeries(
+      json.default,
+      async (time, done) => {
+        let kuskiId = time.KuskiIndex;
+        if (kuskiId === 0) {
+          if (newKuskis[time.Kuski.toLowerCase()]) {
+            kuskiId = newKuskis[time.Kuski.toLowerCase()];
+          } else {
+            kuskiId = await createKuski(time.Kuski, 'skint');
+            newKuskis[time.Kuski.toLowerCase()] = kuskiId;
+          }
         }
-      }
-      if (kuskiId !== 0) {
-        times.push({
-          LevelIndex: time.LevelIndex,
-          KuskiIndex: kuskiId,
-          Time: time.Time,
-          Driven: time.Driven,
-          Source: 3,
-        });
-      }
-      done();
-    },
-    () => {
-      return times;
-    },
-  );
-  return times;
+        if (kuskiId !== 0) {
+          times.push({
+            LevelIndex: time.LevelIndex,
+            KuskiIndex: kuskiId,
+            Time: time.Time,
+            Driven: time.Driven,
+            Source: 3,
+          });
+        }
+        done();
+      },
+      () => {
+        resolve(times);
+      },
+    );
+  });
 };
 
 const insertFinished = times => {
