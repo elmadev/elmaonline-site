@@ -57,6 +57,7 @@ const LevelPack = ({ name }) => {
     records,
     recordsLoading,
     setPersonalTimesLoading,
+    personalKuski,
     settings: { highlightWeeks, showLegacyIcon },
   } = useStoreState(state => state.LevelPack);
   const {
@@ -182,6 +183,7 @@ const LevelPack = ({ name }) => {
                   records={records}
                   setPersonalTimesLoading={setPersonalTimesLoading}
                   showLegacyIcon={showLegacyIcon}
+                  kuski={personalKuski}
                 />
               )}
               {tab === 4 && (

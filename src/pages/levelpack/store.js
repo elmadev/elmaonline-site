@@ -71,6 +71,7 @@ export default {
     state.timesError = payload;
   }),
   personalTimes: [],
+  personalKuski: '',
   personalTimesLoading: false,
   setPersonalTimes: action((state, payload) => {
     state.personalTimes = payload;
@@ -78,8 +79,12 @@ export default {
   setPersonalTimesLoading: action((state, paylaod) => {
     state.personalTimesLoading = paylaod;
   }),
+  setPersonalKuski: action((state, payload) => {
+    state.personalKuski = payload;
+  }),
   getPersonalTimes: thunk(async (actions, payload) => {
     actions.setPersonalTimesLoading(true);
+    actions.setPersonalKuski(payload.PersonalKuskiIndex);
     const times = await PersonalTimes(payload);
     if (times.ok) {
       if (times.data.error) {
