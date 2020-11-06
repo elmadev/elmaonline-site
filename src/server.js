@@ -56,7 +56,7 @@ import {
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
-import { kuskimap, email } from 'utils/dataImports';
+import { kuskimap, email, legacyTimes } from 'utils/dataImports';
 import { updateRanking, deleteRanking } from './ranking';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import router from './router';
@@ -319,6 +319,18 @@ app.get('/run/email', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     await email();
     res.json({ status: 'done' });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+app.get('/run/legacytimes/:strategy', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    res.json({ started: true });
+    await legacyTimes(
+      ['BaSk', 'BaSkG', 'BaSkP', 'SkHoyl', 'Skint', 'SkVar', 'SNTL'],
+      'skint',
+    );
   } else {
     res.status(401);
     res.send('Unauthorized');

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { action, thunk } from 'easy-peasy';
+import { action, thunk, persist } from 'easy-peasy';
 import {
   Highlight,
   TotalTimes,
@@ -26,6 +26,19 @@ export default {
     if (highlights.ok) {
       actions.setHighlight(highlights.data);
     }
+  }),
+  settings: persist(
+    {
+      highlightWeeks: 1,
+      showLegacyIcon: true,
+    },
+    { storage: 'localStorage' },
+  ),
+  setHighlightWeeks: action((state, payload) => {
+    state.settings.highlightWeeks = payload;
+  }),
+  toggleShowLegacyIcon: action(state => {
+    state.settings.showLegacyIcon = !state.settings.showLegacyIcon;
   }),
   totaltimes: [],
   kinglist: [],
@@ -58,6 +71,7 @@ export default {
     state.timesError = payload;
   }),
   personalTimes: [],
+  personalKuski: '',
   personalTimesLoading: false,
   setPersonalTimes: action((state, payload) => {
     state.personalTimes = payload;
@@ -65,8 +79,12 @@ export default {
   setPersonalTimesLoading: action((state, paylaod) => {
     state.personalTimesLoading = paylaod;
   }),
+  setPersonalKuski: action((state, payload) => {
+    state.personalKuski = payload;
+  }),
   getPersonalTimes: thunk(async (actions, payload) => {
     actions.setPersonalTimesLoading(true);
+    actions.setPersonalKuski(payload.PersonalKuskiIndex);
     const times = await PersonalTimes(payload);
     if (times.ok) {
       if (times.data.error) {

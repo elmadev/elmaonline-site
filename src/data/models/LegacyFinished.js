@@ -2,17 +2,12 @@ import DataType from 'sequelize';
 import moment from 'moment';
 import Model from '../sequelize';
 
-const Besttime = Model.define(
-  'besttime',
+const LegacyFinished = Model.define(
+  'legacyfinished',
   {
-    BestTimeIndex: {
+    LegacyFinishedIndex: {
       type: DataType.INTEGER,
       autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
-    TimeIndex: {
-      type: DataType.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
@@ -36,20 +31,22 @@ const Besttime = Model.define(
       defaultValue: '0000-00-00 00:00:00',
       allowNull: false,
       get() {
-        const ts = this.getDataValue('Driven')
-          ? moment(this.getDataValue('Driven')).format('X')
-          : 0;
-        return ts;
+        return moment(this.getDataValue('Driven')).format('X');
       },
+    },
+    Source: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
   },
   {
     indexes: [
       {
-        fields: ['LevelIndex, TimeIndex'],
+        fields: ['LevelIndex'],
       },
     ],
   },
 );
 
-export default Besttime;
+export default LegacyFinished;

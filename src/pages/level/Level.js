@@ -255,8 +255,8 @@ class Level extends React.Component {
                   />
                 )}
                 {tab === 1 && <AllTimes LevelIndex={LevelIndex} />}
-                {tab === 2 && <TimeTable data={getBestTimes} />}
-                {tab === 3 && <AllTimes LevelIndex={LevelIndex} />}
+                {/* tab === 2 && <TimeTable data={getBestTimes} /> */}
+                {/* tab === 3 && <AllTimes LevelIndex={LevelIndex} /> */}
               </>
             )}
           </Paper>

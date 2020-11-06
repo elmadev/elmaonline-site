@@ -15,6 +15,7 @@ export const schema = [
     Locked: Int
     SiteLock: Int
     Hidden: Int
+    Legacy: Int
   }
 `,
 ];
@@ -43,6 +44,7 @@ const attributes = [
   'Locked',
   'SiteLock',
   'Hidden',
+  'Legacy',
 ];
 
 export const resolvers = {

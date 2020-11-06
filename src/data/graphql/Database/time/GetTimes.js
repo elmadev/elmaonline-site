@@ -2,6 +2,7 @@ import {
   /* AllFinished, */ Kuski,
   Team,
   Besttime,
+  LegacyBesttime,
   Level,
   AllFinished,
 } from 'data/models';
@@ -82,14 +83,19 @@ export const resolvers = {
     },
     async getBestTimes(parent, { LevelIndex, Limit }) {
       const level = await Level.findOne({
-        attributes: ['Hidden', 'Locked'],
+        attributes: ['Hidden', 'Locked', 'Legacy'],
         where: { LevelIndex },
       });
 
       if (level.Locked) return [];
       if (level.Hidden) return [];
 
-      const times = await Besttime.findAll({
+      let timeTable = Besttime;
+      if (level.Legacy) {
+        timeTable = LegacyBesttime;
+      }
+
+      const times = await timeTable.findAll({
         where: { LevelIndex },
         order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: Limit,
