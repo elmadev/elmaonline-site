@@ -30,6 +30,8 @@ import SiteCupTime from './SiteCupTime';
 import SiteCupBlog from './SiteCupBlog';
 import KuskiMap from './KuskiMap';
 import SiteSetting from './SiteSetting';
+import LegacyFinished from './LegacyFinished';
+import LegacyBesttime from './LegacyBesttime';
 import Ignored from './Ignored';
 
 Replay.belongsTo(Kuski, {
@@ -133,6 +135,12 @@ LevelPackLevel.hasMany(Besttime, {
   as: 'LevelBesttime',
 });
 
+LevelPackLevel.hasMany(LegacyBesttime, {
+  foreignKey: 'LevelIndex',
+  sourceKey: 'LevelIndex',
+  as: 'LevelLegacyBesttime',
+});
+
 LevelPackLevel.hasMany(BestMultitime, {
   foreignKey: 'LevelIndex',
   sourceKey: 'LevelIndex',
@@ -141,6 +149,21 @@ LevelPackLevel.hasMany(BestMultitime, {
 
 Ignored.belongsTo(Kuski, {
   foreignKey: 'IgnoredKuskiIndex',
+  as: 'KuskiData',
+});
+
+LegacyBesttime.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LegacyBesttime.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
+LegacyFinished.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
   as: 'KuskiData',
 });
 
@@ -303,5 +326,7 @@ export {
   SiteCupBlog,
   KuskiMap,
   SiteSetting,
+  LegacyFinished,
+  LegacyBesttime,
   Ignored,
 }; // add the data model here as well so it exports

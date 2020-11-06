@@ -43,6 +43,7 @@ const Cups = props => {
       <Grid item xs={12} sm={6}>
         {events.sort(eventSort).map((e, i) => (
           <EventContainer
+            key={e.CupIndex}
             highlight={i === openEvent}
             onClick={() => setOpenEvent(i)}
           >
@@ -104,7 +105,12 @@ const Cups = props => {
       </Grid>
       {openEvent > -1 && (
         <Grid item xs={12} sm={6}>
-          <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+          <Tabs
+            variant="scrollable"
+            scrollButtons="auto"
+            value={tab}
+            onChange={(e, value) => setTab(value)}
+          >
             <Tab label="Results" />
             {events[openEvent].StartTime < format(new Date(), 't') && (
               <Tab label="Map" />

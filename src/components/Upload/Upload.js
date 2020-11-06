@@ -248,8 +248,10 @@ class Upload extends React.Component {
                   duplicateReplayIndex: body.replayInfo[0].ReplayIndex,
                 });
               }
+            } else if (body.error && body.error.code) {
+              if (body.error.code === 'ENOENT' && body.error.errno === -2) this.setState({ error: 'Filename too long.'});
             } else {
-              this.setState({ error: body.error });
+              this.setState({ error: body.error.toString() });
             }
           } else {
             this.sendMutation(

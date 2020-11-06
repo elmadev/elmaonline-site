@@ -1,4 +1,5 @@
 import DataType from 'sequelize';
+import moment from 'moment';
 import Model from '../sequelize';
 
 const Besttime = Model.define(
@@ -29,6 +30,17 @@ const Besttime = Model.define(
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    Driven: {
+      type: DataType.STRING(19),
+      defaultValue: '0000-00-00 00:00:00',
+      allowNull: false,
+      get() {
+        const ts = this.getDataValue('Driven')
+          ? moment(this.getDataValue('Driven')).format('X')
+          : 0;
+        return ts;
+      },
     },
   },
   {

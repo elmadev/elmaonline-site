@@ -44,7 +44,12 @@ const Cups = props => {
 
   return (
     <>
-      <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        value={tab}
+        onChange={(e, value) => setTab(value)}
+      >
         <Tab label="Dashboard" />
         <Tab label="Events" />
         <Tab label="Standings" />

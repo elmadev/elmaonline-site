@@ -1,12 +1,19 @@
 import express from 'express';
-import { Besttime, Kuski, Team, Level, BestMultitime } from '../data/models';
+import {
+  Besttime,
+  Kuski,
+  Team,
+  Level,
+  BestMultitime,
+  LegacyBesttime,
+} from '../data/models';
 
 const router = express.Router();
 
 const levelInfo = async LevelIndex => {
   const lev = await Level.findOne({
     where: { LevelIndex },
-    attributes: ['Hidden', 'Locked'],
+    attributes: ['Hidden', 'Locked', 'Legacy'],
   });
   return lev;
 };
@@ -14,7 +21,11 @@ const levelInfo = async LevelIndex => {
 const getTimes = async (LevelIndex, limit) => {
   const lev = await levelInfo(LevelIndex);
   if (lev.Hidden) return [];
-  const times = await Besttime.findAll({
+  let timeTable = Besttime;
+  if (lev.Legacy) {
+    timeTable = LegacyBesttime;
+  }
+  const times = await timeTable.findAll({
     where: { LevelIndex },
     order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
     limit: parseInt(limit, 10),

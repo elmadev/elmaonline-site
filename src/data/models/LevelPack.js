@@ -113,6 +113,11 @@ const LevelPack = Model.define('levelpack', {
     allowNull: false,
     defaultValue: 0,
   },
+  Legacy: {
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
 });
 
 export default LevelPack;

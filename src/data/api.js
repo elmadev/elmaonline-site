@@ -145,3 +145,6 @@ export const Players = () => api.get('player/');
 // teams
 export const Teams = () => api.get('teams');
 export const TeamMembers = Team => api.get(`teams/${Team}`);
+
+// chat
+export const SearchChat = data => api.get('chat', { params: data });

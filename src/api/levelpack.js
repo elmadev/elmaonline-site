@@ -13,6 +13,7 @@ import {
   Level,
   Team,
   BestMultitime,
+  LegacyBesttime,
 } from '../data/models';
 
 const router = express.Router();
@@ -26,16 +27,25 @@ const getKuski = async k => {
 
 const getRecords = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
+    attributes: ['LevelPackIndex', 'Legacy'],
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['Sort', 'ASC'], ['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        model: timeTable,
+        as: timeTableAlias,
+        attributes,
         order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: 1,
         include: [
@@ -60,6 +70,16 @@ const getRecords = async LevelPackName => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 
@@ -118,14 +138,22 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        model: timeTable,
+        as: timeTableAlias,
+        attributes,
         where: { KuskiIndex },
         include: [
           {
@@ -142,17 +170,36 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 
 const getTimes = async LevelPackIndex => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackIndex },
+  });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  if (packInfo.Legacy) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex },
     attributes: ['LevelIndex'],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
+        model: timeTable,
+        as: timeTableAlias,
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         include: [
           {
@@ -169,6 +216,14 @@ const getTimes = async LevelPackIndex => {
       },
     ],
   });
+  if (packInfo.Legacy) {
+    return times.map(t => {
+      return {
+        ...t.dataValues,
+        LevelBesttime: t.dataValues.LevelLegacyBesttime,
+      };
+    });
+  }
   return times;
 };
 
@@ -188,15 +243,18 @@ const getPacksByQuery = async query => {
       },
     ],
   });
+
+  const matchingLevels = await Level.findAll({
+    attributes: ['LevelName', 'LevelIndex'],
+    where: { LevelName: { [Op.like]: `${like(query)}%` } },
+  });
+
   const levels = await LevelPackLevel.findAll({
     attributes: ['LevelPackIndex', 'LevelIndex'],
+    where: {
+      LevelIndex: { [Op.in]: matchingLevels.map(lev => lev.LevelIndex) },
+    },
     include: [
-      {
-        model: Level,
-        as: 'Level',
-        attributes: ['LevelName', 'LongName', 'LevelIndex'],
-        where: { LevelName: { [Op.like]: `${like(query)}%` } },
-      },
       {
         model: LevelPack,
         as: 'LevelPack',
@@ -211,6 +269,7 @@ const getPacksByQuery = async query => {
       },
     ],
   });
+
   return [...packs, ...levels].filter(
     (v, i, a) => a.findIndex(x => x.LevelPackIndex === v.LevelPackIndex) === i,
   );

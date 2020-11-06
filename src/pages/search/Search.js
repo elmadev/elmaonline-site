@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { has } from 'lodash';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
@@ -49,22 +48,22 @@ const Search = ({
   } = useStoreActions(actions => actions.Search);
   useEffect(() => {
     if (t === 'level') {
-      getLevels({ q, offset: 0 });
+      getLevels({ q: q.replace('?', '_'), offset: 0 });
     }
     if (t === 'battle') {
       getBattles({
-        q,
+        q: q.replace('?', '_'),
         offset: 0,
       });
     }
     if (t === 'replay') {
-      getReplays({ q, offset: 0 });
+      getReplays({ q: q.replace('?', '_'), offset: 0 });
     }
     if (t === 'player') {
-      getPlayers({ q, offset: 0 });
+      getPlayers({ q: q.replace('?', '_'), offset: 0 });
     }
     if (t === 'team') {
-      getTeams({ q, offset: 0 });
+      getTeams({ q: q.replace('?', '_'), offset: 0 });
     }
   }, [q]);
 
@@ -130,7 +129,7 @@ const Search = ({
                 <>
                   {levelPacks.map(l => (
                     <>
-                      {has(l, 'LevelPack') ? (
+                      {l.LevelPack ? (
                         <Link
                           to={`levels/packs/${l.LevelPack.LevelPackName}`}
                           key={l.LevelPack.LevelPackIndex}
