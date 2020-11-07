@@ -18,12 +18,12 @@ const levelInfo = async LevelIndex => {
   return lev;
 };
 
-const getTimes = async (LevelIndex, limit) => {
+const getTimes = async (LevelIndex, limit, eolOnly = false) => {
   const lev = await levelInfo(LevelIndex);
   if (lev.Hidden) return [];
   if (lev.Locked) return [];
   let timeTable = Besttime;
-  if (lev.Legacy) {
+  if (lev.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
   }
   const times = await timeTable.findAll({
@@ -111,6 +111,10 @@ const getLatest = async (KuskiIndex, limit) => {
 router
   .get('/:LevelIndex/:limit', async (req, res) => {
     const data = await getTimes(req.params.LevelIndex, req.params.limit);
+    res.json(data);
+  })
+  .get('/eol/:LevelIndex/:limit', async (req, res) => {
+    const data = await getTimes(req.params.LevelIndex, req.params.limit, true);
     res.json(data);
   })
   .get('/latest/:KuskiIndex/:limit', async (req, res) => {

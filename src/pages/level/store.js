@@ -1,6 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { Besttime, Level, BattlesByLevel, AllFinishedLevel } from 'data/api';
+import {
+  Besttime,
+  Level,
+  BattlesByLevel,
+  AllFinishedLevel,
+  EOLBesttime,
+} from 'data/api';
 
 export default {
   besttimes: [],
@@ -8,6 +14,7 @@ export default {
   battlesForLevel: [],
   loading: true,
   allfinished: [],
+  eoltimes: [],
   setBesttimes: action((state, payload) => {
     state.besttimes = payload;
   }),
@@ -41,6 +48,15 @@ export default {
     const times = await AllFinishedLevel(payload);
     if (times.ok) {
       actions.setAllfinished(times.data);
+    }
+  }),
+  setEoltimes: action((state, payload) => {
+    state.eoltimes = payload;
+  }),
+  getEoltimes: thunk(async (actions, payload) => {
+    const times = await EOLBesttime(payload);
+    if (times.ok) {
+      actions.setEoltimes(times.data);
     }
   }),
 };

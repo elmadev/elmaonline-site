@@ -121,6 +121,8 @@ export const LevelPackSort = data => api.post('levelpack/admin/sort', data);
 // besttime
 export const Besttime = data =>
   api.get(`besttime/${data.levelId}/${data.limit}`);
+export const EOLBesttime = data =>
+  api.get(`besttime/eol/${data.levelId}/${data.limit}`);
 export const PersonalLatestPRs = data =>
   api.get(`besttime/latest/${data.KuskiIndex}/${data.limit}`);
 export const MultiBesttime = data =>

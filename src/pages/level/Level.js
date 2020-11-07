@@ -7,15 +7,14 @@ import {
   TableHead,
   TableRow,
   Typography,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  ExpansionPanelDetails,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Tabs,
   Tab,
 } from '@material-ui/core';
 import styled from 'styled-components';
 import { ExpandMore } from '@material-ui/icons';
-import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import { Paper } from 'styles/Paper';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
@@ -23,51 +22,11 @@ import Kuski from 'components/Kuski';
 import Recplayer from 'components/Recplayer';
 import RecList from 'components/RecList';
 import Loading from 'components/Loading';
-import Time from 'components/Time';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
-
-const TimeTable = ({ data, latestBattle }) => (
-  <div>
-    <ListContainer>
-      <ListHeader>
-        <ListCell right width={30}>
-          #
-        </ListCell>
-        <ListCell width={200}>Kuski</ListCell>
-        <ListCell right width={200}>
-          Time
-        </ListCell>
-        <ListCell />
-      </ListHeader>
-      {data &&
-        (!latestBattle ||
-          latestBattle.Finished === 1 ||
-          latestBattle.Aborted === 1) &&
-        data.map((t, i) => (
-          <ListRow key={t.TimeIndex}>
-            <ListCell right width={30}>
-              {i + 1}.
-            </ListCell>
-            <ListCell width={200}>
-              {t.KuskiData.Kuski}{' '}
-              {t.KuskiData.TeamData && `[${t.KuskiData.TeamData.Team}]`}
-            </ListCell>
-            <ListCell width={200} right>
-              <Time time={t.Time} />
-            </ListCell>
-            <ListCell />
-          </ListRow>
-        ))}
-    </ListContainer>
-  </div>
-);
-
-TimeTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-};
+import TimeTable from './TimeTable';
 
 const Level = ({ LevelIndex }) => {
   const [tab, setTab] = useState(0);
@@ -77,10 +36,14 @@ const Level = ({ LevelIndex }) => {
     battlesForLevel,
     loading,
     allfinished,
+    eoltimes,
   } = useStoreState(state => state.Level);
-  const { getBesttimes, getLevel, getAllfinished } = useStoreActions(
-    actions => actions.Level,
-  );
+  const {
+    getBesttimes,
+    getLevel,
+    getAllfinished,
+    getEoltimes,
+  } = useStoreActions(actions => actions.Level);
 
   useEffect(() => {
     getBesttimes({ levelId: LevelIndex, limit: 10000 });
@@ -91,6 +54,9 @@ const Level = ({ LevelIndex }) => {
     setTab(value);
     if (value === 1 && allfinished.length === 0) {
       getAllfinished(LevelIndex);
+    }
+    if (value === 2 && eoltimes.length === 0) {
+      getEoltimes({ levelId: LevelIndex, limit: 10000 });
     }
   };
 
@@ -120,11 +86,11 @@ const Level = ({ LevelIndex }) => {
         <ChatContainer>
           {loading && <Loading />}
           {!loading && (
-            <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+            <Accordion defaultExpanded>
+              <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body2">Level info</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
+              </AccordionSummary>
+              <AccordionDetails>
                 <LevelDescription>
                   <a href={`/dl/level/${LevelIndex}`}>{level.LevelName}.lev</a>
                   <LevelFullName>{level.LongName}</LevelFullName>
@@ -132,14 +98,14 @@ const Level = ({ LevelIndex }) => {
                   {'Level ID: '}
                   {`${LevelIndex}`}
                 </LevelDescription>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
+              </AccordionDetails>
+            </Accordion>
           )}
-          <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="body2">Battles in level</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetailsBattles>
+            </AccordionSummary>
+            <AccordionBattles>
               <BattlesContainer>
                 <Table>
                   <TableHead>
@@ -195,20 +161,20 @@ const Level = ({ LevelIndex }) => {
                   </TableBody>
                 </Table>
               </BattlesContainer>
-            </ExpansionPanelDetailsBattles>
-          </ExpansionPanel>
-          <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+            </AccordionBattles>
+          </Accordion>
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="body2">Replays in level</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetailsReplays>
+            </AccordionSummary>
+            <AccordionReplays>
               <RecList
                 LevelIndex={LevelIndex}
                 columns={['Replay', 'Time', 'By']}
                 horizontalMargin={-24}
               />
-            </ExpansionPanelDetailsReplays>
-          </ExpansionPanel>
+            </AccordionReplays>
+          </Accordion>
         </ChatContainer>
       </RightBarContainer>
       <ResultsContainer>
@@ -224,6 +190,7 @@ const Level = ({ LevelIndex }) => {
               >
                 <Tab label="Best times" />
                 <Tab label="All times" />
+                {level.Legacy && <Tab label="EOL times" />}
               </Tabs>
               {tab === 0 && (
                 <TimeTable data={besttimes} latestBattle={battlesForLevel[0]} />
@@ -234,6 +201,9 @@ const Level = ({ LevelIndex }) => {
                   latestBattle={battlesForLevel[0]}
                 />
               )}
+              {tab === 2 && (
+                <TimeTable data={eoltimes} latestBattle={battlesForLevel[0]} />
+              )}
             </>
           )}
         </Paper>
@@ -242,13 +212,13 @@ const Level = ({ LevelIndex }) => {
   );
 };
 
-const ExpansionPanelDetailsReplays = styled(ExpansionPanelDetails)`
+const AccordionReplays = styled(AccordionDetails)`
   & {
     flex-direction: column;
   }
 `;
 
-const ExpansionPanelDetailsBattles = styled(ExpansionPanelDetails)`
+const AccordionBattles = styled(AccordionDetails)`
   && {
     padding-left: 0;
     padding-right: 0;
