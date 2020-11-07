@@ -13,6 +13,7 @@ import Besttime from './besttime';
 import Battle from './battle';
 import Player from './player';
 import Teams from './teams';
+import Level from './level';
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router
   .use('/kuskimap', KuskiMap)
   .use('/allfinished', AllFinished)
   .use('/levelpack', LevelPack)
+  .use('/level', Level)
   .use('/besttime', Besttime)
   .use('/battle', Battle)
   .use('/player', Player)

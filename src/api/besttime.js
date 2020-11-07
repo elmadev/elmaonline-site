@@ -21,6 +21,7 @@ const levelInfo = async LevelIndex => {
 const getTimes = async (LevelIndex, limit) => {
   const lev = await levelInfo(LevelIndex);
   if (lev.Hidden) return [];
+  if (lev.Locked) return [];
   let timeTable = Besttime;
   if (lev.Legacy) {
     timeTable = LegacyBesttime;

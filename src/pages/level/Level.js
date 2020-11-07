@@ -1,5 +1,4 @@
-import React from 'react';
-import { graphql, compose } from 'react-apollo';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Table,
@@ -14,10 +13,11 @@ import {
   Tabs,
   Tab,
 } from '@material-ui/core';
+import styled from 'styled-components';
 import { ExpandMore } from '@material-ui/icons';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import { Paper } from 'styles/Paper';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 
 import Kuski from 'components/Kuski';
 import Recplayer from 'components/Recplayer';
@@ -29,11 +29,7 @@ import LocalTime from 'components/LocalTime';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 
-import query from './level.graphql';
-import allTimesQuery from './allTimes.graphql';
-import s from './Level.css';
-
-const TimeTable = withStyles(s)(({ data, latestBattle }) => (
+const TimeTable = ({ data, latestBattle }) => (
   <div>
     <ListContainer>
       <ListHeader>
@@ -67,220 +63,256 @@ const TimeTable = withStyles(s)(({ data, latestBattle }) => (
         ))}
     </ListContainer>
   </div>
-));
+);
 
 TimeTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()),
+  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
-const AllTimes = compose(
-  withStyles(s),
-  graphql(allTimesQuery, {
-    options: ownProps => ({
-      variables: {
-        LevelIndex: ownProps.LevelIndex,
-      },
-    }),
-  }),
-)(props => {
+const Level = ({ LevelIndex }) => {
+  const [tab, setTab] = useState(0);
   const {
-    data: { getTimes, loading },
-  } = props;
-  return loading ? <Loading /> : <TimeTable data={getTimes} />;
-});
+    besttimes,
+    level,
+    battlesForLevel,
+    loading,
+    allfinished,
+  } = useStoreState(state => state.Level);
+  const { getBesttimes, getLevel, getAllfinished } = useStoreActions(
+    actions => actions.Level,
+  );
 
-class Level extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tab: 0,
-    };
-  }
+  useEffect(() => {
+    getBesttimes({ levelId: LevelIndex, limit: 10000 });
+    getLevel(LevelIndex);
+  }, []);
 
-  onTabClick = (e, value) => {
-    this.setState({
-      tab: value,
-    });
+  const onTabClick = (e, value) => {
+    setTab(value);
+    if (value === 1 && allfinished.length === 0) {
+      getAllfinished(LevelIndex);
+    }
   };
 
-  gotoBattle = battleIndex => {
+  const goToBattle = battleIndex => {
     if (!Number.isNaN(battleIndex)) {
       history.push(`/battles/${battleIndex}`);
     }
   };
 
-  render() {
-    const {
-      data: { getBestTimes, getLevel, getBattlesForLevel, loading },
-      LevelIndex,
-    } = this.props;
-    const { tab } = this.state;
-    const isWindow = typeof window !== 'undefined';
-    return (
-      <div className={s.root}>
-        <div className={s.playerContainer}>
+  const isWindow = typeof window !== 'undefined';
+
+  return (
+    <Container>
+      <PlayerContainer>
+        {loading && <Loading />}
+        {!loading && (
+          <Player>
+            {isWindow &&
+              (battlesForLevel.length < 1 ||
+                battleStatus(battlesForLevel[0]) !== 'Queued') && (
+                <Recplayer lev={`/dl/level/${LevelIndex}`} controls />
+              )}
+          </Player>
+        )}
+      </PlayerContainer>
+      <RightBarContainer>
+        <ChatContainer>
           {loading && <Loading />}
           {!loading && (
-            <div className={s.player}>
-              {isWindow &&
-                (getBattlesForLevel.length < 1 ||
-                  battleStatus(getBattlesForLevel[0]) !== 'Queued') && (
-                  <Recplayer lev={`/dl/level/${LevelIndex}`} controls />
-                )}
-            </div>
+            <ExpansionPanel defaultExpanded>
+              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                <Typography variant="body2">Level info</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <LevelDescription>
+                  <a href={`/dl/level/${LevelIndex}`}>{level.LevelName}.lev</a>
+                  <LevelFullName>{level.LongName}</LevelFullName>
+                  <br />
+                  {'Level ID: '}
+                  {`${LevelIndex}`}
+                </LevelDescription>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
           )}
-        </div>
-        <div className={s.rightBarContainer}>
-          <div className={s.chatContainer}>
-            {loading && <Loading />}
-            {!loading && (
-              <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="body2">Level info</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                  <div className={s.levelDescription}>
-                    <a href={`/dl/level/${LevelIndex}`}>
-                      {getLevel.LevelName}.lev
-                    </a>
-                    <div className={s.levelFullName}>{getLevel.LongName}</div>
-                    <br />
-                    {'Level ID: '}
-                    {`${LevelIndex}`}
-                  </div>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
-            )}
-            <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                <Typography variant="body2">Battles in level</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails
-                style={{ paddingLeft: 0, paddingRight: 0 }}
+          <ExpansionPanel defaultExpanded>
+            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+              <Typography variant="body2">Battles in level</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetailsBattles>
+              <BattlesContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Started</TableCell>
+                      <TableCell>Designer</TableCell>
+                      <TableCell>Winner</TableCell>
+                      <TableCell>Battle ID</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {!loading &&
+                      battlesForLevel.map(i => {
+                        const sorted = [...i.Results].sort(
+                          sortResults(i.BattleType),
+                        );
+                        return (
+                          <BattleRow
+                            bg={battleStatusBgColor(i)}
+                            hover
+                            key={i.BattleIndex}
+                            onClick={() => {
+                              goToBattle(i.BattleIndex);
+                            }}
+                          >
+                            <TableCell>
+                              <Link to={`/battles/${i.BattleIndex}`}>
+                                <LocalTime
+                                  date={i.Started}
+                                  format="DD MMM YYYY HH:mm:ss"
+                                  parse="X"
+                                />
+                              </Link>
+                            </TableCell>
+                            <TableCell>
+                              <Kuski kuskiData={i.KuskiData} team flag />
+                            </TableCell>
+                            <TableCell>
+                              {i.Finished === 1 && sorted.length > 0 ? (
+                                <Kuski
+                                  kuskiData={sorted[0].KuskiData}
+                                  team
+                                  flag
+                                />
+                              ) : (
+                                battleStatus(i)
+                              )}
+                            </TableCell>
+                            <TableCell>{i.BattleIndex}</TableCell>
+                          </BattleRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </BattlesContainer>
+            </ExpansionPanelDetailsBattles>
+          </ExpansionPanel>
+          <ExpansionPanel defaultExpanded>
+            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+              <Typography variant="body2">Replays in level</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetailsReplays>
+              <RecList
+                LevelIndex={LevelIndex}
+                columns={['Replay', 'Time', 'By']}
+                horizontalMargin={-24}
+              />
+            </ExpansionPanelDetailsReplays>
+          </ExpansionPanel>
+        </ChatContainer>
+      </RightBarContainer>
+      <ResultsContainer>
+        <Paper>
+          {loading && <Loading />}
+          {!loading && (
+            <>
+              <Tabs
+                variant="scrollable"
+                scrollButtons="auto"
+                value={tab}
+                onChange={(e, value) => onTabClick(e, value)}
               >
-                <div style={{ width: '100%' }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Started</TableCell>
-                        <TableCell>Designer</TableCell>
-                        <TableCell>Winner</TableCell>
-                        <TableCell>Battle ID</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {!loading &&
-                        getBattlesForLevel.map(i => {
-                          const sorted = [...i.Results].sort(
-                            sortResults(i.BattleType),
-                          );
-                          return (
-                            <TableRow
-                              style={{
-                                cursor: 'pointer',
-                                backgroundColor: battleStatusBgColor(i),
-                              }}
-                              hover
-                              key={i.BattleIndex}
-                              onClick={() => {
-                                this.gotoBattle(i.BattleIndex);
-                              }}
-                            >
-                              <TableCell>
-                                <Link to={`/battles/${i.BattleIndex}`}>
-                                  <LocalTime
-                                    date={i.Started}
-                                    format="DD MMM YYYY HH:mm:ss"
-                                    parse="X"
-                                  />
-                                </Link>
-                              </TableCell>
-                              <TableCell>
-                                <Kuski kuskiData={i.KuskiData} team flag />
-                              </TableCell>
-                              <TableCell>
-                                {i.Finished === 1 && sorted.length > 0 ? (
-                                  <Kuski
-                                    kuskiData={sorted[0].KuskiData}
-                                    team
-                                    flag
-                                  />
-                                ) : (
-                                  battleStatus(i)
-                                )}
-                              </TableCell>
-                              <TableCell>{i.BattleIndex}</TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </div>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel defaultExpanded>
-              <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                <Typography variant="body2">Replays in level</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-                <RecList
-                  LevelIndex={LevelIndex}
-                  columns={['Replay', 'Time', 'By']}
-                  horizontalMargin={-24}
+                <Tab label="Best times" />
+                <Tab label="All times" />
+              </Tabs>
+              {tab === 0 && (
+                <TimeTable data={besttimes} latestBattle={battlesForLevel[0]} />
+              )}
+              {tab === 1 && (
+                <TimeTable
+                  data={allfinished}
+                  latestBattle={battlesForLevel[0]}
                 />
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-          </div>
-        </div>
-        <div className={s.resultsContainer}>
-          <Paper>
-            {loading && <Loading />}
-            {!loading && (
-              <>
-                <Tabs
-                  variant="scrollable"
-                  scrollButtons="auto"
-                  value={tab}
-                  onChange={this.onTabClick}
-                >
-                  <Tab label="Best times" />
-                  <Tab label="All times" />
-                  {/* <Tab label="Best multi times" />
-                  <Tab label="All multi times" /> */}
-                </Tabs>
-                {tab === 0 && (
-                  <TimeTable
-                    data={getBestTimes}
-                    latestBattle={getBattlesForLevel[0]}
-                  />
-                )}
-                {tab === 1 && <AllTimes LevelIndex={LevelIndex} />}
-                {/* tab === 2 && <TimeTable data={getBestTimes} /> */}
-                {/* tab === 3 && <AllTimes LevelIndex={LevelIndex} /> */}
-              </>
-            )}
-          </Paper>
-        </div>
-      </div>
-    );
+              )}
+            </>
+          )}
+        </Paper>
+      </ResultsContainer>
+    </Container>
+  );
+};
+
+const ExpansionPanelDetailsReplays = styled(ExpansionPanelDetails)`
+  & {
+    flex-direction: column;
   }
-}
+`;
+
+const ExpansionPanelDetailsBattles = styled(ExpansionPanelDetails)`
+  && {
+    padding-left: 0;
+    padding-right: 0;
+  }
+`;
+
+const BattleRow = styled(TableRow)`
+  && {
+    cursor: pointer;
+    background-color: ${p => p.bg};
+  }
+`;
+
+const ResultsContainer = styled.div`
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const BattlesContainer = styled.div`
+  width: 100%;
+`;
+
+const LevelFullName = styled.div`
+  color: #7d7d7d;
+`;
+
+const LevelDescription = styled.div`
+  font-size: 14px;
+`;
+
+const ChatContainer = styled.div`
+  clear: both;
+`;
+
+const RightBarContainer = styled.div`
+  float: right;
+  width: 40%;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const Container = styled.div`
+  padding: 7px;
+`;
+
+const PlayerContainer = styled.div`
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const Player = styled.div`
+  background: #f1f1f1;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 Level.propTypes = {
   LevelIndex: PropTypes.number.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool,
-    getTimes: PropTypes.array,
-  }).isRequired,
 };
 
-export default compose(
-  withStyles(s),
-  graphql(query, {
-    options: ownProps => ({
-      variables: {
-        LevelIndex: ownProps.LevelIndex,
-      },
-    }),
-  }),
-)(Level);
+export default Level;
