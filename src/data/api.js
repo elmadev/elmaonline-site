@@ -92,14 +92,20 @@ export const PersonalLatest = data =>
   api.get(`allfinished/${data.KuskiIndex}/${data.limit}`);
 export const AllFinishedInRange = data =>
   api.get(`allfinished/ranged/${data.LevelIndex}/${data.from}/${data.to}`);
+export const AllFinishedLevel = LevelIndex =>
+  api.get(`allfinished/${LevelIndex}`);
 
 // levelpack
-export const TotalTimes = LevelPackIndex =>
-  api.get(`levelpack/${LevelPackIndex}/totaltimes`);
+export const TotalTimes = data =>
+  api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
-  api.get(`levelpack/${data.name}/personal/${data.PersonalKuskiIndex}`);
-export const Records = LevelPackName =>
-  api.get(`levelpack/${LevelPackName}/records`);
+  api.get(
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
+      data.eolOnly
+    }`,
+  );
+export const Records = data =>
+  api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
 export const MultiRecords = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/multirecords`);
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
@@ -118,7 +124,7 @@ export const LevelPackSort = data => api.post('levelpack/admin/sort', data);
 
 // besttime
 export const Besttime = data =>
-  api.get(`besttime/${data.levelId}/${data.limit}`);
+  api.get(`besttime/${data.levelId}/${data.limit}/${data.eolOnly}`);
 export const PersonalLatestPRs = data =>
   api.get(`besttime/latest/${data.KuskiIndex}/${data.limit}`);
 export const MultiBesttime = data =>
@@ -129,6 +135,8 @@ export const BattlesSearchByFilename = data =>
   api.get(`battle/search/byFilename/${data.q}/${data.offset}`);
 export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
+export const BattlesByLevel = LevelIndex =>
+  api.get(`battle/byLevel/${LevelIndex}`);
 
 // players
 export const PlayersSearch = data =>
@@ -148,3 +156,6 @@ export const TeamMembers = Team => api.get(`teams/${Team}`);
 
 // chat
 export const SearchChat = data => api.get('chat', { params: data });
+
+// level
+export const Level = LevelIndex => api.get(`level/${LevelIndex}`);

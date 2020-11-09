@@ -11,41 +11,61 @@ import s from './ChatView.css';
 
 const ChatView = props => {
   const {
-    KuskiIndex,
+    KuskiIds,
     text,
     start = 0,
     end = Math.round(Date.now() / 1000),
     limit = CHAT_API_LIMIT,
     order = 'ASC',
     timestamp = 'HH:mm:ss',
+    count = false,
     fullHeight,
     paginated,
   } = props;
 
-  const { chatLines, chatLineCount, chatPage, loading } = useStoreState(
-    state => state.ChatView,
-  );
+  const {
+    chatLines,
+    chatLineCount,
+    chatPage,
+    prevQuery,
+    loading,
+  } = useStoreState(state => state.ChatView);
   const { searchChat, setChatPage } = useStoreActions(
     actions => actions.ChatView,
   );
 
   const opts = {
-    KuskiIndex,
+    KuskiIds,
     text,
     start,
     end,
     limit,
     order,
+    count,
     offset: chatPage * CHAT_API_LIMIT,
   };
 
+  if (
+    KuskiIds === prevQuery.KuskiIds &&
+    text === prevQuery.text &&
+    start === prevQuery.start &&
+    end === prevQuery.end
+  ) {
+    opts.count = false; // Avoiding long findAndCountAll with this
+    if (chatLines.length && order === prevQuery.order)
+      opts.lastId = chatLines.slice(-1)[0].ChatIndex; // id of last chat line, for faster seeking
+  } else {
+    // New query means resetting offset
+    opts.offset = 0;
+  }
+
   useEffect(() => {
     searchChat(opts);
-  }, [chatPage, KuskiIndex, text, start, end, limit, order]);
+  }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
 
   if (loading) return <CircularProgress />;
 
-  if (!chatLineCount) return <span>No chat recorded during this time.</span>;
+  if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
   if (order === 'DESC') chatLines.reverse();
 
@@ -111,7 +131,7 @@ const ChatView = props => {
         </div>
       ))}
 
-      {paginated && chatLineCount > limit && (
+      {paginated && chatLines.length > limit && (
         <div className={s.paginationWrapper}>
           <Typography variant="caption" display="block" gutterBottom>
             {`${opts.offset + 1}-${Math.min(

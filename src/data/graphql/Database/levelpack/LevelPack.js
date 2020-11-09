@@ -25,6 +25,7 @@ export const schema = [
       Multi: Int
       FF: Int
       Weekly: String
+      Legacy: Int
       KuskiData: DatabaseKuski
       Levels: [DatabaseLevelPackLevel]
     }

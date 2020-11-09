@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
@@ -34,6 +34,7 @@ const GET_LEVELPACK = gql`
       LevelPackName
       LevelPackDesc
       KuskiIndex
+      Legacy
       KuskiData {
         Kuski
       }
@@ -58,7 +59,7 @@ const LevelPack = ({ name }) => {
     recordsLoading,
     setPersonalTimesLoading,
     personalKuski,
-    settings: { highlightWeeks, showLegacyIcon },
+    settings: { highlightWeeks, showLegacyIcon, showLegacy },
   } = useStoreState(state => state.LevelPack);
   const {
     getHighlight,
@@ -67,18 +68,38 @@ const LevelPack = ({ name }) => {
     getRecords,
     setHighlightWeeks,
     toggleShowLegacyIcon,
+    toggleShowLegacy,
   } = useStoreActions(actions => actions.LevelPack);
+  const lastShowLegacy = useRef(showLegacy);
   const [openSettings, setOpenSettings] = useState(false);
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    getRecords(name);
+    getRecords({ name, eolOnly: showLegacy ? 0 : 1 });
     getHighlight();
     const PersonalKuskiIndex = nick();
     if (PersonalKuskiIndex !== '') {
-      getPersonalTimes({ PersonalKuskiIndex, name });
+      getPersonalTimes({
+        PersonalKuskiIndex,
+        name,
+        eolOnly: showLegacy ? 0 : 1,
+      });
     }
   }, [name]);
+
+  useEffect(() => {
+    if (lastShowLegacy.current !== showLegacy) {
+      lastShowLegacy.current = showLegacy;
+      getRecords({ name, eolOnly: showLegacy ? 0 : 1 });
+      if (personalKuski !== '') {
+        getPersonalTimes({
+          PersonalKuskiIndex: personalKuski,
+          name,
+          eolOnly: showLegacy ? 0 : 1,
+        });
+      }
+    }
+  }, [showLegacy]);
 
   return (
     <div className={s.root}>
@@ -134,13 +155,24 @@ const LevelPack = ({ name }) => {
                           numbers={[0, 1, 2, 3, 4]}
                         />
                       </SettingItem>
-                      <SettingItem>
-                        <FieldBoolean
-                          value={showLegacyIcon}
-                          label="Show icon on legacy times"
-                          onChange={() => toggleShowLegacyIcon()}
-                        />
-                      </SettingItem>
+                      {getLevelPack.Legacy === 1 && (
+                        <>
+                          <SettingItem>
+                            <FieldBoolean
+                              value={showLegacyIcon}
+                              label="Show icon on legacy times"
+                              onChange={() => toggleShowLegacyIcon()}
+                            />
+                          </SettingItem>
+                          <SettingItem>
+                            <FieldBoolean
+                              value={showLegacy}
+                              label="Show legacy times"
+                              onChange={() => toggleShowLegacy()}
+                            />
+                          </SettingItem>
+                        </>
+                      )}
                     </Paper>
                   </OutsideClickHandler>
                 ) : (
