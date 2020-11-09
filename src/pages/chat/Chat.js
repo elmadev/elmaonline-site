@@ -152,8 +152,7 @@ const Chat = props => {
     query.end || new Date().toISOString().substr(0, 16),
   );
   const [order, setOrder] = useState(query.order !== 'ASC');
-  // eslint-disable-next-line no-unneeded-ternary
-  const [count, setCount] = useState(query.count === null ? true : false);
+  const [count, setCount] = useState(query.count === null);
   const [kuskiValue, setKuskiValue] = useState(
     playerList.filter(player => queryIds.includes(player.KuskiIndex)),
   );
