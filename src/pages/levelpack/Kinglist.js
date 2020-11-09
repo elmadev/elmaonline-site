@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from 'styled-components';
@@ -8,16 +8,27 @@ import Loading from 'components/Loading';
 import s from './LevelPack.css';
 
 const Kinglist = ({ highlight, highlightWeeks, levelPackIndex }) => {
-  const { kinglist, totaltimesLoading, lastPack } = useStoreState(
-    state => state.LevelPack,
-  );
+  const {
+    kinglist,
+    totaltimesLoading,
+    lastPack,
+    settings: { showLegacy },
+  } = useStoreState(state => state.LevelPack);
   const { getTotalTimes } = useStoreActions(actions => actions.LevelPack);
+  const lastShowLegacy = useRef(showLegacy);
 
   useEffect(() => {
     if (lastPack !== levelPackIndex) {
-      getTotalTimes(levelPackIndex);
+      getTotalTimes({ levelPackIndex, eolOnly: showLegacy ? 0 : 1 });
     }
   }, [levelPackIndex]);
+
+  useEffect(() => {
+    if (lastShowLegacy.current !== showLegacy) {
+      lastShowLegacy.current = showLegacy;
+      getTotalTimes({ levelPackIndex, eolOnly: showLegacy ? 0 : 1 });
+    }
+  }, [showLegacy]);
 
   return (
     <>

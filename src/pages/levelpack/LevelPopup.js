@@ -46,6 +46,7 @@ const LevelPopup = ({
     personalAllFinished,
     levelBesttimes,
     levelMultiBesttimes,
+    settings: { showLegacy },
   } = useStoreState(state => state.LevelPack);
   const {
     getPersonalAllFinished,
@@ -61,11 +62,16 @@ const LevelPopup = ({
           LevelIndex: levelId,
           KuskiIndex,
           limit: timesLimit,
+          eolOnly: showLegacy ? 0 : 1,
         });
       } else if (multi) {
         getLevelMultiBesttimes({ levelId, limit: timesLimit });
       } else {
-        getLevelBesttimes({ levelId, limit: timesLimit });
+        getLevelBesttimes({
+          levelId,
+          limit: timesLimit,
+          eolOnly: showLegacy ? 0 : 1,
+        });
       }
     }
   }, [levelId, timesLimit]);
