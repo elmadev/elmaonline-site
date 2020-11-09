@@ -6,6 +6,7 @@ export default {
   chatLines: [],
   chatLineCount: 0,
   chatPage: 0,
+  prevQuery: {},
   loading: false,
   setChatLines: action((state, payload) => {
     state.chatLines = payload;
@@ -19,12 +20,16 @@ export default {
   setLoading: action((state, payload) => {
     state.loading = payload;
   }),
+  setPrevQuery: action((state, payload) => {
+    state.prevQuery = payload;
+  }),
   searchChat: thunk(async (actions, payload) => {
     actions.setLoading(true);
+    actions.setPrevQuery(payload);
     const chatLines = await SearchChat(payload);
     if (chatLines.ok) {
       actions.setChatLines(chatLines.data.rows);
-      actions.setChatLineCount(chatLines.data.count);
+      if (chatLines.data.count) actions.setChatLineCount(chatLines.data.count);
       actions.setLoading(false);
     }
   }),

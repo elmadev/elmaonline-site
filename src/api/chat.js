@@ -17,30 +17,36 @@ const playerInfo = async KuskiIndex => {
 };
 
 const searchChat = async ({
-  KuskiIndex = 0,
+  KuskiIds = [],
   text = '',
   start = 0,
   end = Math.round(Date.now() / 1000),
   limit,
   offset = 0,
-  order,
+  order = 'DESC',
+  count = false,
+  lastId,
 }) => {
   const where = {};
 
-  if (KuskiIndex) {
-    if (typeof KuskiIndex === 'object') {
-      // Array of multiple kuskis
-      where.KuskiIndex = { [Op.or]: KuskiIndex };
+  if (KuskiIds.length !== 0) {
+    if (KuskiIds.length > 1) {
+      where.KuskiIndex = { [Op.or]: KuskiIds };
     } else {
-      const kuski = await playerInfo(KuskiIndex);
+      const kuski = await playerInfo(KuskiIds[0]);
       if (!kuski || !kuski.Confirmed) {
         return { count: 0, rows: [] };
       }
-      where.KuskiIndex = KuskiIndex;
+      where.KuskiIndex = KuskiIds[0];
     }
   }
 
   if (text) where.Text = { [Op.like]: `${like(text)}` };
+
+  if (lastId) {
+    if (order === 'ASC') where.ChatIndex = { [Op.gt]: lastId };
+    else where.ChatIndex = { [Op.lt]: lastId };
+  }
 
   const dateTimeRange = [
     moment(start, 'X')
@@ -54,7 +60,7 @@ const searchChat = async ({
   where.Entered = { [Op.between]: dateTimeRange };
 
   const opts = {
-    order: [['ChatIndex', 'ASC']],
+    order: [['Entered', order], ['ChatIndex', order]],
     include: [
       {
         model: Kuski,
@@ -63,15 +69,17 @@ const searchChat = async ({
       },
     ],
     where,
-    offset: offset ? searchOffset(offset) : 0,
     limit: CHAT_API_LIMIT,
   };
 
+  if (!lastId && offset) opts.offset = searchOffset(offset);
+
   if (limit < CHAT_API_LIMIT) opts.limit = limit;
 
-  if (order === 'DESC') opts.order = [['ChatIndex', 'DESC']];
+  let lines = {};
 
-  const lines = await Chat.findAndCountAll(opts);
+  if (!count) lines.rows = await Chat.findAll(opts);
+  else lines = await Chat.findAndCountAll(opts);
 
   return lines;
 };
