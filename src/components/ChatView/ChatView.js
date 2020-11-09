@@ -11,7 +11,7 @@ import s from './ChatView.css';
 
 const ChatView = props => {
   const {
-    KuskiIndex,
+    KuskiIds,
     text,
     start = 0,
     end = Math.round(Date.now() / 1000),
@@ -30,7 +30,7 @@ const ChatView = props => {
   );
 
   const opts = {
-    KuskiIndex,
+    KuskiIds,
     text,
     start,
     end,
@@ -41,7 +41,7 @@ const ChatView = props => {
 
   useEffect(() => {
     searchChat(opts);
-  }, [chatPage, KuskiIndex, text, start, end, limit, order]);
+  }, [chatPage, KuskiIds, text, start, end, limit, order]);
 
   if (loading) return <CircularProgress />;
 

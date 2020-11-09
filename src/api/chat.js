@@ -17,7 +17,7 @@ const playerInfo = async KuskiIndex => {
 };
 
 const searchChat = async ({
-  KuskiIndex = 0,
+  KuskiIds = [],
   text = '',
   start = 0,
   end = Math.round(Date.now() / 1000),
@@ -27,16 +27,15 @@ const searchChat = async ({
 }) => {
   const where = {};
 
-  if (KuskiIndex) {
-    if (typeof KuskiIndex === 'object') {
-      // Array of multiple kuskis
-      where.KuskiIndex = { [Op.or]: KuskiIndex };
+  if (KuskiIds.length !== 0) {
+    if (KuskiIds.length > 1) {
+      where.KuskiIndex = { [Op.or]: KuskiIds };
     } else {
-      const kuski = await playerInfo(KuskiIndex);
+      const kuski = await playerInfo(KuskiIds[0]);
       if (!kuski || !kuski.Confirmed) {
         return { count: 0, rows: [] };
       }
-      where.KuskiIndex = KuskiIndex;
+      where.KuskiIndex = KuskiIds[0];
     }
   }
 

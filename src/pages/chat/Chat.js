@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useDebounce } from 'use-debounce';
+import queryString from 'query-string';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import {
   TextField,
@@ -8,43 +9,104 @@ import {
   Typography,
   Grid,
   Switch,
+  CircularProgress,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import ChatView from 'components/ChatView';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
+import history from 'utils/history';
 
 import s from './Chat.css';
 
-const Chat = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [KuskiIndex, setKuskiIndex] = useState(0);
-  const [text, setText] = useState('');
-  const [debouncedText] = useDebounce(text, 500);
-  const [start, setStart] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 1))
-      .toISOString()
-      .substr(0, 16),
-  ); // 24h ago
-  const [end, setEnd] = useState(new Date().toISOString().substr(0, 16));
-  const [order, setOrder] = useState(true);
+const Chat = props => {
+  const {
+    context: { query = {} }, // Search query params
+  } = props;
+
+  const queryIds = query.KuskiIds
+    ? query.KuskiIds.split(',').map(id => +id)
+    : [];
+
+  // Store state
   const { chatLineCount, chatPage } = useStoreState(state => state.ChatView);
   const { setChatPage } = useStoreActions(actions => actions.ChatView);
   const { playerList } = useStoreState(state => state.Kuskis);
   const { getPlayers } = useStoreActions(actions => actions.Kuskis);
 
+  // Local state
+  const [KuskiIds, setKuskiIds] = useState(queryIds);
+  const [text, setText] = useState(query.text || '');
+  const [rowsPerPage, setRowsPerPage] = useState(Number(query.rpp) || 25);
+  const [debouncedText] = useDebounce(text, 500);
+  const [start, setStart] = useState(
+    query.start ||
+      new Date(new Date().setDate(new Date().getDate() - 1))
+        .toISOString()
+        .substr(0, 16),
+  ); // default to 24h ago
+  const [end, setEnd] = useState(
+    query.end || new Date().toISOString().substr(0, 16),
+  );
+  const [order, setOrder] = useState(query.order !== 'ASC');
+  const [kuskiValue, setKuskiValue] = useState(
+    playerList.filter(player => queryIds.includes(player.KuskiIndex)),
+  );
+
+  // Populate Kuski select
   useEffect(() => {
     getPlayers();
   }, []);
 
+  useMemo(
+    () =>
+      setKuskiValue(
+        playerList.filter(player => queryIds.includes(player.KuskiIndex)),
+      ),
+    [playerList],
+  );
+
+  const urlSync = keys => {
+    const sortOrder = [
+      'KuskiIds',
+      'text',
+      'start',
+      'end',
+      'order',
+      'rpp',
+      'page',
+    ];
+
+    history.replace({
+      search: queryString.stringify(
+        {
+          ...query,
+          ...keys,
+        },
+        {
+          arrayFormat: 'comma',
+          skipNull: true,
+          skipEmptyString: true,
+          sort: (a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b),
+        },
+      ),
+    });
+  };
+
   const handleChangePage = (event, newPage) => {
     setChatPage(newPage);
+    urlSync({ page: newPage });
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const rpp = parseInt(event.target.value, 10);
+    setRowsPerPage(rpp);
     setChatPage(0);
+    urlSync({
+      rpp,
+      page: 0,
+    });
   };
 
   return (
@@ -52,33 +114,39 @@ const Chat = () => {
       <Header h2>Chat Log Filter</Header>
       <Grid container className={s.chatFilters} spacing={2} alignItems="center">
         <Grid item xs={12} sm={6} lg={3}>
-          <Autocomplete
-            id="filter-kuski"
-            options={playerList}
-            multiple
-            filterSelectedOptions
-            getOptionLabel={option => option.Kuski}
-            getOptionSelected={(option, value) =>
-              option.KuskiIndex === value.KuskiIndex
-            }
-            onChange={(event, newValue) => {
-              if (newValue.length === 1) setKuskiIndex(newValue[0].KuskiIndex);
-              else if (newValue.length === 0) setKuskiIndex(0);
-              else setKuskiIndex(newValue.map(value => value.KuskiIndex));
-            }}
-            renderInput={params => (
-              <TextField
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...params}
-                label="Kuski"
-                placeholder="Name(s)"
-                variant="outlined"
-              />
-            )}
-            renderOption={option => (
-              <Kuski kuskiData={option} flag team noLink />
-            )}
-          />
+          {playerList.length > 0 ? (
+            <Autocomplete
+              id="filter-kuski"
+              options={playerList}
+              multiple
+              filterSelectedOptions
+              getOptionLabel={option => option.Kuski}
+              getOptionSelected={(option, value) =>
+                option.KuskiIndex === value.KuskiIndex
+              }
+              onChange={(event, newValue) => {
+                const ids = newValue.map(value => value.KuskiIndex);
+                setKuskiIds(ids);
+                setKuskiValue(newValue);
+                urlSync({ KuskiIds: ids });
+              }}
+              renderInput={params => (
+                <TextField
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...params}
+                  label="Kuski"
+                  placeholder="Name(s)"
+                  variant="outlined"
+                />
+              )}
+              renderOption={option => (
+                <Kuski kuskiData={option} flag team noLink />
+              )}
+              value={kuskiValue}
+            />
+          ) : (
+            <CircularProgress />
+          )}
         </Grid>
 
         <Grid item xs={12} sm={6} lg={3}>
@@ -86,8 +154,9 @@ const Chat = () => {
             id="filter-text"
             label="Text"
             value={text}
-            onChange={e => {
-              setText(e.target.value);
+            onChange={({ target: { value = '' } }) => {
+              setText(value);
+              urlSync({ text: value });
             }}
             fullWidth
             variant="outlined"
@@ -100,8 +169,9 @@ const Chat = () => {
             label="Start"
             type="datetime-local"
             defaultValue={start}
-            onChange={e => {
-              setStart(e.target.value);
+            onChange={({ target: { value = 0 } }) => {
+              setStart(value);
+              urlSync({ start: value });
             }}
             InputLabelProps={{
               shrink: true,
@@ -115,8 +185,9 @@ const Chat = () => {
             label="End"
             type="datetime-local"
             defaultValue={end}
-            onChange={e => {
-              setEnd(e.target.value);
+            onChange={({ target: { value = 0 } }) => {
+              setEnd(value);
+              urlSync({ end: value });
             }}
             InputLabelProps={{
               shrink: true,
@@ -133,6 +204,7 @@ const Chat = () => {
                   checked={order}
                   onChange={(e, value) => {
                     setOrder(value);
+                    urlSync({ order: value ? 'DESC' : 'ASC' });
                   }}
                   name="order"
                   size="small"
@@ -146,7 +218,7 @@ const Chat = () => {
       </Grid>
 
       <ChatView
-        KuskiIndex={KuskiIndex}
+        KuskiIds={KuskiIds}
         text={debouncedText}
         start={Math.floor(new Date(start).getTime() / 1000)}
         end={Math.floor(new Date(end).getTime() / 1000)}
