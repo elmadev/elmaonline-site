@@ -49,7 +49,8 @@ const ChatView = props => {
     KuskiIds === prevQuery.KuskiIds &&
     text === prevQuery.text &&
     start === prevQuery.start &&
-    end === prevQuery.end
+    end === prevQuery.end &&
+    count === prevQuery.count
   ) {
     opts.count = false; // Avoiding long findAndCountAll with this
     if (chatLines.length && order === prevQuery.order)
