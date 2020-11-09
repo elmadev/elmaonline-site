@@ -23,7 +23,9 @@ const searchChat = async ({
   end = Math.round(Date.now() / 1000),
   limit,
   offset = 0,
-  order,
+  order = 'DESC',
+  count = false,
+  lastId,
 }) => {
   const where = {};
 
@@ -41,6 +43,11 @@ const searchChat = async ({
 
   if (text) where.Text = { [Op.like]: `${like(text)}` };
 
+  if (lastId) {
+    if (order === 'ASC') where.ChatIndex = { [Op.gt]: lastId };
+    else where.ChatIndex = { [Op.lt]: lastId };
+  }
+
   const dateTimeRange = [
     moment(start, 'X')
       .utc()
@@ -53,7 +60,7 @@ const searchChat = async ({
   where.Entered = { [Op.between]: dateTimeRange };
 
   const opts = {
-    order: [['ChatIndex', 'ASC']],
+    order: [['Entered', order], ['ChatIndex', order]],
     include: [
       {
         model: Kuski,
@@ -62,15 +69,17 @@ const searchChat = async ({
       },
     ],
     where,
-    offset: offset ? searchOffset(offset) : 0,
     limit: CHAT_API_LIMIT,
   };
 
+  if (!lastId && offset) opts.offset = searchOffset(offset);
+
   if (limit < CHAT_API_LIMIT) opts.limit = limit;
 
-  if (order === 'DESC') opts.order = [['ChatIndex', 'DESC']];
+  let lines = {};
 
-  const lines = await Chat.findAndCountAll(opts);
+  if (!count) lines.rows = await Chat.findAll(opts);
+  else lines = await Chat.findAndCountAll(opts);
 
   return lines;
 };

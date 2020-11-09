@@ -18,13 +18,18 @@ const ChatView = props => {
     limit = CHAT_API_LIMIT,
     order = 'ASC',
     timestamp = 'HH:mm:ss',
+    count = 'false',
     fullHeight,
     paginated,
   } = props;
 
-  const { chatLines, chatLineCount, chatPage, loading } = useStoreState(
-    state => state.ChatView,
-  );
+  const {
+    chatLines,
+    chatLineCount,
+    chatPage,
+    prevQuery,
+    loading,
+  } = useStoreState(state => state.ChatView);
   const { searchChat, setChatPage } = useStoreActions(
     actions => actions.ChatView,
   );
@@ -36,8 +41,23 @@ const ChatView = props => {
     end,
     limit,
     order,
+    count,
     offset: chatPage * CHAT_API_LIMIT,
   };
+
+  if (
+    KuskiIds === prevQuery.KuskiIds &&
+    text === prevQuery.text &&
+    start === prevQuery.start &&
+    end === prevQuery.end
+  ) {
+    opts.count = false; // Avoiding long findAndCountAll with this
+    if (chatLines.length && order === prevQuery.order)
+      opts.lastId = chatLines.slice(-1)[0].ChatIndex; // id of last chat line, for faster seeking
+  } else {
+    // New query means resetting offset
+    opts.offset = 0;
+  }
 
   useEffect(() => {
     searchChat(opts);

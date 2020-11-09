@@ -39,7 +39,6 @@ const Chat = props => {
   const [KuskiIds, setKuskiIds] = useState(queryIds);
   const [text, setText] = useState(query.text || '');
   const [rowsPerPage, setRowsPerPage] = useState(Number(query.rpp) || 25);
-  const [debouncedText] = useDebounce(text, 500);
   const [start, setStart] = useState(
     query.start ||
       new Date(new Date().setDate(new Date().getDate() - 1))
@@ -53,6 +52,11 @@ const Chat = props => {
   const [kuskiValue, setKuskiValue] = useState(
     playerList.filter(player => queryIds.includes(player.KuskiIndex)),
   );
+
+  // Debounce values that can change rapidly
+  const [debouncedText] = useDebounce(text, 500);
+  const [debouncedStart] = useDebounce(start, 500);
+  const [debouncedEnd] = useDebounce(end, 500);
 
   // Populate Kuski select
   useEffect(() => {
@@ -220,8 +224,8 @@ const Chat = props => {
       <ChatView
         KuskiIds={KuskiIds}
         text={debouncedText}
-        start={Math.floor(new Date(start).getTime() / 1000)}
-        end={Math.floor(new Date(end).getTime() / 1000)}
+        start={Math.floor(new Date(debouncedStart).getTime() / 1000)}
+        end={Math.floor(new Date(debouncedEnd).getTime() / 1000)}
         limit={rowsPerPage}
         order={order ? 'DESC' : 'ASC'}
         timestamp="YYYY-MM-DD HH:mm:ss"
