@@ -31,6 +31,7 @@ export default {
     {
       highlightWeeks: 1,
       showLegacyIcon: true,
+      showLegacy: true,
     },
     { storage: 'localStorage' },
   ),
@@ -39,6 +40,9 @@ export default {
   }),
   toggleShowLegacyIcon: action(state => {
     state.settings.showLegacyIcon = !state.settings.showLegacyIcon;
+  }),
+  toggleShowLegacy: action(state => {
+    state.settings.showLegacy = !state.settings.showLegacy;
   }),
   totaltimes: [],
   kinglist: [],
@@ -62,7 +66,7 @@ export default {
     if (tts.ok) {
       actions.setTotalTimes(tts.data.tts);
       actions.setKinglist(tts.data.points);
-      actions.setLastPack(payload);
+      actions.setLastPack(payload.levelPackIndex);
     }
     actions.setTotaltimesLoading(false);
   }),

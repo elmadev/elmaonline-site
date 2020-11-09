@@ -1,12 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import {
-  Besttime,
-  Level,
-  BattlesByLevel,
-  AllFinishedLevel,
-  EOLBesttime,
-} from 'data/api';
+import { Besttime, Level, BattlesByLevel, AllFinishedLevel } from 'data/api';
 
 export default {
   besttimes: [],
@@ -54,7 +48,7 @@ export default {
     state.eoltimes = payload;
   }),
   getEoltimes: thunk(async (actions, payload) => {
-    const times = await EOLBesttime(payload);
+    const times = await Besttime(payload);
     if (times.ok) {
       actions.setEoltimes(times.data);
     }

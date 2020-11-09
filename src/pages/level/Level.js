@@ -46,7 +46,7 @@ const Level = ({ LevelIndex }) => {
   } = useStoreActions(actions => actions.Level);
 
   useEffect(() => {
-    getBesttimes({ levelId: LevelIndex, limit: 10000 });
+    getBesttimes({ levelId: LevelIndex, limit: 10000, eolOnly: 0 });
     getLevel(LevelIndex);
   }, []);
 
@@ -56,7 +56,7 @@ const Level = ({ LevelIndex }) => {
       getAllfinished(LevelIndex);
     }
     if (value === 2 && eoltimes.length === 0) {
-      getEoltimes({ levelId: LevelIndex, limit: 10000 });
+      getEoltimes({ levelId: LevelIndex, limit: 10000, eolOnly: 1 });
     }
   };
 
@@ -97,6 +97,12 @@ const Level = ({ LevelIndex }) => {
                   <br />
                   {'Level ID: '}
                   {`${LevelIndex}`}
+                  {level.Legacy && (
+                    <div>
+                      This level has legacy times imported from a third party
+                      site.
+                    </div>
+                  )}
                 </LevelDescription>
               </AccordionDetails>
             </Accordion>

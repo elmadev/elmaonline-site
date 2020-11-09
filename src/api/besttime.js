@@ -18,7 +18,7 @@ const levelInfo = async LevelIndex => {
   return lev;
 };
 
-const getTimes = async (LevelIndex, limit, eolOnly = false) => {
+const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
   const lev = await levelInfo(LevelIndex);
   if (lev.Hidden) return [];
   if (lev.Locked) return [];
@@ -113,8 +113,12 @@ router
     const data = await getTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
   })
-  .get('/eol/:LevelIndex/:limit', async (req, res) => {
-    const data = await getTimes(req.params.LevelIndex, req.params.limit, true);
+  .get('/:LevelIndex/:limit/:eolOnly', async (req, res) => {
+    const data = await getTimes(
+      req.params.LevelIndex,
+      req.params.limit,
+      parseInt(req.params.eolOnly, 10),
+    );
     res.json(data);
   })
   .get('/latest/:KuskiIndex/:limit', async (req, res) => {

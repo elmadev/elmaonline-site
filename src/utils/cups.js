@@ -304,7 +304,7 @@ export const generateEvent = (event, cup, times, cuptimes) => {
         const exists = cuptimes.filter(
           c =>
             c.KuskiIndex === t.KuskiIndex &&
-            c.Time === 999900 + (100 - t.Apples),
+            c.Time === 9999000 + (1000 - t.Apples),
         );
         // insert only if replay uploaded
         if (exists.length > 0) {
