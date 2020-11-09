@@ -2,9 +2,36 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
-import { Battle, Level, Kuski } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime } from '../data/models';
 
 const router = express.Router();
+
+const attributes = [
+  'BattleIndex',
+  'KuskiIndex',
+  'LevelIndex',
+  'BattleType',
+  'SeeOthers',
+  'SeeTimes',
+  'AllowStarter',
+  'AcceptBugs',
+  'NoVolt',
+  'NoTurn',
+  'OneTurn',
+  'NoBrake',
+  'NoThrottle',
+  'Drunk',
+  'OneWheel',
+  'Multi',
+  'Started',
+  'StartedUtc',
+  'Duration',
+  'Aborted',
+  'Finished',
+  'InQueue',
+  'Countdown',
+  'RecFileName',
+];
 
 const BattlesSearchByFilename = async (query, offset) => {
   const byFilename = await Battle.findAll({
@@ -68,6 +95,51 @@ const BattlesSearchByDesigner = async (query, offset) => {
   return byDesigner;
 }
 
+const BattlesForLevel = async LevelIndex => {
+  const battles = await Battle.findAll({
+    attributes,
+    where: { LevelIndex },
+    limit: 100,
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [['BattleIndex', 'DESC']],
+  });
+  return battles;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
@@ -84,6 +156,10 @@ router
       req.params.query,
       req.params.offset,
     );
+    res.json(battles);
+  })
+  .get('/byLevel/:LevelIndex', async (req, res) => {
+    const battles = await BattlesForLevel(req.params.LevelIndex);
     res.json(battles);
   });
 

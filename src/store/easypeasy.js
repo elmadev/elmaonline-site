@@ -16,6 +16,7 @@ import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
 import Teams from 'pages/teams/store';
 import Kuskis from 'pages/kuskis/store';
+import Level from 'pages/level/store';
 
 export default {
   ReplayComments,
@@ -34,6 +35,7 @@ export default {
   Settings,
   Teams,
   Replay,
+  Level,
   Page: {
     sideBarVisible: true,
     showSideBar: action(state => {

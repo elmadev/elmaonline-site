@@ -2,7 +2,13 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
-import { AllFinished, Level, Kuski, LegacyFinished } from '../data/models';
+import {
+  AllFinished,
+  Level,
+  Kuski,
+  LegacyFinished,
+  Team,
+} from '../data/models';
 
 const router = express.Router();
 
@@ -108,6 +114,30 @@ const getLatest = async (KuskiIndex, limit) => {
   });
 };
 
+const timesByLevel = async LevelIndex => {
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Locked || lev.Hidden) return [];
+  const times = await AllFinished.findAll({
+    where: { LevelIndex },
+    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    limit: 10000,
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski', 'Country'],
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+    ],
+  });
+  return times;
+};
+
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
@@ -143,6 +173,10 @@ router
   })
   .get('/:KuskiIndex/:limit', async (req, res) => {
     const data = await getLatest(req.params.KuskiIndex, req.params.limit);
+    res.json(data);
+  })
+  .get('/:LevelIndex', async (req, res) => {
+    const data = await timesByLevel(req.params.LevelIndex);
     res.json(data);
   });
 
