@@ -152,7 +152,8 @@ const Chat = props => {
     query.end || new Date().toISOString().substr(0, 16),
   );
   const [order, setOrder] = useState(query.order !== 'ASC');
-  const [count, setCount] = useState(false);
+  // eslint-disable-next-line no-unneeded-ternary
+  const [count, setCount] = useState(query.count === null ? true : false);
   const [kuskiValue, setKuskiValue] = useState(
     playerList.filter(player => queryIds.includes(player.KuskiIndex)),
   );
@@ -182,6 +183,7 @@ const Chat = props => {
       'start',
       'end',
       'order',
+      'count',
       'rpp',
       'page',
     ];
@@ -194,7 +196,6 @@ const Chat = props => {
         },
         {
           arrayFormat: 'comma',
-          skipNull: true,
           skipEmptyString: true,
           sort: (a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b),
         },
@@ -335,6 +336,9 @@ const Chat = props => {
               <Checkbox
                 checked={count}
                 onChange={(e, value) => {
+                  if (value) {
+                    urlSync({ count: null });
+                  }
                   setCount(value);
                 }}
                 name="cbCount"
@@ -359,7 +363,7 @@ const Chat = props => {
 
       <TablePagination
         component="div"
-        count={chatLineCount || 9999999}
+        count={chatLineCount}
         page={chatPage}
         onChangePage={handleChangePage}
         rowsPerPage={rowsPerPage}

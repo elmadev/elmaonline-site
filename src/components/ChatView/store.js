@@ -30,6 +30,7 @@ export default {
     if (chatLines.ok) {
       actions.setChatLines(chatLines.data.rows);
       if (chatLines.data.count) actions.setChatLineCount(chatLines.data.count);
+      else actions.setChatLineCount(9999999);
       actions.setLoading(false);
     }
   }),
