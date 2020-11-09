@@ -11,6 +11,8 @@ import {
   Grid,
   Switch,
   ListSubheader,
+  Checkbox,
+  FormControlLabel,
   CircularProgress,
   useMediaQuery,
 } from '@material-ui/core';
@@ -150,6 +152,7 @@ const Chat = props => {
     query.end || new Date().toISOString().substr(0, 16),
   );
   const [order, setOrder] = useState(query.order !== 'ASC');
+  const [count, setCount] = useState(false);
   const [kuskiValue, setKuskiValue] = useState(
     playerList.filter(player => queryIds.includes(player.KuskiIndex)),
   );
@@ -325,6 +328,21 @@ const Chat = props => {
             </Grid>
           </Typography>
         </Grid>
+
+        <Grid item xs>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={count}
+                onChange={(e, value) => {
+                  setCount(value);
+                }}
+                name="cbCount"
+              />
+            }
+            label="Count (slow!)"
+          />
+        </Grid>
       </Grid>
 
       <ChatView
@@ -334,13 +352,14 @@ const Chat = props => {
         end={Math.floor(new Date(debouncedEnd).getTime() / 1000)}
         limit={rowsPerPage}
         order={order ? 'DESC' : 'ASC'}
+        count={count}
         timestamp="YYYY-MM-DD HH:mm:ss"
         fullHeight
       />
 
       <TablePagination
         component="div"
-        count={chatLineCount}
+        count={chatLineCount || 9999999}
         page={chatPage}
         onChangePage={handleChangePage}
         rowsPerPage={rowsPerPage}

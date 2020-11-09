@@ -18,7 +18,7 @@ const ChatView = props => {
     limit = CHAT_API_LIMIT,
     order = 'ASC',
     timestamp = 'HH:mm:ss',
-    count = 'false',
+    count = false,
     fullHeight,
     paginated,
   } = props;
@@ -61,11 +61,11 @@ const ChatView = props => {
 
   useEffect(() => {
     searchChat(opts);
-  }, [chatPage, KuskiIds, text, start, end, limit, order]);
+  }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
 
   if (loading) return <CircularProgress />;
 
-  if (!chatLineCount) return <span>No chat recorded during this time.</span>;
+  if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
   if (order === 'DESC') chatLines.reverse();
 
@@ -131,7 +131,7 @@ const ChatView = props => {
         </div>
       ))}
 
-      {paginated && chatLineCount > limit && (
+      {paginated && chatLines.length > limit && (
         <div className={s.paginationWrapper}>
           <Typography variant="caption" display="block" gutterBottom>
             {`${opts.offset + 1}-${Math.min(
