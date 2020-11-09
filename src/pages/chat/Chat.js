@@ -337,7 +337,7 @@ const Chat = props => {
                 onChange={(e, value) => {
                   if (value) {
                     urlSync({ count: null });
-                  }
+                  } else urlSync({ count: false });
                   setCount(value);
                 }}
                 name="cbCount"
