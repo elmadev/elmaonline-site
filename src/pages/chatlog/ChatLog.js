@@ -24,7 +24,7 @@ import Kuski from 'components/Kuski';
 import Header from 'components/Header';
 import history from 'utils/history';
 
-import s from './Chat.css';
+import s from './ChatLog.css';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -123,7 +123,7 @@ const renderGroup = params => [
   params.children,
 ];
 
-const Chat = props => {
+const ChatLog = props => {
   const {
     context: { query = {} }, // Search query params
   } = props;
@@ -133,7 +133,9 @@ const Chat = props => {
     : [];
 
   // Store state
-  const { chatLineCount, chatPage } = useStoreState(state => state.ChatView);
+  const { chatLineCount, chatPage, chatLines } = useStoreState(
+    state => state.ChatView,
+  );
   const { setChatPage } = useStoreActions(actions => actions.ChatView);
   const { playerList } = useStoreState(state => state.Kuskis);
   const { getPlayers } = useStoreActions(actions => actions.Kuskis);
@@ -165,6 +167,7 @@ const Chat = props => {
   // Populate Kuski select
   useEffect(() => {
     getPlayers();
+    if (query.page && !chatPage) setChatPage(Number(query.page));
   }, []);
 
   useMemo(
@@ -360,22 +363,24 @@ const Chat = props => {
         fullHeight
       />
 
-      <TablePagination
-        component="div"
-        count={chatLineCount}
-        page={chatPage}
-        onChangePage={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10, 25, 50, 100, 250, 1000]}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-        classes={{
-          root: s.paginationRoot,
-          spacer: s.paginationSpacer,
-          toolbar: s.paginationToolbar,
-        }}
-      />
+      {chatLines && (
+        <TablePagination
+          component="div"
+          count={chatLineCount}
+          page={chatPage}
+          onChangePage={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[10, 25, 50, 100, 250, 1000]}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+          classes={{
+            root: s.paginationRoot,
+            spacer: s.paginationSpacer,
+            toolbar: s.paginationToolbar,
+          }}
+        />
+      )}
     </div>
   );
 };
 
-export default withStyles(s)(Chat);
+export default withStyles(s)(ChatLog);

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Typography, CircularProgress } from '@material-ui/core';
+import { Typography, CircularProgress, Tooltip } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 import withStyles from 'isomorphic-style-loader/withStyles';
 
@@ -42,7 +42,7 @@ const ChatView = props => {
     limit,
     order,
     count,
-    offset: chatPage * CHAT_API_LIMIT,
+    offset: chatPage * limit,
   };
 
   if (
@@ -52,13 +52,18 @@ const ChatView = props => {
     end === prevQuery.end &&
     count === prevQuery.count
   ) {
-    opts.count = false; // Avoiding long findAndCountAll with this
-    if (chatLines.length && order === prevQuery.order)
-      opts.lastId = chatLines.slice(-1)[0].ChatIndex; // id of last chat line, for faster seeking
+    opts.count = false; // Avoiding long findAndCountAll if query is the same
+    if (chatLines.length && order === prevQuery.order) {
+      // preserve ids of first and last chat line, for faster seeking
+      opts.firstId = chatLines[0].ChatIndex;
+      opts.lastId = chatLines.slice(-1)[0].ChatIndex;
+    }
   } else {
     // New query means resetting offset
     opts.offset = 0;
   }
+
+  if (opts.offset < prevQuery.offset) opts.seek = 'backward';
 
   useEffect(() => {
     searchChat(opts);
@@ -67,8 +72,6 @@ const ChatView = props => {
   if (loading) return <CircularProgress />;
 
   if (!chatLines.length) return <span>No chat recorded during this time.</span>;
-
-  if (order === 'DESC') chatLines.reverse();
 
   const colorMap = {};
 
@@ -111,25 +114,32 @@ const ChatView = props => {
   return (
     <div className={s.chat} style={fullHeight && { maxHeight: 'max-content' }}>
       {chatLines.map(l => (
-        <div className={s.chatLine} key={l.ChatIndex}>
-          <div className={s.timestamp}>
-            <LocalTime date={l.Entered} format={timestamp} parse="X" />
-          </div>{' '}
-          <div className={s.message}>
-            <span className={s.kuski}>
-              &lt;
-              {l.KuskiData ? (
-                <span style={{ color: getColor(l.KuskiData.Kuski) }}>
-                  {l.KuskiData.Kuski}
-                </span>
-              ) : (
-                '[No User Data]'
-              )}
-              &gt;
-            </span>{' '}
-            <span>{l.Text}</span>
+        <Tooltip
+          title={`#${l.ChatIndex}`}
+          key={l.ChatIndex}
+          placement="left-start"
+          arrow
+        >
+          <div className={s.chatLine}>
+            <div className={s.timestamp}>
+              <LocalTime date={l.Entered} format={timestamp} parse="X" />
+            </div>{' '}
+            <div className={s.message}>
+              <span className={s.kuski}>
+                &lt;
+                {l.KuskiData ? (
+                  <span style={{ color: getColor(l.KuskiData.Kuski) }}>
+                    {l.KuskiData.Kuski}
+                  </span>
+                ) : (
+                  '[No User Data]'
+                )}
+                &gt;
+              </span>{' '}
+              <span>{l.Text}</span>
+            </div>
           </div>
-        </div>
+        </Tooltip>
       ))}
 
       {paginated && chatLines.length > limit && (

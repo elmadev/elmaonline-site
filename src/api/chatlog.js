@@ -25,7 +25,9 @@ const searchChat = async ({
   offset = 0,
   order = 'DESC',
   count = false,
+  firstId,
   lastId,
+  seek = 'forward',
 }) => {
   const where = {};
 
@@ -43,10 +45,18 @@ const searchChat = async ({
 
   if (text) where.Text = { [Op.like]: `${like(text)}` };
 
-  if (lastId) {
-    if (order === 'ASC') where.ChatIndex = { [Op.gt]: lastId };
-    else where.ChatIndex = { [Op.lt]: lastId };
-  }
+  if (
+    firstId &&
+    ((order === 'DESC' && seek === 'forward') ||
+      (order === 'ASC' && seek === 'backward'))
+  )
+    where.ChatIndex = { [Op.lt]: firstId };
+  else if (
+    lastId &&
+    ((order === 'DESC' && seek === 'backward') ||
+      (order === 'ASC' && seek === 'forward'))
+  )
+    where.ChatIndex = { [Op.gt]: lastId };
 
   const dateTimeRange = [
     moment(start, 'X')
@@ -72,7 +82,7 @@ const searchChat = async ({
     limit: CHAT_API_LIMIT,
   };
 
-  if (!lastId && offset) opts.offset = searchOffset(offset);
+  if (!lastId && !firstId && offset) opts.offset = searchOffset(offset);
 
   if (limit < CHAT_API_LIMIT) opts.limit = limit;
 
