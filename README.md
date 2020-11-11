@@ -1,5 +1,7 @@
 # elmaonline-site
 
+![](https://github.com/elmadev/elmaonline-site/workflows/Deployment%20to%20elma.online/badge.svg?branch=master) ![](https://github.com/elmadev/elmaonline-site/workflows/Deployment%20to%20test.elma.online/badge.svg?branch=dev)
+
 Repo for an open source version of the website for Elma Online.
 
 Current website can be seen on http://elmaonline.net/. The point of making a completely new version is to use better suited frameworks and code structure, something that will better fit a multi developer open source project and the things we want to do with the site. The new site will be available on a secondary URL until such a time as it can completely replace the old site.

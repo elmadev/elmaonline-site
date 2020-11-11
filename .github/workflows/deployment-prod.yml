@@ -1,0 +1,25 @@
+name: Deployment to elma.online
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    if: contains(github.event.head_commit.message, 'skip ci') == false
+    name: Build, push and deploy to production
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ${{ secrets.PATH_PROD }}
+          git pull
+          yarn build
+          pm2 startOrRestart
