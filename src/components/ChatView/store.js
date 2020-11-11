@@ -4,7 +4,7 @@ import { SearchChat } from 'data/api';
 
 export default {
   chatLines: [],
-  chatLineCount: 0,
+  chatLineCount: -1,
   chatPage: 0,
   prevQuery: {},
   loading: false,
@@ -28,8 +28,10 @@ export default {
     actions.setPrevQuery(payload);
     const chatLines = await SearchChat(payload);
     if (chatLines.ok) {
+      if (payload.order === 'DESC') chatLines.data.rows.reverse();
       actions.setChatLines(chatLines.data.rows);
       if (chatLines.data.count) actions.setChatLineCount(chatLines.data.count);
+      else actions.setChatLineCount(-1);
       actions.setLoading(false);
     }
   }),
