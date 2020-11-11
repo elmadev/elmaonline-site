@@ -27,6 +27,7 @@ import LocalTime from 'components/LocalTime';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import TimeTable from './TimeTable';
+import StatsTable from './StatsTable';
 
 const Level = ({ LevelIndex }) => {
   const [tab, setTab] = useState(0);
@@ -37,17 +38,20 @@ const Level = ({ LevelIndex }) => {
     loading,
     allfinished,
     eoltimes,
+    timeStats,
   } = useStoreState(state => state.Level);
   const {
     getBesttimes,
     getLevel,
     getAllfinished,
     getEoltimes,
+    getTimeStats,
   } = useStoreActions(actions => actions.Level);
 
   useEffect(() => {
     getBesttimes({ levelId: LevelIndex, limit: 10000, eolOnly: 0 });
     getLevel(LevelIndex);
+    getTimeStats(LevelIndex);
   }, []);
 
   const onTabClick = (e, value) => {
@@ -196,6 +200,7 @@ const Level = ({ LevelIndex }) => {
               >
                 <Tab label="Best times" />
                 <Tab label="All times" />
+                <Tab label="Personal stats" />
                 {level.Legacy && <Tab label="EOL times" />}
               </Tabs>
               {tab === 0 && (
@@ -207,7 +212,8 @@ const Level = ({ LevelIndex }) => {
                   latestBattle={battlesForLevel[0]}
                 />
               )}
-              {tab === 2 && (
+              {tab === 2 && <StatsTable data={timeStats} />}
+              {tab === 3 && (
                 <TimeTable data={eoltimes} latestBattle={battlesForLevel[0]} />
               )}
             </>

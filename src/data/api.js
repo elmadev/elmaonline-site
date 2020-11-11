@@ -159,3 +159,5 @@ export const SearchChat = data => api.get('chatlog', { params: data });
 
 // level
 export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
+export const LevelTimeStats = LevelIndex =>
+  api.get(`level/timestats/${LevelIndex}`);
