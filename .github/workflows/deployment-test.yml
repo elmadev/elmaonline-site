@@ -20,6 +20,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ${{ secrets.PATH_TEST }}
+          git checkout -- src/config.js
           git checkout dev
           git pull
           sed -i "s|accessKeyId: ''|accessKeyId: '${{ secrets.ACCESSKEYID_TEST }}'|" src/config.js
