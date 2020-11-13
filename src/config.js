@@ -9,6 +9,9 @@
 
 /* eslint-disable max-len */
 
+// IMPORTANT NOTE:
+// Adjust .github/workflows/*.yml after changes to make correct replacements in CI
+
 if (process.env.BROWSER) {
   throw new Error(
     'Do not import `config.js` from inside the client-side code.',
@@ -60,8 +63,8 @@ module.exports = {
       state: true,
     },
   },
-  jwtSecret:
-    'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
+  // eslint-disable-next-line prettier/prettier
+  jwtSecret: 'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
   jwtAlgo: 'HS256',
   recaptcha: {
     client: '6Le-n9QUAAAAAG-3bYyysXddxwD6I6iJeDBTHf2r',
