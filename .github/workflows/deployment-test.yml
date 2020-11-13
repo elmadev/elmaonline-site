@@ -3,12 +3,12 @@ name: Deployment to test.elma.online
 on:
   push:
     branches:
-      - dev
+      - test
 
 jobs:
   build:
     if: contains(github.event.head_commit.message, 'skip ci') == false
-    name: Build, push and deploy to production
+    name: ssh into server, pull from repo, build test release and restart pm2
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
@@ -20,6 +20,19 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ${{ secrets.PATH_TEST }}
+          git checkout test
           git pull
+          sed -i "s|accessKeyId: ''|accessKeyId: '${{ secrets.ACCESSKEYID_TEST }}'|" src/config.js
+          sed -i "s|secretAccessKey: ''|secretAccessKey: '${{ secrets.SECRETACCESSKEY_TEST }}'|" src/config.js
+          sed -i "s|sibApiKey: ''|sibApiKey: '${{ secrets.SIBAPIKEY_TEST }}'|" src/config.js
+          sed -i "s|token: ''|token: '${{ secrets.DISCORD_TOKEN_TEST }}'|" src/config.js
+          sed -i "s|battle: ''|battle: '${{ secrets.DISCORD_CHANNELS_BATTLE_TEST }}'|" src/config.js
+          sed -i "s|times: ''|times: '${{ secrets.DISCORD_CHANNELS_TIMES_TEST }}'|" src/config.js
+          sed -i "s|events: ''|events: '${{ secrets.DISCORD_CHANNELS_EVENTS_TEST }}'|" src/config.js
+          sed -i "s|apiAuth: ''|apiAuth: '${{ secrets.DISCORD_APIAUTH_TEST }}'|" src/config.js
+          sed -i "s|started: ''|started: '${{ secrets.DISCORD_ICONS_STARTED_TEST }}'|" src/config.js
+          sed -i "s|queue: ''|queue: '${{ secrets.DISCORD_ICONS_QUEUE_TEST }}'|" src/config.js
+          sed -i "s|results: ''|results: '${{ secrets.DISCORD_ICONS_RESULTS_TEST }}'|" src/config.js
+          sed -i "s|ended: ''|ended: '${{ secrets.DISCORD_ICONS_ENDED_TEST }}'|" src/config.js
           yarn build-release
           pm2 restart elmaonline-site-test
