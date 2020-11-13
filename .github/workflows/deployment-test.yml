@@ -3,7 +3,7 @@ name: Deployment to test.elma.online
 on:
   push:
     branches:
-      - test
+      - dev
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ${{ secrets.PATH_TEST }}
-          git checkout test
+          git checkout dev
           git pull
           sed -i "s|accessKeyId: ''|accessKeyId: '${{ secrets.ACCESSKEYID_TEST }}'|" src/config.js
           sed -i "s|secretAccessKey: ''|secretAccessKey: '${{ secrets.SECRETACCESSKEY_TEST }}'|" src/config.js
