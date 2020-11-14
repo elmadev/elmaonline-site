@@ -21,7 +21,6 @@ jobs:
         script: |
           cd ${{ secrets.PATH_LIVE }}
           git checkout -- src/config.js
-          git checkout master
           git pull
           sed -i "s|3000|${{ secrets.PORT_LIVE }}|g" src/config.js
           sed -i "s|user: 'sandbox'|user: '${{ secrets.MYSQL_USER_LIVE }}'|" src/config.js
