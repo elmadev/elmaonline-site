@@ -33,12 +33,16 @@ const Level = ({ LevelIndex }) => {
   const [tab, setTab] = useState(0);
   const {
     besttimes,
+    besttimesLoading,
     level,
     battlesForLevel,
     loading,
     allfinished,
+    allLoading,
     eoltimes,
+    eolLoading,
     timeStats,
+    statsLoading,
   } = useStoreState(state => state.Level);
   const {
     getBesttimes,
@@ -51,15 +55,23 @@ const Level = ({ LevelIndex }) => {
   useEffect(() => {
     getBesttimes({ levelId: LevelIndex, limit: 10000, eolOnly: 0 });
     getLevel(LevelIndex);
-    getTimeStats(LevelIndex);
   }, []);
 
   const onTabClick = (e, value) => {
     setTab(value);
-    if (value === 1 && allfinished.length === 0) {
+    if (
+      value === 1 &&
+      (allfinished.length === 0 || allLoading !== LevelIndex)
+    ) {
       getAllfinished(LevelIndex);
     }
-    if (value === 2 && eoltimes.length === 0) {
+    if (
+      value === 2 &&
+      (timeStats.length === 0 || statsLoading !== LevelIndex)
+    ) {
+      getTimeStats(LevelIndex);
+    }
+    if (value === 3 && (eoltimes.length === 0 || eolLoading !== LevelIndex)) {
       getEoltimes({ levelId: LevelIndex, limit: 10000, eolOnly: 1 });
     }
   };
@@ -204,17 +216,31 @@ const Level = ({ LevelIndex }) => {
                 {level.Legacy && <Tab label="EOL times" />}
               </Tabs>
               {tab === 0 && (
-                <TimeTable data={besttimes} latestBattle={battlesForLevel[0]} />
+                <TimeTable
+                  loading={besttimesLoading}
+                  data={besttimes}
+                  latestBattle={battlesForLevel[0]}
+                />
               )}
               {tab === 1 && (
                 <TimeTable
+                  loading={allLoading !== LevelIndex}
                   data={allfinished}
                   latestBattle={battlesForLevel[0]}
                 />
               )}
-              {tab === 2 && <StatsTable data={timeStats} />}
+              {tab === 2 && (
+                <StatsTable
+                  data={timeStats}
+                  loading={statsLoading !== LevelIndex}
+                />
+              )}
               {tab === 3 && (
-                <TimeTable data={eoltimes} latestBattle={battlesForLevel[0]} />
+                <TimeTable
+                  loading={eolLoading !== LevelIndex}
+                  data={eoltimes}
+                  latestBattle={battlesForLevel[0]}
+                />
               )}
             </>
           )}

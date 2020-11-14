@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Time from 'components/Time';
+import Loading from 'components/Loading';
 import LegacyIcon from 'styles/LegacyIcon';
 
-const TimeTable = ({ data, latestBattle }) => {
+const TimeTable = ({ data, latestBattle, loading }) => {
+  if (loading) return <Loading />;
   return (
     <div>
       <ListContainer>

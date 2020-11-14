@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Time from 'components/Time';
+import Loading from 'components/Loading';
 import _ from 'lodash';
 
 const finishedTypes = [
@@ -14,7 +15,8 @@ const finishedTypes = [
   { key: 'S', value: 'Spied' },
 ];
 
-const StatsTable = ({ data }) => {
+const StatsTable = ({ data, loading }) => {
+  if (loading) return <Loading />;
   const getTotalRunCount = () => {
     return _.sumBy(data, 'RunCount');
   };
