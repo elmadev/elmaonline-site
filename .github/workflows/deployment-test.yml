@@ -35,4 +35,4 @@ jobs:
           sed -i "s|results: ''|results: '${{ secrets.DISCORD_ICONS_RESULTS_TEST }}'|" src/config.js
           sed -i "s|ended: ''|ended: '${{ secrets.DISCORD_ICONS_ENDED_TEST }}'|" src/config.js
           yarn build-release
-          pm2 restart elmaonline-site-test
+          /home/deploy/.nvm/versions/node/v12.18.3/bin/pm2 restart elmaonline-site-test
