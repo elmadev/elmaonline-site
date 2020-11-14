@@ -5,15 +5,12 @@ import Time from 'components/Time';
 import Loading from 'components/Loading';
 import _ from 'lodash';
 
-const finishedTypes = [
-  {
-    key: 'D',
-    value: 'Dead',
-  },
-  { key: 'E', value: 'Esced' },
-  { key: 'F', value: 'Finished' },
-  { key: 'S', value: 'Spied' },
-];
+const finishedTypes = {
+  D: 'Dead',
+  E: 'Esced',
+  F: 'Finished',
+  S: 'Spied',
+};
 
 const StatsTable = ({ data, loading }) => {
   if (loading) return <Loading />;
@@ -21,34 +18,16 @@ const StatsTable = ({ data, loading }) => {
     return _.sumBy(data, 'RunCount');
   };
 
-  const getRunCountByType = type => {
-    return _.sumBy(data, row => {
-      if (row.Finished === type) {
-        return row.RunCount;
-      }
-      return 0;
-    });
-  };
-
-  const getRunCountPercentageByType = type => {
-    return _.round((getRunCountByType(type) / getTotalRunCount()) * 100, 2);
+  const getRunCountPercentage = RunCount => {
+    return _.round((RunCount / getTotalRunCount()) * 100, 2);
   };
 
   const getTotalTimeSum = () => {
     return _.sumBy(data, row => parseInt(row.TimeSum, 10));
   };
 
-  const getTimeSumByType = type => {
-    return _.sumBy(data, row => {
-      if (row.Finished === type) {
-        return parseInt(row.TimeSum, 10);
-      }
-      return 0;
-    });
-  };
-
-  const getTimeSumPercentageByType = type => {
-    return _.round((getTimeSumByType(type) / getTotalTimeSum()) * 100, 2);
+  const getTimeSumPercentage = TimeSum => {
+    return _.round((TimeSum / getTotalTimeSum()) * 100, 2);
   };
 
   return (
@@ -83,25 +62,23 @@ const StatsTable = ({ data, loading }) => {
         <ListCell />
         <ListCell />
       </ListRow>
-      {finishedTypes.map(type => {
+      {data.map(row => {
         return (
           <ListRow>
             <ListCell right width={100}>
-              {type.value}
+              {finishedTypes[row.Finished]}
             </ListCell>
             <ListCell right width={200}>
-              {getRunCountByType(type.key)}
+              {row.RunCount}
             </ListCell>
             <ListCell right width={200}>
-              {getTimeSumByType(type.key) !== 0 && (
-                <Time time={getTimeSumByType(type.key)} />
-              )}
+              {row.TimeSum !== 0 && <Time time={row.TimeSum} />}
             </ListCell>
             <ListCell right width={200}>
-              {getRunCountPercentageByType(type.key) || null}
+              {getRunCountPercentage(row.RunCount) || null}
             </ListCell>
             <ListCell right width={200}>
-              {getTimeSumPercentageByType(type.key) || null}
+              {getTimeSumPercentage(row.TimeSum) || null}
             </ListCell>
           </ListRow>
         );

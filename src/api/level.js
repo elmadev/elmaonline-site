@@ -29,10 +29,9 @@ const getLevel = async LevelIndex => {
 
 const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
   const stats = await Time.findAll({
-    group: ['Finished', 'Apples'],
+    group: ['Finished'],
     attributes: [
       'Finished',
-      'Apples',
       [sequelize.fn('COUNT', 'Finished'), 'RunCount'],
       [sequelize.fn('SUM', sequelize.col('Time')), 'TimeSum'],
     ],
