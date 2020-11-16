@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
@@ -15,6 +15,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 
 import { nick, nickId } from 'utils/nick';
 import { Number } from 'components/Selectors';
+import FieldBoolean from 'components/FieldBoolean';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
 import Personal from './Personal';
@@ -33,6 +34,7 @@ const GET_LEVELPACK = gql`
       LevelPackName
       LevelPackDesc
       KuskiIndex
+      Legacy
       KuskiData {
         Kuski
       }
@@ -56,25 +58,48 @@ const LevelPack = ({ name }) => {
     records,
     recordsLoading,
     setPersonalTimesLoading,
+    personalKuski,
+    settings: { highlightWeeks, showLegacyIcon, showLegacy },
   } = useStoreState(state => state.LevelPack);
   const {
     getHighlight,
     getPersonalTimes,
     setError,
     getRecords,
+    setHighlightWeeks,
+    toggleShowLegacyIcon,
+    toggleShowLegacy,
   } = useStoreActions(actions => actions.LevelPack);
+  const lastShowLegacy = useRef(showLegacy);
   const [openSettings, setOpenSettings] = useState(false);
-  const [highlightWeeks, setHighlightWeeks] = useState(1);
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    getRecords(name);
+    getRecords({ name, eolOnly: showLegacy ? 0 : 1 });
     getHighlight();
     const PersonalKuskiIndex = nick();
     if (PersonalKuskiIndex !== '') {
-      getPersonalTimes({ PersonalKuskiIndex, name });
+      getPersonalTimes({
+        PersonalKuskiIndex,
+        name,
+        eolOnly: showLegacy ? 0 : 1,
+      });
     }
   }, [name]);
+
+  useEffect(() => {
+    if (lastShowLegacy.current !== showLegacy) {
+      lastShowLegacy.current = showLegacy;
+      getRecords({ name, eolOnly: showLegacy ? 0 : 1 });
+      if (personalKuski !== '') {
+        getPersonalTimes({
+          PersonalKuskiIndex: personalKuski,
+          name,
+          eolOnly: showLegacy ? 0 : 1,
+        });
+      }
+    }
+  }, [showLegacy]);
 
   return (
     <div className={s.root}>
@@ -130,6 +155,24 @@ const LevelPack = ({ name }) => {
                           numbers={[0, 1, 2, 3, 4]}
                         />
                       </SettingItem>
+                      {getLevelPack.Legacy === 1 && (
+                        <>
+                          <SettingItem>
+                            <FieldBoolean
+                              value={showLegacyIcon}
+                              label="Show icon on legacy times"
+                              onChange={() => toggleShowLegacyIcon()}
+                            />
+                          </SettingItem>
+                          <SettingItem>
+                            <FieldBoolean
+                              value={showLegacy}
+                              label="Show legacy times"
+                              onChange={() => toggleShowLegacy()}
+                            />
+                          </SettingItem>
+                        </>
+                      )}
                     </Paper>
                   </OutsideClickHandler>
                 ) : (
@@ -142,6 +185,7 @@ const LevelPack = ({ name }) => {
                   highlight={highlight}
                   highlightWeeks={highlightWeeks}
                   recordsLoading={recordsLoading}
+                  showLegacyIcon={showLegacyIcon}
                 />
               )}
               {tab === 1 && (
@@ -170,6 +214,8 @@ const LevelPack = ({ name }) => {
                   highlightWeeks={highlightWeeks}
                   records={records}
                   setPersonalTimesLoading={setPersonalTimesLoading}
+                  showLegacyIcon={showLegacyIcon}
+                  kuski={personalKuski}
                 />
               )}
               {tab === 4 && (

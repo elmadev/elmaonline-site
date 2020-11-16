@@ -4,6 +4,7 @@ import ReplayComments from 'components/ReplayComments/store';
 import ReplayRating from 'components/ReplayRating/store';
 import ReplaysBy from 'components/ReplaysBy/store';
 import Register from 'components/Register/store';
+import ChatView from 'components/ChatView/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -15,12 +16,14 @@ import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
 import Teams from 'pages/teams/store';
 import Kuskis from 'pages/kuskis/store';
+import Level from 'pages/level/store';
 
 export default {
   ReplayComments,
   ReplayRating,
   ReplaysBy,
   Register,
+  ChatView,
   Cups,
   Cup,
   KuskiMap,
@@ -32,6 +35,7 @@ export default {
   Settings,
   Teams,
   Replay,
+  Level,
   Page: {
     sideBarVisible: true,
     showSideBar: action(state => {

@@ -13,6 +13,7 @@ import {
   Level,
   Team,
   BestMultitime,
+  LegacyBesttime,
 } from '../data/models';
 
 const router = express.Router();
@@ -24,18 +25,27 @@ const getKuski = async k => {
   return findKuski;
 };
 
-const getRecords = async LevelPackName => {
+const getRecords = async (LevelPackName, eol = 0) => {
   const packInfo = await LevelPack.findOne({
+    attributes: ['LevelPackIndex', 'Legacy'],
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  if (packInfo.Legacy && !eol) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['Sort', 'ASC'], ['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        model: timeTable,
+        as: timeTableAlias,
+        attributes,
         order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
         limit: 1,
         include: [
@@ -60,6 +70,16 @@ const getRecords = async LevelPackName => {
       },
     ],
   });
+  if (packInfo.Legacy && !eol) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 
@@ -114,18 +134,26 @@ const getMultiRecords = async LevelPackName => {
   return times.filter(t => !t.Level.Hidden);
 };
 
-const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
+const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  if (packInfo.Legacy && !eolOnly) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     order: [['LevelPackLevelIndex', 'ASC']],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        model: timeTable,
+        as: timeTableAlias,
+        attributes,
         where: { KuskiIndex },
         include: [
           {
@@ -142,17 +170,36 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex) => {
       },
     ],
   });
+  if (packInfo.Legacy && !eolOnly) {
+    return times
+      .filter(t => !t.Level.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
   return times.filter(t => !t.Level.Hidden);
 };
 
-const getTimes = async LevelPackIndex => {
+const getTimes = async (LevelPackIndex, eolOnly = 0) => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackIndex },
+  });
+  let timeTable = Besttime;
+  let timeTableAlias = 'LevelBesttime';
+  if (packInfo.Legacy && !eolOnly) {
+    timeTable = LegacyBesttime;
+    timeTableAlias = 'LevelLegacyBesttime';
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex },
     attributes: ['LevelIndex'],
     include: [
       {
-        model: Besttime,
-        as: 'LevelBesttime',
+        model: timeTable,
+        as: timeTableAlias,
         attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
         include: [
           {
@@ -169,6 +216,14 @@ const getTimes = async LevelPackIndex => {
       },
     ],
   });
+  if (packInfo.Legacy && !eolOnly) {
+    return times.map(t => {
+      return {
+        ...t.dataValues,
+        LevelBesttime: t.dataValues.LevelLegacyBesttime,
+      };
+    });
+  }
   return times;
 };
 
@@ -490,6 +545,15 @@ router
     const points = kinglist(data);
     res.json({ tts, points });
   })
+  .get('/:LevelPackIndex/totaltimes/:eolOnly', async (req, res) => {
+    const data = await getTimes(
+      req.params.LevelPackIndex,
+      parseInt(req.params.eolOnly, 10),
+    );
+    const tts = totalTimes(data);
+    const points = kinglist(data);
+    res.json({ tts, points });
+  })
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
     const getKuskiIndex = await getKuski(req.params.KuskiIndex);
     if (getKuskiIndex) {
@@ -502,8 +566,28 @@ router
       res.json({ error: 'Kuski does not exist' });
     }
   })
+  .get('/:LevelPackName/personal/:KuskiIndex/:eolOnly', async (req, res) => {
+    const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+    if (getKuskiIndex) {
+      const data = await getPersonalTimes(
+        req.params.LevelPackName,
+        getKuskiIndex.dataValues.KuskiIndex,
+        parseInt(req.params.eolOnly, 10),
+      );
+      res.json(data);
+    } else {
+      res.json({ error: 'Kuski does not exist' });
+    }
+  })
   .get('/:LevelPackName/records', async (req, res) => {
     const records = await getRecords(req.params.LevelPackName);
+    res.json(records);
+  })
+  .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
+    const records = await getRecords(
+      req.params.LevelPackName,
+      parseInt(req.params.eolOnly, 10),
+    );
     res.json(records);
   })
   .get('/:LevelPackName/multirecords', async (req, res) => {

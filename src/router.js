@@ -99,6 +99,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'map' */ './pages/map'),
     },
     {
+      path: '/chatlog',
+      load: () => import(/* webpackChunkName: 'chat' */ './pages/chatlog'),
+    },
+    {
       path: '/help',
       load: () => import(/* webpackChunkName: 'help' */ './pages/help'),
     },

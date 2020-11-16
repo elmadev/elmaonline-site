@@ -27,7 +27,7 @@ export function log(func, query, benchmark) {
 }
 
 export function like(text) {
-  return text.replace('%', '\\%').replace('*', '%');
+  return text.replace(/%/g, '\\%').replace(/\*/g, '%');
 }
 
 export function searchLimit(offset) {

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { action, thunk } from 'easy-peasy';
+import { action, thunk, persist } from 'easy-peasy';
 import {
   Highlight,
   TotalTimes,
@@ -27,6 +27,23 @@ export default {
       actions.setHighlight(highlights.data);
     }
   }),
+  settings: persist(
+    {
+      highlightWeeks: 1,
+      showLegacyIcon: true,
+      showLegacy: true,
+    },
+    { storage: 'localStorage' },
+  ),
+  setHighlightWeeks: action((state, payload) => {
+    state.settings.highlightWeeks = payload;
+  }),
+  toggleShowLegacyIcon: action(state => {
+    state.settings.showLegacyIcon = !state.settings.showLegacyIcon;
+  }),
+  toggleShowLegacy: action(state => {
+    state.settings.showLegacy = !state.settings.showLegacy;
+  }),
   totaltimes: [],
   kinglist: [],
   lastPack: 0,
@@ -49,7 +66,7 @@ export default {
     if (tts.ok) {
       actions.setTotalTimes(tts.data.tts);
       actions.setKinglist(tts.data.points);
-      actions.setLastPack(payload);
+      actions.setLastPack(payload.levelPackIndex);
     }
     actions.setTotaltimesLoading(false);
   }),
@@ -58,6 +75,7 @@ export default {
     state.timesError = payload;
   }),
   personalTimes: [],
+  personalKuski: '',
   personalTimesLoading: false,
   setPersonalTimes: action((state, payload) => {
     state.personalTimes = payload;
@@ -65,8 +83,12 @@ export default {
   setPersonalTimesLoading: action((state, paylaod) => {
     state.personalTimesLoading = paylaod;
   }),
+  setPersonalKuski: action((state, payload) => {
+    state.personalKuski = payload;
+  }),
   getPersonalTimes: thunk(async (actions, payload) => {
     actions.setPersonalTimesLoading(true);
+    actions.setPersonalKuski(payload.PersonalKuskiIndex);
     const times = await PersonalTimes(payload);
     if (times.ok) {
       if (times.data.error) {
