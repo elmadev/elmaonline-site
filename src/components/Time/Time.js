@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const thousandsValues = [1000, 59999, 60000, 3];
-const hundredsValues = [100, 5999, 6000, 2];
+const thousandsValues = [1000, 59999, 60000, 3, 3600000];
+const hundredsValues = [100, 5999, 6000, 2, 360000];
 
 class Time extends React.Component {
   static propTypes = {
@@ -33,6 +33,7 @@ class Time extends React.Component {
     if (time === 0) {
       return `${apples} apple${apples !== 1 ? `s` : ``}`;
     }
+
     let values = hundredsValues;
     if (thousands) {
       values = thousandsValues;
@@ -43,6 +44,13 @@ class Time extends React.Component {
       .toString()
       .padStart(values[3], 0)}`;
 
+    if (time > values[4]) {
+      const hours = Math.floor((time / values[4]) % 60);
+      return `${hours}:${Math.floor(time / values[2] - hours * 60)
+        .toString()
+        .padStart(2, 0)}:${string}`;
+    }
+
     if (time > values[1]) {
       return `${Math.floor(time / values[2])}:${string}`;
     }
@@ -52,6 +60,16 @@ class Time extends React.Component {
 
   render() {
     const { time } = this.props;
+    if (typeof time === 'object') {
+      if (time.unfinished) {
+        return (
+          <span>
+            {time.finished} / {time.levs}
+          </span>
+        );
+      }
+      return <span>{this.formatTime(time.tt)}</span>;
+    }
     return <span>{this.formatTime(time)}</span>;
   }
 }
