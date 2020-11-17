@@ -113,7 +113,7 @@ const Level = ({ LevelIndex }) => {
                   <br />
                   {'Level ID: '}
                   {`${LevelIndex}`}
-                  {level.Legacy && (
+                  {level.Legacy !== 0 && (
                     <div>
                       This level has legacy times imported from a third party
                       site.
