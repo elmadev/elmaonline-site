@@ -15,6 +15,7 @@ module.exports = {
     'levelpacks',
     'kuskis',
     'search',
+    'chat',
     'login',
     'replays',
     'teams',

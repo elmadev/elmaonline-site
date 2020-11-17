@@ -70,7 +70,7 @@ const searchChat = async ({
   where.Entered = { [Op.between]: dateTimeRange };
 
   const opts = {
-    order: [['Entered', order], ['ChatIndex', order]],
+    order: [['ChatIndex', order]],
     include: [
       {
         model: Kuski,
