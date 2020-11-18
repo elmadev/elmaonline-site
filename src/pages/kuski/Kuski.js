@@ -67,7 +67,10 @@ class Kuski extends React.Component {
                 `Team: ${getKuskiByName.TeamData.Team}`}
             </div>
           </div>
-          <KuskiHeader KuskiIndex={getKuskiByName.KuskiIndex} />
+          <KuskiHeader
+            Kuski={getKuskiByName.Kuski}
+            KuskiIndex={getKuskiByName.KuskiIndex}
+          />
         </div>
         <Tabs
           variant="scrollable"

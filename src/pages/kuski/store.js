@@ -1,6 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { PersonalLatest, PersonalLatestPRs, PersonalRanking } from 'data/api';
+import {
+  PersonalLatest,
+  PersonalLatestPRs,
+  PersonalRanking,
+  Records,
+  PersonalTimes,
+} from 'data/api';
 
 export default {
   latestTimes: [],
@@ -31,6 +37,28 @@ export default {
     const call = await PersonalRanking(payload);
     if (call.ok) {
       actions.setRanking(call.data);
+    }
+  }),
+  tt: [],
+  setTt: action((state, payload) => {
+    state.tt = payload;
+  }),
+  getTt: thunk(async (actions, payload) => {
+    const records = await Records({ name: 'Int', eolOnly: 0 });
+    const times = await PersonalTimes({
+      PersonalKuskiIndex: payload,
+      name: 'Int',
+      eolOnly: 0,
+    });
+    if (records.ok && times.ok) {
+      const levels = records.data.map(r => {
+        const personal = times.data.filter(t => t.LevelIndex === r.LevelIndex);
+        if (personal.length > 0) {
+          return { ...r, LevelBesttime: personal[0].LevelBesttime };
+        }
+        return { ...r, LevelBesttime: [] };
+      });
+      actions.setTt(levels);
     }
   }),
 };

@@ -2,12 +2,16 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from 'styled-components';
+import Time from 'components/Time';
+import Loading from 'components/Loading';
+import { recordsTT } from 'utils/calcs';
 
-const KuskiHeader = ({ KuskiIndex }) => {
-  const { ranking } = useStoreState(state => state.Kuski);
-  const { getRanking } = useStoreActions(actions => actions.Kuski);
+const KuskiHeader = ({ KuskiIndex, Kuski }) => {
+  const { ranking, tt } = useStoreState(state => state.Kuski);
+  const { getRanking, getTt } = useStoreActions(actions => actions.Kuski);
   useEffect(() => {
     getRanking(KuskiIndex);
+    getTt(Kuski);
   }, []);
   let playedAll = 0;
   let winsAll = 0;
@@ -20,15 +24,21 @@ const KuskiHeader = ({ KuskiIndex }) => {
   return (
     <Container>
       <StatsContainer>
-        <div>42:31:09</div>
-        <StatsTitle>total time</StatsTitle>
+        <div>
+          {tt.length === 0 ? (
+            <Loading />
+          ) : (
+            <Time time={recordsTT(tt, 'LevelBesttime')} />
+          )}
+        </div>
+        <StatsTitle>Int total time</StatsTitle>
       </StatsContainer>
       <StatsContainer>
-        <div>{playedAll}</div>
+        {ranking.length === 0 ? <Loading /> : <div>{playedAll}</div>}
         <StatsTitle>battles played</StatsTitle>
       </StatsContainer>
       <StatsContainer>
-        <div>{winsAll}</div>
+        {ranking.length === 0 ? <Loading /> : <div>{winsAll}</div>}
         <StatsTitle>battles won</StatsTitle>
       </StatsContainer>
     </Container>

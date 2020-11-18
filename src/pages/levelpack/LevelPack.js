@@ -207,7 +207,11 @@ const LevelPack = ({ name }) => {
                   timesError={timesError}
                   setError={e => setError(e)}
                   getTimes={newKuski =>
-                    getPersonalTimes({ PersonalKuskiIndex: newKuski, name })
+                    getPersonalTimes({
+                      PersonalKuskiIndex: newKuski,
+                      name,
+                      eolOnly: showLegacy ? 0 : 1,
+                    })
                   }
                   times={personalTimes}
                   highlight={highlight}
