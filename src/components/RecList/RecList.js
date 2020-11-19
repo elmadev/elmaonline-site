@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useStoreState, useStoreActions } from 'easy-peasy';
+import { useStoreState, useStoreActions, useStoreRehydrated } from 'easy-peasy';
 import { sortBy, filter } from 'lodash';
 import { Checkbox, FormControlLabel } from '@material-ui/core';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
@@ -11,6 +11,7 @@ import historyRefresh from 'utils/historyRefresh';
 const widths = { Replay: 200, Time: 100, Level: null, By: null };
 
 const RecList = ({ currentUUID, columns, horizontalMargin, LevelIndex }) => {
+  const isRehydrated = useStoreRehydrated();
   const {
     show: { showTAS, showDNF, showBug, showNitro },
     loading,
@@ -54,6 +55,7 @@ const RecList = ({ currentUUID, columns, horizontalMargin, LevelIndex }) => {
     }
     return show;
   };
+  if (!isRehydrated) return null;
   return (
     <>
       <div>
