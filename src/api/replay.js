@@ -5,6 +5,25 @@ import { Replay, Level, Kuski } from '../data/models';
 
 const router = express.Router();
 
+const attributes = [
+  'ReplayIndex',
+  'DrivenBy',
+  'DrivenByText',
+  'UploadedBy',
+  'LevelIndex',
+  'TimeIndex',
+  'ReplayTime',
+  'Finished',
+  'Uploaded',
+  'Unlisted',
+  'UUID',
+  'RecFileName',
+  'Comment',
+  'TAS',
+  'Bug',
+  'Nitro',
+];
+
 const getReplayByReplayId = async ReplayIndex => {
   const data = await Replay.findAll({
     where: { ReplayIndex, Unlisted: 0 },
@@ -146,6 +165,16 @@ const getReplaysSearchFilename = async (query, offset) => {
   return replays;
 };
 
+const getReplaysByLevelIndex = async LevelIndex => {
+  const replays = await Replay.findAll({
+    attributes,
+    where: { LevelIndex, Unlisted: 0 },
+    limit: 100,
+    order: [['ReplayIndex', 'DESC']],
+  });
+  return replays;
+};
+
 router
   .get('/', (req, res) => {
     res.sendStatus(404);
@@ -160,6 +189,10 @@ router
   })
   .get('/uploaded_by/:KuskiIndex', async (req, res) => {
     const data = await getReplayByUploadedBy(req.params.KuskiIndex);
+    res.json(data);
+  })
+  .get('/byLevelIndex/:LevelIndex', async (req, res) => {
+    const data = await getReplaysByLevelIndex(req.params.LevelIndex);
     res.json(data);
   })
   .get('/search/byDriven/:query/:offset', async (req, res) => {

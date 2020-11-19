@@ -1,205 +1,151 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { graphql, compose } from 'react-apollo';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { sortBy, filter } from 'lodash';
 import { Checkbox, FormControlLabel } from '@material-ui/core';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
-import querystring from 'querystring';
 
 import RecListItem from 'components/RecListItem';
-import history from 'utils/history';
 import historyRefresh from 'utils/historyRefresh';
 
-import recListQuery from './recList.graphql';
+const widths = { Replay: 200, Time: 100, Level: null, By: null };
 
-class RecList extends React.Component {
-  static propTypes = {
-    data: PropTypes.shape({
-      loading: PropTypes.bool.isRequired,
-      getReplaysByLevelIndex: PropTypes.arrayOf(
-        PropTypes.shape({
-          ReplayIndex: PropTypes.number.isRequired,
-          RecFileName: PropTypes.string.isRequired,
-          LevelIndex: PropTypes.number.isRequired,
-          ReplayTime: PropTypes.number.isRequired,
-          DrivenBy: PropTypes.number.isRequired,
-          UUID: PropTypes.string.isRequired,
-          TAS: PropTypes.number.isRequired,
-          Bug: PropTypes.number.isRequired,
-          Nitro: PropTypes.number.isRequired,
-          Finished: PropTypes.number.isRequired,
-        }),
-      ),
-    }).isRequired,
-    currentUUID: PropTypes.string,
-    columns: PropTypes.arrayOf(PropTypes.string),
-    horizontalMargin: PropTypes.number,
-  };
+const RecList = ({ currentUUID, columns, horizontalMargin, LevelIndex }) => {
+  const {
+    show: { showTAS, showDNF, showBug, showNitro },
+    loading,
+    replays,
+  } = useStoreState(state => state.RecList);
+  const {
+    setShowTAS,
+    setShowDNF,
+    setShowBug,
+    setShowNitro,
+    getReplays,
+  } = useStoreActions(actions => actions.RecList);
 
-  static defaultProps = {
-    currentUUID: null,
-    columns: ['Replay', 'Level', 'Time', 'By'],
-    horizontalMargin: 0,
-  };
+  useEffect(() => {
+    getReplays(LevelIndex);
+  }, [LevelIndex]);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      showTAS: false,
-      showDNF: false,
-      showBug: false,
-      showNitro: false,
-    };
-  }
-
-  componentDidMount() {
-    const queryParams = querystring.parse(window.location.search.substring(1));
-    this.setState({
-      showTAS: queryParams.showTAS === 'true',
-      showDNF: queryParams.showDNF === 'true',
-      showBug: queryParams.showBug === 'true',
-      showNitro: queryParams.showNitro === 'true',
-    });
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState !== this.state;
-  }
-
-  onFilterChange(id) {
-    const newState = { ...this.state };
-    newState[id] = !newState[id];
-    this.setState(() => newState);
-    history.replace({
-      search: `?${querystring.stringify(newState)}`,
-    });
-  }
-
-  isSelected = uuid => {
-    const { currentUUID } = this.props;
+  const isSelected = uuid => {
     return currentUUID === uuid;
   };
 
-  handleOpenReplay(uuid) {
+  const handleOpenReplay = uuid => {
     historyRefresh.push({
       pathname: `/r/${uuid}`,
-      search: `?${querystring.stringify(this.state)}`,
     });
-  }
+  };
 
-  render() {
-    const {
-      data: { loading, getReplaysByLevelIndex },
-      columns,
-      horizontalMargin,
-    } = this.props;
-    const { showTAS, showDNF, showBug, showNitro } = this.state;
-    const filterFunction = o => {
-      let show = true;
-      if (!showTAS && o.TAS) {
-        show = false;
-      }
-      if (!showDNF && !o.Finished) {
-        show = false;
-      }
-      if (!showBug && o.Bug) {
-        show = false;
-      }
-      if (!showNitro && o.Nitro) {
-        show = false;
-      }
-      return show;
-    };
-    return (
-      <>
-        <div>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showTAS}
-                onChange={() => this.onFilterChange('showTAS')}
-                value="ShowTAS"
-                color="primary"
-              />
-            }
-            label="Show TAS"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showDNF}
-                onChange={() => this.onFilterChange('showDNF')}
-                value="ShowDNF"
-                color="primary"
-              />
-            }
-            label="Show Unfinished"
-          />
-        </div>
-        <div>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showBug}
-                onChange={() => this.onFilterChange('showBug')}
-                value="showBug"
-                color="primary"
-              />
-            }
-            label="Show Bugged"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showNitro}
-                onChange={() => this.onFilterChange('showNitro')}
-                value="showNitro"
-                color="primary"
-              />
-            }
-            label="Show Modded"
-          />
-        </div>
-        <ListContainer
-          horizontalMargin={`${horizontalMargin}px`}
-          width={`calc(100% - ${horizontalMargin * 2}px)`}
-        >
-          <ListHeader>
-            {columns.map(c => (
-              <ListCell key={c} right={c === 'Time'}>
-                {c}
-              </ListCell>
-            ))}
-          </ListHeader>
-          {loading ? (
-            <ListRow>
-              <ListCell>Loading...</ListCell>
-            </ListRow>
-          ) : (
-            sortBy(filter(getReplaysByLevelIndex, filterFunction), [
-              'ReplayTime',
-            ]).map(i => (
-              <RecListItem
-                key={i.ReplayIndex}
-                replay={i}
-                openReplay={uuid => this.handleOpenReplay(uuid)}
-                selected={this.isSelected(i.UUID)}
-                columns={columns}
-              />
-            ))
-          )}
-        </ListContainer>
-      </>
-    );
-  }
-}
+  const filterFunction = o => {
+    let show = true;
+    if (!showTAS && o.TAS) {
+      show = false;
+    }
+    if (!showDNF && !o.Finished) {
+      show = false;
+    }
+    if (!showBug && o.Bug) {
+      show = false;
+    }
+    if (!showNitro && o.Nitro) {
+      show = false;
+    }
+    return show;
+  };
+  return (
+    <>
+      <div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showTAS}
+              onChange={() => setShowTAS(!showTAS)}
+              value="ShowTAS"
+              color="primary"
+            />
+          }
+          label="Show TAS"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showDNF}
+              onChange={() => setShowDNF(!showDNF)}
+              value="ShowDNF"
+              color="primary"
+            />
+          }
+          label="Show Unfinished"
+        />
+      </div>
+      <div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showBug}
+              onChange={() => setShowBug(!showBug)}
+              value="showBug"
+              color="primary"
+            />
+          }
+          label="Show Bugged"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showNitro}
+              onChange={() => setShowNitro(!showNitro)}
+              value="showNitro"
+              color="primary"
+            />
+          }
+          label="Show Modded"
+        />
+      </div>
+      <ListContainer
+        horizontalMargin={`${horizontalMargin}px`}
+        width={`calc(100% - ${horizontalMargin * 2}px)`}
+      >
+        <ListHeader>
+          {columns.map(c => (
+            <ListCell ListCell width={widths[c]} key={c} right={c === 'Time'}>
+              {c}
+            </ListCell>
+          ))}
+        </ListHeader>
+        {loading ? (
+          <ListRow>
+            <ListCell>Loading...</ListCell>
+          </ListRow>
+        ) : (
+          sortBy(filter(replays, filterFunction), ['ReplayTime']).map(i => (
+            <RecListItem
+              key={i.ReplayIndex}
+              replay={i}
+              openReplay={uuid => handleOpenReplay(uuid)}
+              selected={isSelected(i.UUID)}
+              columns={columns}
+            />
+          ))
+        )}
+      </ListContainer>
+    </>
+  );
+};
 
-export default compose(
-  graphql(recListQuery, {
-    options: ownProps => ({
-      variables: {
-        LevelIndex: ownProps.LevelIndex,
-      },
-    }),
-  }),
-)(RecList);
+RecList.propTypes = {
+  currentUUID: PropTypes.string,
+  columns: PropTypes.arrayOf(PropTypes.string),
+  horizontalMargin: PropTypes.number,
+  LevelIndex: PropTypes.number.isRequired,
+};
+
+RecList.defaultProps = {
+  currentUUID: null,
+  columns: ['Replay', 'Level', 'Time', 'By'],
+  horizontalMargin: 0,
+};
+
+export default RecList;
