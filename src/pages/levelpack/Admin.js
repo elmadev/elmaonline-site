@@ -13,7 +13,11 @@ import { ListCell, ListContainer, ListHeader } from 'styles/List';
 
 const Admin = ({ records, LevelPack }) => {
   const [search, setSearch] = useState('');
-  const { levelsFound, adminLoading } = useStoreState(state => state.LevelPack);
+  const {
+    levelsFound,
+    adminLoading,
+    settings: { showLegacy },
+  } = useStoreState(state => state.LevelPack);
   const {
     deleteLevel,
     searchLevel,
@@ -29,6 +33,7 @@ const Admin = ({ records, LevelPack }) => {
         LevelPackIndex: LevelPack.LevelPackIndex,
         levels: records,
         name: LevelPack.LevelPackName,
+        showLegacy,
       });
     }
   }, []);
@@ -44,6 +49,7 @@ const Admin = ({ records, LevelPack }) => {
         source: result.source,
         destination: result.destination,
         name: LevelPack.LevelPackName,
+        showLegacy,
       });
     }
   };
@@ -91,6 +97,7 @@ const Admin = ({ records, LevelPack }) => {
                                   LevelIndex: l.LevelIndex,
                                   LevelPackIndex: LevelPack.LevelPackIndex,
                                   name: LevelPack.LevelPackName,
+                                  showLegacy,
                                 })
                               }
                             />
@@ -154,6 +161,7 @@ const Admin = ({ records, LevelPack }) => {
                       name: LevelPack.LevelPackName,
                       levels: records.length,
                       last: records[records.length - 1],
+                      showLegacy,
                     })
                   }
                 />
