@@ -1,9 +1,12 @@
 import express from 'express';
 import { uuid } from 'utils/calcs';
 import crypto from 'crypto';
+import { format } from 'date-fns';
 import { Team, Kuski, SiteSetting } from 'data/models';
 import { confirmMail, resetMail } from 'utils/email';
 import { authContext } from 'utils/auth';
+import { sendMessage } from 'utils/discord';
+import config from '../config';
 
 const router = express.Router();
 
@@ -87,17 +90,27 @@ const validateEmail = e => {
   return re.test(e);
 };
 
-const nickRequest = async (nick, KuskiIndex) => {
+const nickRequest = async (nick, KuskiIndex, oldNick) => {
   const r = await SiteSetting.create({
     SettingName: 'ChangeNick',
     Setting: nick,
     KuskiIndex,
   });
+  sendMessage(
+    config.discord.channels.admin,
+    `:pencil2: New nick change request: ${oldNick} >> ${nick}`,
+  );
   return r;
 };
 
 const UpdateTeam = async (TeamIndex, KuskiIndex) => {
   await Kuski.update({ TeamIndex }, { where: { KuskiIndex } });
+  await SiteSetting.create({
+    SettingName: 'TeamChange',
+    Setting: TeamIndex,
+    KuskiIndex,
+    Value1: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+  });
 };
 
 const UpdateEmail = async (Email, KuskiIndex) => {
@@ -234,7 +247,7 @@ router
           message = 'Nickname is already taken.';
           error = true;
         } else {
-          await nickRequest(req.body.Value[0], auth.userid);
+          await nickRequest(req.body.Value[0], auth.userid, auth.user);
           message =
             'Nick change has been requested, now awaiting moderator approval, you will be notified.';
         }

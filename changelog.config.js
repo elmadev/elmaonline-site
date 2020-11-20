@@ -26,6 +26,7 @@ module.exports = {
     'ranking',
     'config',
     'ui',
+    'admin',
   ],
   types: {
     chore: {
