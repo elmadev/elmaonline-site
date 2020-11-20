@@ -6,10 +6,12 @@ import Loading from 'components/Loading';
 import _ from 'lodash';
 
 const finishedTypes = {
+  B: 'Finished (Apple Bug)',
   D: 'Dead',
   E: 'Esced',
   F: 'Finished',
   S: 'Spied',
+  X: 'Cheated',
 };
 
 const StatsTable = ({ data, loading }) => {
