@@ -6,7 +6,8 @@ const hundredsValues = [100, 5999, 6000, 2, 360000];
 
 class Time extends React.Component {
   static propTypes = {
-    time: PropTypes.number.isRequired,
+    time: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({})])
+      .isRequired,
     apples: PropTypes.number,
     thousands: PropTypes.bool,
   };
