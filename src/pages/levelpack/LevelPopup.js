@@ -125,7 +125,9 @@ const LevelPopup = ({
                     <>
                       {times.map((t, i) => {
                         return (
-                          <div key={t.KuskiData.Kuski}>
+                          <div
+                            key={multi ? t.BestMultiTimeIndex : t.BestTimeIndex}
+                          >
                             <span>{i + 1}.</span>
                             {multi ? (
                               <>

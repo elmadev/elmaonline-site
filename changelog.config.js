@@ -15,6 +15,7 @@ module.exports = {
     'levelpacks',
     'kuskis',
     'search',
+    'chat',
     'login',
     'replays',
     'teams',
@@ -25,6 +26,7 @@ module.exports = {
     'ranking',
     'config',
     'ui',
+    'admin',
   ],
   types: {
     chore: {

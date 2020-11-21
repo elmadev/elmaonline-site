@@ -70,6 +70,7 @@ class PlayedBattles extends React.Component {
           );
         })}
         <TablePagination
+          style={{ width: '300px' }}
           component="div"
           count={getBattlesByKuski.total}
           rowsPerPage={25}

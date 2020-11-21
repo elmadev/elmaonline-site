@@ -1,9 +1,0 @@
-query Ranking($KuskiIndex: Int!) {
-  getRankingByKuski(KuskiIndex: $KuskiIndex) {
-    KuskiIndex
-    PlayedAll
-    PlayedNM
-    WinsAll
-    WinsNM
-  }
-}

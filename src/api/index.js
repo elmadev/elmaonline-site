@@ -14,6 +14,7 @@ import Battle from './battle';
 import Player from './player';
 import Teams from './teams';
 import Level from './level';
+import Ranking from './ranking';
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router
   .use('/replay', Replay)
   .use('/country', Country)
   .use('/register', Register)
+  .use('/ranking', Ranking)
   .use('/chatlog', ChatLog)
   .use('/cups', Cups)
   .use('/kuskimap', KuskiMap)

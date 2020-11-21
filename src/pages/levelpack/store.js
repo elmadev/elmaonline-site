@@ -169,7 +169,10 @@ export default {
   deleteLevel: thunk(async (actions, payload) => {
     const del = await LevelPackDeleteLevel(payload);
     if (del.ok) {
-      actions.getRecords(payload.name);
+      actions.getRecords({
+        name: payload.name,
+        eolOnly: payload.showLegacy ? 0 : 1,
+      });
     }
   }),
   levelsFound: [],
@@ -189,14 +192,20 @@ export default {
   addLevel: thunk(async (actions, payload) => {
     const add = await LevelPackAddLevel(payload);
     if (add.ok) {
-      actions.getRecords(payload.name);
+      actions.getRecords({
+        name: payload.name,
+        eolOnly: payload.showLegacy ? 0 : 1,
+      });
     }
   }),
   sortLevel: thunk(async (actions, payload) => {
     actions.setAdminLoading(true);
     const sort = await LevelPackSortLevel(payload);
     if (sort.ok) {
-      actions.getRecords(payload.name);
+      actions.getRecords({
+        name: payload.name,
+        eolOnly: payload.showLegacy ? 0 : 1,
+      });
     } else {
       actions.setAdminLoading(false);
     }
@@ -205,7 +214,10 @@ export default {
     actions.setAdminLoading(true);
     const sort = await LevelPackSort(payload);
     if (sort.ok) {
-      actions.getRecords(payload.name);
+      actions.getRecords({
+        name: payload.name,
+        eolOnly: payload.showLegacy ? 0 : 1,
+      });
     } else {
       actions.setAdminLoading(false);
     }

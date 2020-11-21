@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { useStoreState, useStoreActions } from 'easy-peasy';
+import { useStoreState, useStoreActions, useStoreRehydrated } from 'easy-peasy';
 import {
   Settings as SettingsIcon,
   Close as CloseIcon,
@@ -51,6 +51,7 @@ const GET_LEVELPACK = gql`
 `;
 
 const LevelPack = ({ name }) => {
+  const isRehydrated = useStoreRehydrated();
   const {
     highlight,
     personalTimes,
@@ -101,6 +102,7 @@ const LevelPack = ({ name }) => {
     }
   }, [showLegacy]);
 
+  if (!isRehydrated) return null;
   return (
     <div className={s.root}>
       <Query query={GET_LEVELPACK} variables={{ name }}>
@@ -207,7 +209,11 @@ const LevelPack = ({ name }) => {
                   timesError={timesError}
                   setError={e => setError(e)}
                   getTimes={newKuski =>
-                    getPersonalTimes({ PersonalKuskiIndex: newKuski, name })
+                    getPersonalTimes({
+                      PersonalKuskiIndex: newKuski,
+                      name,
+                      eolOnly: showLegacy ? 0 : 1,
+                    })
                   }
                   times={personalTimes}
                   highlight={highlight}

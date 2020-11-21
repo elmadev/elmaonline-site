@@ -1,56 +1,80 @@
-import React from 'react';
-import { graphql, compose } from 'react-apollo';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import styled from 'styled-components';
+import Time from 'components/Time';
+import Loading from 'components/Loading';
+import { recordsTT } from 'utils/calcs';
 
-import rankingQuery from './ranking.graphql';
-import s from './Ranking.css';
-
-class KuskiHeader extends React.Component {
-  render() {
-    const {
-      data: { getRankingByKuski },
-    } = this.props;
-    let playedAll = 0;
-    let winsAll = 0;
-    if (getRankingByKuski) {
-      if (getRankingByKuski[0]) {
-        playedAll = getRankingByKuski[0].PlayedAll;
-        winsAll = getRankingByKuski[0].WinsAll;
-      }
+const KuskiHeader = ({ KuskiIndex, Kuski }) => {
+  const { ranking, tt } = useStoreState(state => state.Kuski);
+  const { getRanking, getTt } = useStoreActions(actions => actions.Kuski);
+  useEffect(() => {
+    getRanking(KuskiIndex);
+    getTt(Kuski);
+  }, []);
+  let playedAll = 0;
+  let winsAll = 0;
+  if (ranking) {
+    if (ranking[0]) {
+      playedAll = ranking[0].PlayedAll;
+      winsAll = ranking[0].WinsAll;
     }
-    return (
-      <div style={{ alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-        <div className={s.statsContainer}>
-          <div className={s.lineThrough}>42:31:09</div>
-          <div className={s.statsTitle}>total time</div>
-        </div>
-        <div className={s.statsContainer}>
-          <div>{playedAll}</div>
-          <div className={s.statsTitle}>battles played</div>
-        </div>
-        <div className={s.statsContainer}>
-          <div>{winsAll}</div>
-          <div className={s.statsTitle}>battles won</div>
-        </div>
-      </div>
-    );
   }
-}
-
-KuskiHeader.propTypes = {
-  data: PropTypes.shape({
-    getRankingByKuski: PropTypes.arrayOf(PropTypes.shape({})),
-  }).isRequired,
+  return (
+    <Container>
+      <StatsContainer>
+        <div>
+          {tt.length === 0 ? (
+            <Loading />
+          ) : (
+            <Time time={recordsTT(tt, 'LevelBesttime')} />
+          )}
+        </div>
+        <StatsTitle>Int total time</StatsTitle>
+      </StatsContainer>
+      <StatsContainer>
+        {ranking.length === 0 ? <Loading /> : <div>{playedAll}</div>}
+        <StatsTitle>battles played</StatsTitle>
+      </StatsContainer>
+      <StatsContainer>
+        {ranking.length === 0 ? <Loading /> : <div>{winsAll}</div>}
+        <StatsTitle>battles won</StatsTitle>
+      </StatsContainer>
+    </Container>
+  );
 };
 
-export default compose(
-  withStyles(s),
-  graphql(rankingQuery, {
-    options: ownProps => ({
-      variables: {
-        KuskiIndex: ownProps.KuskiIndex,
-      },
-    }),
-  }),
-)(KuskiHeader);
+KuskiHeader.propTypes = {
+  KuskiIndex: PropTypes.number.isRequired,
+};
+
+const Container = styled.div`
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+`;
+
+const StatsTitle = styled.div`
+  color: #c3c3c3;
+  font-size: 16px;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const StatsContainer = styled.div`
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-size: 30px;
+  font-weight: 500;
+  color: #219653;
+  min-width: 150px;
+  flex-basis: auto;
+  flex-grow: 1;
+  text-align: center;
+`;
+
+export default KuskiHeader;

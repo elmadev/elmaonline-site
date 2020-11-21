@@ -38,6 +38,7 @@ jobs:
           sed -i "s|battle: ''|battle: '${{ secrets.DISCORD_CHANNELS_BATTLE_LIVE }}'|" src/config.js
           sed -i "s|times: ''|times: '${{ secrets.DISCORD_CHANNELS_TIMES_LIVE }}'|" src/config.js
           sed -i "s|events: ''|events: '${{ secrets.DISCORD_CHANNELS_EVENTS_LIVE }}'|" src/config.js
+          sed -i "s|admin: ''|admin: '${{ secrets.DISCORD_CHANNELS_ADMIN_LIVE }}'|" src/config.js
           sed -i "s|apiAuth: ''|apiAuth: '${{ secrets.DISCORD_APIAUTH_LIVE }}'|" src/config.js
           sed -i "s|url: 'https://test.elma.online/'|url: '${{ secrets.DISCORD_URL_LIVE }}'|" src/config.js
           sed -i "s|started: ''|started: '${{ secrets.DISCORD_ICONS_STARTED_LIVE }}'|" src/config.js

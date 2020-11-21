@@ -3,7 +3,6 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
-import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
@@ -40,7 +39,6 @@ const Records = ({ highlight, highlightWeeks, name }) => {
         {multiRecordsLoading && <Loading />}
         {multiRecords.map(r => (
           <TimeRow
-            to={`/levels/${r.LevelIndex}`}
             key={r.LevelIndex}
             onClick={e => {
               e.preventDefault();
@@ -108,9 +106,14 @@ const Records = ({ highlight, highlightWeeks, name }) => {
   );
 };
 
-const TimeRow = styled(Link)`
+const TimeRow = styled.span`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
-  color: ${p => (p.selected ? '#fff' : 'inherit')};
+  a {
+    color: ${p => (p.selected ? 'white' : '#219653')};
+  }
+  span {
+    color: ${p => (p.selected ? 'white' : 'inherit')};
+  }
   :hover {
     background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
     color: ${p => (p.selected ? '#fff' : 'inherit')};
