@@ -88,6 +88,7 @@ module.exports = {
       battle: '',
       times: '',
       events: '',
+      admin: '',
     },
     apiAuth: '',
     url: 'https://test.elma.online/',

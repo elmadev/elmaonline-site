@@ -22,6 +22,7 @@ import ChatView from 'components/ChatView';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
+import Play from 'styles/Play';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 
 import s from './Battle.css';
@@ -67,6 +68,7 @@ class Battle extends React.Component {
     super(props);
     this.state = {
       extra: '',
+      play: navigator.userAgent.toLowerCase().indexOf('firefox') === -1,
     };
   }
 
@@ -107,7 +109,7 @@ class Battle extends React.Component {
     const {
       data: { getBattle, getAllBattleTimes },
     } = this.props;
-    const { extra } = this.state;
+    const { extra, play } = this.state;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
@@ -116,11 +118,20 @@ class Battle extends React.Component {
       <div className={s.root}>
         <div className={s.playerContainer}>
           <div className={s.player}>
-            {isWindow && !(battleStatus(getBattle) === 'Queued') && (
-              <Recplayer
-                rec={`/dl/battlereplay/${BattleIndex}`}
-                lev={`/dl/level/${getBattle.LevelIndex}`}
-                controls
+            {play ? (
+              <>
+                {isWindow && battleStatus(getBattle) !== 'Queued' && (
+                  <Recplayer
+                    rec={`/dl/battlereplay/${BattleIndex}`}
+                    lev={`/dl/level/${getBattle.LevelIndex}`}
+                    controls
+                  />
+                )}
+              </>
+            ) : (
+              <Play
+                type="replay"
+                onClick={() => this.setState({ play: true })}
               />
             )}
           </div>

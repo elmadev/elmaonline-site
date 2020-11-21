@@ -23,6 +23,7 @@ import Recplayer from 'components/Recplayer';
 import RecList from 'components/RecList';
 import Loading from 'components/Loading';
 import Link from 'components/Link';
+import Play from 'styles/Play';
 import LocalTime from 'components/LocalTime';
 import history from 'utils/history';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
@@ -31,6 +32,9 @@ import StatsTable from './StatsTable';
 
 const Level = ({ LevelIndex }) => {
   const [tab, setTab] = useState(0);
+  const [play, setPlay] = useState(
+    navigator.userAgent.toLowerCase().indexOf('firefox') === -1,
+  );
   const {
     besttimes,
     besttimesLoading,
@@ -90,11 +94,17 @@ const Level = ({ LevelIndex }) => {
         {loading && <Loading />}
         {!loading && (
           <Player>
-            {isWindow &&
-              (battlesForLevel.length < 1 ||
-                battleStatus(battlesForLevel[0]) !== 'Queued') && (
-                <Recplayer lev={`/dl/level/${LevelIndex}`} controls />
-              )}
+            {play ? (
+              <>
+                {isWindow &&
+                  (battlesForLevel.length < 1 ||
+                    battleStatus(battlesForLevel[0]) !== 'Queued') && (
+                    <Recplayer lev={`/dl/level/${LevelIndex}`} controls />
+                  )}
+              </>
+            ) : (
+              <Play type="map" onClick={() => setPlay(true)} />
+            )}
           </Player>
         )}
       </PlayerContainer>
@@ -113,7 +123,7 @@ const Level = ({ LevelIndex }) => {
                   <br />
                   {'Level ID: '}
                   {`${LevelIndex}`}
-                  {level.Legacy && (
+                  {level.Legacy !== 0 && (
                     <div>
                       This level has legacy times imported from a third party
                       site.

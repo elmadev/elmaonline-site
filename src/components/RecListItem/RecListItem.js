@@ -49,12 +49,12 @@ class RecListItem extends React.Component {
         selected={selected}
       >
         {columns.indexOf('Replay') !== -1 && (
-          <ListCell>
+          <ListCell width={200}>
             <Link to={`/r/${replay.UUID}`}>{replay.RecFileName}</Link>
           </ListCell>
         )}
         {columns.indexOf('Level') !== -1 && (
-          <ListCell>
+          <ListCell width={100}>
             <Level LevelData={replay.LevelData} />
           </ListCell>
         )}

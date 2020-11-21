@@ -3,16 +3,21 @@ import { customAlphabet } from 'nanoid';
 
 export const recordsTT = (levels, timeObj) => {
   let tt = 0;
+  let levs = 0;
+  let finished = 0;
+  let unfinished = false;
   forEach(levels, l => {
     if (l[timeObj].length > 0) {
       tt += l[timeObj][0].Time;
+      finished += 1;
+      levs += 1;
     } else {
-      tt = 0;
-      return false;
+      levs += 1;
+      unfinished = true;
     }
     return true;
   });
-  return tt;
+  return { tt, finished, levs, unfinished };
 };
 
 export const uuid = (length = 10) => {

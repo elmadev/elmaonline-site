@@ -137,7 +137,7 @@ const CupReplays = ({ ReplayIndex, Filename }) => {
                         <Kuski kuskiData={t.KuskiData} />
                       </ListCell>
                       <ListCell>
-                        <Time time={t.Time} />
+                        <Time apples={-1} time={t.Time} />
                       </ListCell>
                     </ListRow>
                   ))}

@@ -5,6 +5,7 @@ import ReplayRating from 'components/ReplayRating/store';
 import ReplaysBy from 'components/ReplaysBy/store';
 import Register from 'components/Register/store';
 import ChatView from 'components/ChatView/store';
+import RecList from 'components/RecList/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -35,6 +36,7 @@ export default {
   Settings,
   Teams,
   Replay,
+  RecList,
   Level,
   Page: {
     sideBarVisible: true,

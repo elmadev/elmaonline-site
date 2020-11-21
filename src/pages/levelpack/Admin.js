@@ -8,12 +8,17 @@ import {
   DragHandle,
 } from '@material-ui/icons';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import Link from 'components/Link';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ListCell, ListContainer, ListHeader } from 'styles/List';
 
 const Admin = ({ records, LevelPack }) => {
   const [search, setSearch] = useState('');
-  const { levelsFound, adminLoading } = useStoreState(state => state.LevelPack);
+  const {
+    levelsFound,
+    adminLoading,
+    settings: { showLegacy },
+  } = useStoreState(state => state.LevelPack);
   const {
     deleteLevel,
     searchLevel,
@@ -29,6 +34,7 @@ const Admin = ({ records, LevelPack }) => {
         LevelPackIndex: LevelPack.LevelPackIndex,
         levels: records,
         name: LevelPack.LevelPackName,
+        showLegacy,
       });
     }
   }, []);
@@ -44,8 +50,14 @@ const Admin = ({ records, LevelPack }) => {
         source: result.source,
         destination: result.destination,
         name: LevelPack.LevelPackName,
+        showLegacy,
       });
     }
+  };
+
+  const isAlreadyAdded = levelId => {
+    const find = records.filter(l => l.LevelIndex === levelId);
+    return find.length;
   };
 
   return (
@@ -91,6 +103,7 @@ const Admin = ({ records, LevelPack }) => {
                                   LevelIndex: l.LevelIndex,
                                   LevelPackIndex: LevelPack.LevelPackIndex,
                                   name: LevelPack.LevelPackName,
+                                  showLegacy,
                                 })
                               }
                             />
@@ -142,21 +155,26 @@ const Admin = ({ records, LevelPack }) => {
             <ListCell width={180}>Add</ListCell>
           </ListHeader>
           {levelsFound.map(l => (
-            <Row key={l.LevelIndex}>
-              <ListCell width={70}>{l.LevelName}</ListCell>
+            <Row color={isAlreadyAdded(l.LevelIndex)} key={l.LevelIndex}>
+              <ListCell width={70}>
+                <Link to={`/levels/${l.LevelIndex}`}>{l.LevelName}</Link>
+              </ListCell>
               <ListCell width={300}>{l.LongName}</ListCell>
               <ListCell width={180}>
-                <Add
-                  onClick={() =>
-                    addLevel({
-                      LevelIndex: l.LevelIndex,
-                      LevelPackIndex: LevelPack.LevelPackIndex,
-                      name: LevelPack.LevelPackName,
-                      levels: records.length,
-                      last: records[records.length - 1],
-                    })
-                  }
-                />
+                {!isAlreadyAdded(l.LevelIndex) && (
+                  <Add
+                    onClick={() =>
+                      addLevel({
+                        LevelIndex: l.LevelIndex,
+                        LevelPackIndex: LevelPack.LevelPackIndex,
+                        name: LevelPack.LevelPackName,
+                        levels: records.length,
+                        last: records[records.length - 1],
+                        showLegacy,
+                      })
+                    }
+                  />
+                )}
               </ListCell>
             </Row>
           ))}
@@ -194,9 +212,9 @@ const Add = styled(PlaylistAdd)`
 
 const Row = styled.div`
   display: table-row;
-  color: inherit;
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
+  color: ${p => (p.color ? '#b3b3b3' : 'inherit')};
   :hover {
     background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
     color: ${p => (p.selected ? '#fff' : 'inherit')};

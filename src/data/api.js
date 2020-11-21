@@ -31,6 +31,8 @@ export const ReplaysSearchByLevel = data =>
   api.get(`replay/search/byLevel/${data.q}/${data.offset}`);
 export const ReplaysSearchByFilename = data =>
   api.get(`replay/search/byFilename/${data.q}/${data.offset}`);
+export const ReplaysByLevelIndex = LevelIndex =>
+  api.get(`replay/byLevelIndex/${LevelIndex}`);
 
 // country
 export const Country = () => api.get('country');
@@ -161,3 +163,7 @@ export const SearchChat = data => api.get('chatlog', { params: data });
 export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
 export const LevelTimeStats = LevelIndex =>
   api.get(`level/timestats/${LevelIndex}`);
+
+// ranking
+export const PersonalRanking = KuskiIndex =>
+  api.get(`ranking/kuski/${KuskiIndex}`);

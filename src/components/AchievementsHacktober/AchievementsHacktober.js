@@ -21,6 +21,7 @@ const a = {
   '6879': ['19'],
   '144': ['20'],
   '95': ['20'],
+  '137': ['20'],
 };
 
 const AchievementsHacktober = ({ KuskiIndex }) => {

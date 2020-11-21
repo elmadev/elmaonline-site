@@ -109,6 +109,10 @@ const getLatest = async (KuskiIndex, limit) => {
 };
 
 router
+  .get('/multi/:LevelIndex/:limit', async (req, res) => {
+    const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
+    res.json(data);
+  })
   .get('/:LevelIndex/:limit', async (req, res) => {
     const data = await getTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
@@ -123,10 +127,6 @@ router
   })
   .get('/latest/:KuskiIndex/:limit', async (req, res) => {
     const data = await getLatest(req.params.KuskiIndex, req.params.limit);
-    res.json(data);
-  })
-  .get('/multi/:LevelIndex/:limit', async (req, res) => {
-    const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
   });
 
