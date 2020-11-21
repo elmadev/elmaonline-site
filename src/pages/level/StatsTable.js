@@ -1,9 +1,11 @@
 import React from 'react';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
 import _ from 'lodash';
+import { nickId } from 'utils/nick';
 
 const finishedTypes = {
   B: 'Finished (Apple Bug)',
@@ -16,6 +18,9 @@ const finishedTypes = {
 
 const StatsTable = ({ data, loading }) => {
   if (loading) return <Loading />;
+
+  if (!nickId()) return <Container>Log in to see personal stats.</Container>;
+
   const getTotalRunCount = () => {
     return _.sumBy(data, 'RunCount');
   };
@@ -92,5 +97,9 @@ const StatsTable = ({ data, loading }) => {
 StatsTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
+
+const Container = styled.div`
+  padding: 20px;
+`;
 
 export default StatsTable;
