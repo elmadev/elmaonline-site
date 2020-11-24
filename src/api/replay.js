@@ -24,6 +24,33 @@ const attributes = [
   'Nitro',
 ];
 
+const getReplays = async (offset = 0, limit = 50) => {
+  const data = await Replay.findAll({
+    limit: searchLimit(limit),
+    offset: searchOffset(offset),
+    where: { Unlisted: 0 },
+    order: [['Uploaded', 'DESC']],
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return data;
+};
+
 const getReplayByReplayId = async ReplayIndex => {
   const data = await Replay.findAll({
     where: { ReplayIndex, Unlisted: 0 },
@@ -176,8 +203,9 @@ const getReplaysByLevelIndex = async LevelIndex => {
 };
 
 router
-  .get('/', (req, res) => {
-    res.sendStatus(404);
+  .get('/', async (req, res) => {
+    const data = await getReplays(req.query.offset, req.query.limit);
+    res.json(data);
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayByReplayId(req.params.ReplayIndex);

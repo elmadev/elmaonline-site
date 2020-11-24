@@ -30,12 +30,15 @@ export function like(text) {
   return text.replace(/%/g, '\\%').replace(/\*/g, '%');
 }
 
-export function searchLimit(offset) {
-  const offsetInt = parseInt(offset, 10);
-  if (offsetInt < 0) {
+export function searchLimit(limit) {
+  const limitInt = parseInt(limit, 10);
+  if (limitInt < 0) {
     return 10000;
   }
-  return 25;
+  if (limitInt > 10000) {
+    return 10000;
+  }
+  return limitInt;
 }
 
 export function searchOffset(offset) {
