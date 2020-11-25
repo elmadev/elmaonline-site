@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import { mod } from 'utils/nick';
 
 import Link from 'components/Link';
 
@@ -81,6 +82,11 @@ const SideBar = () => {
           <Link to="/help" onClick={onNavigation}>
             Help
           </Link>
+          {mod() === 1 && (
+            <Link to="/mod" onClick={onNavigation}>
+              Mod
+            </Link>
+          )}
         </div>
       </div>
     </div>
