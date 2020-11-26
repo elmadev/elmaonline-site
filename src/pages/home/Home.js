@@ -189,7 +189,4 @@ class Home extends React.Component {
   }
 }
 
-export default compose(
-  withStyles(s),
-  graphql(homeQuery),
-)(Home); // place the query object in the graphql decorator here so it's available in the this.props object
+export default compose(withStyles(s), graphql(homeQuery))(Home); // place the query object in the graphql decorator here so it's available in the this.props object

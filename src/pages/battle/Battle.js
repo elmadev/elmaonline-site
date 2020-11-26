@@ -196,6 +196,7 @@ class Battle extends React.Component {
                       Number(getBattle.Started) +
                       Number(getBattle.Duration * 60)
                     }
+                    logOffset={Number(2 * 60)}
                     paginated
                   />
                 </ExpansionPanelDetails>

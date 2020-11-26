@@ -21,6 +21,7 @@ const ChatView = props => {
     count = false,
     fullHeight,
     paginated,
+    logOffset,
   } = props;
 
   const {
@@ -67,13 +68,29 @@ const ChatView = props => {
 
   useEffect(() => {
     searchChat(opts);
-  }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
+  }, [chatPage, KuskiIds, text, start, end + logOffset, limit, order, count]);
 
   if (loading) return <CircularProgress />;
 
   if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
   const colorMap = {};
+
+  const battleEndEvent = {
+    Entered: end,
+    Event: {
+      Type: 'battleEnd',
+      Text: '--- Battle End ---',
+    },
+  };
+
+  chatLines.splice(
+    chatLines.findIndex(
+      line => parseInt(line.Entered, 10) > parseInt(battleEndEvent.Entered, 10),
+    ),
+    0,
+    battleEndEvent,
+  );
 
   const colorPool = [
     '#cb52e2',
@@ -113,34 +130,46 @@ const ChatView = props => {
 
   return (
     <div className={s.chat} style={fullHeight && { maxHeight: 'max-content' }}>
-      {chatLines.map(l => (
-        <Tooltip
-          title={`#${l.ChatIndex}`}
-          key={l.ChatIndex}
-          placement="left-start"
-          arrow
-        >
+      {chatLines.map(l =>
+        !l.Event ? (
+          <Tooltip
+            title={`#${l.ChatIndex}`}
+            key={l.ChatIndex}
+            placement="left-start"
+            arrow
+          >
+            <div className={s.chatLine}>
+              <div className={s.timestamp}>
+                <LocalTime date={l.Entered} format={timestamp} parse="X" />
+              </div>{' '}
+              <div className={s.message}>
+                <span className={s.kuski}>
+                  &lt;
+                  {l.KuskiData ? (
+                    <span style={{ color: getColor(l.KuskiData.Kuski) }}>
+                      {l.KuskiData.Kuski}
+                    </span>
+                  ) : (
+                    '[No User Data]'
+                  )}
+                  &gt;
+                </span>{' '}
+                <span>{l.Text}</span>
+              </div>
+            </div>
+          </Tooltip>
+        ) : (
           <div className={s.chatLine}>
             <div className={s.timestamp}>
+              {' '}
               <LocalTime date={l.Entered} format={timestamp} parse="X" />
             </div>{' '}
-            <div className={s.message}>
-              <span className={s.kuski}>
-                &lt;
-                {l.KuskiData ? (
-                  <span style={{ color: getColor(l.KuskiData.Kuski) }}>
-                    {l.KuskiData.Kuski}
-                  </span>
-                ) : (
-                  '[No User Data]'
-                )}
-                &gt;
-              </span>{' '}
-              <span>{l.Text}</span>
+            <div className={s.event}>
+              <span className={s.kuski}>{l.Event.Text}</span>{' '}
             </div>
           </div>
-        </Tooltip>
-      ))}
+        ),
+      )}
 
       {paginated && chatLines.length > limit && (
         <div className={s.paginationWrapper}>

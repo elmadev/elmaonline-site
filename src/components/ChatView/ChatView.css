@@ -19,6 +19,11 @@
   font-weight: 400;
 }
 
+.event {
+  font-size: 14px;
+  color: #292929;
+}
+
 .timestamp {
   color: #7d7d7d;
   min-width: 50px;
