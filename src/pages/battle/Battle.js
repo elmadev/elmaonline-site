@@ -196,8 +196,8 @@ class Battle extends React.Component {
                       Number(getBattle.Started) +
                       Number((getBattle.Duration + 2) * 60)
                     }
-                    // logOffset: when the battle ends compared to the start prop
-                    logOffset={Number(getBattle.Duration * 60)}
+                    // battleEndEvent: when the battle ends compared to the start prop
+                    battleEnd={Number(getBattle.Duration * 60)}
                     paginated
                   />
                 </ExpansionPanelDetails>

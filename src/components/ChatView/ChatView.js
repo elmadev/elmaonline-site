@@ -21,7 +21,7 @@ const ChatView = props => {
     count = false,
     fullHeight,
     paginated,
-    logOffset,
+    battleEnd,
   } = props;
 
   const {
@@ -76,11 +76,11 @@ const ChatView = props => {
     // add the battle end event to the chat log
     // currently only used when Battle.js calls ChatView
     if (!chatLines || chatLines.length === 0) return;
-    if (logOffset) {
+    if (battleEnd) {
       const chatLineArray = [...chatLines];
       // add a "chatline" for the battle end event
       const battleEndEvent = {
-        BattleEnd: start + logOffset,
+        BattleEnd: start + battleEnd,
         Event: {
           Type: 'battleEnd',
           Text: 'Battle ended at ',
@@ -106,7 +106,7 @@ const ChatView = props => {
     } else {
       setChatLinesWithEvent(chatLines);
     }
-  }, [logOffset, chatLines]);
+  }, [battleEnd, chatLines]);
 
   if (loading) return <CircularProgress />;
 
