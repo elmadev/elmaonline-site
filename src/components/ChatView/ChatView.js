@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Typography, CircularProgress, Tooltip } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
@@ -35,6 +35,8 @@ const ChatView = props => {
     actions => actions.ChatView,
   );
 
+  const [chatLinesWithEvent, setChatLinesWithEvent] = useState([]);
+
   const opts = {
     KuskiIds,
     text,
@@ -70,39 +72,47 @@ const ChatView = props => {
     searchChat(opts);
   }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
 
+  useEffect(() => {
+    // add the battle end event to the chat log
+    // currently only used when Battle.js calls ChatView
+    if (!chatLines || chatLines.length === 0) return;
+    if (logOffset) {
+      const chatLineArray = [...chatLines];
+      // add a "chatline" for the battle end event
+      const battleEndEvent = {
+        BattleEnd: start + logOffset,
+        Event: {
+          Type: 'battleEnd',
+          Text: 'Battle ended at ',
+        },
+      };
+      if (
+        battleEndEvent.BattleEnd >
+        parseInt(chatLineArray[chatLineArray.length - 1].Entered, 10)
+      ) {
+        chatLineArray.push(battleEndEvent);
+      } else {
+        chatLineArray.splice(
+          chatLineArray.findIndex(
+            line =>
+              parseInt(line.Entered, 10) >
+              parseInt(battleEndEvent.BattleEnd, 10),
+          ),
+          0,
+          battleEndEvent,
+        );
+      }
+      setChatLinesWithEvent(chatLineArray);
+    } else {
+      setChatLinesWithEvent(chatLines);
+    }
+  }, [logOffset, chatLines]);
+
   if (loading) return <CircularProgress />;
 
   if (!chatLines.length) return <span>No chat recorded during this time.</span>;
 
   const colorMap = {};
-
-  // add the battle end event to the chat log
-  // currently only used when Battle.js calls ChatView
-  if (logOffset) {
-    // add a "chatline" for the battle end event
-    const battleEndEvent = {
-      BattleEnd: start + logOffset,
-      Event: {
-        Type: 'battleEnd',
-        Text: 'Battle ended at ',
-      },
-    };
-    if (
-      battleEndEvent.BattleEnd >
-      parseInt(chatLines[chatLines.length - 1].Entered, 10)
-    ) {
-      chatLines.push(battleEndEvent);
-    } else {
-      chatLines.splice(
-        chatLines.findIndex(
-          line =>
-            parseInt(line.Entered, 10) > parseInt(battleEndEvent.BattleEnd, 10),
-        ),
-        0,
-        battleEndEvent,
-      );
-    }
-  }
 
   const colorPool = [
     '#cb52e2',
@@ -142,7 +152,7 @@ const ChatView = props => {
 
   return (
     <div className={s.chat} style={fullHeight && { maxHeight: 'max-content' }}>
-      {chatLines.map(l =>
+      {chatLinesWithEvent.map(l =>
         !l.Event ? (
           <Tooltip
             title={`#${l.ChatIndex}`}
@@ -172,7 +182,7 @@ const ChatView = props => {
           </Tooltip>
         ) : (
           // add a battle end line if current chatline has Event
-          <div className={s.container}>
+          <div className={s.container} key={`${l.Entered}-${l.Event.Type}`}>
             <hr className={s.line} />
             <span className={s.event}>
               <>
@@ -185,7 +195,7 @@ const ChatView = props => {
         ),
       )}
 
-      {paginated && chatLines.length > limit && (
+      {paginated && chatLinesWithEvent.length > limit && (
         <div className={s.paginationWrapper}>
           <Typography variant="caption" display="block" gutterBottom>
             {`${opts.offset + 1}-${Math.min(
