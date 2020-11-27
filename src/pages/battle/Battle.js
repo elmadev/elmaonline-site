@@ -116,9 +116,6 @@ class Battle extends React.Component {
 
     return (
       <div className={s.root}>
-        {/*
-        console.log('a', Number((getBattle.Duration + 15) * 60))
-        */}
         <div className={s.playerContainer}>
           <div className={s.player}>
             {play ? (
