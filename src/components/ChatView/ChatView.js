@@ -68,7 +68,7 @@ const ChatView = props => {
 
   useEffect(() => {
     searchChat(opts);
-  }, [chatPage, KuskiIds, text, start, end + logOffset, limit, order, count]);
+  }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
 
   if (loading) return <CircularProgress />;
 
@@ -76,21 +76,33 @@ const ChatView = props => {
 
   const colorMap = {};
 
-  const battleEndEvent = {
-    Entered: end,
-    Event: {
-      Type: 'battleEnd',
-      Text: '--- Battle End ---',
-    },
-  };
-
-  chatLines.splice(
-    chatLines.findIndex(
-      line => parseInt(line.Entered, 10) > parseInt(battleEndEvent.Entered, 10),
-    ),
-    0,
-    battleEndEvent,
-  );
+  // add the battle end event to the chat log
+  // currently only used when Battle.js calls ChatView
+  if (logOffset) {
+    // add a "chatline" for the battle end event
+    const battleEndEvent = {
+      BattleEnd: start + logOffset,
+      Event: {
+        Type: 'battleEnd',
+        Text: 'Battle ended at ',
+      },
+    };
+    if (
+      battleEndEvent.BattleEnd >
+      parseInt(chatLines[chatLines.length - 1].Entered, 10)
+    ) {
+      chatLines.push(battleEndEvent);
+    } else {
+      chatLines.splice(
+        chatLines.findIndex(
+          line =>
+            parseInt(line.Entered, 10) > parseInt(battleEndEvent.BattleEnd, 10),
+        ),
+        0,
+        battleEndEvent,
+      );
+    }
+  }
 
   const colorPool = [
     '#cb52e2',
@@ -159,14 +171,16 @@ const ChatView = props => {
             </div>
           </Tooltip>
         ) : (
-          <div className={s.chatLine}>
-            <div className={s.timestamp}>
-              {' '}
-              <LocalTime date={l.Entered} format={timestamp} parse="X" />
-            </div>{' '}
-            <div className={s.event}>
-              <span className={s.kuski}>{l.Event.Text}</span>{' '}
-            </div>
+          // add a battle end line if current chatline has Event
+          <div className={s.container}>
+            <hr className={s.line} />
+            <span className={s.event}>
+              <>
+                {l.Event.Text}
+                {<LocalTime date={l.BattleEnd} format={timestamp} parse="X" />}
+              </>
+            </span>
+            <hr className={s.line} />
           </div>
         ),
       )}

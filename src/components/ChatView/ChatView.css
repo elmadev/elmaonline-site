@@ -19,9 +19,22 @@
   font-weight: 400;
 }
 
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.line {
+  margin: 7px;
+  border-color: #7d7d7d;
+  width: 100%;
+}
+
 .event {
-  font-size: 14px;
-  color: #292929;
+  position: relative;
+  color: #7d7d7d;
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 .timestamp {
