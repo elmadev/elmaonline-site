@@ -194,8 +194,10 @@ class Battle extends React.Component {
                     start={Number(getBattle.Started)}
                     end={
                       Number(getBattle.Started) +
-                      Number(getBattle.Duration * 60)
+                      Number((getBattle.Duration + 2) * 60)
                     }
+                    // battleEndEvent: when the battle ends compared to the start prop
+                    battleEnd={Number(getBattle.Duration * 60)}
                     paginated
                   />
                 </ExpansionPanelDetails>

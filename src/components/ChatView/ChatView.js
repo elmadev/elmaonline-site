@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Typography, CircularProgress, Tooltip } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
@@ -21,6 +21,7 @@ const ChatView = props => {
     count = false,
     fullHeight,
     paginated,
+    battleEnd,
   } = props;
 
   const {
@@ -33,6 +34,8 @@ const ChatView = props => {
   const { searchChat, setChatPage } = useStoreActions(
     actions => actions.ChatView,
   );
+
+  const [chatLinesWithEvent, setChatLinesWithEvent] = useState([]);
 
   const opts = {
     KuskiIds,
@@ -68,6 +71,42 @@ const ChatView = props => {
   useEffect(() => {
     searchChat(opts);
   }, [chatPage, KuskiIds, text, start, end, limit, order, count]);
+
+  useEffect(() => {
+    // add the battle end event to the chat log
+    // currently only used when Battle.js calls ChatView
+    if (!chatLines || chatLines.length === 0) return;
+    if (battleEnd) {
+      const chatLineArray = [...chatLines];
+      // add a "chatline" for the battle end event
+      const battleEndEvent = {
+        BattleEnd: start + battleEnd,
+        Event: {
+          Type: 'battleEnd',
+          Text: 'Battle ended at ',
+        },
+      };
+      if (
+        battleEndEvent.BattleEnd >
+        parseInt(chatLineArray[chatLineArray.length - 1].Entered, 10)
+      ) {
+        chatLineArray.push(battleEndEvent);
+      } else {
+        chatLineArray.splice(
+          chatLineArray.findIndex(
+            line =>
+              parseInt(line.Entered, 10) >
+              parseInt(battleEndEvent.BattleEnd, 10),
+          ),
+          0,
+          battleEndEvent,
+        );
+      }
+      setChatLinesWithEvent(chatLineArray);
+    } else {
+      setChatLinesWithEvent(chatLines);
+    }
+  }, [battleEnd, chatLines]);
 
   if (loading) return <CircularProgress />;
 
@@ -113,36 +152,50 @@ const ChatView = props => {
 
   return (
     <div className={s.chat} style={fullHeight && { maxHeight: 'max-content' }}>
-      {chatLines.map(l => (
-        <Tooltip
-          title={`#${l.ChatIndex}`}
-          key={l.ChatIndex}
-          placement="left-start"
-          arrow
-        >
-          <div className={s.chatLine}>
-            <div className={s.timestamp}>
-              <LocalTime date={l.Entered} format={timestamp} parse="X" />
-            </div>{' '}
-            <div className={s.message}>
-              <span className={s.kuski}>
-                &lt;
-                {l.KuskiData ? (
-                  <span style={{ color: getColor(l.KuskiData.Kuski) }}>
-                    {l.KuskiData.Kuski}
-                  </span>
-                ) : (
-                  '[No User Data]'
-                )}
-                &gt;
-              </span>{' '}
-              <span>{l.Text}</span>
+      {chatLinesWithEvent.map(l =>
+        !l.Event ? (
+          <Tooltip
+            title={`#${l.ChatIndex}`}
+            key={l.ChatIndex}
+            placement="left-start"
+            arrow
+          >
+            <div className={s.chatLine}>
+              <div className={s.timestamp}>
+                <LocalTime date={l.Entered} format={timestamp} parse="X" />
+              </div>{' '}
+              <div className={s.message}>
+                <span className={s.kuski}>
+                  &lt;
+                  {l.KuskiData ? (
+                    <span style={{ color: getColor(l.KuskiData.Kuski) }}>
+                      {l.KuskiData.Kuski}
+                    </span>
+                  ) : (
+                    '[No User Data]'
+                  )}
+                  &gt;
+                </span>{' '}
+                <span>{l.Text}</span>
+              </div>
             </div>
+          </Tooltip>
+        ) : (
+          // add a battle end line if current chatline has Event
+          <div className={s.container} key={`${l.Entered}-${l.Event.Type}`}>
+            <hr className={s.line} />
+            <span className={s.event}>
+              <>
+                {l.Event.Text}
+                {<LocalTime date={l.BattleEnd} format={timestamp} parse="X" />}
+              </>
+            </span>
+            <hr className={s.line} />
           </div>
-        </Tooltip>
-      ))}
+        ),
+      )}
 
-      {paginated && chatLines.length > limit && (
+      {paginated && chatLinesWithEvent.length > limit && (
         <div className={s.paginationWrapper}>
           <Typography variant="caption" display="block" gutterBottom>
             {`${opts.offset + 1}-${Math.min(
