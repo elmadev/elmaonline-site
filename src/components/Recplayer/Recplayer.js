@@ -4,73 +4,80 @@ import PropTypes from 'prop-types';
 const RecPlayer =
   typeof document !== 'undefined' && require('recplayer-react').default; // eslint-disable-line global-require
 
-class Recplayer extends React.Component {
-  static propTypes = {
-    rec: PropTypes.string,
-    lev: PropTypes.string.isRequired,
-    width: PropTypes.string,
-    height: PropTypes.string,
-    zoom: PropTypes.number,
-    controls: PropTypes.bool,
-    imageUrl: PropTypes.string,
-    autoPlay: PropTypes.oneOf(['if-visible', 'yes', 'no']),
-  };
+const Recplayer = props => {
+  // const [playing, setPlaying] = useState(false);
 
-  static defaultProps = {
-    rec: null,
-    width: 'auto',
-    height: 'auto',
-    zoom: 1,
-    controls: true,
-    imageUrl: 'https://elma.online/recplayer',
-    autoPlay: 'if-visible',
-  };
+  // const handleVisibilityChange = () => {
+  //   console.log("bear");
+  //   const { visibilityState } = document;
+  //   if (visibilityState === 'visible') {
+  //     console.log("bear is playing");
+  //     setPlaying(true);
+  //   }
+  // };
 
-  render() {
-    const {
-      rec,
-      lev,
-      width,
-      height,
-      zoom,
-      controls,
-      imageUrl,
-      autoPlay,
-    } = this.props;
+  // useEffect(() => {
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, []);
 
-    let shouldAutoPlay = false;
+  const { rec, lev, width, height, zoom, controls, imageUrl, autoPlay } = props;
 
-    if (autoPlay === 'if-visible') {
-      const { visibilityState } = document;
+  let shouldAutoPlay = false;
 
-      if (visibilityState === 'visible') {
-        shouldAutoPlay = true;
-      }
-    } else if (autoPlay === 'no') {
-      shouldAutoPlay = false;
-    } else if (autoPlay === 'yes') {
+  if (autoPlay === 'if-visible') {
+    const { visibilityState } = document;
+
+    if (visibilityState === 'visible') {
       shouldAutoPlay = true;
     }
-
-    return (
-      <>
-        {RecPlayer && lev ? (
-          <RecPlayer
-            recUrl={rec}
-            levUrl={lev}
-            width={width}
-            height={height}
-            zoom={zoom}
-            controls={controls}
-            imageUrl={imageUrl}
-            autoPlay={shouldAutoPlay}
-          />
-        ) : (
-          <span>Loading..</span>
-        )}
-      </>
-    );
+  } else if (autoPlay === 'no') {
+    shouldAutoPlay = false;
+  } else if (autoPlay === 'yes') {
+    shouldAutoPlay = true;
   }
-}
+
+  return (
+    <>
+      {RecPlayer && lev ? (
+        <RecPlayer
+          recUrl={rec}
+          levUrl={lev}
+          width={width}
+          height={height}
+          zoom={zoom}
+          controls={controls}
+          imageUrl={imageUrl}
+          autoPlay={shouldAutoPlay}
+        />
+      ) : (
+        <span>Loading..</span>
+      )}
+    </>
+  );
+};
+
+Recplayer.propTypes = {
+  rec: PropTypes.string,
+  lev: PropTypes.string.isRequired,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  zoom: PropTypes.number,
+  controls: PropTypes.bool,
+  imageUrl: PropTypes.string,
+  autoPlay: PropTypes.oneOf(['if-visible', 'yes', 'no']),
+};
+
+Recplayer.defaultProps = {
+  rec: null,
+  width: 'auto',
+  height: 'auto',
+  zoom: 1,
+  controls: true,
+  imageUrl: 'https://elma.online/recplayer',
+  autoPlay: 'if-visible',
+};
 
 export default Recplayer;

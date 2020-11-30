@@ -9,7 +9,7 @@ const Play = ({ onClick, type }) => {
     <Paper onClick={() => onClick && onClick()}>
       <Container>
         <Arrow />
-        {type === 'replay' && <Text>Click to play replay</Text>}
+        {type === 'replay' && <Text>Click to show replay</Text>}
         {type === 'map' && <Text>Click to show map</Text>}
       </Container>
     </Paper>
