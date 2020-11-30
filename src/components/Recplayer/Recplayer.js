@@ -5,24 +5,6 @@ const RecPlayer =
   typeof document !== 'undefined' && require('recplayer-react').default; // eslint-disable-line global-require
 
 const Recplayer = props => {
-  // const [playing, setPlaying] = useState(false);
-
-  // const handleVisibilityChange = () => {
-  //   console.log("bear");
-  //   const { visibilityState } = document;
-  //   if (visibilityState === 'visible') {
-  //     console.log("bear is playing");
-  //     setPlaying(true);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, []);
-
   const { rec, lev, width, height, zoom, controls, imageUrl, autoPlay } = props;
 
   let shouldAutoPlay = false;
