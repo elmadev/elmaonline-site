@@ -10,11 +10,18 @@ import {
   Close as CloseIcon,
 } from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
-import { Tabs, Tab } from '@material-ui/core';
-import OutsideClickHandler from 'react-outside-click-handler';
+import {
+  Tabs,
+  Tab,
+  ClickAwayListener,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel,
+} from '@material-ui/core';
 
 import { nick, nickId } from 'utils/nick';
-import { Number } from 'components/Selectors';
 import FieldBoolean from 'components/FieldBoolean';
 import Records from './Records';
 import TotalTimes from './TotalTimes';
@@ -104,7 +111,7 @@ const LevelPack = ({ name }) => {
 
   if (!isRehydrated) return null;
   return (
-    <div className={s.root}>
+    <RootStyle>
       <Query query={GET_LEVELPACK} variables={{ name }}>
         {({ data: { getLevelPack }, loading, error }) => {
           if (loading) return null;
@@ -124,23 +131,19 @@ const LevelPack = ({ name }) => {
                 <Tab label="Multi records" />
                 {nickId() === getLevelPack.KuskiIndex && <Tab label="Admin" />}
               </Tabs>
-              <div className={s.levelPackName}>
-                <span className={s.shortName}>
-                  {getLevelPack.LevelPackName}
-                </span>{' '}
-                <span className={s.longName}>
+              <LevelPackName>
+                <ShortNameStyled>{getLevelPack.LevelPackName}</ShortNameStyled>{' '}
+                <LongNameStyled>
                   {getLevelPack.LevelPackLongName}
-                </span>
+                </LongNameStyled>
                 <a href={`/dl/pack/${getLevelPack.LevelPackName}`}>
                   <Download>Download</Download>
                 </a>
-              </div>
-              <div className={s.description}>{getLevelPack.LevelPackDesc}</div>
+              </LevelPackName>
+              <DescriptionStyle>{getLevelPack.LevelPackDesc}</DescriptionStyle>
               <Settings>
                 {openSettings ? (
-                  <OutsideClickHandler
-                    onOutsideClick={() => setOpenSettings(false)}
-                  >
+                  <ClickAwayListener onClickAway={() => setOpenSettings(false)}>
                     <Paper>
                       <SettingsHeader>
                         <ClickCloseIcon
@@ -148,15 +151,58 @@ const LevelPack = ({ name }) => {
                         />
                         <SettingsHeadline>Settings</SettingsHeadline>
                       </SettingsHeader>
-                      <SettingItem>
-                        Highlight times newer than{' '}
-                        <Number
-                          number={highlightWeeks}
-                          updated={n => setHighlightWeeks(n)}
-                          name="weeks"
-                          numbers={[0, 1, 2, 3, 4]}
-                        />
-                      </SettingItem>
+                      <FormControl component="fieldset" focused={false}>
+                        <RadioButtonContainer>
+                          <RadioButtonItem>
+                            <FormLabel component="legend">
+                              Highlight times newer than{' '}
+                            </FormLabel>
+                          </RadioButtonItem>
+                          <RadioButtonItem>
+                            <RadioGroup
+                              aria-label="highlightWeeks"
+                              value={highlightWeeks}
+                              onChange={n => setHighlightWeeks(n.target.value)}
+                              name="weeks"
+                              row
+                            >
+                              <FormControlLabel
+                                value={0}
+                                checked={highlightWeeks === '0'}
+                                label="0"
+                                control={<Radio size="small" />}
+                              />
+                              <FormControlLabel
+                                value={1}
+                                checked={highlightWeeks === '1'}
+                                label="1"
+                                control={<Radio size="small" />}
+                              />
+                              <FormControlLabel
+                                value={2}
+                                checked={highlightWeeks === '2'}
+                                label="2"
+                                control={<Radio size="small" />}
+                              />
+                              <FormControlLabel
+                                value={3}
+                                checked={highlightWeeks === '3'}
+                                label="3"
+                                control={<Radio size="small" />}
+                              />
+                              <FormControlLabel
+                                value={4}
+                                checked={highlightWeeks === '4'}
+                                label="4"
+                                control={<Radio size="small" />}
+                              />
+                            </RadioGroup>
+                          </RadioButtonItem>
+                          <RadioButtonItem>
+                            <FormLabel component="legend">weeks</FormLabel>
+                          </RadioButtonItem>
+                        </RadioButtonContainer>
+                      </FormControl>
                       {getLevelPack.Legacy === 1 && (
                         <>
                           <SettingItem>
@@ -176,7 +222,7 @@ const LevelPack = ({ name }) => {
                         </>
                       )}
                     </Paper>
-                  </OutsideClickHandler>
+                  </ClickAwayListener>
                 ) : (
                   <ClickSettingsIcon onClick={() => setOpenSettings(true)} />
                 )}
@@ -238,13 +284,37 @@ const LevelPack = ({ name }) => {
           );
         }}
       </Query>
-    </div>
+    </RootStyle>
   );
 };
 
 LevelPack.propTypes = {
   name: PropTypes.string.isRequired,
 };
+
+const RootStyle = styled.div`
+  background: #fff;
+  min-height: 100%;
+  box-sizing: border-box;
+`;
+
+const LevelPackName = styled.div`
+  font-size: 20px;
+  padding: 10px;
+`;
+
+const ShortNameStyled = styled.span`
+  font-weight: 500;
+`;
+
+const LongNameStyled = styled.span`
+  color: #8c8c8c;
+`;
+
+const DescriptionStyle = styled.div`
+  margin: 0 10px;
+  font-size: 14px;
+`;
 
 const Download = styled.span`
   padding-left: 10px;
@@ -263,7 +333,7 @@ const SettingsHeader = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  margin: 2px;
+  margin: 5px;
 `;
 
 const SettingsHeadline = styled.div`
@@ -274,8 +344,21 @@ const SettingsHeadline = styled.div`
 const SettingItem = styled.div`
   display: flex;
   align-items: center;
-  margin: 6px;
+  margin-left: 10px;
   padding-bottom: 6px;
+`;
+
+const RadioButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 12px;
+`;
+
+const RadioButtonItem = styled.div`
+  display: flex;
+  float: left;
+  margin-right: 15px;
 `;
 
 const ClickSettingsIcon = styled(SettingsIcon)`
