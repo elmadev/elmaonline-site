@@ -111,6 +111,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'settings' */ './pages/settings'),
     },
     {
+      path: '/mod',
+      load: () => import(/* webpackChunkName: 'mod' */ './pages/mod'),
+    },
+    {
       path: '/confirm/:confirmCode',
       load: () => import(/* webpackChunkName: 'confirm' */ './pages/confirm'),
     },

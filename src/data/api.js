@@ -167,3 +167,6 @@ export const LevelTimeStats = LevelIndex =>
 // ranking
 export const PersonalRanking = KuskiIndex =>
   api.get(`ranking/kuski/${KuskiIndex}`);
+
+// mod
+export const NickRequests = () => api.get(`mod/nickrequests`);

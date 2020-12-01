@@ -18,6 +18,7 @@ import Replay from 'pages/cupreplay/store';
 import Teams from 'pages/teams/store';
 import Kuskis from 'pages/kuskis/store';
 import Level from 'pages/level/store';
+import Mod from 'pages/mod/store';
 
 export default {
   ReplayComments,
@@ -34,6 +35,7 @@ export default {
   Kuski,
   LevelsAdd,
   Settings,
+  Mod,
   Teams,
   Replay,
   RecList,
