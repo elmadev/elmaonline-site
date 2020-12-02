@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
-import 'components/variables.css';
+import 'components/variables.css'; // probably won't work, not used in document
 import {
   Typography,
   ExpansionPanel,
