@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
+import 'components/variables.css';
 import {
   Typography,
   ExpansionPanel,
@@ -24,7 +25,6 @@ import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 import RecView from './RecView';
 
-import s from './Battle.css';
 import battleQuery from './battle.graphql';
 
 const GET_BATTLE_TIMES = gql`
@@ -110,52 +110,52 @@ class Battle extends React.Component {
     const { extra } = this.state;
     const isWindow = typeof window !== 'undefined';
 
-    if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
+    if (!getBattle) return <Root>Battle is unfinished</Root>;
 
     return (
-      <div className={s.root}>
+      <Root>
         <RecView
           isWindow={isWindow}
           BattleIndex={BattleIndex}
           levelIndex={getBattle.LevelIndex}
           battleStatus={battleStatus(getBattle)}
         />
-        <div className={s.rightBarContainer}>
-          <div className={s.chatContainer}>
+        <RightBarContainer>
+          <ChatContainer>
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body2">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <div className={s.battleDescription}>
+                <BattleStyleDescription>
                   {getBattle.Duration} minute{' '}
-                  <span className={s.battleType}>
+                  <BattleTypeStyled>
                     <BattleType type={getBattle.BattleType} />
-                  </span>{' '}
+                  </BattleTypeStyled>{' '}
                   battle in{' '}
                   <a href={`/dl/level/${getBattle.LevelIndex}`}>
                     {getBattle.LevelData ? getBattle.LevelData.LevelName : '?'}
                     .lev
                   </a>{' '}
                   {getBattle.KuskiData.Kuski}
-                  <div className={s.battleTimestamp}>
+                  <BattleTimeStampStyled>
                     Started{' '}
                     <LocalTime
                       date={getBattle.Started}
                       format="DD.MM.YYYY HH:mm:ss"
                       parse="X"
                     />
-                  </div>
-                  <div className={s.battleTimestamp}>
+                  </BattleTimeStampStyled>
+                  <BattleTimeStampStyled>
                     <a href={`/dl/battlereplay/${BattleIndex}`}>
                       Download replay
                     </a>
-                  </div>
+                  </BattleTimeStampStyled>
                   <br />
                   <Link to={`/levels/${getBattle.LevelIndex}`}>
                     Go to level page
                   </Link>
-                </div>
+                </BattleStyleDescription>
               </ExpansionPanelDetails>
             </ExpansionPanel>
             {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
@@ -187,9 +187,9 @@ class Battle extends React.Component {
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}
-          </div>
-        </div>
-        <div className={s.levelStatsContainer}>
+          </ChatContainer>
+        </RightBarContainer>
+        <LevelStatsContainer>
           <Paper>
             {getBattle.Results && (
               <ListContainer>
@@ -250,14 +250,47 @@ class Battle extends React.Component {
               </ListContainer>
             )}
           </Paper>
-        </div>
-      </div>
+        </LevelStatsContainer>
+      </Root>
     );
   }
 }
 
+const Root = styled.div`
+  padding: 7px;
+`;
+
+const ChatContainer = styled.div`
+  clear: both;
+`;
+
+const RightBarContainer = styled.div`
+  float: right;
+  width: 40%;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const LevelStatsContainer = styled.div`
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const BattleTypeStyled = styled.span`
+  text-transform: lowercase;
+`;
+
+const BattleStyleDescription = styled.div`
+  font-size: 14px;
+`;
+
+const BattleTimeStampStyled = styled.div`
+  color: #7d7d7d;
+`;
+
 export default compose(
-  withStyles(s),
   graphql(battleQuery, {
     options: ownProps => ({
       variables: {
