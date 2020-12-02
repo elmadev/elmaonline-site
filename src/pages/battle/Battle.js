@@ -121,7 +121,7 @@ class Battle extends React.Component {
           battleStatus={battleStatus(getBattle)}
         />
         <RightBarContainer>
-          <ChatContainer>
+          <div className="chatContainer">
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body2">Battle info</Typography>
@@ -129,28 +129,28 @@ class Battle extends React.Component {
               <ExpansionPanelDetails>
                 <BattleStyleDescription>
                   {getBattle.Duration} minute{' '}
-                  <BattleTypeStyled>
+                  <span className="battleType">
                     <BattleType type={getBattle.BattleType} />
-                  </BattleTypeStyled>{' '}
+                  </span>{' '}
                   battle in{' '}
                   <a href={`/dl/level/${getBattle.LevelIndex}`}>
                     {getBattle.LevelData ? getBattle.LevelData.LevelName : '?'}
                     .lev
                   </a>{' '}
                   {getBattle.KuskiData.Kuski}
-                  <BattleTimeStampStyled>
+                  <div className="timeStamp">
                     Started{' '}
                     <LocalTime
                       date={getBattle.Started}
                       format="DD.MM.YYYY HH:mm:ss"
                       parse="X"
                     />
-                  </BattleTimeStampStyled>
-                  <BattleTimeStampStyled>
+                  </div>
+                  <div className="timeStamp">
                     <a href={`/dl/battlereplay/${BattleIndex}`}>
                       Download replay
                     </a>
-                  </BattleTimeStampStyled>
+                  </div>
                   <br />
                   <Link to={`/levels/${getBattle.LevelIndex}`}>
                     Go to level page
@@ -187,7 +187,7 @@ class Battle extends React.Component {
                 </ExpansionPanelDetails>
               </ExpansionPanel>
             )}
-          </ChatContainer>
+          </div>
         </RightBarContainer>
         <LevelStatsContainer>
           <Paper>
@@ -260,15 +260,14 @@ const Root = styled.div`
   padding: 7px;
 `;
 
-const ChatContainer = styled.div`
-  clear: both;
-`;
-
 const RightBarContainer = styled.div`
   float: right;
   width: 40%;
   padding: 7px;
   box-sizing: border-box;
+  .chatContainer {
+    clear: both;
+  }
 `;
 
 const LevelStatsContainer = styled.div`
@@ -278,16 +277,14 @@ const LevelStatsContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const BattleTypeStyled = styled.span`
-  text-transform: lowercase;
-`;
-
 const BattleStyleDescription = styled.div`
   font-size: 14px;
-`;
-
-const BattleTimeStampStyled = styled.div`
-  color: #7d7d7d;
+  .timeStamp {
+    color: #7d7d7d;
+  }
+  .battleType {
+    text-transform: lowercase;
+  }
 `;
 
 export default compose(
