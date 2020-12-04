@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
+import 'components/variables.css'; // probably won't work, not used in document
 import {
   Typography,
   ExpansionPanel,
@@ -24,7 +25,6 @@ import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 import RecView from './RecView';
 
-import s from './Battle.css';
 import battleQuery from './battle.graphql';
 
 const GET_BATTLE_TIMES = gql`
@@ -110,26 +110,26 @@ class Battle extends React.Component {
     const { extra } = this.state;
     const isWindow = typeof window !== 'undefined';
 
-    if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
+    if (!getBattle) return <Root>Battle is unfinished</Root>;
 
     return (
-      <div className={s.root}>
+      <Root>
         <RecView
           isWindow={isWindow}
           BattleIndex={BattleIndex}
           levelIndex={getBattle.LevelIndex}
           battleStatus={battleStatus(getBattle)}
         />
-        <div className={s.rightBarContainer}>
-          <div className={s.chatContainer}>
+        <RightBarContainer>
+          <div className="chatContainer">
             <ExpansionPanel defaultExpanded>
               <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body2">Battle info</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <div className={s.battleDescription}>
+                <BattleStyleDescription>
                   {getBattle.Duration} minute{' '}
-                  <span className={s.battleType}>
+                  <span className="battleType">
                     <BattleType type={getBattle.BattleType} />
                   </span>{' '}
                   battle in{' '}
@@ -138,7 +138,7 @@ class Battle extends React.Component {
                     .lev
                   </a>{' '}
                   {getBattle.KuskiData.Kuski}
-                  <div className={s.battleTimestamp}>
+                  <div className="timeStamp">
                     Started{' '}
                     <LocalTime
                       date={getBattle.Started}
@@ -146,7 +146,7 @@ class Battle extends React.Component {
                       parse="X"
                     />
                   </div>
-                  <div className={s.battleTimestamp}>
+                  <div className="timeStamp">
                     <a href={`/dl/battlereplay/${BattleIndex}`}>
                       Download replay
                     </a>
@@ -155,7 +155,7 @@ class Battle extends React.Component {
                   <Link to={`/levels/${getBattle.LevelIndex}`}>
                     Go to level page
                   </Link>
-                </div>
+                </BattleStyleDescription>
               </ExpansionPanelDetails>
             </ExpansionPanel>
             {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
@@ -188,8 +188,8 @@ class Battle extends React.Component {
               </ExpansionPanel>
             )}
           </div>
-        </div>
-        <div className={s.levelStatsContainer}>
+        </RightBarContainer>
+        <LevelStatsContainer>
           <Paper>
             {getBattle.Results && (
               <ListContainer>
@@ -250,14 +250,44 @@ class Battle extends React.Component {
               </ListContainer>
             )}
           </Paper>
-        </div>
-      </div>
+        </LevelStatsContainer>
+      </Root>
     );
   }
 }
 
+const Root = styled.div`
+  padding: 7px;
+`;
+
+const RightBarContainer = styled.div`
+  float: right;
+  width: 40%;
+  padding: 7px;
+  box-sizing: border-box;
+  .chatContainer {
+    clear: both;
+  }
+`;
+
+const LevelStatsContainer = styled.div`
+  width: 60%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+`;
+
+const BattleStyleDescription = styled.div`
+  font-size: 14px;
+  .timeStamp {
+    color: #7d7d7d;
+  }
+  .battleType {
+    text-transform: lowercase;
+  }
+`;
+
 export default compose(
-  withStyles(s),
   graphql(battleQuery, {
     options: ownProps => ({
       variables: {

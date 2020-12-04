@@ -24,7 +24,7 @@ const RecView = props => {
     <div>
       {!isRehydrated ? null : (
         <PlayerContainer>
-          <Player>
+          <div className="player">
             {play ? (
               <>
                 {isWindow && battleStatus !== 'Queued' && (
@@ -39,7 +39,7 @@ const RecView = props => {
             ) : (
               <Play type="replay" onClick={() => setPlay(true)} />
             )}
-          </Player>
+          </div>
           <StyledFormControlLabel
             control={
               <Checkbox
@@ -49,7 +49,7 @@ const RecView = props => {
                 size="small"
               />
             }
-            label="Autoplay recs"
+            label="Autoplay replays"
           />
         </PlayerContainer>
       )}
@@ -62,14 +62,13 @@ const PlayerContainer = styled.div`
   float: left;
   padding: 7px;
   box-sizing: border-box;
-`;
-
-const Player = styled.div`
-  background: #f1f1f1;
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .player {
+    background: #f1f1f1;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const StyledFormControlLabel = withStyles({
