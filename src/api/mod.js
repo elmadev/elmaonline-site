@@ -1,5 +1,6 @@
 import express from 'express';
 import { acceptNickMail } from 'utils/email';
+import { authContext } from 'utils/auth';
 import { SiteSetting, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -46,21 +47,31 @@ const AcceptNick = async data => {
 
 router
   .get('/nickrequests', async (req, res) => {
-    const data = await getNickRequests();
-    res.json(data);
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getNickRequests();
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
   })
   .post('/nickrequests/:action/:id', async (req, res) => {
-    const data = await getNickRequest(req.params.id);
-    if (data) {
-      if (req.params.action === 'accept') {
-        await AcceptNick(data);
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getNickRequest(req.params.id);
+      if (data) {
+        if (req.params.action === 'accept') {
+          await AcceptNick(data);
+        }
+        if (req.params.action === 'decline') {
+          await DeclineNick(data.SiteSettingIndex);
+        }
+        res.json({ success: 1 });
+      } else {
+        res.json({ success: 0 });
       }
-      if (req.params.action === 'decline') {
-        await DeclineNick(data.SiteSettingIndex);
-      }
-      res.json({ success: 1 });
     } else {
-      res.json({ success: 0 });
+      res.sendStatus(401);
     }
   });
 
