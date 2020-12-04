@@ -6,7 +6,13 @@ import { uuid } from 'utils/calcs';
 import AWS from 'aws-sdk';
 import { format } from 'date-fns';
 
-import { Level, Replay as ReplayDB, SiteCup, SiteCupTime } from 'data/models';
+import {
+  Level,
+  Replay as ReplayDB,
+  SiteCup,
+  SiteCupTime,
+  Kuski,
+} from 'data/models';
 import config from '../config';
 
 const getLevelsFromName = async LevelName => {
@@ -77,8 +83,12 @@ const CreateOrUpdateCuptime = async (
       ShareReplay,
       Comment,
     });
-    return true;
+    return 1;
   }
+  const KuskiData = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: ['TeamIndex'],
+  });
   if (ReplayInfo.finished) {
     await SiteCupTime.create({
       Replay: 1,
@@ -89,6 +99,7 @@ const CreateOrUpdateCuptime = async (
       Code,
       ShareReplay,
       Comment,
+      TeamIndex: KuskiData.TeamIndex,
     });
   } else {
     await SiteCupTime.create({
@@ -100,9 +111,10 @@ const CreateOrUpdateCuptime = async (
       Code,
       ShareReplay,
       Comment,
+      TeamIndex: KuskiData.TeamIndex,
     });
   }
-  return true;
+  return 2;
 };
 
 const findLevelIndexFromReplay = async file => {
@@ -253,22 +265,22 @@ export function uploadCupReplay(
         findLevelIndexFromReplay(fileDir).then(LevelIndex => {
           if (LevelIndex === 0) {
             resolve({ error: 'Level not found' });
-            fs.unlink(fileDir);
+            fs.unlink(fileDir, () => {});
           } else {
             getReplayInfo(fileDir).then(replayData => {
               const replayTime = Math.floor(replayData.time / 10);
               getCupEventByLevelIndex(LevelIndex).then(CupIndex => {
                 if (CupIndex === 0) {
                   resolve({ error: 'Replay is not from a cup level' });
-                  fs.unlink(fileDir);
+                  fs.unlink(fileDir, () => {});
                 } else if (!replayData.finished && !replayData.apples) {
                   resolve({ error: 'Level not finished or apple not picked' });
-                  fs.unlink(fileDir);
+                  fs.unlink(fileDir, () => {});
                 } else {
                   fs.readFile(fileDir, (error, data) => {
                     if (error) {
                       resolve({ error });
-                      fs.unlink(fileDir);
+                      fs.unlink(fileDir, () => {});
                     } else {
                       CreateOrUpdateCuptime(
                         CupIndex,
@@ -280,13 +292,13 @@ export function uploadCupReplay(
                         ShareReplay,
                         Comment,
                       ).then(() => {
+                        fs.unlink(fileDir, () => {});
                         resolve({
                           CupIndex,
                           Time: replayTime,
                           Apples: replayData.apples,
                           Finished: replayData.finished,
                         });
-                        fs.unlink(fileDir);
                       });
                     }
                   });

@@ -14,7 +14,6 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
-import Recplayer from 'components/Recplayer';
 import { BattleType } from 'components/Names';
 import Time from 'components/Time';
 import Link from 'components/Link';
@@ -22,8 +21,8 @@ import ChatView from 'components/ChatView';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
-import Play from 'styles/Play';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
+import RecView from './RecView';
 
 import s from './Battle.css';
 import battleQuery from './battle.graphql';
@@ -68,7 +67,6 @@ class Battle extends React.Component {
     super(props);
     this.state = {
       extra: '',
-      play: navigator.userAgent.toLowerCase().indexOf('firefox') === -1,
     };
   }
 
@@ -109,33 +107,19 @@ class Battle extends React.Component {
     const {
       data: { getBattle, getAllBattleTimes },
     } = this.props;
-    const { extra, play } = this.state;
+    const { extra } = this.state;
     const isWindow = typeof window !== 'undefined';
 
     if (!getBattle) return <div className={s.root}>Battle is unfinished</div>;
 
     return (
       <div className={s.root}>
-        <div className={s.playerContainer}>
-          <div className={s.player}>
-            {play ? (
-              <>
-                {isWindow && battleStatus(getBattle) !== 'Queued' && (
-                  <Recplayer
-                    rec={`/dl/battlereplay/${BattleIndex}`}
-                    lev={`/dl/level/${getBattle.LevelIndex}`}
-                    controls
-                  />
-                )}
-              </>
-            ) : (
-              <Play
-                type="replay"
-                onClick={() => this.setState({ play: true })}
-              />
-            )}
-          </div>
-        </div>
+        <RecView
+          isWindow={isWindow}
+          BattleIndex={BattleIndex}
+          levelIndex={getBattle.LevelIndex}
+          battleStatus={battleStatus(getBattle)}
+        />
         <div className={s.rightBarContainer}>
           <div className={s.chatContainer}>
             <ExpansionPanel defaultExpanded>
@@ -194,8 +178,10 @@ class Battle extends React.Component {
                     start={Number(getBattle.Started)}
                     end={
                       Number(getBattle.Started) +
-                      Number(getBattle.Duration * 60)
+                      Number((getBattle.Duration + 2) * 60)
                     }
+                    // battleEndEvent: when the battle ends compared to the start prop
+                    battleEnd={Number(getBattle.Duration * 60)}
                     paginated
                   />
                 </ExpansionPanelDetails>

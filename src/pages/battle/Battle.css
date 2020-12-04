@@ -4,21 +4,6 @@
   padding: 7px;
 }
 
-.playerContainer {
-  width: 60%;
-  float: left;
-  padding: 7px;
-  box-sizing: border-box;
-}
-
-.player {
-  background: #f1f1f1;
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .rightBarContainer {
   float: right;
   width: 40%;
@@ -46,10 +31,6 @@
 }
 
 @media all and (max-width: 1400px) {
-  .playerContainer {
-    width: 100%;
-  }
-
   .rightBarContainer {
     width: 40%;
   }

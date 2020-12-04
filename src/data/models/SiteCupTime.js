@@ -60,6 +60,11 @@ const SiteCupTime = Model.define(
       allowNull: false,
       defaultValue: false,
     },
+    TeamIndex: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['CupIndex, KuskiIndex, TimeIndex'] }],
