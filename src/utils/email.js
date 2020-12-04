@@ -8,14 +8,14 @@ const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = config.sibApiKey;
 
-export const confirmMail = (kuski, email, confirmId) => {
+export const sendEmail = (email, kuski, template, params) => {
   return new Promise((resolve, reject) => {
     const apiInstance = new SibApiV3Sdk.SMTPApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.to = [{ email, name: kuski }];
     sendSmtpEmail.sender = { email: fromMail, name: fromName };
-    sendSmtpEmail.templateId = 2;
-    sendSmtpEmail.params = { kuski, confirmId };
+    sendSmtpEmail.templateId = template;
+    sendSmtpEmail.params = params;
     apiInstance.sendTransacEmail(sendSmtpEmail).then(
       data => {
         resolve(data);
@@ -27,23 +27,19 @@ export const confirmMail = (kuski, email, confirmId) => {
   });
 };
 
-export const resetMail = (kuski, email, confirmId) => {
-  return new Promise((resolve, reject) => {
-    const apiInstance = new SibApiV3Sdk.SMTPApi();
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.to = [{ email, name: kuski }];
-    sendSmtpEmail.sender = { email: fromMail, name: fromName };
-    sendSmtpEmail.templateId = 3;
-    sendSmtpEmail.params = { kuski, confirmId };
-    apiInstance.sendTransacEmail(sendSmtpEmail).then(
-      data => {
-        resolve(data);
-      },
-      error => {
-        reject(error);
-      },
-    );
-  });
+export const confirmMail = async (kuski, email, confirmId) => {
+  const send = await sendEmail(email, kuski, 2, { kuski, confirmId });
+  return send;
+};
+
+export const resetMail = async (kuski, email, confirmId) => {
+  const send = await sendEmail(email, kuski, 3, { kuski, confirmId });
+  return send;
+};
+
+export const acceptNickMail = async (kuski, email, oldNick) => {
+  const send = await sendEmail(email, kuski, 4, { kuski, oldNick });
+  return send;
 };
 
 export const newsMail = () => {

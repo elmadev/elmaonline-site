@@ -289,6 +289,11 @@ KuskiMap.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+SiteSetting.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
