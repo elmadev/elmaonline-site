@@ -18,7 +18,6 @@ import {
   FormControlLabel,
   Radio,
   FormControl,
-  FormLabel,
 } from '@material-ui/core';
 
 import { nick, nickId } from 'utils/nick';
@@ -367,6 +366,12 @@ const ClickSettingsIcon = styled(SettingsIcon)`
 
 const ClickCloseIcon = styled(CloseIcon)`
   cursor: pointer;
+`;
+
+const FormLabel = styled.legend`
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 1rem;
+  letter-spacing: 0.00938em;
 `;
 
 export default withStyles(s)(LevelPack);
