@@ -38,6 +38,9 @@ export function searchLimit(limit) {
   if (limitInt > 10000) {
     return 10000;
   }
+  if (limitInt === 0) {
+    return 25;
+  }
   return limitInt;
 }
 
