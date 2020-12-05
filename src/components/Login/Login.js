@@ -91,6 +91,18 @@ class Login extends React.Component {
             path: '/',
             maxAge: 8640000,
           });
+          if (body.Response.mod) {
+            cookies.set('mod', body.Response.mod, {
+              path: '/',
+              maxAge: 8640000,
+            });
+          }
+          if (body.Response.admin) {
+            cookies.set('admin', body.Response.admin, {
+              path: '/',
+              maxAge: 8640000,
+            });
+          }
           this.setState({ loggedIn: true });
         }
       });
@@ -102,6 +114,8 @@ class Login extends React.Component {
     cookies.remove('token', { path: '/' });
     cookies.remove('username', { path: '/' });
     cookies.remove('userid', { path: '/' });
+    cookies.remove('mod', { path: '/' });
+    cookies.remove('admin', { path: '/' });
     this.setState({ loggedIn: false });
   }
 

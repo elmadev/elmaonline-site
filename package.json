@@ -47,7 +47,7 @@
     "date-fns": "^2.16.1",
     "discord.js": "^12.3.1",
     "easy-peasy": "^3.3.1",
-    "elmajs": "^1.1.2",
+    "elmajs": "^1.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
     "express-graphql": "^0.8.0",

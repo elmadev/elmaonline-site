@@ -19,3 +19,23 @@ export const nickId = () => {
   }
   return 0;
 };
+
+export const mod = () => {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const m = cookies.get('mod');
+  if (token && m) {
+    return parseInt(m, 10);
+  }
+  return 0;
+};
+
+export const admin = () => {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const a = cookies.get('admin');
+  if (token && a) {
+    return parseInt(a, 10);
+  }
+  return 0;
+};

@@ -2,6 +2,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
+import add from 'date-fns/add';
+import parse from 'date-fns/parse';
 import { Battle, Level, Kuski, Team, Battletime } from '../data/models';
 
 const router = express.Router();
@@ -33,6 +35,63 @@ const attributes = [
   'RecFileName',
 ];
 
+const BattlesByDate = async date => {
+  try {
+    const start = parse(date, 'yyyy-M-d', new Date());
+    const end = add(start, { days: 1 });
+
+    const battles = await Battle.findAll({
+      attributes: {
+        exclude: ['RecData'],
+      },
+      order: [['BattleIndex', 'DESC']],
+      where: {
+        Started: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: Level,
+          as: 'LevelData',
+          attributes: ['LevelName', 'LongName'],
+        },
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski', 'Country'],
+          include: [
+            {
+              model: Team,
+              as: 'TeamData',
+            },
+          ],
+        },
+        {
+          model: Battletime,
+          as: 'Results',
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'KuskiData',
+              include: [
+                {
+                  model: Team,
+                  as: 'TeamData',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    return battles;
+  } catch (e) {
+    return [];
+  }
+};
+
 const BattlesSearchByFilename = async (query, offset) => {
   const byFilename = await Battle.findAll({
     attributes: [
@@ -43,9 +102,7 @@ const BattlesSearchByFilename = async (query, offset) => {
       'Started',
     ],
     limit: searchLimit(offset),
-    order: [
-      ['BattleIndex', 'DESC'],
-    ],
+    order: [['BattleIndex', 'DESC']],
     offset: searchOffset(offset),
     include: [
       {
@@ -74,9 +131,7 @@ const BattlesSearchByDesigner = async (query, offset) => {
       'Started',
     ],
     limit: searchLimit(offset),
-    order: [
-      ['BattleIndex', 'DESC'],
-    ],
+    order: [['BattleIndex', 'DESC']],
     offset: searchOffset(offset),
     include: [
       {
@@ -93,7 +148,7 @@ const BattlesSearchByDesigner = async (query, offset) => {
     ],
   });
   return byDesigner;
-}
+};
 
 const BattlesForLevel = async LevelIndex => {
   const battles = await Battle.findAll({
@@ -143,6 +198,10 @@ const BattlesForLevel = async LevelIndex => {
 router
   .get('/', async (req, res) => {
     res.json({});
+  })
+  .get('/date/:date', async (req, res) => {
+    const battles = await BattlesByDate(req.params.date);
+    res.json(battles);
   })
   .get('/search/byFilename/:query/:offset/', async (req, res) => {
     const battles = await BattlesSearchByFilename(

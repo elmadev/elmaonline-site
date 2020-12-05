@@ -32,7 +32,7 @@ class Link extends React.Component {
   };
 
   handleClick = event => {
-    const { onClick, to } = this.props;
+    const { onClick, to, download } = this.props;
     if (onClick) {
       onClick(event);
     }
@@ -42,6 +42,11 @@ class Link extends React.Component {
     }
 
     if (event.defaultPrevented === true) {
+      return;
+    }
+
+    if (download) {
+      event.stopPropagation();
       return;
     }
 

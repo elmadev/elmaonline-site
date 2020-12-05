@@ -12,6 +12,8 @@ const getKuskiData = async (kuski, Password) => {
       'Country',
       'Password',
       'Confirmed',
+      'RAdmin',
+      'RMod',
     ],
     where: { Kuski: kuski, Password },
   });
@@ -38,6 +40,8 @@ export function auth(body) {
             payload: {
               username: kuskiData.dataValues.Kuski,
               userid: kuskiData.dataValues.KuskiIndex,
+              admin: kuskiData.dataValues.RAdmin,
+              mod: kuskiData.dataValues.RMod,
             },
             secret: config.jwtSecret,
           });
@@ -46,6 +50,8 @@ export function auth(body) {
             token,
             username: kuskiData.dataValues.Kuski,
             userid: kuskiData.dataValues.KuskiIndex,
+            admin: kuskiData.dataValues.RAdmin,
+            mod: kuskiData.dataValues.RMod,
           });
         } else {
           resolve({
@@ -72,6 +78,8 @@ export function authContext(req) {
         auth: true,
         user: payload.username,
         userid: payload.userid,
+        admin: payload.admin,
+        mod: payload.mod,
         signature: userInfo.signature,
       };
     }

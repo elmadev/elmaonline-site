@@ -18,6 +18,8 @@ import Replay from 'pages/cupreplay/store';
 import Teams from 'pages/teams/store';
 import Kuskis from 'pages/kuskis/store';
 import Level from 'pages/level/store';
+import Mod from 'pages/mod/store';
+import Battle from 'pages/battle/store';
 
 export default {
   ReplayComments,
@@ -34,10 +36,12 @@ export default {
   Kuski,
   LevelsAdd,
   Settings,
+  Mod,
   Teams,
   Replay,
   RecList,
   Level,
+  Battle,
   Page: {
     sideBarVisible: true,
     showSideBar: action(state => {

@@ -15,6 +15,7 @@ import Player from './player';
 import Teams from './teams';
 import Level from './level';
 import Ranking from './ranking';
+import Mod from './mod';
 
 const router = express.Router();
 
@@ -34,6 +35,7 @@ router
   .use('/allfinished', AllFinished)
   .use('/levelpack', LevelPack)
   .use('/level', Level)
+  .use('/mod', Mod)
   .use('/besttime', Besttime)
   .use('/battle', Battle)
   .use('/player', Player)
