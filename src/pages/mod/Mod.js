@@ -7,7 +7,9 @@ import { ListRow, ListCell, ListHeader } from 'styles/List';
 import { mod } from 'utils/nick';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Kuski from 'components/Kuski';
+import Header from 'components/Header';
 import { Check, Clear } from '@material-ui/icons';
+import Bans from './Bans';
 
 const Mod = () => {
   const { nickChanges } = useStoreState(state => state.Mod);
@@ -29,7 +31,7 @@ const Mod = () => {
         onChange={(e, value) => setTab(value)}
       >
         <Tab label="Dashboard" />
-        <Tab label="Ban" />
+        <Tab label="Bans" />
         <Tab label="Reports" />
         <Tab label="Error log" />
         <Tab label="Mod log" />
@@ -41,6 +43,7 @@ const Mod = () => {
             {tab === 0 && (
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={6}>
+                  <Header h2>Nick change requests</Header>
                   <Paper>
                     <ListHeader>
                       <ListCell>Old nick</ListCell>
@@ -67,6 +70,7 @@ const Mod = () => {
                 </Grid>
               </Grid>
             )}
+            {tab === 1 && <Bans />}
           </>
         ) : (
           <div>You are not a mod or not logged in.</div>

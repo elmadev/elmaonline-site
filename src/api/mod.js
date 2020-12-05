@@ -1,7 +1,8 @@
 import express from 'express';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
-import { SiteSetting, Kuski } from '../data/models';
+import { Op, fn } from 'sequelize';
+import { SiteSetting, Kuski, Ban, FlagBan } from '../data/models';
 
 const router = express.Router();
 
@@ -45,6 +46,30 @@ const AcceptNick = async data => {
   await acceptNickMail(data.Setting, kuskiInfo.Email, kuskiInfo.Kuski);
 };
 
+const getBanlists = async () => {
+  const bans = await Ban.findAll({
+    where: { Expires: { [Op.gt]: fn('NOW') } },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+  const flagbans = await FlagBan.findAll({
+    where: { Expired: 0, Revoked: 0 },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+  return { ips: bans, flags: flagbans };
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -70,6 +95,15 @@ router
       } else {
         res.json({ success: 0 });
       }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/banlist', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getBanlists();
+      res.json(data);
     } else {
       res.sendStatus(401);
     }
