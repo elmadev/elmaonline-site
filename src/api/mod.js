@@ -1,8 +1,10 @@
 import express from 'express';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
+import { sendMessage } from 'utils/discord';
 import { Op, fn } from 'sequelize';
-import { SiteSetting, Kuski, Ban, FlagBan } from '../data/models';
+import { SiteSetting, Kuski, Ban, FlagBan, ActionLogs } from '../data/models';
+import config from '../config';
 
 const router = express.Router();
 
@@ -28,11 +30,47 @@ const getNickRequest = async SiteSettingIndex => {
   return data;
 };
 
-const DeclineNick = async SiteSettingIndex => {
-  await SiteSetting.destroy({ where: { SiteSettingIndex } });
+const WriteActionLog = async (
+  KuskiIndex,
+  RightsKuski,
+  ActionType,
+  Action,
+  ActionIndex,
+  Text,
+) => {
+  await ActionLogs.create({
+    KuskiIndex,
+    RightsKuski,
+    ActionType,
+    Action,
+    Time: fn('NOW'),
+    ActionIndex,
+    Text,
+  });
 };
 
-const AcceptNick = async data => {
+const DeclineNick = async (data, modId) => {
+  const kuskiInfo = await Kuski.findOne({
+    where: { KuskiIndex: data.KuskiIndex },
+  });
+  await SiteSetting.destroy({
+    where: { SiteSettingIndex: data.SiteSettingIndex },
+  });
+  await WriteActionLog(
+    modId,
+    data.KuskiIndex,
+    'DeclineNick',
+    1,
+    0,
+    `${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+  sendMessage(
+    config.discord.channels.admin,
+    `:x: Nick change request declined: ${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+};
+
+const AcceptNick = async (data, modId) => {
   const kuskiInfo = await Kuski.findOne({
     where: { KuskiIndex: data.KuskiIndex },
   });
@@ -44,6 +82,20 @@ const AcceptNick = async data => {
     where: { SiteSettingIndex: data.SiteSettingIndex },
   });
   await acceptNickMail(data.Setting, kuskiInfo.Email, kuskiInfo.Kuski);
+  await WriteActionLog(
+    modId,
+    data.KuskiIndex,
+    'AcceptNick',
+    1,
+    0,
+    `${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+  sendMessage(
+    config.discord.channels.admin,
+    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${
+      data.Setting
+    }`,
+  );
 };
 
 const getBanlists = async () => {
@@ -86,10 +138,10 @@ router
       const data = await getNickRequest(req.params.id);
       if (data) {
         if (req.params.action === 'accept') {
-          await AcceptNick(data);
+          await AcceptNick(data, auth.userid);
         }
         if (req.params.action === 'decline') {
-          await DeclineNick(data.SiteSettingIndex);
+          await DeclineNick(data, auth.userid);
         }
         res.json({ success: 1 });
       } else {

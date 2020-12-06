@@ -35,6 +35,7 @@ import LegacyBesttime from './LegacyBesttime';
 import Ignored from './Ignored';
 import Ban from './Ban';
 import FlagBan from './FlagBan';
+import ActionLogs from './ActionLogs';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -306,6 +307,16 @@ FlagBan.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+ActionLogs.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+ActionLogs.belongsTo(Kuski, {
+  foreignKey: 'RightsKuski',
+  as: 'RightsKuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -348,4 +359,5 @@ export {
   Ignored,
   Ban,
   FlagBan,
+  ActionLogs,
 }; // add the data model here as well so it exports
