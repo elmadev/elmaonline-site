@@ -6,6 +6,7 @@ import {
   PersonalRanking,
   Records,
   PersonalTimes,
+  BattlesByDesigner,
 } from 'data/api';
 
 export default {
@@ -59,6 +60,19 @@ export default {
         return { ...r, LevelBesttime: [] };
       });
       actions.setTt(levels);
+    }
+  }),
+  designedBattles: {
+    count: 0,
+    rows: [],
+  },
+  setDesignedBattes: action((state, payload) => {
+    state.designedBattles = payload;
+  }),
+  getDesignedBattles: thunk(async (actions, payload) => {
+    const call = await BattlesByDesigner(payload);
+    if (call.ok) {
+      actions.setDesignedBattes(call.data);
     }
   }),
 };

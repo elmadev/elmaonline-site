@@ -195,6 +195,48 @@ const BattlesForLevel = async LevelIndex => {
   return battles;
 };
 
+const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
+  const byDesigner = await Battle.findAndCountAll({
+    attributes: [
+      'KuskiIndex',
+      'BattleIndex',
+      'LevelIndex',
+      'BattleType',
+      'Started',
+      'Duration',
+    ],
+    where: { KuskiIndex },
+    limit: parseInt(pageSize, 10),
+    order: [['BattleIndex', 'DESC']],
+    offset: parseInt(page * pageSize, 10),
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'LongName'],
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+  return byDesigner;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
@@ -219,6 +261,14 @@ router
   })
   .get('/byLevel/:LevelIndex', async (req, res) => {
     const battles = await BattlesForLevel(req.params.LevelIndex);
+    res.json(battles);
+  })
+  .get('/byDesigner/:KuskiIndex', async (req, res) => {
+    const battles = await BattlesForDesigner(
+      req.params.KuskiIndex,
+      req.query.page,
+      req.query.pageSize,
+    );
     res.json(battles);
   });
 

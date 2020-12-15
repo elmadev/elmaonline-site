@@ -139,6 +139,12 @@ export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
 export const BattlesByLevel = LevelIndex =>
   api.get(`battle/byLevel/${LevelIndex}`);
+export const BattlesByDesigner = data =>
+  api.get(
+    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
+      data.pageSize
+    }`,
+  );
 
 // players
 export const PlayersSearch = data =>
