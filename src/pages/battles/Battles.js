@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import moment from 'moment';
 
@@ -7,60 +7,51 @@ import history from 'utils/history';
 
 import s from './battles.css';
 
-class Battles extends React.Component {
-  constructor(props) {
-    super(props);
-    const date = this.parseDate(props);
-    this.state = {
-      start: date,
-      end: date.clone().add(1, 'days'),
-    };
-  }
+const Battles = props => {
+  const {
+    context: {
+      query: { date },
+    },
+  } = props;
 
-  componentWillReceiveProps(props) {
-    const date = this.parseDate(props);
-    this.setState({
-      start: date,
-      end: date.clone().add(1, 'days'),
-    });
-  }
+  const [start, setStart] = useState();
+  const [end, setEnd] = useState();
 
-  parseDate = props =>
-    props.context.query.date
-      ? moment(props.context.query.date, 'YYYY-MM-DD').startOf('day')
-      : moment().startOf('day');
+  const parseDate = d =>
+    d ? moment(d, 'YYYY-MM-DD').startOf('day') : moment().startOf('day');
 
-  next = () => {
-    const { start } = this.state;
+  useEffect(() => {
+    const parsedDate = parseDate(date);
+    setStart(parsedDate);
+    setEnd(parsedDate.clone().add(1, 'days'));
+  }, [date]);
+
+  const next = () => {
     history.push(`/battles?date=${start.add(1, 'days').format('YYYY-MM-DD')}`);
   };
 
-  previous = () => {
-    const { start } = this.state;
+  const previous = () => {
     history.push(
       `/battles?date=${start.subtract(1, 'days').format('YYYY-MM-DD')}`,
     );
   };
 
-  render() {
-    const { start, end } = this.state;
-    return (
-      <div className={s.battles}>
-        <div className={s.datepicker}>
-          <button onClick={this.previous} type="button">
-            &lt;
-          </button>
-          <span className={s.selectedDate}>
-            {start.format('ddd DD.MM.YYYY')}
-          </span>
-          <button onClick={this.next} type="button">
-            &gt;
-          </button>
-        </div>
-        <BattleList start={start.clone()} end={end.clone()} />
+  if (!start || !end) return null;
+
+  return (
+    <div className={s.battles}>
+      <div className={s.datepicker}>
+        <button onClick={previous} type="button">
+          &lt;
+        </button>
+        <span className={s.selectedDate}>{start.format('ddd DD.MM.YYYY')}</span>
+        <button onClick={next} type="button">
+          &gt;
+        </button>
       </div>
-    );
-  }
-}
+      <BattleList start={start.clone()} end={end.clone()} />
+    </div>
+  );
+};
 
 export default withStyles(s)(Battles);
