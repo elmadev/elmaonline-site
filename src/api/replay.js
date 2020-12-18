@@ -106,6 +106,30 @@ const getReplayByUploadedBy = async KuskiIndex => {
   return data;
 };
 
+const getReplayByUUID = async replayUUID => {
+  const data = await Replay.findOne({
+    where: { UUID: replayUUID },
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+  return data;
+};
+
 const getReplaysSearchDriven = async (query, offset) => {
   const data = await Replay.findAll({
     limit: searchLimit(offset),
@@ -219,10 +243,17 @@ router
     const data = await getReplayByUploadedBy(req.params.KuskiIndex);
     res.json(data);
   })
+
+  .get('/replay_by_uuid/:UUID', async (req, res) => {
+    const data = await getReplayByUUID(req.params.UUID);
+    res.json(data);
+  })
+
   .get('/byLevelIndex/:LevelIndex', async (req, res) => {
     const data = await getReplaysByLevelIndex(req.params.LevelIndex);
     res.json(data);
   })
+
   .get('/search/byDriven/:query/:offset', async (req, res) => {
     const data = await getReplaysSearchDriven(
       req.params.query,

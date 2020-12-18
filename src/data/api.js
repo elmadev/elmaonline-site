@@ -25,6 +25,7 @@ export const ReplayDrivenBy = kuskiIndex =>
   api.get(`replay/driven_by/${kuskiIndex}`);
 export const ReplayUploadedBy = kuskiIndex =>
   api.get(`replay/uploaded_by/${kuskiIndex}`);
+export const ReplayByUUID = UUID => api.get(`replay/replay_by_uuid/${UUID}`);
 export const ReplaysSearchByDriven = data =>
   api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
 export const ReplaysSearchByLevel = data =>
@@ -102,9 +103,7 @@ export const TotalTimes = data =>
   api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
   api.get(
-    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
-      data.eolOnly
-    }`,
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${data.eolOnly}`,
   );
 export const Records = data =>
   api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
