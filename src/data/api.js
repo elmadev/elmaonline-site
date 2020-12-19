@@ -25,7 +25,7 @@ export const ReplayDrivenBy = kuskiIndex =>
   api.get(`replay/driven_by/${kuskiIndex}`);
 export const ReplayUploadedBy = kuskiIndex =>
   api.get(`replay/uploaded_by/${kuskiIndex}`);
-export const ReplayByUUID = UUID => api.get(`replay/replay_by_uuid/${UUID}`);
+export const ReplayByUUID = UUID => api.get(`replay/byUUID/${UUID}`);
 export const ReplaysSearchByDriven = data =>
   api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
 export const ReplaysSearchByLevel = data =>

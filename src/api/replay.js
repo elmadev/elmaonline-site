@@ -244,7 +244,7 @@ router
     res.json(data);
   })
 
-  .get('/replay_by_uuid/:UUID', async (req, res) => {
+  .get('/byUUID/:UUID', async (req, res) => {
     const data = await getReplayByUUID(req.params.UUID);
     res.json(data);
   })
