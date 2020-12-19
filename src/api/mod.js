@@ -159,6 +159,41 @@ const getErrorLog = async (k, ErrorTime) => {
   return errors;
 };
 
+const getActionLog = async (k, LogTime) => {
+  const findAll = {
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+      {
+        model: Kuski,
+        as: 'RightsKuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+    limit: 100,
+    order: [['ActionLogsIndex', 'DESC']],
+  };
+  if (k !== '0' && LogTime !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = {
+      Time: { [Op.gt]: `${LogTime} 00:00:00` },
+      KuskiIndex: findKuski.KuskiIndex,
+    };
+    findAll.order = [['ActionLogsIndex', 'ASC']];
+  } else if (k !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = { KuskiIndex: findKuski.KuskiIndex };
+  } else if (LogTime !== '0') {
+    findAll.where = { Time: { [Op.gt]: `${LogTime} 00:00:00` } };
+    findAll.order = [['ActionLogsIndex', 'ASC']];
+  }
+  const logs = await ActionLogs.findAll(findAll);
+  return logs;
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -201,6 +236,15 @@ router
     const auth = authContext(req);
     if (auth.mod) {
       const data = await getErrorLog(req.params.Kuski, req.params.ErrorTime);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/actionlog/:Kuski/:ErrorTime', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getActionLog(req.params.Kuski, req.params.ErrorTime);
       res.json(data);
     } else {
       res.sendStatus(401);

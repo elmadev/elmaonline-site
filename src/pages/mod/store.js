@@ -6,6 +6,7 @@ import {
   NickDecline,
   Banlist,
   ErrorLog,
+  ActionLog,
 } from 'data/api';
 
 export default {
@@ -49,6 +50,16 @@ export default {
     const get = await ErrorLog(payload);
     if (get.ok) {
       actions.setErrorLog(get.data);
+    }
+  }),
+  actionLog: [],
+  setActionLog: action((state, payload) => {
+    state.actionLog = payload;
+  }),
+  getActionLog: thunk(async (actions, payload) => {
+    const get = await ActionLog(payload);
+    if (get.ok) {
+      actions.setActionLog(get.data);
     }
   }),
 };

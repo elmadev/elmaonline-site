@@ -11,6 +11,7 @@ import Header from 'components/Header';
 import { Check, Clear } from '@material-ui/icons';
 import Bans from './Bans';
 import ErrorLog from './ErrorLog';
+import ActionLog from './ActionLog';
 
 const Mod = () => {
   const { nickChanges } = useStoreState(state => state.Mod);
@@ -73,6 +74,7 @@ const Mod = () => {
             )}
             {tab === 1 && <Bans />}
             {tab === 3 && <ErrorLog />}
+            {tab === 4 && <ActionLog />}
           </>
         ) : (
           <div>You are not a mod or not logged in.</div>

@@ -36,8 +36,8 @@ const ActionLogs = Model.define(
       allowNull: false,
       defaultValue: '0000-00-00 00:00:00',
       get() {
-        const ts = this.getDataValue('Expires')
-          ? moment(this.getDataValue('Expires')).format('X')
+        const ts = this.getDataValue('Time')
+          ? moment(this.getDataValue('Time')).format('X')
           : 0;
         return ts;
       },
