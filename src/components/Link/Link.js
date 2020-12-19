@@ -20,19 +20,8 @@ function isModifiedEvent(event) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
-class Link extends React.Component {
-  static propTypes = {
-    to: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
-    onClick: PropTypes.func,
-  };
-
-  static defaultProps = {
-    onClick: null,
-  };
-
-  handleClick = event => {
-    const { onClick, to, download } = this.props;
+const Link = ({ to, children, onClick, download, ...props }) => {
+  const handleClick = event => {
     if (onClick) {
       onClick(event);
     }
@@ -55,14 +44,21 @@ class Link extends React.Component {
     history.push(to);
   };
 
-  render() {
-    const { to, children, ...props } = this.props;
-    return (
-      <a href={to} {...props} onClick={this.handleClick}>
-        {children}
-      </a>
-    );
-  }
-}
+  return (
+    <a href={to} download={download} {...props} onClick={handleClick}>
+      {children}
+    </a>
+  );
+};
+
+Link.defaultProps = {
+  onClick: null,
+};
+
+Link.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  onClick: PropTypes.func,
+};
 
 export default Link;
