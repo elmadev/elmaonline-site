@@ -15,6 +15,7 @@ import Kuski from 'pages/kuski/store';
 import LevelsAdd from 'pages/levels-add/store';
 import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
+import ReplayByUUID from 'pages/replay/store';
 import Teams from 'pages/teams/store';
 import Kuskis from 'pages/kuskis/store';
 import Level from 'pages/level/store';
@@ -39,6 +40,7 @@ export default {
   Mod,
   Teams,
   Replay,
+  ReplayByUUID,
   RecList,
   Level,
   Battle,
