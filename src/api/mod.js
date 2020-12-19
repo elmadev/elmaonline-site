@@ -3,7 +3,14 @@ import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
 import { sendMessage } from 'utils/discord';
 import { Op, fn } from 'sequelize';
-import { SiteSetting, Kuski, Ban, FlagBan, ActionLogs } from '../data/models';
+import {
+  SiteSetting,
+  Kuski,
+  Ban,
+  FlagBan,
+  ActionLogs,
+  Error,
+} from '../data/models';
 import config from '../config';
 
 const router = express.Router();
@@ -122,6 +129,36 @@ const getBanlists = async () => {
   return { ips: bans, flags: flagbans };
 };
 
+const getErrorLog = async (k, ErrorTime) => {
+  const findAll = {
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+    limit: 100,
+    order: [['ErrorIndex', 'DESC']],
+  };
+  if (k !== '0' && ErrorTime !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = {
+      ErrorTime: { [Op.gt]: `${ErrorTime} 00:00:00` },
+      KuskiIndex: findKuski.KuskiIndex,
+    };
+    findAll.order = [['ErrorIndex', 'ASC']];
+  } else if (k !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = { KuskiIndex: findKuski.KuskiIndex };
+  } else if (ErrorTime !== '0') {
+    findAll.where = { ErrorTime: { [Op.gt]: `${ErrorTime} 00:00:00` } };
+    findAll.order = [['ErrorIndex', 'ASC']];
+  }
+  const errors = await Error.findAll(findAll);
+  return errors;
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -155,6 +192,15 @@ router
     const auth = authContext(req);
     if (auth.mod) {
       const data = await getBanlists();
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/errorlog/:Kuski/:ErrorTime', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getErrorLog(req.params.Kuski, req.params.ErrorTime);
       res.json(data);
     } else {
       res.sendStatus(401);

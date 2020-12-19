@@ -32,7 +32,7 @@ const Bans = () => {
             </ListHeader>
             {banlist.ips.length > 0 &&
               banlist.ips.map(n => (
-                <ListRow title={n.Reason}>
+                <ListRow key={n.BanIndex} title={n.Reason}>
                   <ListCell>
                     <Kuski kuskiData={n.KuskiData} />
                   </ListCell>
@@ -61,7 +61,7 @@ const Bans = () => {
             </ListHeader>
             {banlist.flags.length > 0 &&
               banlist.flags.map(n => (
-                <ListRow title={n.Reason}>
+                <ListRow key={n.FlagBanIndex} title={n.Reason}>
                   <ListCell>
                     <Kuski kuskiData={n.KuskiData} />
                   </ListCell>

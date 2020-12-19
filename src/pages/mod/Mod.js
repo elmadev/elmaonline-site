@@ -10,6 +10,7 @@ import Kuski from 'components/Kuski';
 import Header from 'components/Header';
 import { Check, Clear } from '@material-ui/icons';
 import Bans from './Bans';
+import ErrorLog from './ErrorLog';
 
 const Mod = () => {
   const { nickChanges } = useStoreState(state => state.Mod);
@@ -53,7 +54,7 @@ const Mod = () => {
                     </ListHeader>
                     {nickChanges.length > 0 &&
                       nickChanges.map(n => (
-                        <ListRow>
+                        <ListRow key={n.SiteSettingIndex}>
                           <ListCell>
                             <Kuski kuskiData={n.KuskiData} />
                           </ListCell>
@@ -71,6 +72,7 @@ const Mod = () => {
               </Grid>
             )}
             {tab === 1 && <Bans />}
+            {tab === 3 && <ErrorLog />}
           </>
         ) : (
           <div>You are not a mod or not logged in.</div>
