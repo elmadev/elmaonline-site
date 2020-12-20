@@ -179,3 +179,8 @@ export const NickAccept = data =>
   api.post(`mod/nickrequests/accept/${data.SiteSettingIndex}`);
 export const NickDecline = data =>
   api.post(`mod/nickrequests/decline/${data.SiteSettingIndex}`);
+export const Banlist = () => api.get('mod/banlist');
+export const ErrorLog = data =>
+  api.get(`mod/errorlog/${data.Kuski}/${data.ErrorTime}`);
+export const ActionLog = data =>
+  api.get(`mod/actionlog/${data.Kuski}/${data.ErrorTime}`);

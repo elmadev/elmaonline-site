@@ -1,7 +1,17 @@
 import express from 'express';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
-import { SiteSetting, Kuski } from '../data/models';
+import { sendMessage } from 'utils/discord';
+import { Op, fn } from 'sequelize';
+import {
+  SiteSetting,
+  Kuski,
+  Ban,
+  FlagBan,
+  ActionLogs,
+  Error,
+} from '../data/models';
+import config from '../config';
 
 const router = express.Router();
 
@@ -27,11 +37,47 @@ const getNickRequest = async SiteSettingIndex => {
   return data;
 };
 
-const DeclineNick = async SiteSettingIndex => {
-  await SiteSetting.destroy({ where: { SiteSettingIndex } });
+const WriteActionLog = async (
+  KuskiIndex,
+  RightsKuski,
+  ActionType,
+  Action,
+  ActionIndex,
+  Text,
+) => {
+  await ActionLogs.create({
+    KuskiIndex,
+    RightsKuski,
+    ActionType,
+    Action,
+    Time: fn('NOW'),
+    ActionIndex,
+    Text,
+  });
 };
 
-const AcceptNick = async data => {
+const DeclineNick = async (data, modId) => {
+  const kuskiInfo = await Kuski.findOne({
+    where: { KuskiIndex: data.KuskiIndex },
+  });
+  await SiteSetting.destroy({
+    where: { SiteSettingIndex: data.SiteSettingIndex },
+  });
+  await WriteActionLog(
+    modId,
+    data.KuskiIndex,
+    'DeclineNick',
+    1,
+    0,
+    `${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+  sendMessage(
+    config.discord.channels.admin,
+    `:x: Nick change request declined: ${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+};
+
+const AcceptNick = async (data, modId) => {
   const kuskiInfo = await Kuski.findOne({
     where: { KuskiIndex: data.KuskiIndex },
   });
@@ -43,6 +89,109 @@ const AcceptNick = async data => {
     where: { SiteSettingIndex: data.SiteSettingIndex },
   });
   await acceptNickMail(data.Setting, kuskiInfo.Email, kuskiInfo.Kuski);
+  await WriteActionLog(
+    modId,
+    data.KuskiIndex,
+    'AcceptNick',
+    1,
+    0,
+    `${kuskiInfo.Kuski} >> ${data.Setting}`,
+  );
+  sendMessage(
+    config.discord.channels.admin,
+    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${
+      data.Setting
+    }`,
+  );
+};
+
+const getBanlists = async () => {
+  const bans = await Ban.findAll({
+    where: { Expires: { [Op.gt]: fn('NOW') } },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+  const flagbans = await FlagBan.findAll({
+    where: { Expired: 0, Revoked: 0 },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+  return { ips: bans, flags: flagbans };
+};
+
+const getErrorLog = async (k, ErrorTime) => {
+  const findAll = {
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+    limit: 100,
+    order: [['ErrorIndex', 'DESC']],
+  };
+  if (k !== '0' && ErrorTime !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = {
+      ErrorTime: { [Op.gt]: `${ErrorTime} 00:00:00` },
+      KuskiIndex: findKuski.KuskiIndex,
+    };
+    findAll.order = [['ErrorIndex', 'ASC']];
+  } else if (k !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = { KuskiIndex: findKuski.KuskiIndex };
+  } else if (ErrorTime !== '0') {
+    findAll.where = { ErrorTime: { [Op.gt]: `${ErrorTime} 00:00:00` } };
+    findAll.order = [['ErrorIndex', 'ASC']];
+  }
+  const errors = await Error.findAll(findAll);
+  return errors;
+};
+
+const getActionLog = async (k, LogTime) => {
+  const findAll = {
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+      {
+        model: Kuski,
+        as: 'RightsKuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+    limit: 100,
+    order: [['ActionLogsIndex', 'DESC']],
+  };
+  if (k !== '0' && LogTime !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = {
+      Time: { [Op.gt]: `${LogTime} 00:00:00` },
+      KuskiIndex: findKuski.KuskiIndex,
+    };
+    findAll.order = [['ActionLogsIndex', 'ASC']];
+  } else if (k !== '0') {
+    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    findAll.where = { KuskiIndex: findKuski.KuskiIndex };
+  } else if (LogTime !== '0') {
+    findAll.where = { Time: { [Op.gt]: `${LogTime} 00:00:00` } };
+    findAll.order = [['ActionLogsIndex', 'ASC']];
+  }
+  const logs = await ActionLogs.findAll(findAll);
+  return logs;
 };
 
 router
@@ -61,15 +210,42 @@ router
       const data = await getNickRequest(req.params.id);
       if (data) {
         if (req.params.action === 'accept') {
-          await AcceptNick(data);
+          await AcceptNick(data, auth.userid);
         }
         if (req.params.action === 'decline') {
-          await DeclineNick(data.SiteSettingIndex);
+          await DeclineNick(data, auth.userid);
         }
         res.json({ success: 1 });
       } else {
         res.json({ success: 0 });
       }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/banlist', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getBanlists();
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/errorlog/:Kuski/:ErrorTime', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getErrorLog(req.params.Kuski, req.params.ErrorTime);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/actionlog/:Kuski/:ErrorTime', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getActionLog(req.params.Kuski, req.params.ErrorTime);
+      res.json(data);
     } else {
       res.sendStatus(401);
     }

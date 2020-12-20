@@ -1,6 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { NickRequests, NickAccept, NickDecline } from 'data/api';
+import {
+  NickRequests,
+  NickAccept,
+  NickDecline,
+  Banlist,
+  ErrorLog,
+  ActionLog,
+} from 'data/api';
 
 export default {
   nickChanges: '',
@@ -23,6 +30,36 @@ export default {
     const post = await NickDecline(payload);
     if (post.ok) {
       actions.getNickChanges();
+    }
+  }),
+  banlist: { ips: [], flags: [] },
+  setBanlist: action((state, payload) => {
+    state.banlist = payload;
+  }),
+  getBanlist: thunk(async actions => {
+    const get = await Banlist();
+    if (get.ok) {
+      actions.setBanlist(get.data);
+    }
+  }),
+  errorLog: [],
+  setErrorLog: action((state, payload) => {
+    state.errorLog = payload;
+  }),
+  getErrorLog: thunk(async (actions, payload) => {
+    const get = await ErrorLog(payload);
+    if (get.ok) {
+      actions.setErrorLog(get.data);
+    }
+  }),
+  actionLog: [],
+  setActionLog: action((state, payload) => {
+    state.actionLog = payload;
+  }),
+  getActionLog: thunk(async (actions, payload) => {
+    const get = await ActionLog(payload);
+    if (get.ok) {
+      actions.setActionLog(get.data);
     }
   }),
 };
