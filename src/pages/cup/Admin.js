@@ -118,16 +118,12 @@ const Admin = () => {
                 eolconf.exe).
               </li>
               <li>
-                In site search box, search for the level, tick show locked
-                levels.
+                Under add event search for the level name and select it in the
+                dropdown.
               </li>
               <li>
-                Copy the index number, and come back to the cup admin page.
-              </li>
-              <li>
-                Put the number in level index under add event, add start,
-                deadline and designer, remember it&apos;s in server&apos;s
-                timezone (UTC).
+                Then add start, deadline and designer, remember it&apos;s in
+                server&apos;s timezone (UTC).
               </li>
             </ol>
           </Paper>
@@ -137,8 +133,8 @@ const Admin = () => {
           <Paper>
             <ul>
               <li>
-                To edit Designer or LevelIndex click on the in the table below
-                to enter edit mode, click outside to update.
+                To edit Designer or LevelIndex click on it in the table below to
+                enter edit mode, click outside to update.
               </li>
               <li>
                 The results public checkbox makes no actual difference prior to
