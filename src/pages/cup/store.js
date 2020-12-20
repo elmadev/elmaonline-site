@@ -15,7 +15,9 @@ import {
   UpdateReplay,
   PersonalAllFinished,
   TeamReplays,
+  LevelsSearchAll,
 } from 'data/api';
+import { forEach } from 'lodash';
 
 export default {
   cup: {},
@@ -141,6 +143,23 @@ export default {
     const times = await AllFinishedInRange(payload);
     if (times.ok) {
       actions.setAllFinished(times.data);
+    }
+  }),
+  levelList: [],
+  setLevelList: action((state, payload) => {
+    state.levelList = payload;
+  }),
+  findLevels: thunk(async (actions, payload) => {
+    const get = await LevelsSearchAll({ q: payload });
+    if (get.ok) {
+      const newList = [];
+      forEach(get.data, l => {
+        newList.push({
+          name: `${l.LevelName} (${l.LevelIndex})`,
+          value: l.LevelIndex,
+        });
+      });
+      actions.setLevelList(newList);
     }
   }),
 };
