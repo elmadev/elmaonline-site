@@ -101,7 +101,8 @@ export default function LeaderHistory({ allFinished }) {
                 </span>
               )}
               {a.length > 1 && !a[i - 1] && 'First finish'}
-              {a.length === 1 && 'Only finish'}
+              {a.length === 1 && allFinished.length !== 1 && 'First finish'}
+              {a.length === 1 && allFinished.length === 1 && 'Only finish'}
             </TimeDiff>
             <TimelineCell>
               <TimelineMarker />
