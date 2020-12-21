@@ -4,14 +4,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button, Checkbox, Grid } from '@material-ui/core';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Paper } from 'styles/Paper';
 import Field from 'components/Field';
+import FieldAutoComplete from 'components/FieldAutoComplete';
 import DerpTable from 'components/Table/DerpTable';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import ClickToEdit from 'components/ClickToEdit';
+import ClickToReveal from 'components/ClickToReveal';
 import Feedback from 'components/Feedback';
 import Header from 'components/Header';
 import { points } from 'utils/cups';
@@ -19,7 +22,6 @@ import { format } from 'date-fns';
 import { ListRow, ListCell } from 'styles/List';
 
 const schema = yup.object().shape({
-  LevelIndex: yup.number().min(1),
   StartTime: yup.date().required(),
   StartHour: yup
     .number()
@@ -33,22 +35,30 @@ const schema = yup.object().shape({
   Designer: yup.string().max(15),
 });
 
-const Admin = props => {
+const Admin = () => {
+  const { cup, lastCupShortName, events, updated, levelList } = useStoreState(
+    state => state.Cup,
+  );
   const {
-    events,
     addEvent,
     editEvent,
     deleteEvent,
     generateEvent,
-    updated,
-    closeUpdated,
-  } = props;
+    setUpdated,
+    findLevels,
+  } = useStoreActions(actions => actions.Cup);
   const [error, setError] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState(0);
   const formal = useFormal(
     {},
     {
       schema,
-      onSubmit: values => addEvent(values),
+      onSubmit: values =>
+        addEvent({
+          event: { ...values, LevelIndex: selectedLevel },
+          last: lastCupShortName,
+          CupGroupIndex: cup.CupGroupIndex,
+        }),
     },
   );
 
@@ -56,7 +66,12 @@ const Admin = props => {
     if (isNaN(v)) {
       setError('LevelIndex should be a number');
     } else {
-      editEvent(CupIndex, { LevelIndex: v });
+      editEvent({
+        CupIndex,
+        event: { LevelIndex: v },
+        CupGroupIndex: cup.CupGroupIndex,
+        last: lastCupShortName,
+      });
     }
   };
 
@@ -67,9 +82,11 @@ const Admin = props => {
           <Header h2>Add event</Header>
           <Paper>
             <form {...formal.getFormProps()}>
-              <Field
-                label="Level Index"
-                {...formal.getFieldProps('LevelIndex')}
+              <FieldAutoComplete
+                label="Level"
+                list={levelList}
+                getOptions={v => findLevels(v)}
+                valueSelected={v => setSelectedLevel(v)}
               />
               <Field
                 label="Start Date"
@@ -102,16 +119,12 @@ const Admin = props => {
                 eolconf.exe).
               </li>
               <li>
-                In site search box, search for the level, tick show locked
-                levels.
+                Under add event search for the level name and select it in the
+                dropdown.
               </li>
               <li>
-                Copy the index number, and come back to the cup admin page.
-              </li>
-              <li>
-                Put the number in level index under add event, add start,
-                deadline and designer, remember it&apos;s in server&apos;s
-                timezone (UTC).
+                Then add start, deadline and designer, remember it&apos;s in
+                server&apos;s timezone (UTC).
               </li>
             </ol>
           </Paper>
@@ -121,8 +134,8 @@ const Admin = props => {
           <Paper>
             <ul>
               <li>
-                To edit Designer or LevelIndex click on the in the table below
-                to enter edit mode, click outside to update.
+                To edit Designer or LevelIndex click on it in the table below to
+                enter edit mode, click outside to update.
               </li>
               <li>
                 The results public checkbox makes no actual difference prior to
@@ -166,7 +179,14 @@ const Admin = props => {
               <ListCell>
                 <ClickToEdit
                   value={e.KuskiData ? e.KuskiData.Kuski : 'Unknown'}
-                  update={v => editEvent(e.CupIndex, { Designer: v })}
+                  update={v =>
+                    editEvent({
+                      CupIndex: e.CupIndex,
+                      event: { Designer: v },
+                      CupGroupIndex: cup.CupGroupIndex,
+                      last: lastCupShortName,
+                    })
+                  }
                 >
                   <Kuski noLink kuskiData={e.KuskiData} />
                 </ClickToEdit>
@@ -189,28 +209,52 @@ const Admin = props => {
                 <Checkbox
                   checked={e.ShowResults === 1}
                   onChange={() =>
-                    editEvent(e.CupIndex, {
-                      ShowResults: e.ShowResults ? 0 : 1,
+                    editEvent({
+                      CupIndex: e.CupIndex,
+                      event: { ShowResults: e.ShowResults ? 0 : 1 },
+                      CupGroupIndex: cup.CupGroupIndex,
+                      last: lastCupShortName,
                     })
                   }
                   value="ShowResults"
                 />
               </ListCell>
               <ListCell>
-                <ClickToEdit
-                  value={e.LevelIndex}
-                  update={v => editLevelIndex(e.CupIndex, v)}
-                >
-                  {e.LevelIndex}
-                </ClickToEdit>
+                <ClickToReveal value={e.LevelIndex}>
+                  <FieldAutoComplete
+                    label="Level"
+                    list={levelList}
+                    getOptions={v => findLevels(v)}
+                    valueSelected={v => editLevelIndex(e.CupIndex, v)}
+                    margin="none"
+                  />
+                </ClickToReveal>
               </ListCell>
               <ListCell>
                 {e.Updated === 0 && e.StartTime < format(new Date(), 't') && (
-                  <Button variant="contained" onClick={() => generateEvent(e)}>
+                  <Button
+                    variant="contained"
+                    onClick={() =>
+                      generateEvent({
+                        event: e,
+                        last: lastCupShortName,
+                        CupGroupIndex: cup.CupGroupIndex,
+                      })
+                    }
+                  >
                     Generate
                   </Button>
                 )}
-                <Button variant="contained" onClick={() => deleteEvent(e)}>
+                <Button
+                  variant="contained"
+                  onClick={() =>
+                    deleteEvent({
+                      event: e,
+                      last: lastCupShortName,
+                      CupGroupIndex: cup.CupGroupIndex,
+                    })
+                  }
+                >
                   Delete
                 </Button>
               </ListCell>
@@ -228,7 +272,7 @@ const Admin = props => {
         open={updated !== ''}
         text={updated}
         type="success"
-        close={() => closeUpdated()}
+        close={() => setUpdated('')}
       />
     </Container>
   );

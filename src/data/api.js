@@ -25,6 +25,7 @@ export const ReplayDrivenBy = kuskiIndex =>
   api.get(`replay/driven_by/${kuskiIndex}`);
 export const ReplayUploadedBy = kuskiIndex =>
   api.get(`replay/uploaded_by/${kuskiIndex}`);
+export const ReplayByUUID = UUID => api.get(`replay/byUUID/${UUID}`);
 export const ReplaysSearchByDriven = data =>
   api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
 export const ReplaysSearchByLevel = data =>
@@ -102,9 +103,7 @@ export const TotalTimes = data =>
   api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
   api.get(
-    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
-      data.eolOnly
-    }`,
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${data.eolOnly}`,
   );
 export const Records = data =>
   api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
@@ -139,6 +138,12 @@ export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
 export const BattlesByLevel = LevelIndex =>
   api.get(`battle/byLevel/${LevelIndex}`);
+export const BattlesByDesigner = data =>
+  api.get(
+    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
+      data.pageSize
+    }`,
+  );
 
 // players
 export const PlayersSearch = data =>
@@ -174,3 +179,8 @@ export const NickAccept = data =>
   api.post(`mod/nickrequests/accept/${data.SiteSettingIndex}`);
 export const NickDecline = data =>
   api.post(`mod/nickrequests/decline/${data.SiteSettingIndex}`);
+export const Banlist = () => api.get('mod/banlist');
+export const ErrorLog = data =>
+  api.get(`mod/errorlog/${data.Kuski}/${data.ErrorTime}`);
+export const ActionLog = data =>
+  api.get(`mod/actionlog/${data.Kuski}/${data.ErrorTime}`);

@@ -54,6 +54,7 @@ export const ListRow = ({
   selected,
   onClick,
   bg = 'transparent',
+  title = '',
 }) => {
   return (
     <Row
@@ -61,6 +62,7 @@ export const ListRow = ({
       selected={selected}
       bg={bg}
       onClick={() => onClick && onClick()}
+      title={title}
     >
       {children}
     </Row>
