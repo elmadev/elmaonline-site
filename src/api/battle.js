@@ -206,6 +206,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
       'Duration',
     ],
     where: { KuskiIndex },
+    distinct: true,
     limit: parseInt(pageSize, 10),
     order: [['BattleIndex', 'DESC']],
     offset: parseInt(page * pageSize, 10),
