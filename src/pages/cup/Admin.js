@@ -14,6 +14,7 @@ import * as yup from 'yup';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import ClickToEdit from 'components/ClickToEdit';
+import ClickToReveal from 'components/ClickToReveal';
 import Feedback from 'components/Feedback';
 import Header from 'components/Header';
 import { points } from 'utils/cups';
@@ -219,12 +220,15 @@ const Admin = () => {
                 />
               </ListCell>
               <ListCell>
-                <ClickToEdit
-                  value={e.LevelIndex}
-                  update={v => editLevelIndex(e.CupIndex, v)}
-                >
-                  {e.LevelIndex}
-                </ClickToEdit>
+                <ClickToReveal value={e.LevelIndex}>
+                  <FieldAutoComplete
+                    label="Level"
+                    list={levelList}
+                    getOptions={v => findLevels(v)}
+                    valueSelected={v => editLevelIndex(e.CupIndex, v)}
+                    margin="none"
+                  />
+                </ClickToReveal>
               </ListCell>
               <ListCell>
                 {e.Updated === 0 && e.StartTime < format(new Date(), 't') && (

@@ -9,6 +9,7 @@ export default function FieldAutoComplete({
   list,
   getOptions,
   valueSelected,
+  margin,
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -69,7 +70,7 @@ export default function FieldAutoComplete({
               }
             }}
             variant="outlined"
-            margin="normal"
+            margin={margin || 'normal'}
             fullWidth
             error={isError}
             helperText={error}
