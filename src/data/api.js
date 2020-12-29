@@ -103,7 +103,9 @@ export const TotalTimes = data =>
   api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
   api.get(
-    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${data.eolOnly}`,
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
+      data.eolOnly
+    }`,
   );
 export const Records = data =>
   api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
@@ -166,6 +168,7 @@ export const SearchChat = data => api.get('chatlog', { params: data });
 
 // level
 export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
+export const LevelData = LevelIndex => api.get(`level/leveldata/${LevelIndex}`);
 export const LevelTimeStats = LevelIndex =>
   api.get(`level/timestats/${LevelIndex}`);
 

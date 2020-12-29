@@ -6,6 +6,7 @@ import ReplaysBy from 'components/ReplaysBy/store';
 import Register from 'components/Register/store';
 import ChatView from 'components/ChatView/store';
 import RecList from 'components/RecList/store';
+import LevelMap from 'components/LevelMap/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -32,6 +33,7 @@ export default {
   Cup,
   KuskiMap,
   Kuskis,
+  LevelMap,
   LevelPack,
   Search,
   Kuski,

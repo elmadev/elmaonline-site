@@ -27,6 +27,14 @@ const getLevel = async LevelIndex => {
   return level;
 };
 
+const getLevelData = async LevelIndex => {
+  const level = await Level.findOne({
+    attributes: ['LevelData', 'LevelIndex'],
+    where: { LevelIndex },
+  });
+  return level;
+};
+
 const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
   const stats = await Time.findAll({
     group: ['Finished'],
@@ -43,6 +51,11 @@ const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
 
 router.get('/:LevelIndex', async (req, res) => {
   const data = await getLevel(req.params.LevelIndex);
+  res.json(data);
+});
+
+router.get('/leveldata/:LevelIndex', async (req, res) => {
+  const data = await getLevelData(req.params.LevelIndex);
   res.json(data);
 });
 
