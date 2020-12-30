@@ -3849,6 +3849,10 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
+"elma-js@https://github.com/ville-j/elma-js":
+  version "1.0.0"
+  resolved "https://github.com/ville-j/elma-js#4946ca1f428f76d124dbb571882daf4ad6bec61b"
+
 elmajs@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/elmajs/-/elmajs-1.2.0.tgz#5fdba2b73140087e7e89c7cd7c32730d55ba3d82"

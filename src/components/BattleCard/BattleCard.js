@@ -6,6 +6,7 @@ import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
+import LevelMap from 'components/LevelMap';
 
 import s from './battleCard.css';
 
@@ -62,14 +63,7 @@ const BattleCard = props => {
             </CardContent>
           </Grid>
           <Grid item xs={12} md={6}>
-            {/* TODO: replace with proper solution for level images */}
-            <img
-              className={s.cover}
-              src={`https://elmaonline.net/images/map/${
-                battle.LevelIndex
-              }/150/150`}
-              alt="Elmaonline battle"
-            />
+            <LevelMap LevelIndex={battle.LevelIndex} />
           </Grid>
         </Grid>
       </Card>
