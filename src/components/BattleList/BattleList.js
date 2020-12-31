@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import LocalTime from 'components/LocalTime';
-import Link from 'components/Link';
 import Time from 'components/Time';
+import history from 'utils/history';
 import Kuski from 'components/Kuski';
 import styled from 'styled-components';
 import { BattleType } from 'components/Names';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toServerTime } from 'utils/time';
+import { ListRow, ListCell, ListContainer, ListHeader } from 'styles/List';
 
 const BattleList = ({ start, end }) => {
   const { battles } = useStoreState(state => state.BattleList);
@@ -21,53 +22,51 @@ const BattleList = ({ start, end }) => {
   }, [start, end]);
   return (
     <Container>
-      <Battles>
+      <ListContainer>
         <ListHeader>
-          <Field width={100} lower>
-            Type
-          </Field>
-          <Field width={150}>Designer</Field>
-          <Field width={100}>Level</Field>
-          <Field width={150}>Winner</Field>
-          <Field width={60}>Time</Field>
-          <Field width={80}>Started</Field>
-          <span>Players</span>
+          <ListCell width={100}>Type</ListCell>
+          <ListCell width={150}>Designer</ListCell>
+          <ListCell width={100}>Level</ListCell>
+          <ListCell width={150}>Winner</ListCell>
+          <ListCell width={60}>Time</ListCell>
+          <ListCell width={80}>Started</ListCell>
+          <ListCell>Players</ListCell>
         </ListHeader>
         {battles.length > 0 && (
           <>
             {battles.map(b => {
               const sorted = [...b.Results].sort(sortResults(b.BattleType));
               return (
-                <Link
+                <ListRow
                   key={b.BattleIndex}
-                  to={`battles/${b.BattleIndex}`}
-                  style={{ backgroundColor: battleStatusBgColor(b) }}
+                  onClick={() => history.push(`battles/${b.BattleIndex}`)}
+                  bg={battleStatusBgColor(b)}
                 >
-                  <Field width={100}>
-                    {b.Duration} min <BattleType type={b.BattleType} />
-                  </Field>
-                  <Field width={150}>
+                  <ListCell width={100}>
+                    {b.Duration} min <BattleType lower type={b.BattleType} />
+                  </ListCell>
+                  <ListCell width={150}>
                     <Kuski kuskiData={b.KuskiData} team flag />
-                  </Field>
-                  <Field width={100}>
+                  </ListCell>
+                  <ListCell width={100}>
                     {b.LevelData && b.LevelData.LevelName}
-                  </Field>
-                  <Field width={150}>
+                  </ListCell>
+                  <ListCell width={150}>
                     {b.Finished === 1 && b.Results.length > 0 ? (
                       <Kuski kuskiData={sorted[0].KuskiData} team flag />
                     ) : (
                       battleStatus(b)
                     )}
-                  </Field>
-                  <Field width={60}>
+                  </ListCell>
+                  <ListCell width={60}>
                     {b.Results.length > 0 && (
                       <Time time={sorted[0].Time} apples={sorted[0].Apples} />
                     )}
-                  </Field>
-                  <Field width={80}>
+                  </ListCell>
+                  <ListCell width={80}>
                     <LocalTime date={b.Started} format="HH:mm" parse="X" />
-                  </Field>
-                  <span>
+                  </ListCell>
+                  <ListCell>
                     <Popularity>
                       <Popularity
                         bar
@@ -78,13 +77,13 @@ const BattleList = ({ start, end }) => {
                         }}
                       />
                     </Popularity>
-                  </span>
-                </Link>
+                  </ListCell>
+                </ListRow>
               );
             })}
           </>
         )}
-      </Battles>
+      </ListContainer>
     </Container>
   );
 };
@@ -94,12 +93,6 @@ const Popularity = styled.div`
   overflow: hidden;
   height: ${p => (p.bar ? '5px' : 'auto')};
   background: ${p => (p.bar ? '#219653' : 'transparent')};
-`;
-
-const Field = styled.span`
-  width: ${p => p.width}px;
-  white-space: nowrap;
-  text-transform: ${p => (p.lower ? 'lowercase' : 'none')};
 `;
 
 const Container = styled.div`
@@ -119,22 +112,6 @@ const Container = styled.div`
       display: table-cell;
       vertical-align: middle;
     }
-  }
-`;
-
-const Battles = styled.div`
-  display: table;
-  table-layout: fixed;
-  min-width: 100%;
-`;
-
-const ListHeader = styled.div`
-  font-weight: 500;
-  display: table-row;
-  > * {
-    border-bottom: 1px solid #eaeaea;
-    padding: 10px;
-    display: table-cell;
   }
 `;
 
