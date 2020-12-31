@@ -146,6 +146,8 @@ export const BattlesByDesigner = data =>
       data.pageSize
     }`,
   );
+export const BattleList = data =>
+  api.get(`battle/byPeriod/${data.start}/${data.end}`);
 
 // players
 export const PlayersSearch = data =>

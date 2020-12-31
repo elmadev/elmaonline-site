@@ -1,45 +1,41 @@
-import React from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
-import { Query } from 'react-apollo';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
+import styled from 'styled-components';
 import { BattleType } from 'components/Names';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toServerTime } from 'utils/time';
 
-import battlesQuery from './battles.graphql';
-import s from './battlelist.css';
-
 const BattleList = ({ start, end }) => {
+  const { battles } = useStoreState(state => state.BattleList);
+  const { getBattles } = useStoreActions(actions => actions.BattleList);
+  useEffect(() => {
+    getBattles({
+      start: toServerTime(start).format(),
+      end: toServerTime(end).format(),
+    });
+  }, [start, end]);
   return (
-    <div className={s.battleList}>
-      <div className={s.battles}>
-        <div className={s.listHeader}>
-          <span className={s.type}>Type</span>
-          <span className={s.designerName}>Designer</span>
-          <span className={s.levelFileName}>Level</span>
-          <span className={s.winnerKuski}>Winner</span>
-          <span className={s.winnerTime}>Time</span>
-          <span className={s.battleStarted}>Started</span>
+    <Container>
+      <Battles>
+        <ListHeader>
+          <Field width={100} lower>
+            Type
+          </Field>
+          <Field width={150}>Designer</Field>
+          <Field width={100}>Level</Field>
+          <Field width={150}>Winner</Field>
+          <Field width={60}>Time</Field>
+          <Field width={80}>Started</Field>
           <span>Players</span>
-        </div>
-        <Query
-          query={battlesQuery}
-          variables={{
-            start: toServerTime(start).format(),
-            end: toServerTime(end).format(),
-          }}
-          fetchPolicy={end.isBefore(moment()) ? 'cache-first' : 'no-cache'} // eslint-disable-line
-          ssr={false}
-        >
-          {({ data: { getBattlesBetween } }) => {
-            if (!getBattlesBetween) return null;
-
-            return getBattlesBetween.map(b => {
+        </ListHeader>
+        {battles.length > 0 && (
+          <>
+            {battles.map(b => {
               const sorted = [...b.Results].sort(sortResults(b.BattleType));
               return (
                 <Link
@@ -47,55 +43,104 @@ const BattleList = ({ start, end }) => {
                   to={`battles/${b.BattleIndex}`}
                   style={{ backgroundColor: battleStatusBgColor(b) }}
                 >
-                  <span className={s.type}>
+                  <Field width={100}>
                     {b.Duration} min <BattleType type={b.BattleType} />
-                  </span>
-                  <span className={s.designerName}>
+                  </Field>
+                  <Field width={150}>
                     <Kuski kuskiData={b.KuskiData} team flag />
-                  </span>
-                  <span className={s.levelFileName}>
+                  </Field>
+                  <Field width={100}>
                     {b.LevelData && b.LevelData.LevelName}
-                  </span>
-                  <span className={s.winnerKuski}>
+                  </Field>
+                  <Field width={150}>
                     {b.Finished === 1 && b.Results.length > 0 ? (
                       <Kuski kuskiData={sorted[0].KuskiData} team flag />
                     ) : (
                       battleStatus(b)
                     )}
-                  </span>
-                  <span className={s.winnerTime}>
+                  </Field>
+                  <Field width={60}>
                     {b.Results.length > 0 && (
                       <Time time={sorted[0].Time} apples={sorted[0].Apples} />
                     )}
-                  </span>
-                  <span className={s.battleStarted}>
+                  </Field>
+                  <Field width={80}>
                     <LocalTime date={b.Started} format="HH:mm" parse="X" />
-                  </span>
+                  </Field>
                   <span>
-                    <div className={s.popularity}>
-                      <div
+                    <Popularity>
+                      <Popularity
+                        bar
                         title={b.Results.length}
-                        className={s.popularityBar}
                         style={{
                           width: `${(b.Results.length / 20) * 100}%`,
                           opacity: b.Results.length / 20 + 0.1,
                         }}
                       />
-                    </div>
+                    </Popularity>
                   </span>
                 </Link>
               );
-            });
-          }}
-        </Query>
-      </div>
-    </div>
+            })}
+          </>
+        )}
+      </Battles>
+    </Container>
   );
 };
+
+const Popularity = styled.div`
+  max-width: 150px;
+  overflow: hidden;
+  height: ${p => (p.bar ? '5px' : 'auto')};
+  background: ${p => (p.bar ? '#219653' : 'transparent')};
+`;
+
+const Field = styled.span`
+  width: ${p => p.width}px;
+  white-space: nowrap;
+  text-transform: ${p => (p.lower ? 'lowercase' : 'none')};
+`;
+
+const Container = styled.div`
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+  padding-bottom: 200px;
+  a {
+    color: black;
+    display: table-row;
+    :hover {
+      background: #f9f9f9;
+    }
+    > * {
+      padding: 10px;
+      border-bottom: 1px solid #eaeaea;
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+`;
+
+const Battles = styled.div`
+  display: table;
+  table-layout: fixed;
+  min-width: 100%;
+`;
+
+const ListHeader = styled.div`
+  font-weight: 500;
+  display: table-row;
+  > * {
+    border-bottom: 1px solid #eaeaea;
+    padding: 10px;
+    display: table-cell;
+  }
+`;
 
 BattleList.propTypes = {
   start: PropTypes.shape({}).isRequired,
   end: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(s)(BattleList);
+export default BattleList;
