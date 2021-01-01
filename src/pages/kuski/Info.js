@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import AchievementsCups from 'components/AchievementsCups';
 import AchievementsHacktober from 'components/AchievementsHacktober';
 import Header from 'components/Header';
-import { useStoreActions } from 'easy-peasy';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import { mod, admin } from 'utils/nick';
+import LocalTime from 'components/LocalTime';
+import { ListCell, ListRow, ListHeader, ListContainer } from 'styles/List';
+import { Button } from '@material-ui/core';
 import RPlay from '../../images/rights/RPlay.png';
 import RStartBattle from '../../images/rights/RStartBattle.png';
 import RSpecialBattle from '../../images/rights/RSpecialBattle.png';
@@ -18,7 +21,13 @@ import RMod from '../../images/rights/RMod.png';
 import RAdmin from '../../images/rights/RAdmin.png';
 
 const Info = ({ kuskiInfo }) => {
-  const { giveRights } = useStoreActions(actions => actions.Kuski);
+  const { giveRights, getIplogs, setIplogs } = useStoreActions(
+    actions => actions.Kuski,
+  );
+  const { iplogs } = useStoreState(state => state.Kuski);
+  useEffect(() => {
+    setIplogs([]);
+  }, []);
   return (
     <SubContainer>
       <Header h3>Rights</Header>
@@ -140,6 +149,46 @@ const Info = ({ kuskiInfo }) => {
       )}
       <AchievementsCups KuskiIndex={kuskiInfo.KuskiIndex} />
       <AchievementsHacktober KuskiIndex={kuskiInfo.KuskiIndex} />
+      {mod() === 1 && (
+        <>
+          <Button
+            variant="contained"
+            onClick={() => getIplogs(kuskiInfo.KuskiIndex)}
+          >
+            Get IP logs
+          </Button>
+          {iplogs.length > 0 && (
+            <ListContainer>
+              <ListHeader>
+                <ListCell>Log From</ListCell>
+                <ListCell>Log To</ListCell>
+                <ListCell>Player</ListCell>
+                <ListCell>IP</ListCell>
+              </ListHeader>
+              {iplogs.map(i => (
+                <ListRow key={i.LogIndex}>
+                  <ListCell>
+                    <LocalTime
+                      date={i.LogFrom}
+                      format="D MMM YYYY HH:mm:ss"
+                      parse="X"
+                    />
+                  </ListCell>
+                  <ListCell>
+                    <LocalTime
+                      date={i.LogTo}
+                      format="D MMM YYYY HH:mm:ss"
+                      parse="X"
+                    />
+                  </ListCell>
+                  <ListCell>{i.Player}</ListCell>
+                  <ListCell>{i.IP}</ListCell>
+                </ListRow>
+              ))}
+            </ListContainer>
+          )}
+        </>
+      )}
     </SubContainer>
   );
 };

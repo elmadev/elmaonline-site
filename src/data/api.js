@@ -188,3 +188,4 @@ export const ErrorLog = data =>
 export const ActionLog = data =>
   api.get(`mod/actionlog/${data.Kuski}/${data.ErrorTime}`);
 export const GiveRights = data => api.post('mod/giverights', data);
+export const IPlogs = KuskiIndex => api.get(`mod/iplogs/${KuskiIndex}`);

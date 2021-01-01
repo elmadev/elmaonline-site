@@ -10,6 +10,7 @@ import {
   FlagBan,
   ActionLogs,
   Error,
+  Logs,
 } from '../data/models';
 import config from '../config';
 
@@ -199,6 +200,15 @@ const giveRights = async (Right, KuskiIndex) => {
   await findKuski.update({ [Right]: 1 });
 };
 
+const getIPlogs = async KuskiIndex => {
+  const data = await Logs.findAll({
+    where: { KuskiIndex },
+    order: [['LogIndex', 'DESC']],
+    limit: 1000,
+  });
+  return data;
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -267,6 +277,15 @@ router
         await giveRights(req.body.Right, req.body.KuskiIndex);
         res.json({ success: 1 });
       }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/iplogs/:KuskiIndex', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const logs = await getIPlogs(req.params.KuskiIndex);
+      res.json(logs);
     } else {
       res.sendStatus(401);
     }

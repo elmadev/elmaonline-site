@@ -8,6 +8,7 @@ import {
   PersonalTimes,
   BattlesByDesigner,
   GiveRights,
+  IPlogs,
 } from 'data/api';
 
 export default {
@@ -78,5 +79,15 @@ export default {
   }),
   giveRights: thunk(async (actions, payload) => {
     await GiveRights(payload);
+  }),
+  iplogs: [],
+  setIplogs: action((state, payload) => {
+    state.iplogs = payload;
+  }),
+  getIplogs: thunk(async (actions, payload) => {
+    const get = await IPlogs(payload);
+    if (get.ok) {
+      actions.setIplogs(get.data);
+    }
   }),
 };

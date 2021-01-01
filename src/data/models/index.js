@@ -37,6 +37,7 @@ import Ban from './Ban';
 import FlagBan from './FlagBan';
 import ActionLogs from './ActionLogs';
 import Error from './Error';
+import Logs from './Logs';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -367,4 +368,5 @@ export {
   FlagBan,
   ActionLogs,
   Error,
+  Logs,
 }; // add the data model here as well so it exports
