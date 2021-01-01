@@ -7,6 +7,7 @@ import {
   Records,
   PersonalTimes,
   BattlesByDesigner,
+  GiveRights,
 } from 'data/api';
 
 export default {
@@ -74,5 +75,8 @@ export default {
     if (call.ok) {
       actions.setDesignedBattes(call.data);
     }
+  }),
+  giveRights: thunk(async (actions, payload) => {
+    await GiveRights(payload);
   }),
 };

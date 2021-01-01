@@ -194,6 +194,11 @@ const getActionLog = async (k, LogTime) => {
   return logs;
 };
 
+const giveRights = async (Right, KuskiIndex) => {
+  const findKuski = await Kuski.findOne({ where: { KuskiIndex } });
+  await findKuski.update({ [Right]: 1 });
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -246,6 +251,22 @@ router
     if (auth.mod) {
       const data = await getActionLog(req.params.Kuski, req.params.ErrorTime);
       res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/giverights', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      if (
+        req.body.Right === 'RBan' ||
+        (req.body.Right === 'RMod' && !auth.admin)
+      ) {
+        res.sendStatus(401);
+      } else {
+        await giveRights(req.body.Right, req.body.KuskiIndex);
+        res.json({ success: 1 });
+      }
     } else {
       res.sendStatus(401);
     }
