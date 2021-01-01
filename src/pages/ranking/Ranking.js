@@ -5,11 +5,7 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import { Tabs, Tab, Grid } from '@material-ui/core';
 
 import Header from 'components/Header';
-import RankingOverall from 'components/RankingTable/Overall';
-import RankingYear from 'components/RankingTable/Year';
-import RankingMonth from 'components/RankingTable/Month';
-import RankingWeek from 'components/RankingTable/Week';
-import RankingDay from 'components/RankingTable/Day';
+import RankingTable from 'components/RankingTable';
 import {
   Year,
   Month,
@@ -82,34 +78,48 @@ class Ranking extends React.Component {
             <Grid item xs={12} sm={8}>
               <Header>Ranking</Header>
               {tab === 0 && (
-                <RankingOverall battleType={battleType} minPlayed={min} />
-              )}
-              {tab === 1 && (
-                <RankingYear
-                  period={year}
+                <RankingTable
                   battleType={battleType}
                   minPlayed={min}
+                  index="RankingIndex"
+                  periodType="overall"
+                  period="overall"
+                />
+              )}
+              {tab === 1 && (
+                <RankingTable
+                  battleType={battleType}
+                  minPlayed={min}
+                  index="RankingYearlyIndex"
+                  periodType="year"
+                  period={year}
                 />
               )}
               {tab === 2 && (
-                <RankingMonth
-                  period={formatPeriod('month', year, month, week, day)}
+                <RankingTable
                   battleType={battleType}
                   minPlayed={min}
+                  index="RankingMonthlyIndex"
+                  periodType="month"
+                  period={formatPeriod('month', year, month, week, day)}
                 />
               )}
               {tab === 3 && (
-                <RankingWeek
-                  period={formatPeriod('week', year, month, week, day)}
+                <RankingTable
                   battleType={battleType}
                   minPlayed={min}
+                  index="RankingWeeklyIndex"
+                  periodType="week"
+                  period={formatPeriod('week', year, month, week, day)}
                 />
               )}
               {tab === 4 && (
-                <RankingDay
-                  period={formatPeriod('day', year, month, week, day)}
+                <RankingTable
                   battleType={battleType}
                   minPlayed={min}
+                  index="RankingDailyIndex"
+                  periodType="day"
+                  period={formatPeriod('day', year, month, week, day)}
                 />
               )}
             </Grid>
