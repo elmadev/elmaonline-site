@@ -21,13 +21,18 @@ import RMod from '../../images/rights/RMod.png';
 import RAdmin from '../../images/rights/RAdmin.png';
 
 const Info = ({ kuskiInfo }) => {
-  const { giveRights, getIplogs, setIplogs } = useStoreActions(
+  const { giveRights, getIplogs, setIplogs, getKuskiBans } = useStoreActions(
     actions => actions.Kuski,
   );
-  const { iplogs } = useStoreState(state => state.Kuski);
+  const { iplogs, kuskiBans } = useStoreState(state => state.Kuski);
   useEffect(() => {
     setIplogs([]);
   }, []);
+  useEffect(() => {
+    if (mod() === 1) {
+      getKuskiBans(kuskiInfo.KuskiIndex);
+    }
+  }, [kuskiInfo]);
   return (
     <SubContainer>
       <Header h3>Rights</Header>
@@ -151,13 +156,8 @@ const Info = ({ kuskiInfo }) => {
       <AchievementsHacktober KuskiIndex={kuskiInfo.KuskiIndex} />
       {mod() === 1 && (
         <>
-          <Button
-            variant="contained"
-            onClick={() => getIplogs(kuskiInfo.KuskiIndex)}
-          >
-            Get IP logs
-          </Button>
-          {iplogs.length > 0 && (
+          <Header h3>IP Logs</Header>
+          {iplogs.length > 0 ? (
             <ListContainer>
               <ListHeader>
                 <ListCell>Log From</ListCell>
@@ -183,6 +183,62 @@ const Info = ({ kuskiInfo }) => {
                   </ListCell>
                   <ListCell>{i.Player}</ListCell>
                   <ListCell>{i.IP}</ListCell>
+                </ListRow>
+              ))}
+            </ListContainer>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => getIplogs(kuskiInfo.KuskiIndex)}
+            >
+              Get IP logs
+            </Button>
+          )}
+          <Header h3>Banning</Header>
+          {kuskiBans.ips.length > 0 && (
+            <ListContainer>
+              <ListHeader>
+                <ListCell width={150}>IP</ListCell>
+                <ListCell width={150}>Expires</ListCell>
+                <ListCell width={150}>Severeness</ListCell>
+                <ListCell>Reason</ListCell>
+              </ListHeader>
+              {kuskiBans.ips.map(i => (
+                <ListRow key={i.BanIndex}>
+                  <ListCell width={150}>{i.IP}</ListCell>
+                  <ListCell width={150}>
+                    <LocalTime
+                      date={i.Expires}
+                      format="D MMM YYYY HH:mm:ss"
+                      parse="X"
+                    />
+                  </ListCell>
+                  <ListCell width={150}>{i.Type}</ListCell>
+                  <ListCell>{i.Reason}</ListCell>
+                </ListRow>
+              ))}
+            </ListContainer>
+          )}
+          {kuskiBans.flags.length > 0 && (
+            <ListContainer>
+              <ListHeader>
+                <ListCell width={150}>Type</ListCell>
+                <ListCell width={150}>Expires</ListCell>
+                <ListCell width={150}>Severeness</ListCell>
+                <ListCell>Reason</ListCell>
+              </ListHeader>
+              {kuskiBans.flags.map(i => (
+                <ListRow key={i.FlagBanIndex}>
+                  <ListCell width={150}>{i.BanType}</ListCell>
+                  <ListCell width={150}>
+                    <LocalTime
+                      date={i.ExpireDate}
+                      format="D MMM YYYY HH:mm:ss"
+                      parse="X"
+                    />
+                  </ListCell>
+                  <ListCell width={150}>{i.Severeness}</ListCell>
+                  <ListCell>{i.Reason}</ListCell>
                 </ListRow>
               ))}
             </ListContainer>

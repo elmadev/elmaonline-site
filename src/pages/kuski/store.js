@@ -9,6 +9,7 @@ import {
   BattlesByDesigner,
   GiveRights,
   IPlogs,
+  BanlistKuski,
 } from 'data/api';
 
 export default {
@@ -88,6 +89,16 @@ export default {
     const get = await IPlogs(payload);
     if (get.ok) {
       actions.setIplogs(get.data);
+    }
+  }),
+  kuskiBans: { ips: [], flags: [] },
+  setKuskiBans: action((state, payload) => {
+    state.kuskiBans = payload;
+  }),
+  getKuskiBans: thunk(async (actions, payload) => {
+    const get = await BanlistKuski(payload);
+    if (get.ok) {
+      actions.setKuskiBans(get.data);
     }
   }),
 };

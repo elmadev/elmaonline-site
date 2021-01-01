@@ -183,6 +183,7 @@ export const NickAccept = data =>
 export const NickDecline = data =>
   api.post(`mod/nickrequests/decline/${data.SiteSettingIndex}`);
 export const Banlist = () => api.get('mod/banlist');
+export const BanlistKuski = KuskiIndex => api.get(`mod/banlist/${KuskiIndex}`);
 export const ErrorLog = data =>
   api.get(`mod/errorlog/${data.Kuski}/${data.ErrorTime}`);
 export const ActionLog = data =>

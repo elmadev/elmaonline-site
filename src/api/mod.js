@@ -106,8 +106,8 @@ const AcceptNick = async (data, modId) => {
   );
 };
 
-const getBanlists = async () => {
-  const bans = await Ban.findAll({
+const getBanlists = async KuskiIndex => {
+  const bansQuery = {
     where: { Expires: { [Op.gt]: fn('NOW') } },
     include: [
       {
@@ -116,8 +116,8 @@ const getBanlists = async () => {
         attributes: ['Kuski'],
       },
     ],
-  });
-  const flagbans = await FlagBan.findAll({
+  };
+  const flagsQuery = {
     where: { Expired: 0, Revoked: 0 },
     include: [
       {
@@ -126,7 +126,13 @@ const getBanlists = async () => {
         attributes: ['Kuski'],
       },
     ],
-  });
+  };
+  if (KuskiIndex) {
+    bansQuery.where = { ...bansQuery.where, KuskiIndex };
+    flagsQuery.where = { ...flagsQuery.where, KuskiIndex };
+  }
+  const bans = await Ban.findAll(bansQuery);
+  const flagbans = await FlagBan.findAll(flagsQuery);
   return { ips: bans, flags: flagbans };
 };
 
@@ -195,9 +201,10 @@ const getActionLog = async (k, LogTime) => {
   return logs;
 };
 
-const giveRights = async (Right, KuskiIndex) => {
+const giveRights = async (Right, KuskiIndex, modId) => {
   const findKuski = await Kuski.findOne({ where: { KuskiIndex } });
   await findKuski.update({ [Right]: 1 });
+  await WriteActionLog(modId, KuskiIndex, Right, 1, 0, '');
 };
 
 const getIPlogs = async KuskiIndex => {
@@ -241,7 +248,16 @@ router
   .get('/banlist', async (req, res) => {
     const auth = authContext(req);
     if (auth.mod) {
-      const data = await getBanlists();
+      const data = await getBanlists(0);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/banlist/:KuskiIndex', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getBanlists(req.params.KuskiIndex);
       res.json(data);
     } else {
       res.sendStatus(401);
@@ -274,7 +290,7 @@ router
       ) {
         res.sendStatus(401);
       } else {
-        await giveRights(req.body.Right, req.body.KuskiIndex);
+        await giveRights(req.body.Right, req.body.KuskiIndex, auth.userid);
         res.json({ success: 1 });
       }
     } else {
