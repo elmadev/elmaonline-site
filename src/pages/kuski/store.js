@@ -108,6 +108,8 @@ export default {
     const post = await BanKuski(payload);
     if (post.ok) {
       actions.getKuskiBans(payload.KuskiIndex);
+    }
+  }),
   playedBattles: {
     rows: [],
   },
