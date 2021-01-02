@@ -138,11 +138,17 @@ export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
 export const BattlesByLevel = LevelIndex =>
   api.get(`battle/byLevel/${LevelIndex}`);
+export const BattleResults = BattleIndex =>
+  api.get(`battle/byBattleIndex/${BattleIndex}`);
+export const BattleList = IndexList =>
+  api.get(`battle/byBattleIndexList/${IndexList}`); // array of battle indices
 export const BattlesByDesigner = data =>
   api.get(
-    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
-      data.pageSize
-    }`,
+    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
+  );
+export const BattlesByPlayer = data =>
+  api.get(
+    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
 
 // players
@@ -151,6 +157,8 @@ export const PlayersSearch = data =>
 export const TeamsSearch = data =>
   api.get(`player/searchTeam/${data.q}/${data.offset}`);
 export const UserInfo = KuskiIndex => api.get(`player/${KuskiIndex}`);
+export const UserInfoByIdentifier = data =>
+  api.get(`player/${data.IdentifierType}/${data.KuskiIdentifier}`);
 export const UpdateUserInfo = data => api.post(`register/update`, data);
 export const Ignore = Kuski => api.post(`player/ignore/${Kuski}`);
 export const Ignored = () => api.get('player/ignored');
