@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, Container, Box } from '@material-ui/core';
 import { useStoreActions, useStoreState } from 'easy-peasy';
+import Link from 'components/Link';
 
-const ForgotPassword = props => {
-  const { close } = props;
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const { resetMessage, resetSuccess } = useStoreState(state => state.Register);
@@ -34,7 +33,7 @@ const ForgotPassword = props => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="sm">
       {resetSuccess ? (
         <SuccessMessage>
           Password reset request has been sent successfully. Check your email
@@ -42,51 +41,31 @@ const ForgotPassword = props => {
         </SuccessMessage>
       ) : (
         <>
-          <TextBox>
-            <TextField
-              id="email"
-              label="Email *"
-              margin="normal"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              fullWidth
-              onKeyPress={e => onEnter(e)}
-              variant="outlined"
-            />
-          </TextBox>
-          <ButtonsContainer>
-            {error !== '' && <ErrorMessage>{error}</ErrorMessage>}
-            {resetMessage !== '' && <ErrorMessage>{resetMessage}</ErrorMessage>}
-            <Button onClick={() => close && close()}>Login</Button>
-            <Button
-              onClick={() => clickReset()}
-              variant="contained"
-              color="primary"
-            >
+          <TextField
+            id="email"
+            label="Email *"
+            margin="normal"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            fullWidth
+            onKeyPress={e => onEnter(e)}
+            variant="outlined"
+          />
+          {error !== '' && <ErrorMessage>{error}</ErrorMessage>}
+          {resetMessage !== '' && <ErrorMessage>{resetMessage}</ErrorMessage>}
+          <Box py={2}>
+            <Button onClick={() => clickReset()} variant="contained" fullWidth>
               Reset password
             </Button>
-          </ButtonsContainer>
+          </Box>
+          <Box py={2}>
+            <Link to="/login">Back to login view</Link>
+          </Box>
         </>
       )}
     </Container>
   );
 };
-
-const Container = styled.div`
-  margin: 0 auto;
-  padding: 20px;
-  max-width: var(--max-content-width);
-`;
-
-const TextBox = styled.div`
-  margin-left: 4px;
-  margin-right: 4px;
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
 
 const ErrorMessage = styled.div`
   line-height: 36px;
@@ -97,9 +76,5 @@ const ErrorMessage = styled.div`
 const SuccessMessage = styled.div`
   color: green;
 `;
-
-ForgotPassword.propTypes = {
-  close: PropTypes.func.isRequired,
-};
 
 export default ForgotPassword;

@@ -3,10 +3,11 @@ import { action } from 'easy-peasy';
 import ReplayComments from 'components/ReplayComments/store';
 import ReplayRating from 'components/ReplayRating/store';
 import ReplaysBy from 'components/ReplaysBy/store';
-import Register from 'components/Register/store';
 import ChatView from 'components/ChatView/store';
 import RecList from 'components/RecList/store';
 import LevelMap from 'components/LevelMap/store';
+import Register from 'pages/register/store';
+import Login from 'pages/login/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -46,6 +47,7 @@ export default {
   RecList,
   Level,
   Battle,
+  Login,
   Page: {
     sideBarVisible: true,
     showSideBar: action(state => {
