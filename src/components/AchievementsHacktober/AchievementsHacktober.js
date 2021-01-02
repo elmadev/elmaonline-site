@@ -32,7 +32,7 @@ const AchievementsHacktober = ({ KuskiIndex }) => {
           <Header h3>Hacktober achievements</Header>
           <Container>
             {a[KuskiIndex].map(x => (
-              <img src={images[x]} alt={x} title={titles[x]} />
+              <img key={x} src={images[x]} alt={x} title={titles[x]} />
             ))}
           </Container>
         </>

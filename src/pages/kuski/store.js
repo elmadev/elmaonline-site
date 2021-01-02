@@ -82,7 +82,10 @@ export default {
     }
   }),
   giveRights: thunk(async (actions, payload) => {
-    await GiveRights(payload);
+    const post = await GiveRights(payload);
+    if (post.ok) {
+      actions.getKuskiByName(payload.name);
+    }
   }),
   iplogs: [],
   setIplogs: action((state, payload) => {

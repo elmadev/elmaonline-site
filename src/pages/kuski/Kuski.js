@@ -90,7 +90,7 @@ const Kuski = props => {
           </div>
         </div>
       )}
-      {tab === 5 && <Info kuskiInfo={getKuskiByName} />}
+      {tab === 5 && <Info kuskiInfo={kuski} />}
     </div>
   );
 };

@@ -52,7 +52,24 @@ const TeamsSearch = async (query, offset) => {
 const Player = async (IdentifierType, KuskiIdentifier) => {
   const query = {
     where: {},
-    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Email'],
+    attributes: [
+      'KuskiIndex',
+      'Kuski',
+      'TeamIndex',
+      'Country',
+      'Email',
+      'RPlay',
+      'RStartBattle',
+      'RSpecialBattle',
+      'RStartCup',
+      'RStart24htt',
+      'RStop',
+      'RMultiPlay',
+      'RChat',
+      'RBan',
+      'RMod',
+      'RAdmin',
+    ],
     include: [
       {
         model: Team,

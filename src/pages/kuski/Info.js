@@ -36,7 +36,7 @@ const Info = ({ kuskiInfo }) => {
     banKuski,
   } = useStoreActions(actions => actions.Kuski);
   const { iplogs, kuskiBans } = useStoreState(state => state.Kuski);
-  const [banType, setBanType] = useState('play');
+  const [banType, setBanType] = useState('PlayBan');
   const [severity, setSeverity] = useState('warning');
   const [banText, setBanText] = useState('');
   useEffect(() => {
@@ -94,6 +94,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RStartBattle',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RStartBattle}
@@ -107,6 +108,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RSpecialBattle',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RSpecialBattle}
@@ -120,6 +122,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RStart24htt',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RStart24htt}
@@ -133,6 +136,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RStop',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RStop}
@@ -146,6 +150,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RBan',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RBan}
@@ -159,6 +164,7 @@ const Info = ({ kuskiInfo }) => {
                   giveRights({
                     Right: 'RMod',
                     KuskiIndex: kuskiInfo.KuskiIndex,
+                    name: kuskiInfo.Kuski,
                   })
                 }
                 src={RMod}
