@@ -7,6 +7,10 @@ import {
   Records,
   PersonalTimes,
   BattlesByDesigner,
+  GiveRights,
+  IPlogs,
+  BanlistKuski,
+  BanKuski,
   UserInfoByIdentifier,
   BattlesByPlayer,
 } from 'data/api';
@@ -75,6 +79,35 @@ export default {
     const call = await BattlesByDesigner(payload);
     if (call.ok) {
       actions.setDesignedBattes(call.data);
+    }
+  }),
+  giveRights: thunk(async (actions, payload) => {
+    await GiveRights(payload);
+  }),
+  iplogs: [],
+  setIplogs: action((state, payload) => {
+    state.iplogs = payload;
+  }),
+  getIplogs: thunk(async (actions, payload) => {
+    const get = await IPlogs(payload);
+    if (get.ok) {
+      actions.setIplogs(get.data);
+    }
+  }),
+  kuskiBans: { ips: [], flags: [] },
+  setKuskiBans: action((state, payload) => {
+    state.kuskiBans = payload;
+  }),
+  getKuskiBans: thunk(async (actions, payload) => {
+    const get = await BanlistKuski(payload);
+    if (get.ok) {
+      actions.setKuskiBans(get.data);
+    }
+  }),
+  banKuski: thunk(async (actions, payload) => {
+    const post = await BanKuski(payload);
+    if (post.ok) {
+      actions.getKuskiBans(payload.KuskiIndex);
     }
   }),
   playedBattles: {

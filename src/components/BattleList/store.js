@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { action, thunk } from 'easy-peasy';
-import { BattleList } from 'data/api';
+import { BattleListPeriod } from 'data/api';
 
 export default {
   battles: {},
@@ -8,7 +8,7 @@ export default {
     state.battles = payload;
   }),
   getBattles: thunk(async (actions, payload) => {
-    const get = await BattleList(payload);
+    const get = await BattleListPeriod(payload);
     if (get.ok) {
       actions.setBattles(get.data);
     }
