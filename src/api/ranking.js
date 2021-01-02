@@ -1,5 +1,13 @@
 import express from 'express';
-import { Ranking } from '../data/models';
+import {
+  Ranking,
+  Kuski,
+  RankingYearly,
+  RankingMonthly,
+  RankingWeekly,
+  RankingDaily,
+  Team,
+} from '../data/models';
 
 const router = express.Router();
 
@@ -10,9 +18,53 @@ const getPersonalRanking = async KuskiIndex => {
   return ranking;
 };
 
-router.get('/kuski/:KuskiIndex', async (req, res) => {
-  const data = await getPersonalRanking(req.params.KuskiIndex);
-  res.json(data);
-});
+const getRanking = async (periodType, period) => {
+  const query = {
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+    ],
+  };
+  let data = [];
+  if (periodType === 'overall') {
+    data = await Ranking.findAll(query);
+  }
+  if (periodType === 'year') {
+    query.where = { Year: period };
+    data = await RankingYearly.findAll(query);
+  }
+  if (periodType === 'month') {
+    query.where = { Month: period };
+    data = await RankingMonthly.findAll(query);
+  }
+  if (periodType === 'week') {
+    query.where = { Week: period };
+    data = await RankingWeekly.findAll(query);
+  }
+  if (periodType === 'day') {
+    query.where = { Day: period };
+    data = await RankingDaily.findAll(query);
+  }
+  return data;
+};
+
+router
+  .get('/kuski/:KuskiIndex', async (req, res) => {
+    const data = await getPersonalRanking(req.params.KuskiIndex);
+    res.json(data);
+  })
+  .get('/:periodType/:period', async (req, res) => {
+    const data = await getRanking(req.params.periodType, req.params.period);
+    res.json(data);
+  });
 
 export default router;
