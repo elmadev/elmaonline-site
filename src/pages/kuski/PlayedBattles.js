@@ -32,7 +32,7 @@ const PlayedBattles = ({ KuskiIndex }) => {
       page,
       pageSize,
     });
-  }, [page, pageSize]);
+  }, [page, pageSize, KuskiIndex]);
 
   const handleChangeRowsPerPage = e => {
     setPage(0);
