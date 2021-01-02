@@ -11,6 +11,8 @@ import {
   IPlogs,
   BanlistKuski,
   BanKuski,
+  UserInfoByIdentifier,
+  BattlesByPlayer,
 } from 'data/api';
 
 export default {
@@ -106,6 +108,29 @@ export default {
     const post = await BanKuski(payload);
     if (post.ok) {
       actions.getKuskiBans(payload.KuskiIndex);
+  playedBattles: {
+    rows: [],
+  },
+  setPlayedBattles: action((state, payload) => {
+    state.playedBattles = payload;
+  }),
+  getPlayedBattles: thunk(async (actions, payload) => {
+    const battles = await BattlesByPlayer(payload);
+    if (battles.ok) {
+      actions.setPlayedBattles(battles.data);
+    }
+  }),
+  kuski: '',
+  setKuski: action((state, payload) => {
+    state.kuski = payload;
+  }),
+  getKuskiByName: thunk(async (actions, payload) => {
+    const kuski = await UserInfoByIdentifier({
+      IdentifierType: 'Kuski',
+      KuskiIdentifier: payload,
+    });
+    if (kuski.ok) {
+      actions.setKuski(kuski.data);
     }
   }),
 };
