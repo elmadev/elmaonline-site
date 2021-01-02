@@ -10,6 +10,7 @@ import {
   GiveRights,
   IPlogs,
   BanlistKuski,
+  BanKuski,
 } from 'data/api';
 
 export default {
@@ -99,6 +100,12 @@ export default {
     const get = await BanlistKuski(payload);
     if (get.ok) {
       actions.setKuskiBans(get.data);
+    }
+  }),
+  banKuski: thunk(async (actions, payload) => {
+    const post = await BanKuski(payload);
+    if (post.ok) {
+      actions.getKuskiBans(payload.KuskiIndex);
     }
   }),
 };

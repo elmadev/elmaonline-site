@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import AchievementsCups from 'components/AchievementsCups';
 import AchievementsHacktober from 'components/AchievementsHacktober';
@@ -7,7 +7,14 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 import { mod, admin } from 'utils/nick';
 import LocalTime from 'components/LocalTime';
 import { ListCell, ListRow, ListHeader, ListContainer } from 'styles/List';
-import { Button } from '@material-ui/core';
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+} from '@material-ui/core';
 import RPlay from '../../images/rights/RPlay.png';
 import RStartBattle from '../../images/rights/RStartBattle.png';
 import RSpecialBattle from '../../images/rights/RSpecialBattle.png';
@@ -21,10 +28,17 @@ import RMod from '../../images/rights/RMod.png';
 import RAdmin from '../../images/rights/RAdmin.png';
 
 const Info = ({ kuskiInfo }) => {
-  const { giveRights, getIplogs, setIplogs, getKuskiBans } = useStoreActions(
-    actions => actions.Kuski,
-  );
+  const {
+    giveRights,
+    getIplogs,
+    setIplogs,
+    getKuskiBans,
+    banKuski,
+  } = useStoreActions(actions => actions.Kuski);
   const { iplogs, kuskiBans } = useStoreState(state => state.Kuski);
+  const [banType, setBanType] = useState('play');
+  const [severity, setSeverity] = useState('warning');
+  const [banText, setBanText] = useState('');
   useEffect(() => {
     setIplogs([]);
   }, []);
@@ -33,6 +47,9 @@ const Info = ({ kuskiInfo }) => {
       getKuskiBans(kuskiInfo.KuskiIndex);
     }
   }, [kuskiInfo]);
+  const ban = () => {
+    banKuski({ banType, severity, banText, KuskiIndex: kuskiInfo.KuskiIndex });
+  };
   return (
     <SubContainer>
       <Header h3>Rights</Header>
@@ -194,7 +211,7 @@ const Info = ({ kuskiInfo }) => {
               Get IP logs
             </Button>
           )}
-          <Header h3>Banning</Header>
+          <Header h3>Bans</Header>
           {kuskiBans.ips.length > 0 && (
             <ListContainer>
               <ListHeader>
@@ -243,6 +260,52 @@ const Info = ({ kuskiInfo }) => {
               ))}
             </ListContainer>
           )}
+          <Header h3>Give Ban</Header>
+          <FormControl>
+            <InputLabel htmlFor="type-simple">Ban Type</InputLabel>
+            <Select
+              value={banType}
+              onChange={e => setBanType(e.target.value)}
+              inputProps={{
+                name: 'type',
+                id: 'type-simple',
+              }}
+              style={{ minWidth: '250px' }}
+            >
+              <MenuItem value="PlayBan">Play</MenuItem>
+              <MenuItem value="ChatBan">Chat</MenuItem>
+              <MenuItem value="StartBan">Start</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl>
+            <InputLabel htmlFor="severity-simple">Severity</InputLabel>
+            <Select
+              value={severity}
+              onChange={e => setSeverity(e.target.value)}
+              inputProps={{
+                name: 'severity',
+                id: 'severity-simple',
+              }}
+              style={{ minWidth: '250px' }}
+            >
+              <MenuItem value="warning">Warning</MenuItem>
+              <MenuItem value="week">1 week</MenuItem>
+              <MenuItem value="twoweek">2 weeks</MenuItem>
+              <MenuItem value="year">Year</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            id="outlined-name"
+            label="Reason"
+            value={banText}
+            onChange={e => setBanText(e.target.value)}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          />
+          <Button variant="contained" onClick={() => ban()}>
+            Ban
+          </Button>
         </>
       )}
     </SubContainer>

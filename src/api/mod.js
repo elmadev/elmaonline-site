@@ -2,6 +2,7 @@ import express from 'express';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
 import { sendMessage } from 'utils/discord';
+import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {
   SiteSetting,
@@ -136,6 +137,64 @@ const getBanlists = async KuskiIndex => {
   return { ips: bans, flags: flagbans };
 };
 
+const banKuski = async data => {
+  let add = 0;
+  switch (data.severity) {
+    case 'warning':
+      add = 365;
+      break;
+    case 'week':
+      add = 7;
+      break;
+    case 'twoweek':
+      add = 14;
+      break;
+    case 'year':
+      add = 365;
+      break;
+    default:
+  }
+  const ExpireDate = format(addDays(new Date(), add), 't');
+  const insert = await FlagBan.create({
+    KuskiIndex: data.KuskiIndex,
+    BanType: data.banType,
+    ExpireDate,
+    Reason: data.banText,
+    Severeness: data.banType,
+  });
+  await WriteActionLog(
+    data.modId,
+    data.KuskiIndex,
+    data.banType,
+    1,
+    insert.FlagBanIndex,
+    '',
+  );
+  if (data.severity !== 'warning') {
+    switch (data.banType) {
+      case 'PlayBan':
+        await Kuski.update(
+          { RPlay: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      case 'ChatBan':
+        await Kuski.update(
+          { RChat: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      case 'StartBan':
+        await Kuski.update(
+          { RStartBattle: 0, RSpecialBattle: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      default:
+    }
+  }
+};
+
 const getErrorLog = async (k, ErrorTime) => {
   const findAll = {
     include: [
@@ -259,6 +318,15 @@ router
     if (auth.mod) {
       const data = await getBanlists(req.params.KuskiIndex);
       res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/bankuski', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      await banKuski({ ...req.body, modId: auth.userid });
+      res.json({ success: 1 });
     } else {
       res.sendStatus(401);
     }
