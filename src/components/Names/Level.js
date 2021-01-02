@@ -11,30 +11,27 @@ const formatLevel = level => {
   return level;
 };
 
-class Level extends React.Component {
-  static propTypes = {
-    long: PropTypes.bool,
-    LevelData: PropTypes.shape({
-      LevelName: PropTypes.string,
-      LongName: PropTypes.string,
-    }),
-  };
+const Level = ({ long, LevelData }) => {
+  return (
+    <>
+      {long && LevelData && LevelData.LongName}
+      {!long && LevelData && formatLevel(LevelData.LevelName)}
+      {!LevelData && 'Unknown'}
+    </>
+  );
+};
 
-  static defaultProps = {
-    long: false,
-    LevelData: null,
-  };
+Level.propTypes = {
+  long: PropTypes.bool,
+  LevelData: PropTypes.shape({
+    LevelName: PropTypes.string,
+    LongName: PropTypes.string,
+  }),
+};
 
-  render() {
-    const { LevelData, long } = this.props;
-    return (
-      <>
-        {long && LevelData && LevelData.LongName}
-        {!long && LevelData && formatLevel(LevelData.LevelName)}
-        {!LevelData && 'Unknown'}
-      </>
-    );
-  }
-}
+Level.defaultProps = {
+  long: false,
+  LevelData: null,
+};
 
 export default Level;
