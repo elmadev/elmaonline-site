@@ -7,6 +7,8 @@ import {
   Records,
   PersonalTimes,
   BattlesByDesigner,
+  UserInfoByIdentifier,
+  BattlesByPlayer,
 } from 'data/api';
 
 export default {
@@ -73,6 +75,31 @@ export default {
     const call = await BattlesByDesigner(payload);
     if (call.ok) {
       actions.setDesignedBattes(call.data);
+    }
+  }),
+  playedBattles: {
+    rows: [],
+  },
+  setPlayedBattles: action((state, payload) => {
+    state.playedBattles = payload;
+  }),
+  getPlayedBattles: thunk(async (actions, payload) => {
+    const battles = await BattlesByPlayer(payload);
+    if (battles.ok) {
+      actions.setPlayedBattles(battles.data);
+    }
+  }),
+  kuski: '',
+  setKuski: action((state, payload) => {
+    state.kuski = payload;
+  }),
+  getKuskiByName: thunk(async (actions, payload) => {
+    const kuski = await UserInfoByIdentifier({
+      IdentifierType: 'Kuski',
+      KuskiIdentifier: payload,
+    });
+    if (kuski.ok) {
+      actions.setKuski(kuski.data);
     }
   }),
 };

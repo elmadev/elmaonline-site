@@ -12,7 +12,7 @@ const KuskiHeader = ({ KuskiIndex, Kuski }) => {
   useEffect(() => {
     getRanking(KuskiIndex);
     getTt(Kuski);
-  }, []);
+  }, [KuskiIndex]);
   let playedAll = 0;
   let winsAll = 0;
   if (ranking) {
