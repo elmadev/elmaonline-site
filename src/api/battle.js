@@ -384,6 +384,65 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
   return byDesigner;
 };
 
+const BattlesBetween = async (Start, End) => {
+  const battles = await Battle.findAll({
+    attributes: [
+      'BattleIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Started',
+      'Duration',
+      'BattleType',
+      'Aborted',
+      'InQueue',
+      'Finished',
+    ],
+    limit: 250,
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [['Started', 'DESC']],
+    where: {
+      Started: {
+        [Op.between]: [Start, End],
+      },
+    },
+  });
+  return battles;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
@@ -433,6 +492,10 @@ router
       req.query.page,
       req.query.pageSize,
     );
+    res.json(battles);
+  })
+  .get('/byPeriod/:Start/:End', async (req, res) => {
+    const battles = await BattlesBetween(req.params.Start, req.params.End);
     res.json(battles);
   });
 

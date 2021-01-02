@@ -152,6 +152,8 @@ export const BattlesByPlayer = data =>
   api.get(
     `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
+export const BattleList = data =>
+  api.get(`battle/byPeriod/${data.start}/${data.end}`);
 
 // players
 export const PlayersSearch = data =>
