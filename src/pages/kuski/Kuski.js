@@ -1,5 +1,5 @@
-import React from 'react';
-import { graphql, compose } from 'react-apollo';
+import React, { useState, useEffect } from 'react';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import { Tabs, Tab } from '@material-ui/core';
@@ -15,7 +15,6 @@ import PlayedBattles from './PlayedBattles';
 import DesignedBattles from './DesignedBattles';
 import KuskiHeader from './KuskiHeader';
 import LatestTimes from './LatestTimes';
-import kuskiQuery from './kuski.graphql';
 import s from './Kuski.css';
 
 import RPlay from '../../images/rights/RPlay.png';
@@ -30,152 +29,127 @@ import RBan from '../../images/rights/RBan.png';
 import RMod from '../../images/rights/RMod.png';
 import RAdmin from '../../images/rights/RAdmin.png';
 
-class Kuski extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tab: 0,
-    };
-  }
+const Kuski = props => {
+  const [tab, setTab] = useState(0);
 
-  render() {
-    const {
-      data: { getKuskiByName, loading },
-    } = this.props;
-    const { tab } = this.state;
+  const { name } = props;
 
-    if (loading) return null;
-    if (!getKuskiByName) return <div>not found</div>;
+  const { getKuskiByName } = useStoreActions(state => state.Kuski);
+  const { kuski } = useStoreState(state => state.Kuski);
 
-    return (
-      <div className={s.kuski}>
-        <div className={s.head}>
-          <div className={s.picture}>
-            <img
-              src={`http://elmaonline.net/images/shirt/${
-                getKuskiByName.KuskiIndex
-              }`}
-              alt="shirt"
-            />
-          </div>
-          <div className={s.profile}>
-            <div className={s.name}>
-              <Flag nationality={getKuskiByName.Country} />
-              {getKuskiByName.Kuski}
-            </div>
-            <div className={s.teamNat}>
-              {getKuskiByName.TeamData &&
-                `Team: ${getKuskiByName.TeamData.Team}`}
-            </div>
-          </div>
-          <KuskiHeader
-            Kuski={getKuskiByName.Kuski}
-            KuskiIndex={getKuskiByName.KuskiIndex}
+  useEffect(() => {
+    getKuskiByName(name);
+  }, [name]);
+
+  if (!kuski) return <div>not found</div>;
+
+  return (
+    <div className={s.kuski}>
+      <div className={s.head}>
+        <div className={s.picture}>
+          <img
+            src={`http://elmaonline.net/images/shirt/${kuski.KuskiIndex}`}
+            alt="shirt"
           />
         </div>
-        <Tabs
-          variant="scrollable"
-          scrollButtons="auto"
-          value={tab}
-          onChange={(e, t) => this.setState({ tab: t })}
-        >
-          <Tab label="Played Battles" />
-          <Tab label="Designed Battles" />
-          <Tab label="Latest times" />
-          <Tab label="Replays Uploaded" />
-          <Tab label="Replays Driven" />
-          <Tab label="Info" />
-        </Tabs>
-        {tab === 0 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <PlayedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
+        <div className={s.profile}>
+          <div className={s.name}>
+            <Flag nationality={name} />
+            {kuski.Kuski}
           </div>
-        )}
-        {tab === 1 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <DesignedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
+          <div className={s.teamNat}>
+            {kuski.TeamData && `Team: ${kuski.TeamData.Team}`}
           </div>
-        )}
-        {tab === 2 && <LatestTimes KuskiIndex={getKuskiByName.KuskiIndex} />}
-        {tab === 3 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <ReplaysBy
-                type="uploaded"
-                KuskiIndex={getKuskiByName.KuskiIndex}
-              />
-            </div>
-          </div>
-        )}
-        {tab === 4 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <ReplaysBy type="driven" KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
-          </div>
-        )}
-        {tab === 5 && (
-          <SubContainer>
-            <Header h3>Rights</Header>
-            <Rights>
-              {getKuskiByName.RPlay === 1 && (
-                <img src={RPlay} alt="RPlay" title="Play" />
-              )}
-              {getKuskiByName.RMultiPlay === 1 && (
-                <img src={RMultiPlay} alt="RMultiPlay" title="Multiplay" />
-              )}
-              {getKuskiByName.RChat === 1 && (
-                <img src={RChat} alt="RChat" title="Chat" />
-              )}
-              {getKuskiByName.RStartBattle === 1 && (
-                <img
-                  src={RStartBattle}
-                  alt="RStartBattle"
-                  title="Start battle"
-                />
-              )}
-              {getKuskiByName.RSpecialBattle === 1 && (
-                <img
-                  src={RSpecialBattle}
-                  alt="RSpecialBattle"
-                  title="Start special battle"
-                />
-              )}
-              {getKuskiByName.RStart24htt === 1 && (
-                <img
-                  src={RStart24htt}
-                  alt="RStart24htt"
-                  title="Start 24 hour TT"
-                />
-              )}
-              {getKuskiByName.RStartCup === 1 && (
-                <img src={RStartCup} alt="RStartCup" title="Start cup" />
-              )}
-              {getKuskiByName.RStop === 1 && (
-                <img src={RStop} alt="RStop" title="Abort/Stop battle" />
-              )}
-              {getKuskiByName.RBan === 1 && (
-                <img src={RBan} alt="RBan" title="Ban" />
-              )}
-              {getKuskiByName.RMod === 1 && (
-                <img src={RMod} alt="RMod" title="Mod" />
-              )}
-              {getKuskiByName.RAdmin === 1 && (
-                <img src={RAdmin} alt="RAdmin" title="Admin" />
-              )}
-            </Rights>
-            <AchievementsCups KuskiIndex={getKuskiByName.KuskiIndex} />
-            <AchievementsHacktober KuskiIndex={getKuskiByName.KuskiIndex} />
-          </SubContainer>
-        )}
+        </div>
+        <KuskiHeader Kuski={kuski.Kuski} KuskiIndex={kuski.KuskiIndex} />
       </div>
-    );
-  }
-}
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        value={tab}
+        onChange={(e, t) => setTab(t)}
+      >
+        <Tab label="Played Battles" />
+        <Tab label="Designed Battles" />
+        <Tab label="Latest times" />
+        <Tab label="Replays Uploaded" />
+        <Tab label="Replays Driven" />
+        <Tab label="Info" />
+      </Tabs>
+      {tab === 0 && (
+        <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+          <div className={s.recentBattles}>
+            <PlayedBattles KuskiIndex={kuski.KuskiIndex} />
+          </div>
+        </div>
+      )}
+      {tab === 1 && (
+        <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+          <div className={s.recentBattles}>
+            <DesignedBattles KuskiIndex={kuski.KuskiIndex} />
+          </div>
+        </div>
+      )}
+      {tab === 2 && <LatestTimes KuskiIndex={kuski.KuskiIndex} />}
+      {tab === 3 && (
+        <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+          <div className={s.recentBattles}>
+            <ReplaysBy type="uploaded" KuskiIndex={kuski.KuskiIndex} />
+          </div>
+        </div>
+      )}
+      {tab === 4 && (
+        <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+          <div className={s.recentBattles}>
+            <ReplaysBy type="driven" KuskiIndex={kuski.KuskiIndex} />
+          </div>
+        </div>
+      )}
+      {tab === 5 && (
+        <SubContainer>
+          <Header h3>Rights</Header>
+          <Rights>
+            {kuski.RPlay === 1 && <img src={RPlay} alt="RPlay" title="Play" />}
+            {kuski.RMultiPlay === 1 && (
+              <img src={RMultiPlay} alt="RMultiPlay" title="Multiplay" />
+            )}
+            {kuski.RChat === 1 && <img src={RChat} alt="RChat" title="Chat" />}
+            {kuski.RStartBattle === 1 && (
+              <img src={RStartBattle} alt="RStartBattle" title="Start battle" />
+            )}
+            {kuski.RSpecialBattle === 1 && (
+              <img
+                src={RSpecialBattle}
+                alt="RSpecialBattle"
+                title="Start special battle"
+              />
+            )}
+            {kuski.RStart24htt === 1 && (
+              <img
+                src={RStart24htt}
+                alt="RStart24htt"
+                title="Start 24 hour TT"
+              />
+            )}
+            {kuski.RStartCup === 1 && (
+              <img src={RStartCup} alt="RStartCup" title="Start cup" />
+            )}
+            {kuski.RStop === 1 && (
+              <img src={RStop} alt="RStop" title="Abort/Stop battle" />
+            )}
+            {kuski.RBan === 1 && <img src={RBan} alt="RBan" title="Ban" />}
+            {kuski.RMod === 1 && <img src={RMod} alt="RMod" title="Mod" />}
+            {kuski.RAdmin === 1 && (
+              <img src={RAdmin} alt="RAdmin" title="Admin" />
+            )}
+          </Rights>
+          <AchievementsCups KuskiIndex={kuski.KuskiIndex} />
+          <AchievementsHacktober KuskiIndex={kuski.KuskiIndex} />
+        </SubContainer>
+      )}
+    </div>
+  );
+};
 
 const Rights = styled.div`
   display: flex;
@@ -191,19 +165,7 @@ const SubContainer = styled.div`
 `;
 
 Kuski.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    getKuskiByName: PropTypes.shape.isRequired,
-  }).isRequired,
+  name: PropTypes.string.isRequired,
 };
 
-export default compose(
-  withStyles(s),
-  graphql(kuskiQuery, {
-    options: ownProps => ({
-      variables: {
-        Name: ownProps.name,
-      },
-    }),
-  }),
-)(Kuski);
+export default withStyles(s)(Kuski);
