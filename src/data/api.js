@@ -159,7 +159,7 @@ export const BattlesByPlayer = data =>
     }`,
   );
 export const BattleListPeriod = data =>
-  api.get(`battle/byPeriod/${data.start}/${data.end}`);
+  api.get(`battle/byPeriod/${data.start}/${data.end}/${data.limit}`);
 
 // players
 export const PlayersSearch = data =>

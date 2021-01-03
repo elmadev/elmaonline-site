@@ -384,7 +384,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
   return byDesigner;
 };
 
-const BattlesBetween = async (Start, End) => {
+const BattlesBetween = async (Start, End, Limit = 250) => {
   const battles = await Battle.findAll({
     attributes: [
       'BattleIndex',
@@ -397,7 +397,7 @@ const BattlesBetween = async (Start, End) => {
       'InQueue',
       'Finished',
     ],
-    limit: 250,
+    limit: parseInt(Limit, 10),
     include: [
       {
         model: Kuski,
@@ -494,8 +494,12 @@ router
     );
     res.json(battles);
   })
-  .get('/byPeriod/:Start/:End', async (req, res) => {
-    const battles = await BattlesBetween(req.params.Start, req.params.End);
+  .get('/byPeriod/:Start/:End/:Limit', async (req, res) => {
+    const battles = await BattlesBetween(
+      req.params.Start,
+      req.params.End,
+      req.params.Limit,
+    );
     res.json(battles);
   });
 
