@@ -34,6 +34,8 @@ export const ReplaysSearchByFilename = data =>
   api.get(`replay/search/byFilename/${data.q}/${data.offset}`);
 export const ReplaysByLevelIndex = LevelIndex =>
   api.get(`replay/byLevelIndex/${LevelIndex}`);
+export const InsertReplay = data => api.post('replay', data);
+export const UpdateReplay = data => api.post('replay/update', data);
 
 // country
 export const Country = () => api.get('country');
@@ -77,7 +79,7 @@ export const SubmitInterview = data =>
   api.post(`cups/${data.CupGroupIndex}/event/${data.CupIndex}/interview`, data);
 export const MyReplays = CupGroupIndex =>
   api.get(`cups/${CupGroupIndex}/myreplays`);
-export const UpdateReplay = data =>
+export const UpdateCupReplay = data =>
   api.post(`cups/${data.CupGroupIndex}/updatereplay`, data);
 export const TeamReplays = CupGroupIndex =>
   api.get(`cups/${CupGroupIndex}/teamreplays`);

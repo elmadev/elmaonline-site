@@ -9,6 +9,7 @@ import RecList from 'components/RecList/store';
 import LevelMap from 'components/LevelMap/store';
 import RankingTable from 'components/RankingTable/store';
 import BattleList from 'components/BattleList/store';
+import Upload from 'components/Upload/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -42,6 +43,7 @@ export default {
   Kuski,
   LevelsAdd,
   Settings,
+  Upload,
   Mod,
   Teams,
   Replay,
