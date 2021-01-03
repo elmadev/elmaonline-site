@@ -231,6 +231,34 @@ const GetBattleData = async IndexList => {
   return battleData;
 }
 
+const GetAllBattleTimes = async query => {
+  let whereQuery = {[Op.in]: query.map(r => r.BattleIndex)};
+  if (typeof query === 'string') {
+    whereQuery = {
+      [Op.eq]: query
+    };
+  };
+  const results = await Battletime.findAll({
+    where: {
+      BattleIndex: whereQuery,
+    },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+    ],
+  });
+  return results;
+}
+
 const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
   let battleData = {};
   const Results = [];
@@ -485,6 +513,12 @@ router
   .get('/byLevel/:LevelIndex', async (req, res) => {
     const battles = await BattlesForLevel(req.params.LevelIndex);
     res.json(battles);
+  })
+  .get('/allBattleTimes/:query', async (req, res) => {
+    const times = await GetAllBattleTimes(
+      req.params.query,
+    );
+    res.json(times);
   })
   .get('/byDesigner/:KuskiIndex', async (req, res) => {
     const battles = await BattlesForDesigner(

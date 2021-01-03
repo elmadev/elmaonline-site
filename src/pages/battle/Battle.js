@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
 import { graphql, compose, Query } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -53,7 +54,14 @@ const GET_BATTLE_TIMES = gql`
 `;
 
 const Battle = props => {
+  // const {
+  //   data: { KuskiIndex },
+  // } = props;
   const [extra, setExtra] = useState('');
+
+  // const { getAllBattleTimes2 } = useStoreActions(state => state.Battle);
+
+  // console.log(getAllBattleTimes2());
 
   const getExtra = KuskiIndex => {
     const {
