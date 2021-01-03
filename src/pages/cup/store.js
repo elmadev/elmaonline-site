@@ -12,7 +12,7 @@ import {
   GenerateEvent,
   SubmitInterview,
   MyReplays,
-  UpdateReplay,
+  UpdateCupReplay,
   PersonalAllFinished,
   TeamReplays,
   LevelsSearchAll,
@@ -106,7 +106,7 @@ export default {
     }
   }),
   updateReplay: thunk(async (actions, payload) => {
-    const update = await UpdateReplay(payload);
+    const update = await UpdateCupReplay(payload);
     if (update.ok) {
       actions.getMyReplays(payload.CupGroupIndex);
     }

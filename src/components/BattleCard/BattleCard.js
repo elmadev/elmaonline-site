@@ -1,5 +1,4 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Grid } from '@material-ui/core';
 import { Level, BattleType } from 'components/Names';
@@ -7,8 +6,7 @@ import Kuski from 'components/Kuski';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
 import LevelMap from 'components/LevelMap';
-
-import s from './battleCard.css';
+import styled from 'styled-components';
 
 const BattleCard = props => {
   const { battle } = props;
@@ -18,7 +16,7 @@ const BattleCard = props => {
   return (
     <>
       <Header h2>Current Battle</Header>
-      <Card className={s.card}>
+      <CardFlex>
         <Grid container spacing={0}>
           <Grid item xs={12} md={6}>
             <CardContent>
@@ -28,51 +26,57 @@ const BattleCard = props => {
               <Typography variant="body1" color="textSecondary">
                 <Level long LevelData={battle.LevelData} />
               </Typography>
-              <Typography
-                className={s.info}
-                variant="body1"
-                color="textSecondary"
-              >
-                <div>
-                  <span>Designer: </span>
-                  <strong>
-                    <Kuski kuskiData={battle.KuskiData} />
-                  </strong>
-                </div>
-                <div>
-                  <span>Type: </span>
-                  <strong>
-                    <BattleType type={battle.BattleType} />
-                  </strong>
-                </div>
-                <div>
-                  <span>Duration: </span>
-                  <strong>{battle.Duration} mins</strong>
-                </div>
-                <div>
-                  <span>Started: </span>
-                  <strong>
-                    <LocalTime
-                      date={battle.Started}
-                      format="HH:mm:ss"
-                      parse="X"
-                    />
-                  </strong>
-                </div>
-              </Typography>
+              <Text>
+                <span>Designer: </span>
+                <strong>
+                  <Kuski kuskiData={battle.KuskiData} />
+                </strong>
+              </Text>
+              <Text>
+                <span>Type: </span>
+                <strong>
+                  <BattleType type={battle.BattleType} />
+                </strong>
+              </Text>
+              <Text>
+                <span>Duration: </span>
+                <strong>{battle.Duration} mins</strong>
+              </Text>
+              <Text>
+                <span>Started: </span>
+                <strong>
+                  <LocalTime
+                    date={battle.Started}
+                    format="HH:mm:ss"
+                    parse="X"
+                  />
+                </strong>
+              </Text>
             </CardContent>
           </Grid>
           <Grid item xs={12} md={6}>
             <LevelMap LevelIndex={battle.LevelIndex} />
           </Grid>
         </Grid>
-      </Card>
+      </CardFlex>
     </>
   );
 };
+
+const CardFlex = styled(Card)`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const Text = styled.div`
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+`;
 
 BattleCard.propTypes = {
   battle: PropTypes.shape().isRequired,
 };
 
-export default withStyles(s)(BattleCard);
+export default BattleCard;
