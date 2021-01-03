@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import {
   TextField,
   FormControl,
@@ -8,12 +7,14 @@ import {
   OutlinedInput,
   InputLabel,
   Button,
+  Container,
+  Box,
 } from '@material-ui/core';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import ReCAPTCHA from 'react-google-recaptcha';
+import Link from 'components/Link';
 
-const Register = props => {
-  const { close } = props;
+const Register = () => {
   const [kuski, setKuski] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -70,7 +71,7 @@ const Register = props => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="sm">
       {registerSuccess ? (
         <SuccessMessage>
           You have successfully registered. Check your email and click the
@@ -173,40 +174,31 @@ const Register = props => {
               </div>
             )}
           </TextBox>
-          <ButtonsContainer>
-            {error !== '' && <ErrorMessage>{error}</ErrorMessage>}
-            {registerMessage !== '' && (
-              <ErrorMessage>{registerMessage}</ErrorMessage>
-            )}
-            <Button onClick={() => close && close()}>Login</Button>
+          {error !== '' && <ErrorMessage>{error}</ErrorMessage>}
+          {registerMessage !== '' && (
+            <ErrorMessage>{registerMessage}</ErrorMessage>
+          )}
+          <Box py={2}>
             <Button
               onClick={() => clickRegister()}
               variant="contained"
-              color="primary"
+              fullWidth
             >
               Register
             </Button>
-          </ButtonsContainer>
+          </Box>
+          <Box py={2}>
+            <Link to="/login">Back to login view</Link>
+          </Box>
         </>
       )}
     </Container>
   );
 };
 
-const Container = styled.div`
-  margin: 0 auto;
-  padding: 20px;
-  max-width: var(--max-content-width);
-`;
-
 const TextBox = styled.div`
   margin-left: 4px;
   margin-right: 4px;
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;
 
 const ErrorMessage = styled.div`
@@ -218,9 +210,5 @@ const ErrorMessage = styled.div`
 const SuccessMessage = styled.div`
   color: green;
 `;
-
-Register.propTypes = {
-  close: PropTypes.func.isRequired,
-};
 
 export default Register;
