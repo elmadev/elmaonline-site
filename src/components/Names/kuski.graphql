@@ -1,7 +1,0 @@
-query Kuski($KuskiIndex: Int!) {
-  getKuskiById(KuskiIndex: $KuskiIndex) {
-    Kuski
-    Country
-    TeamIndex
-  }
-}

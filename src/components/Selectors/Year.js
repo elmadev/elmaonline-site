@@ -66,7 +66,9 @@ class Year extends React.Component {
             }}
           >
             {years.map(y => (
-              <MenuItem value={y}>{y}</MenuItem>
+              <MenuItem key={y} value={y}>
+                {y}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

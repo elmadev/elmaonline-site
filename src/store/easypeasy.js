@@ -8,6 +8,8 @@ import RecList from 'components/RecList/store';
 import LevelMap from 'components/LevelMap/store';
 import Register from 'pages/register/store';
 import Login from 'pages/login/store';
+import RankingTable from 'components/RankingTable/store';
+import BattleList from 'components/BattleList/store';
 import Cups from 'pages/cups/store';
 import Cup from 'pages/cup/store';
 import KuskiMap from 'pages/map/store';
@@ -29,6 +31,7 @@ export default {
   ReplayRating,
   ReplaysBy,
   Register,
+  BattleList,
   ChatView,
   Cups,
   Cup,
@@ -45,6 +48,7 @@ export default {
   Replay,
   ReplayByUUID,
   RecList,
+  RankingTable,
   Level,
   Battle,
   Login,

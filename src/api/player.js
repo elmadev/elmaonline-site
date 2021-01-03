@@ -49,10 +49,27 @@ const TeamsSearch = async (query, offset) => {
   return get;
 };
 
-const Player = async KuskiIndex => {
-  const data = await Kuski.findOne({
-    where: { KuskiIndex },
-    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Email'],
+const Player = async (IdentifierType, KuskiIdentifier) => {
+  const query = {
+    where: {},
+    attributes: [
+      'KuskiIndex',
+      'Kuski',
+      'TeamIndex',
+      'Country',
+      'Email',
+      'RPlay',
+      'RStartBattle',
+      'RSpecialBattle',
+      'RStartCup',
+      'RStart24htt',
+      'RStop',
+      'RMultiPlay',
+      'RChat',
+      'RBan',
+      'RMod',
+      'RAdmin',
+    ],
     include: [
       {
         model: Team,
@@ -60,7 +77,9 @@ const Player = async KuskiIndex => {
         attributes: ['Team', 'Locked'],
       },
     ],
-  });
+  };
+  query.where[IdentifierType] = KuskiIdentifier;
+  const data = await Kuski.findOne(query);
   return data;
 };
 
@@ -135,8 +154,15 @@ router
     res.json(players);
   })
   .get('/:KuskiIndex', async (req, res) => {
-    const data = await Player(req.params.KuskiIndex);
+    const data = await Player('KuskiIndex', req.params.KuskiIndex);
     res.json(data);
+  })
+  .get('/:identifierType/:kuskiIdentifier', async (req, res) => {
+    const kuski = await Player(
+      req.params.identifierType,
+      req.params.kuskiIdentifier,
+    );
+    res.json(kuski);
   });
 
 export default router;

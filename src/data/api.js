@@ -140,12 +140,24 @@ export const BattlesSearchByDesigner = data =>
   api.get(`battle/search/byDesigner/${data.q}/${data.offset}`);
 export const BattlesByLevel = LevelIndex =>
   api.get(`battle/byLevel/${LevelIndex}`);
+export const BattleResults = BattleIndex =>
+  api.get(`battle/byBattleIndex/${BattleIndex}`);
+export const BattleList = IndexList =>
+  api.get(`battle/byBattleIndexList/${IndexList}`); // array of battle indices
 export const BattlesByDesigner = data =>
   api.get(
     `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
       data.pageSize
     }`,
   );
+export const BattlesByPlayer = data =>
+  api.get(
+    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${
+      data.pageSize
+    }`,
+  );
+export const BattleListPeriod = data =>
+  api.get(`battle/byPeriod/${data.start}/${data.end}`);
 
 // players
 export const PlayersSearch = data =>
@@ -153,6 +165,8 @@ export const PlayersSearch = data =>
 export const TeamsSearch = data =>
   api.get(`player/searchTeam/${data.q}/${data.offset}`);
 export const UserInfo = KuskiIndex => api.get(`player/${KuskiIndex}`);
+export const UserInfoByIdentifier = data =>
+  api.get(`player/${data.IdentifierType}/${data.KuskiIdentifier}`);
 export const UpdateUserInfo = data => api.post(`register/update`, data);
 export const Ignore = Kuski => api.post(`player/ignore/${Kuski}`);
 export const Ignored = () => api.get('player/ignored');
@@ -175,6 +189,8 @@ export const LevelTimeStats = LevelIndex =>
 // ranking
 export const PersonalRanking = KuskiIndex =>
   api.get(`ranking/kuski/${KuskiIndex}`);
+export const Ranking = data =>
+  api.get(`ranking/${data.periodType}/${data.period}`);
 
 // mod
 export const NickRequests = () => api.get(`mod/nickrequests`);
@@ -183,7 +199,11 @@ export const NickAccept = data =>
 export const NickDecline = data =>
   api.post(`mod/nickrequests/decline/${data.SiteSettingIndex}`);
 export const Banlist = () => api.get('mod/banlist');
+export const BanlistKuski = KuskiIndex => api.get(`mod/banlist/${KuskiIndex}`);
+export const BanKuski = data => api.post('mod/bankuski', data);
 export const ErrorLog = data =>
   api.get(`mod/errorlog/${data.Kuski}/${data.ErrorTime}`);
 export const ActionLog = data =>
   api.get(`mod/actionlog/${data.Kuski}/${data.ErrorTime}`);
+export const GiveRights = data => api.post('mod/giverights', data);
+export const IPlogs = KuskiIndex => api.get(`mod/iplogs/${KuskiIndex}`);

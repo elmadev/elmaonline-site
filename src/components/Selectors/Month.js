@@ -68,7 +68,9 @@ class Month extends React.Component {
             }}
           >
             {months.map(y => (
-              <MenuItem value={y}>{monthsVisual[y]}</MenuItem>
+              <MenuItem key={y} value={y}>
+                {monthsVisual[y]}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

@@ -53,7 +53,9 @@ class Day extends React.Component {
             }}
           >
             {days.map(y => (
-              <MenuItem value={y}>{y}</MenuItem>
+              <MenuItem key={y} value={y}>
+                {y}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

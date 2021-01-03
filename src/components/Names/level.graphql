@@ -1,6 +1,0 @@
-query Level($LevelIndex: Int!) {
-  getLevel(LevelIndex: $LevelIndex) {
-    LevelName
-    LongName
-  }
-}
