@@ -151,6 +151,8 @@ export const BattlesByPlayer = data =>
   api.get(
     `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
+export const BattleListPeriod = data =>
+  api.get(`battle/byPeriod/${data.start}/${data.end}`);
 
 // players
 export const PlayersSearch = data =>
@@ -175,6 +177,7 @@ export const SearchChat = data => api.get('chatlog', { params: data });
 
 // level
 export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
+export const LevelData = LevelIndex => api.get(`level/leveldata/${LevelIndex}`);
 export const LevelTimeStats = LevelIndex =>
   api.get(`level/timestats/${LevelIndex}`);
 
