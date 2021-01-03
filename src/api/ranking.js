@@ -7,6 +7,7 @@ import {
   RankingWeekly,
   RankingDaily,
   Team,
+  RankingHistory,
 } from '../data/models';
 
 const router = express.Router();
@@ -57,6 +58,13 @@ const getRanking = async (periodType, period) => {
   return data;
 };
 
+const getRankingHistoryByBattle = async b => {
+  const RankingHistoryByBattle = await RankingHistory.findAll({
+    where: { b },
+  });
+  return RankingHistoryByBattle;
+};
+
 router
   .get('/kuski/:KuskiIndex', async (req, res) => {
     const data = await getPersonalRanking(req.params.KuskiIndex);
@@ -64,6 +72,10 @@ router
   })
   .get('/:periodType/:period', async (req, res) => {
     const data = await getRanking(req.params.periodType, req.params.period);
+    res.json(data);
+  })
+  .get('/battle/:BattleIndex', async (req, res) => {
+    const data = await getRankingHistoryByBattle(req.params.BattleIndex);
     res.json(data);
   });
 

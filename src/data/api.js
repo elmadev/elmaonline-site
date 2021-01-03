@@ -142,7 +142,8 @@ export const BattleResults = BattleIndex =>
   api.get(`battle/byBattleIndex/${BattleIndex}`);
 export const BattleList = IndexList =>
   api.get(`battle/byBattleIndexList/${IndexList}`); // array of battle indices
-export const GetAllBattleTimes = query => api.get(`allBattleTimes/${query}`);
+export const GetAllBattleTimes = query =>
+  api.get(`battle/allBattleTimes/${query}`);
 export const BattlesByDesigner = data =>
   api.get(
     `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
@@ -186,6 +187,8 @@ export const PersonalRanking = KuskiIndex =>
   api.get(`ranking/kuski/${KuskiIndex}`);
 export const Ranking = data =>
   api.get(`ranking/${data.periodType}/${data.period}`);
+export const RankingHistoryByBattle = BattleIndex =>
+  api.get(`ranking/battle/${BattleIndex}`);
 
 // mod
 export const NickRequests = () => api.get(`mod/nickrequests`);

@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import add from 'date-fns/add';
 import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
 
 const router = express.Router();
 
@@ -231,32 +231,35 @@ const GetBattleData = async IndexList => {
   return battleData;
 }
 
-const GetAllBattleTimes = async query => {
-  let whereQuery = {[Op.in]: query.map(r => r.BattleIndex)};
-  if (typeof query === 'string') {
-    whereQuery = {
-      [Op.eq]: query
-    };
-  };
-  const results = await Battletime.findAll({
-    where: {
-      BattleIndex: whereQuery,
-    },
-    include: [
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
-      },
-    ],
+
+const GetAllBattleTimes = async BattleIndex => {
+  const battleStatus = await Battle.findAll({
+    attributes: ['Finished'],
+    where: { BattleIndex },
   });
-  return results;
+  let times;
+  if (battleStatus[0].dataValues.Finished === 1) {
+    times = await AllFinished.findAll({
+      where: { BattleIndex },
+      order: [['TimeIndex', 'ASC']],
+      include: [
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski', 'Country'],
+          include: [
+            {
+              model: Team,
+              as: 'TeamData',
+            },
+          ],
+        },
+      ],
+    });
+  } else {
+    times = [];
+  }
+  return times;
 }
 
 const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
@@ -514,10 +517,8 @@ router
     const battles = await BattlesForLevel(req.params.LevelIndex);
     res.json(battles);
   })
-  .get('/allBattleTimes/:query', async (req, res) => {
-    const times = await GetAllBattleTimes(
-      req.params.query,
-    );
+  .get('/allBattleTimes/:q', async (req, res) => {
+    const times = await GetAllBattleTimes(req.params.q);
     res.json(times);
   })
   .get('/byDesigner/:KuskiIndex', async (req, res) => {
