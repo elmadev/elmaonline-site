@@ -42,8 +42,8 @@ const Confirm = props => {
         )}
         {confirmSuccess === 2 && (
           <Paper>
-            Your email has been confirmed. You can now login using the form on
-            the right. Your new password is: {password}
+            Your email has been confirmed. You can now
+            <Link to="/login">login</Link>. Your new password is: {password}
           </Paper>
         )}
         {confirmSuccess === -2 && (

@@ -38,7 +38,7 @@ export default {
       cookies.set('mod', body.Response.mod, options);
     }
     if (body.Response.admin) {
-      cookies.set('admin', Response.body.admin, options);
+      cookies.set('admin', body.Response.admin, options);
     }
     actions.setLoggedIn(true);
     actions.setUsername(body.Response.username);
