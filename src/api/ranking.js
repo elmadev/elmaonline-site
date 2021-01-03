@@ -58,9 +58,9 @@ const getRanking = async (periodType, period) => {
   return data;
 };
 
-const getRankingHistoryByBattle = async b => {
+const getRankingHistoryByBattle = async BattleIndex => {
   const RankingHistoryByBattle = await RankingHistory.findAll({
-    where: { b },
+    where: { BattleIndex },
   });
   return RankingHistoryByBattle;
 };
