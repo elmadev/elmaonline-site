@@ -186,6 +186,17 @@ const BattleResults = async BattleIndex => {
               },
             ],
           },
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData2',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
         ],
       },
     ],

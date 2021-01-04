@@ -36,7 +36,7 @@ export default {
       actions.setBattle(times.data);
     }
   }),
-  rankingHistory: null,
+  rankingHistory: {},
   setRankingHistory: thunk(async (state, payload) => {
     state.rankingHistory = payload;
   }),

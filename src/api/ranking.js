@@ -70,12 +70,12 @@ router
     const data = await getPersonalRanking(req.params.KuskiIndex);
     res.json(data);
   })
-  .get('/:periodType/:period', async (req, res) => {
-    const data = await getRanking(req.params.periodType, req.params.period);
-    res.json(data);
-  })
   .get('/battle/:BattleIndex', async (req, res) => {
     const data = await getRankingHistoryByBattle(req.params.BattleIndex);
+    res.json(data);
+  })
+  .get('/:periodType/:period', async (req, res) => {
+    const data = await getRanking(req.params.periodType, req.params.period);
     res.json(data);
   });
 

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import styled from 'styled-components';
 import 'components/variables.css'; // probably won't work, not used in document
 import {
@@ -26,80 +24,55 @@ import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 import RecView from './RecView';
 
-const GET_BATTLE_TIMES = gql`
-  query($id: Int!) {
-    getBattleTimes(BattleIndex: $id) {
-      Time
-      KuskiIndex
-      KuskiIndex2
-      Apples
-      KuskiData {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-      KuskiData2 {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-    }
+const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
+  let typeFilter = '';
+  let value = '';
+  if (Object.keys(rankingHistory).length === 0) return 'unavailable';
+  if (extra === '') {
+    return '';
   }
-`;
+  if (extra === 'RankingAll') {
+    typeFilter = 'All';
+    value = 'Ranking';
+  }
+  if (extra === 'RankingType') {
+    typeFilter = getBattleType(battle);
+    value = 'Ranking';
+  }
+  if (extra === 'RankingIncreaseAll') {
+    typeFilter = 'All';
+    value = 'Increase';
+  }
+  if (extra === 'RankingIncreaseType') {
+    typeFilter = getBattleType(battle);
+    value = 'Increase';
+  }
+  const filtered = rankingHistory.filter(
+    r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
+  );
+  if (filtered.length > 0) {
+    return filtered[0][value];
+  }
+  return '';
+};
 
 const Battle = props => {
   const { BattleIndex } = props;
   const [extra, setExtra] = useState('');
-
+  const { allBattleTimes, battle, rankingHistory } = useStoreState(
+    state => state.Battle,
+  );
   const {
     getAllBattleTimes,
     getBattle,
     getRankingHistoryByBattle,
   } = useStoreActions(state => state.Battle);
-  const { allBattleTimes, battle, rankingHistory } = useStoreState(
-    state => state.Battle,
-  );
 
   useEffect(() => {
     if (!allBattleTimes) getAllBattleTimes(BattleIndex);
     if (!battle) getBattle(BattleIndex);
-  });
-  useEffect(() => {
     getRankingHistoryByBattle(BattleIndex);
-  }, [extra, BattleIndex]);
-
-  const getExtra = KuskiIndex => {
-    let typeFilter = '';
-    let value = '';
-    if (rankingHistory === [] || rankingHistory === null) return '';
-    if (extra === 'RankingAll') {
-      typeFilter = 'All';
-      value = 'Ranking';
-    }
-    if (extra === 'RankingType') {
-      typeFilter = getBattleType(battle);
-      value = 'Ranking';
-    }
-    if (extra === 'RankingIncreaseAll') {
-      typeFilter = 'All';
-      value = 'Increase';
-    }
-    if (extra === 'RankingIncreaseType') {
-      typeFilter = getBattleType(battle);
-      value = 'Increase';
-    }
-    const filtered = rankingHistory.filter(
-      r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
-    );
-    if (filtered.length > 0) {
-      return filtered[0][value];
-    }
-    return '';
-  };
+  });
 
   const isWindow = typeof window !== 'undefined';
 
@@ -216,15 +189,14 @@ const Battle = props => {
                   </Select>
                 </ListCell>
               </ListHeader>
-              <Query query={GET_BATTLE_TIMES} variables={{ id: BattleIndex }}>
-                {({ data: { getBattleTimes }, loading }) => {
-                  if (loading) return null;
-                  return [...getBattleTimes]
-                    .sort(sortResults(battle.BattleType))
-                    .map((r, i) => (
+              {[...battle.Results]
+                .sort(sortResults(battle.BattleType))
+                .map((r, i) => {
+                  return (
+                    <>
                       <ListRow key={r.KuskiIndex}>
                         <ListCell width={30}>{i + 1}.</ListCell>
-                        <ListCell width={200}>
+                        <ListCell width={battle.Multi === 1 ? 300 : 200}>
                           <Kuski kuskiData={r.KuskiData} flag team />
                           {battle.Multi === 1 && (
                             <>
@@ -236,11 +208,18 @@ const Battle = props => {
                         <ListCell right width={200}>
                           <Time time={r.Time} apples={r.Apples} />
                         </ListCell>
-                        <ListCell>{getExtra(r.KuskiIndex)}</ListCell>
+                        <ListCell>
+                          {getExtra(
+                            r.KuskiIndex,
+                            extra,
+                            rankingHistory,
+                            battle,
+                          )}
+                        </ListCell>
                       </ListRow>
-                    ));
-                }}
-              </Query>
+                    </>
+                  );
+                })}
             </ListContainer>
           )}
         </Paper>
