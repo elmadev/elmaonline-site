@@ -11,7 +11,6 @@ import Kuski from 'components/Kuski';
 import Upload from 'components/Upload';
 import Header from 'components/Header';
 import RecListItem from 'components/RecListItem';
-import Login from 'components/Login';
 import Welcome from 'components/Welcome';
 import BattleCard from 'components/BattleCard';
 import Link from 'components/Link';
@@ -154,7 +153,6 @@ class Home extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={5}>
-            <Login />
             {currentBattle && <BattleCard battle={currentBattle} />}
             <Header h2 top>
               Upload Replays
@@ -189,4 +187,7 @@ class Home extends React.Component {
   }
 }
 
-export default compose(withStyles(s), graphql(homeQuery))(Home); // place the query object in the graphql decorator here so it's available in the this.props object
+export default compose(
+  withStyles(s),
+  graphql(homeQuery),
+)(Home); // place the query object in the graphql decorator here so it's available in the this.props object

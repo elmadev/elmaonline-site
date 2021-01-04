@@ -76,9 +76,6 @@ const SideBar = () => {
           <Link to="/chatlog" onClick={onNavigation}>
             Chat Log
           </Link>
-          <Link to="/settings" onClick={onNavigation}>
-            Settings
-          </Link>
           <Link to="/help" onClick={onNavigation}>
             Help
           </Link>
