@@ -51,7 +51,7 @@ const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
     r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
   );
   if (filtered.length > 0) {
-    return filtered[0][value];
+    return parseInt(filtered[0][value], 10).toFixed(2);
   }
   return '';
 };
@@ -69,10 +69,10 @@ const Battle = props => {
   } = useStoreActions(state => state.Battle);
 
   useEffect(() => {
-    if (!allBattleTimes) getAllBattleTimes(BattleIndex);
-    if (!battle) getBattle(BattleIndex);
+    getAllBattleTimes(BattleIndex);
+    getBattle(BattleIndex);
     getRankingHistoryByBattle(BattleIndex);
-  });
+  }, [BattleIndex]);
 
   const isWindow = typeof window !== 'undefined';
 

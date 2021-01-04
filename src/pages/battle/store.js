@@ -37,7 +37,7 @@ export default {
     }
   }),
   rankingHistory: {},
-  setRankingHistory: thunk(async (state, payload) => {
+  setRankingHistory: action((state, payload) => {
     state.rankingHistory = payload;
   }),
   getRankingHistoryByBattle: thunk(async (actions, payload) => {
