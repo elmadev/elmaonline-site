@@ -100,7 +100,6 @@ const Container = styled.div`
   display: block;
   max-width: 100%;
   overflow: auto;
-  padding-bottom: 200px;
   a {
     color: black;
     display: table-row;
