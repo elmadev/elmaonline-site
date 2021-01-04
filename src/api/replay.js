@@ -26,7 +26,7 @@ const attributes = [
 ];
 
 const getReplays = async (offset = 0, limit = 50) => {
-  const data = await Replay.findAll({
+  const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
@@ -250,7 +250,9 @@ const getReplaysByLevelIndex = async LevelIndex => {
 
 router
   .get('/', async (req, res) => {
-    const data = await getReplays(req.query.offset, req.query.limit);
+    const offset = req.query.pageSize * req.query.page;
+    const limit = req.query.pageSize;
+    const data = await getReplays(offset, limit);
     res.json(data);
   })
   .post('/', async (req, res) => {
