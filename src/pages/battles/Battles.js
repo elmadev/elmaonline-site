@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import moment from 'moment';
-
+import styled from 'styled-components';
 import BattleList from 'components/BattleList';
 import history from 'utils/history';
-
-import s from './battles.css';
 
 const Battles = props => {
   const {
@@ -39,19 +36,47 @@ const Battles = props => {
   if (!start || !end) return null;
 
   return (
-    <div className={s.battles}>
-      <div className={s.datepicker}>
+    <Container>
+      <Datepicker>
         <button onClick={previous} type="button">
           &lt;
         </button>
-        <span className={s.selectedDate}>{start.format('ddd DD.MM.YYYY')}</span>
+        <SelectedDate>{start.format('ddd DD.MM.YYYY')}</SelectedDate>
         <button onClick={next} type="button">
           &gt;
         </button>
-      </div>
+      </Datepicker>
       <BattleList start={start.clone()} end={end.clone()} />
-    </div>
+    </Container>
   );
 };
 
-export default withStyles(s)(Battles);
+const Container = styled.div`
+  background: #fff;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+`;
+
+const Datepicker = styled.div`
+  background: #f1f1f1;
+  font-weight: 500;
+  font-size: 16px;
+  button {
+    padding: 15px 10px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    outline: 0;
+    width: 50px;
+    text-align: center;
+  }
+`;
+
+const SelectedDate = styled.span`
+  display: inline-block;
+  width: 120px;
+  text-align: center;
+`;
+
+export default Battles;

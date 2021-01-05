@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Typography, CircularProgress, Tooltip } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
-import withStyles from 'isomorphic-style-loader/withStyles';
-
+import styled from 'styled-components';
 import LocalTime from 'components/LocalTime';
 import { CHAT_API_LIMIT } from 'constants/api';
-
-import s from './ChatView.css';
 
 const ChatView = props => {
   const {
@@ -151,7 +148,7 @@ const ChatView = props => {
   };
 
   return (
-    <div className={s.chat} style={fullHeight && { maxHeight: 'max-content' }}>
+    <Container style={fullHeight && { maxHeight: 'max-content' }}>
       {chatLinesWithEvent.map(l =>
         !l.Event ? (
           <Tooltip
@@ -160,12 +157,12 @@ const ChatView = props => {
             placement="left-start"
             arrow
           >
-            <div className={s.chatLine}>
-              <div className={s.timestamp}>
+            <ChatLine>
+              <Timestamp>
                 <LocalTime date={l.Entered} format={timestamp} parse="X" />
-              </div>{' '}
-              <div className={s.message}>
-                <span className={s.kuski}>
+              </Timestamp>{' '}
+              <Message>
+                <Kuski>
                   &lt;
                   {l.KuskiData ? (
                     <span style={{ color: getColor(l.KuskiData.Kuski) }}>
@@ -175,45 +172,98 @@ const ChatView = props => {
                     '[No User Data]'
                   )}
                   &gt;
-                </span>{' '}
+                </Kuski>{' '}
                 <span>{l.Text}</span>
-              </div>
-            </div>
+              </Message>
+            </ChatLine>
           </Tooltip>
         ) : (
           // add a battle end line if current chatline has Event
-          <div className={s.container} key={`${l.Entered}-${l.Event.Type}`}>
-            <hr className={s.line} />
-            <span className={s.event}>
+          <EndContainer key={`${l.Entered}-${l.Event.Type}`}>
+            <Line />
+            <Event>
               <>
                 {l.Event.Text}
                 {<LocalTime date={l.BattleEnd} format={timestamp} parse="X" />}
               </>
-            </span>
-            <hr className={s.line} />
-          </div>
+            </Event>
+            <Line />
+          </EndContainer>
         ),
       )}
 
       {paginated && chatLinesWithEvent.length > limit && (
-        <div className={s.paginationWrapper}>
+        <PaginationWrapper>
           <Typography variant="caption" display="block" gutterBottom>
             {`${opts.offset + 1}-${Math.min(
               chatLineCount,
               limit * (chatPage + 1),
             )} of ${chatLineCount}`}
           </Typography>
-          <Pagination
+          <PaginationInline
             count={Math.ceil(chatLineCount / CHAT_API_LIMIT)}
             size="small"
             page={chatPage}
             onChange={handlePageChange}
-            classes={{ root: s.pagination }}
           />
-        </div>
+        </PaginationWrapper>
       )}
-    </div>
+    </Container>
   );
 };
 
-export default withStyles(s)(ChatView);
+const PaginationInline = styled(Pagination)`
+  display: inline-block;
+`;
+
+const Container = styled.div`
+  margin: 0;
+  max-height: 400px;
+  width: 100%;
+  overflow: auto;
+`;
+
+const ChatLine = styled.div`
+  font-size: 14px;
+  margin-bottom: 4px;
+  position: relative;
+`;
+
+const Message = styled.div`
+  margin-left: 60px;
+`;
+
+const Kuski = styled.span`
+  font-weight: 400;
+`;
+
+const EndContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const Line = styled.hr`
+  margin: 7px;
+  border-color: #7d7d7d;
+  width: 100%;
+`;
+
+const Event = styled.span`
+  position: relative;
+  color: #7d7d7d;
+  font-size: 10px;
+  white-space: nowrap;
+`;
+
+const Timestamp = styled.div`
+  color: #7d7d7d;
+  min-width: 50px;
+  float: left;
+  margin-right: 5px;
+`;
+
+const PaginationWrapper = styled.div`
+  text-align: center;
+`;
+
+export default ChatView;
