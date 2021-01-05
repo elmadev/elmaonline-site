@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { action, thunk } from 'easy-peasy';
+import { action, thunk, computed } from 'easy-peasy';
 import { BattleListPeriod } from 'data/api';
 
 export default {
@@ -12,5 +12,13 @@ export default {
     if (get.ok) {
       actions.setBattles(get.data);
     }
+  }),
+  currentBattle: computed(state => {
+    if (Array.isArray(state.battles)) {
+      return state.battles.filter(
+        i => i.InQueue === 0 && i.Finished === 0 && i.Aborted === 0,
+      )[0];
+    }
+    return null;
   }),
 };

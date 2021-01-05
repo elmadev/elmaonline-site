@@ -36,6 +36,8 @@ export const ReplaysByLevelIndex = LevelIndex =>
   api.get(`replay/byLevelIndex/${LevelIndex}`);
 export const InsertReplay = data => api.post('replay', data);
 export const UpdateReplay = data => api.post('replay/update', data);
+export const Replays = data =>
+  api.get(`replay?page=${data.page}&pageSize=${data.pageSize}`);
 
 // country
 export const Country = () => api.get('country');
@@ -159,7 +161,7 @@ export const BattlesByPlayer = data =>
     }`,
   );
 export const BattleListPeriod = data =>
-  api.get(`battle/byPeriod/${data.start}/${data.end}`);
+  api.get(`battle/byPeriod/${data.start}/${data.end}/${data.limit}`);
 
 // players
 export const PlayersSearch = data =>
