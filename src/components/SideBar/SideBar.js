@@ -134,7 +134,7 @@ const Content = styled.div`
 
 const Title = styled.div`
   background: #383838;
-  line-height: var(--top-bar-height);
+  line-height: 50px;
   color: #fff;
   text-transform: uppercase;
   padding: 0 17px;
