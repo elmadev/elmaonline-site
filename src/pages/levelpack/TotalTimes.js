@@ -1,13 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from 'styled-components';
 
 import Time from 'components/Time';
 import Loading from 'components/Loading';
-
-// eslint-disable-next-line css-modules/no-unused-class
-import s from './LevelPack.css';
+import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 
 const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
   const {
@@ -35,13 +32,13 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
   return (
     <>
       <h2>Total Times</h2>
-      <div className={s.levels}>
-        <div className={s.tableHead}>
-          <span>#</span>
-          <span>Player</span>
-          <span>Total Time</span>
-          <span />
-        </div>
+      <ListContainer>
+        <ListHeader>
+          <ListCell width={70}>#</ListCell>
+          <ListCell width={320}>Player</ListCell>
+          <ListCell width={200}>Total Time</ListCell>
+          <ListCell />
+        </ListHeader>
         {totaltimesLoading && <Loading />}
         {totaltimes.length > 0 && (
           <>
@@ -49,33 +46,33 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
               .sort((a, b) => a.tt - b.tt)
               .map((r, no) => (
                 <TimeRow key={r.KuskiIndex}>
-                  <span>{no + 1}</span>
-                  <span>{r.KuskiData.Kuski}</span>
+                  <ListCell width={70}>{no + 1}</ListCell>
+                  <ListCell width={320}>{r.KuskiData.Kuski}</ListCell>
                   <TimeSpan
                     highlight={r.TimeIndex >= highlight[highlightWeeks]}
                   >
                     <Time time={r.tt} />
                   </TimeSpan>
-                  <span />
+                  <ListCell />
                 </TimeRow>
               ))}
           </>
         )}
-      </div>
+      </ListContainer>
     </>
   );
 };
 
-const TimeSpan = styled.span`
+const TimeSpan = styled(ListCell)`
   background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
   width: auto !important;
 `;
 
-const TimeRow = styled.div`
+const TimeRow = styled(ListRow)`
   display: table-row;
   color: inherit;
   font-size: 14px;
   padding: 10px;
 `;
 
-export default withStyles(s)(TotalTimes);
+export default TotalTimes;

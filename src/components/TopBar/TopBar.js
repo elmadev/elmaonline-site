@@ -1,20 +1,38 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
-import s from './TopBar.css';
+import styled from 'styled-components';
 import SearchBar from '../SearchBar';
 import TopBarActions from './TopBarActions';
 
 class TopBar extends React.Component {
   render() {
     return (
-      <div className={s.root}>
-        <div className={s.container}>
+      <Root>
+        <Container>
           <SearchBar />
           <TopBarActions />
-        </div>
-      </div>
+        </Container>
+      </Root>
     );
   }
 }
 
-export default withStyles(s)(TopBar);
+const Root = styled.div`
+  top: 0;
+  left: 0;
+  background: #219653;
+  color: #f1f1f1;
+  position: fixed;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 50px;
+  padding-left: 250px;
+  z-index: 10;
+`;
+
+const Container = styled.div`
+  margin: 0 14px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export default TopBar;

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import 'components/variables.css'; // probably won't work, not used in document
 import {
   Typography,
   Accordion,

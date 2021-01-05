@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
 import { recordsTT } from 'utils/calcs';
 import LevelPopup from './LevelPopup';
-
-// eslint-disable-next-line css-modules/no-unused-class
-import s from './LevelPack.css';
 
 const Records = ({ highlight, highlightWeeks, name }) => {
   const [level, selectLevel] = useState(-1);
@@ -28,14 +25,14 @@ const Records = ({ highlight, highlightWeeks, name }) => {
   return (
     <>
       <h2>Levels</h2>
-      <div className={s.multis}>
-        <div className={s.tableHead}>
-          <span>Filename</span>
-          <span>Level name</span>
-          <span>Kuski</span>
-          <span>Kuski</span>
-          <span>Time</span>
-        </div>
+      <ListContainer>
+        <ListHeader>
+          <ListCell width={100}>Filename</ListCell>
+          <ListCell width={320}>Level name</ListCell>
+          <ListCell width={200}>Kuski</ListCell>
+          <ListCell width={200}>Kuski</ListCell>
+          <ListCell>Time</ListCell>
+        </ListHeader>
         {multiRecordsLoading && <Loading />}
         {multiRecords.map(r => (
           <TimeRow
@@ -46,24 +43,24 @@ const Records = ({ highlight, highlightWeeks, name }) => {
             }}
             selected={level === r.LevelIndex}
           >
-            <span>{r.Level.LevelName}</span>
-            <span>{r.Level.LongName}</span>
+            <ListCell width={100}>{r.Level.LevelName}</ListCell>
+            <ListCell width={320}>{r.Level.LongName}</ListCell>
             {r.LevelMultiBesttime.length > 0 ? (
               <>
-                <span>
+                <ListCell width={200}>
                   <Kuski
                     kuskiData={r.LevelMultiBesttime[0].Kuski1Data}
                     team
                     flag
                   />
-                </span>
-                <span>
+                </ListCell>
+                <ListCell width={200}>
                   <Kuski
                     kuskiData={r.LevelMultiBesttime[0].Kuski2Data}
                     team
                     flag
                   />
-                </span>
+                </ListCell>
                 <TimeSpan
                   highlight={
                     r.LevelMultiBesttime[0].TimeIndex >=
@@ -75,23 +72,23 @@ const Records = ({ highlight, highlightWeeks, name }) => {
               </>
             ) : (
               <>
-                <span />
-                <span />
-                <span />
+                <ListCell />
+                <ListCell />
+                <ListCell />
               </>
             )}
           </TimeRow>
         ))}
         <TTRow>
-          <span />
-          <span />
-          <span />
-          <span>Total Time</span>
-          <span>
+          <ListCell />
+          <ListCell />
+          <ListCell />
+          <ListCell>Total Time</ListCell>
+          <ListCell>
             <Time time={recordsTT(multiRecords, 'LevelMultiBesttime')} />
-          </span>
+          </ListCell>
         </TTRow>
-      </div>
+      </ListContainer>
       {level !== -1 && (
         <LevelPopup
           highlight={highlight[highlightWeeks]}
@@ -106,7 +103,7 @@ const Records = ({ highlight, highlightWeeks, name }) => {
   );
 };
 
-const TimeRow = styled.span`
+const TimeRow = styled(ListRow)`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   a {
     color: ${p => (p.selected ? 'white' : '#219653')};
@@ -120,7 +117,7 @@ const TimeRow = styled.span`
   }
 `;
 
-const TTRow = styled.div`
+const TTRow = styled(ListRow)`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
   :hover {
@@ -129,8 +126,8 @@ const TTRow = styled.div`
   }
 `;
 
-const TimeSpan = styled.span`
+const TimeSpan = styled(ListCell)`
   background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
 `;
 
-export default withStyles(s)(Records);
+export default Records;

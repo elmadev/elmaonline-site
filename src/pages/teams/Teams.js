@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Link from 'components/Link';
-
-import s from './Teams.css';
 
 const groups = [
   'a',
@@ -65,8 +63,8 @@ const Teams = () => {
       k.Team.toLowerCase().includes(filter.toLocaleLowerCase()),
   );
   return (
-    <div className={s.kuskis}>
-      <div className={s.filter}>
+    <Container>
+      <Filter>
         <input
           type="text"
           value={filter}
@@ -75,8 +73,8 @@ const Teams = () => {
           }}
           placeholder="Filter"
         />
-      </div>
-      <div className={s.kuskiList}>
+      </Filter>
+      <KuskiList>
         {groups.map(g => {
           const letterTeams = filteredTeams.filter(k =>
             Array.isArray(g)
@@ -86,37 +84,100 @@ const Teams = () => {
           if (letterTeams.length < 1) return null;
           return (
             <div key={g}>
-              <div
-                className={s.groupTitle}
+              <GroupTitle
                 onClick={() => toggleGroup(g)}
                 onKeyDown={() => toggleGroup(g)}
                 role="button"
                 tabIndex="0"
               >
-                <span className={s.groupChar}>
-                  {Array.isArray(g) ? '…' : g}
-                </span>
-                <span className={s.groupItemCount}>{letterTeams.length}</span>
-              </div>
+                <GroupChar>{Array.isArray(g) ? '…' : g}</GroupChar>
+                <GroupItemCount>{letterTeams.length}</GroupItemCount>
+              </GroupTitle>
               {(filter.length > 0 || expanded.includes(g)) && (
-                <div className={s.groupContent}>
+                <GroupContent>
                   {letterTeams.map(k => (
-                    <Link
-                      to={`/team/${k.Team}`}
-                      className={s.kuskiRow}
-                      key={k.TeamIndex}
-                    >
+                    <KuskiRow to={`/team/${k.Team}`} key={k.TeamIndex}>
                       {k.Team}
-                    </Link>
+                    </KuskiRow>
                   ))}
-                </div>
+                </GroupContent>
               )}
             </div>
           );
         })}
-      </div>
-    </div>
+      </KuskiList>
+    </Container>
   );
 };
 
-export default withStyles(s)(Teams);
+const Container = styled.div`
+  min-height: 100%;
+  background: #fff;
+  padding-bottom: 200px;
+  a {
+    color: #000;
+    border-bottom: 1px solid #eaeaea;
+    font-size: 14px;
+    display: block;
+    :hover {
+      background: #f9f9f9;
+    }
+    span {
+      margin-right: 10px;
+    }
+  }
+`;
+
+const GroupTitle = styled.div`
+  padding: 10px;
+  padding-top: 20px;
+  font-weight: 500;
+  border-bottom: 1px solid #eaeaea;
+  outline: 0;
+  cursor: pointer;
+`;
+
+const GroupItemCount = styled.span`
+  font-size: 12px;
+  color: #909090;
+  font-weight: normal;
+`;
+
+const GroupChar = styled.span`
+  display: inline-block;
+  min-width: 20px;
+  margin-right: 10px;
+  text-transform: uppercase;
+`;
+
+const GroupContent = styled.div`
+  display: block;
+`;
+
+const KuskiRow = styled(Link)`
+  padding: 10px;
+`;
+
+const Filter = styled.div`
+  background: #f1f1f1;
+  position: fixed;
+  width: 100%;
+  z-index: 5;
+  input {
+    padding: 15px 10px;
+    font-size: 14px;
+    border: 0;
+    background: transparent;
+    outline: 0;
+    width: 100%;
+    max-width: 500px;
+    display: block;
+    box-sizing: border-box;
+  }
+`;
+
+const KuskiList = styled.div`
+  padding-top: 46px;
+`;
+
+export default Teams;

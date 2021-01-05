@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { TablePagination } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import history from 'utils/history';
 
 import Time from 'components/Time';
-import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import LocalTime from 'components/LocalTime';
 import { BattleType } from 'components/Names';
 import { sortResults } from 'utils/battle';
-
-import s from './PlayedBattles.css';
+import { ListCell, ListHeader, ListContainer, ListRow } from 'styles/List';
 
 const PlayedBattles = ({ KuskiIndex }) => {
   const { getPlayedBattles } = useStoreActions(state => state.Kuski);
@@ -41,49 +39,60 @@ const PlayedBattles = ({ KuskiIndex }) => {
 
   return (
     <>
-      <div className={s.recentBattlesHead}>
-        <span className={s.type}>Type</span>
-        <span className={s.designer}>Designer</span>
-        <span className={s.filename}>Level</span>
-        <span className={s.winnerKuski}>Winner</span>
-        <span className={s.winnerTime}>Time</span>
-        <span className={s.placement}>#</span>
-        <span className={s.started}>Started</span>
-      </div>
-      {playedBattles.rows.map((b, i) => {
-        const sorted = playedBattles.Results[i].sort(sortResults(b.BattleType));
-        return (
-          <Link to={`/battles/${b.BattleIndex}`} key={b.BattleIndex}>
-            <span className={s.type}>
-              {b.Duration} min <BattleType type={b.BattleType} />
-            </span>
-            <span className={s.designer}>
-              <Kuski kuskiData={b.KuskiData} flag team />
-            </span>
-            <span className={s.filename}>
-              {b.LevelData && b.LevelData.LevelName}
-            </span>
-            <span className={s.winnerKuski}>
-              {playedBattles.Results[i].length > 0 && (
-                <Kuski kuskiData={sorted[0].KuskiData} flag team />
-              )}
-            </span>
-            <span className={s.winnerTime}>
-              {playedBattles.Results[i].length > 0 ? (
-                <Time time={sorted[0].Time} apples={sorted[0].Apples} />
-              ) : null}
-            </span>
-            <span className={s.placement}>
-              {playedBattles.Results[i].findIndex(
-                r => r.KuskiIndex === KuskiIndex,
-              ) + 1}
-            </span>
-            <span className={s.started}>
-              <LocalTime date={b.Started} format="DD.MM.YYYY HH:mm" parse="X" />
-            </span>
-          </Link>
-        );
-      })}
+      <ListContainer>
+        <ListHeader>
+          <ListCell width={130}>Type</ListCell>
+          <ListCell width={150}>Designer</ListCell>
+          <ListCell width={130}>Level</ListCell>
+          <ListCell width={150}>Winner</ListCell>
+          <ListCell width={60}>Time</ListCell>
+          <ListCell width={60}>#</ListCell>
+          <ListCell>Started</ListCell>
+        </ListHeader>
+        {playedBattles.rows.map((b, i) => {
+          const sorted = playedBattles.Results[i].sort(
+            sortResults(b.BattleType),
+          );
+          return (
+            <ListRow
+              onClick={() => history.push(`/battles/${b.BattleIndex}`)}
+              key={b.BattleIndex}
+            >
+              <ListCell width={130}>
+                {b.Duration} min <BattleType type={b.BattleType} />
+              </ListCell>
+              <ListCell width={150}>
+                <Kuski kuskiData={b.KuskiData} flag team />
+              </ListCell>
+              <ListCell width={130}>
+                {b.LevelData && b.LevelData.LevelName}
+              </ListCell>
+              <ListCell width={150}>
+                {playedBattles.Results[i].length > 0 && (
+                  <Kuski kuskiData={sorted[0].KuskiData} flag team />
+                )}
+              </ListCell>
+              <ListCell width={60}>
+                {playedBattles.Results[i].length > 0 ? (
+                  <Time time={sorted[0].Time} apples={sorted[0].Apples} />
+                ) : null}
+              </ListCell>
+              <ListCell width={60}>
+                {playedBattles.Results[i].findIndex(
+                  r => r.KuskiIndex === KuskiIndex,
+                ) + 1}
+              </ListCell>
+              <ListCell>
+                <LocalTime
+                  date={b.Started}
+                  format="DD.MM.YYYY HH:mm"
+                  parse="X"
+                />
+              </ListCell>
+            </ListRow>
+          );
+        })}
+      </ListContainer>
       <TablePagination
         style={{ width: '600px' }}
         component="div"
@@ -107,4 +116,4 @@ PlayedBattles.propTypes = {
   KuskiIndex: PropTypes.number.isRequired,
 };
 
-export default withStyles(s)(PlayedBattles);
+export default PlayedBattles;

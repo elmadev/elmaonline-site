@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { mod } from 'utils/nick';
 
 import Link from 'components/Link';
-
-import s from './SideBar.css';
 
 const SideBar = () => {
   const { sideBarVisible } = useStoreState(state => state.Page);
@@ -30,22 +28,20 @@ const SideBar = () => {
       window.dispatchEvent(new Event('resize'));
     }, 10);
   };
-  const className = sideBarVisible ? ` ${s.expanded}` : '';
   return (
-    <div className={s.root + className}>
-      <div className={s.container}>
-        <div
+    <Root sideBarVisible={sideBarVisible}>
+      <Container>
+        <Title
           role="button"
           tabIndex="0"
-          className={s.title}
           onKeyUp={e => {
             if (e.keyCode === 13) onToggle();
           }}
           onClick={onToggle}
         >
-          &#9776; <span className={s.text}>Sidebar</span>
-        </div>
-        <div className={s.content}>
+          &#9776; <Header sideBarVisible={sideBarVisible}>Sidebar</Header>
+        </Title>
+        <Content sideBarVisible={sideBarVisible}>
           <Link to="/" onClick={onNavigation}>
             Home
           </Link>
@@ -87,10 +83,63 @@ const SideBar = () => {
               Mod
             </Link>
           )}
-        </div>
-      </div>
-    </div>
+        </Content>
+      </Container>
+    </Root>
   );
 };
 
-export default withStyles(s)(SideBar);
+const Root = styled.div`
+  color: black;
+  position: fixed;
+  width: 250px;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  height: ${p => (p.sideBarVisible ? '100%' : 'auto')};
+  @media (max-width: 768px) {
+    width: ${p => (p.sideBarVisible ? '250px' : '50px')};
+  }
+`;
+
+const Header = styled.span`
+  display: ${p => (p.sideBarVisible ? 'inline' : 'initial')};
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const Container = styled.div`
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+`;
+
+const Content = styled.div`
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  display: ${p => (p.sideBarVisible ? 'block' : 'none')};
+  background: #1f1f1f;
+  a {
+    color: #c3c3c3;
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    :hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+`;
+
+const Title = styled.div`
+  background: #383838;
+  line-height: var(--top-bar-height);
+  color: #fff;
+  text-transform: uppercase;
+  padding: 0 17px;
+  outline: 0;
+  cursor: pointer;
+`;
+
+export default SideBar;

@@ -3,7 +3,6 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import { useStoreState, useStoreActions, useStoreRehydrated } from 'easy-peasy';
 import {
   Settings as SettingsIcon,
@@ -28,9 +27,6 @@ import Personal from './Personal';
 import Kinglist from './Kinglist';
 import MultiRecords from './MultiRecords';
 import Admin from './Admin';
-
-// eslint-disable-next-line css-modules/no-unused-class
-import s from './LevelPack.css';
 
 const GET_LEVELPACK = gql`
   query($name: String!) {
@@ -374,4 +370,4 @@ const FormLabel = styled.legend`
   letter-spacing: 0.00938em;
 `;
 
-export default withStyles(s)(LevelPack);
+export default LevelPack;

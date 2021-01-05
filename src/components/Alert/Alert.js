@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import {
   Button,
   Dialog,
@@ -9,7 +8,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@material-ui/core';
-import s from './Alert.css';
 
 class Alert extends React.Component {
   static propTypes = {
@@ -47,4 +45,4 @@ class Alert extends React.Component {
   }
 }
 
-export default withStyles(s)(Alert);
+export default Alert;
