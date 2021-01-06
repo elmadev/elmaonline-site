@@ -17,6 +17,8 @@ const Records = ({
   showLegacyIcon,
 }) => {
   const [level, selectLevel] = useState(-1);
+  const [longName, setLongName] = useState('');
+  const [levelName, setLevelName] = useState('');
 
   return (
     <>
@@ -37,6 +39,8 @@ const Records = ({
             onClick={e => {
               e.preventDefault();
               selectLevel(level === r.LevelIndex ? -1 : r.LevelIndex);
+              setLongName(r.Level.LongName);
+              setLevelName(r.Level.LevelName);
             }}
             selected={level === r.LevelIndex}
           >
@@ -86,6 +90,8 @@ const Records = ({
         <LevelPopup
           highlight={highlight[highlightWeeks]}
           levelId={level}
+          longName={longName}
+          levelName={levelName}
           close={() => {
             selectLevel(-1);
           }}

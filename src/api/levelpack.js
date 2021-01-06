@@ -538,7 +538,26 @@ const SortPack = async data => {
   return false;
 };
 
+const getPackByName = async LevelPackName => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  return packInfo;
+};
+
+const allPacks = async () => {
+  const data = await LevelPack.findAll({
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    order: [['LevelPackName', 'ASC']],
+  });
+  return data;
+};
+
 router
+  .get('/', async (req, res) => {
+    const data = await allPacks();
+    res.json(data);
+  })
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
     const tts = totalTimes(data);
@@ -681,6 +700,10 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .get('/:LevelPackName', async (req, res) => {
+    const data = await getPackByName(req.params.LevelPackName);
+    res.json(data);
   });
 
 export default router;

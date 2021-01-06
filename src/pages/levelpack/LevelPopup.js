@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
@@ -10,27 +8,6 @@ import Link from 'components/Link';
 import LegacyIcon from 'styles/LegacyIcon';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 
-const GET_LEVEL = gql`
-  query($LevelIndex: Int!) {
-    getBestTimes(LevelIndex: $LevelIndex, Limit: 10) {
-      TimeIndex
-      KuskiIndex
-      Time
-      KuskiData {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-    }
-    getLevel(LevelIndex: $LevelIndex) {
-      LevelName
-      LongName
-    }
-  }
-`;
-
 const LevelPopup = ({
   levelId,
   KuskiIndex,
@@ -38,6 +15,8 @@ const LevelPopup = ({
   highlight,
   multi,
   showLegacyIcon,
+  levelName,
+  longName,
 }) => {
   const {
     personalAllFinished,
@@ -77,127 +56,97 @@ const LevelPopup = ({
 
   return (
     <LevelPopUpCon>
-      <Query query={GET_LEVEL} variables={{ LevelIndex: levelId }}>
-        {({ data: { getLevel }, loading }) => {
-          if (loading) return null;
-
-          return (
+      <LevelTimesContainer>
+        <Title>
+          <Link to={`/levels/${levelId}`}>{levelName}.lev</Link>
+          <br />
+          {longName}
+          <ClosePopUp
+            tabIndex="0"
+            role="button"
+            onClick={close}
+            onKeyPress={close}
+          >
+            &times;
+          </ClosePopUp>
+        </Title>
+        <h2>Top-{timesLimit.toLocaleString()} times</h2>
+        <ListContainer>
+          <ListHeader>
+            <ListCell width={40}>#</ListCell>
+            {!KuskiIndex && !multi && <ListCell width={220}>Kuski</ListCell>}
+            {multi && (
+              <>
+                <ListCell width={220}>Kuski</ListCell>
+                <ListCell width={220}>Kuski</ListCell>
+              </>
+            )}
+            <ListCell>Time</ListCell>
+            {times.length > 0 && times[0].Source !== undefined && <ListCell />}
+            {personalAllFinished.length > 0 &&
+              personalAllFinished[0].Source !== undefined && <ListCell />}
+          </ListHeader>
+          {!KuskiIndex ? (
             <>
-              <LevelTimesContainer>
-                <Title>
-                  <Link to={`/levels/${levelId}`}>
-                    {getLevel.LevelName}.lev
-                  </Link>
-                  <br />
-                  {getLevel.LongName}
-                  <ClosePopUp
-                    tabIndex="0"
-                    role="button"
-                    onClick={close}
-                    onKeyPress={close}
-                  >
-                    &times;
-                  </ClosePopUp>
-                </Title>
-                <h2>Top-{timesLimit.toLocaleString()} times</h2>
-                <ListContainer>
-                  <ListHeader>
-                    <ListCell width={40}>#</ListCell>
-                    {!KuskiIndex && !multi && (
-                      <ListCell width={220}>Kuski</ListCell>
-                    )}
-                    {multi && (
+              {times.map((t, i) => {
+                return (
+                  <ListRow key={multi ? t.BestMultiTimeIndex : t.BestTimeIndex}>
+                    <ListCell width={40}>{i + 1}.</ListCell>
+                    {multi ? (
                       <>
-                        <ListCell width={220}>Kuski</ListCell>
-                        <ListCell width={220}>Kuski</ListCell>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.Kuski1Data} team flag />
+                        </ListCell>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.Kuski2Data} team flag />
+                        </ListCell>
+                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                          <Time time={t.Time} />
+                        </TimeSpan>
+                      </>
+                    ) : (
+                      <>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.KuskiData} team flag />
+                        </ListCell>
+                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                          <Time time={t.Time} />
+                        </TimeSpan>
+                        {t.Source !== undefined && (
+                          <LegacyIcon source={t.Source} show={showLegacyIcon} />
+                        )}
                       </>
                     )}
-                    <ListCell>Time</ListCell>
-                    {times.length > 0 && times[0].Source !== undefined && (
-                      <ListCell />
-                    )}
-                    {personalAllFinished.length > 0 &&
-                      personalAllFinished[0].Source !== undefined && (
-                        <ListCell />
-                      )}
-                  </ListHeader>
-                  {!KuskiIndex ? (
-                    <>
-                      {times.map((t, i) => {
-                        return (
-                          <ListRow
-                            key={multi ? t.BestMultiTimeIndex : t.BestTimeIndex}
-                          >
-                            <ListCell width={40}>{i + 1}.</ListCell>
-                            {multi ? (
-                              <>
-                                <ListCell width={220}>
-                                  <Kuski kuskiData={t.Kuski1Data} team flag />
-                                </ListCell>
-                                <ListCell width={220}>
-                                  <Kuski kuskiData={t.Kuski2Data} team flag />
-                                </ListCell>
-                                <TimeSpan highlight={t.TimeIndex >= highlight}>
-                                  <Time time={t.Time} />
-                                </TimeSpan>
-                              </>
-                            ) : (
-                              <>
-                                <ListCell width={220}>
-                                  <Kuski kuskiData={t.KuskiData} team flag />
-                                </ListCell>
-                                <TimeSpan highlight={t.TimeIndex >= highlight}>
-                                  <Time time={t.Time} />
-                                </TimeSpan>
-                                {t.Source !== undefined && (
-                                  <LegacyIcon
-                                    source={t.Source}
-                                    show={showLegacyIcon}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </ListRow>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <>
-                      {personalAllFinished.map((t, i) => {
-                        return (
-                          <ListRow key={`${t.TimeIndex}${t.Time}`}>
-                            <ListCell width={40}>{i + 1}.</ListCell>
-                            <TimeSpan highlight={t.TimeIndex >= highlight}>
-                              <Time time={t.Time} />
-                            </TimeSpan>
-                            {t.Source !== undefined && (
-                              <LegacyIcon
-                                source={t.Source}
-                                show={showLegacyIcon}
-                              />
-                            )}
-                          </ListRow>
-                        );
-                      })}
-                    </>
-                  )}
-                </ListContainer>
-                <ShowMoreCon>
-                  {timesLimit === 10 ? (
-                    <ShowMore onClick={() => setTimesLimit(10000)}>
-                      Show more
-                    </ShowMore>
-                  ) : (
-                    <ShowMore onClick={() => setTimesLimit(10)}>
-                      Show less
-                    </ShowMore>
-                  )}
-                </ShowMoreCon>
-              </LevelTimesContainer>
+                  </ListRow>
+                );
+              })}
             </>
-          );
-        }}
-      </Query>
+          ) : (
+            <>
+              {personalAllFinished.map((t, i) => {
+                return (
+                  <ListRow key={`${t.TimeIndex}${t.Time}`}>
+                    <ListCell width={40}>{i + 1}.</ListCell>
+                    <TimeSpan highlight={t.TimeIndex >= highlight}>
+                      <Time time={t.Time} />
+                    </TimeSpan>
+                    {t.Source !== undefined && (
+                      <LegacyIcon source={t.Source} show={showLegacyIcon} />
+                    )}
+                  </ListRow>
+                );
+              })}
+            </>
+          )}
+        </ListContainer>
+        <ShowMoreCon>
+          {timesLimit === 10 ? (
+            <ShowMore onClick={() => setTimesLimit(10000)}>Show more</ShowMore>
+          ) : (
+            <ShowMore onClick={() => setTimesLimit(10)}>Show less</ShowMore>
+          )}
+        </ShowMoreCon>
+      </LevelTimesContainer>
     </LevelPopUpCon>
   );
 };

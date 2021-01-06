@@ -103,11 +103,15 @@ export const AllFinishedLevel = LevelIndex =>
   api.get(`allfinished/${LevelIndex}`);
 
 // levelpack
+export const LevelPacks = () => api.get('levelpack');
+export const LevelPack = LevelPackName => api.get(`levelpack/${LevelPackName}`);
 export const TotalTimes = data =>
   api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
   api.get(
-    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${data.eolOnly}`,
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
+      data.eolOnly
+    }`,
   );
 export const Records = data =>
   api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
@@ -150,11 +154,15 @@ export const GetAllBattleTimes = query =>
   api.get(`battle/allBattleTimes/${query}`);
 export const BattlesByDesigner = data =>
   api.get(
-    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
+    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
+      data.pageSize
+    }`,
   );
 export const BattlesByPlayer = data =>
   api.get(
-    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
+    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${
+      data.pageSize
+    }`,
   );
 export const BattleListPeriod = data =>
   api.get(`battle/byPeriod/${data.start}/${data.end}/${data.limit}`);

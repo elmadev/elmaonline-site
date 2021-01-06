@@ -1,56 +1,41 @@
-import React from 'react';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Fab } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import Link from 'components/Link';
 import history from 'utils/history';
 
-const GET_LEVELPACKS = gql`
-  query {
-    getLevelPacks {
-      LevelPackIndex
-      LevelPackLongName
-      LevelPackName
-      LevelPackDesc
-      Levels {
-        LevelIndex
-      }
-    }
-  }
-`;
 const promote = 'Int';
 
 const Levels = () => {
+  const { levelpacks } = useStoreState(state => state.Levels);
+  const { getLevelpacks } = useStoreActions(actions => actions.Levels);
+  useEffect(() => {
+    getLevelpacks();
+  }, []);
   return (
     <Container>
-      <Query query={GET_LEVELPACKS}>
-        {({ data, loading, error }) => {
-          if (loading) return null;
-          if (error) return <div>something went wrong</div>;
-
-          return [...data.getLevelPacks]
-            .sort((a, b) => {
-              if (a.LevelPackName === promote) return -1;
-              if (b.LevelPackName === promote) return 1;
-              return a.LevelPackName.toLowerCase().localeCompare(
-                b.LevelPackName.toLowerCase(),
-              );
-            })
-            .map(p => (
-              <LevelPackContainer
-                promote={p.LevelPackName === promote}
-                key={p.LevelPackIndex}
-              >
-                <Link to={`/levels/packs/${p.LevelPackName}`}>
-                  <ShortName>{p.LevelPackName}</ShortName>
-                  <LongName>{p.LevelPackLongName}</LongName>
-                </Link>
-              </LevelPackContainer>
-            ));
-        }}
-      </Query>
+      {levelpacks.length > 0 &&
+        levelpacks
+          .sort((a, b) => {
+            if (a.LevelPackName === promote) return -1;
+            if (b.LevelPackName === promote) return 1;
+            return a.LevelPackName.toLowerCase().localeCompare(
+              b.LevelPackName.toLowerCase(),
+            );
+          })
+          .map(p => (
+            <LevelPackContainer
+              promote={p.LevelPackName === promote}
+              key={p.LevelPackIndex}
+            >
+              <Link to={`/levels/packs/${p.LevelPackName}`}>
+                <ShortName>{p.LevelPackName}</ShortName>
+                <LongName>{p.LevelPackLongName}</LongName>
+              </Link>
+            </LevelPackContainer>
+          ))}
       <FabCon>
         <Fab
           color="primary"
