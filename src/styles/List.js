@@ -61,7 +61,7 @@ export const ListRow = ({
       pointer={onClick}
       selected={selected}
       bg={bg}
-      onClick={() => onClick && onClick()}
+      onClick={e => onClick && onClick(e)}
       title={title}
     >
       {children}

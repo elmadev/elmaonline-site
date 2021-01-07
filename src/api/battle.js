@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import add from 'date-fns/add';
 import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
 
 const router = express.Router();
 
@@ -186,6 +186,17 @@ const BattleResults = async BattleIndex => {
               },
             ],
           },
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData2',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
         ],
       },
     ],
@@ -229,6 +240,37 @@ const GetBattleData = async IndexList => {
     order: [['BattleIndex', 'DESC']],
   });
   return battleData;
+}
+
+
+const GetAllBattleTimes = async BattleIndex => {
+  const battleStatus = await Battle.findAll({
+    attributes: ['Finished'],
+    where: { BattleIndex },
+  });
+  let times;
+  if (battleStatus[0].dataValues.Finished === 1) {
+    times = await AllFinished.findAll({
+      where: { BattleIndex },
+      order: [['TimeIndex', 'ASC']],
+      include: [
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski', 'Country'],
+          include: [
+            {
+              model: Team,
+              as: 'TeamData',
+            },
+          ],
+        },
+      ],
+    });
+  } else {
+    times = [];
+  }
+  return times;
 }
 
 const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
@@ -384,7 +426,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
   return byDesigner;
 };
 
-const BattlesBetween = async (Start, End) => {
+const BattlesBetween = async (Start, End, Limit = 250) => {
   const battles = await Battle.findAll({
     attributes: [
       'BattleIndex',
@@ -397,7 +439,7 @@ const BattlesBetween = async (Start, End) => {
       'InQueue',
       'Finished',
     ],
-    limit: 250,
+    limit: parseInt(Limit, 10),
     include: [
       {
         model: Kuski,
@@ -486,6 +528,10 @@ router
     const battles = await BattlesForLevel(req.params.LevelIndex);
     res.json(battles);
   })
+  .get('/allBattleTimes/:q', async (req, res) => {
+    const times = await GetAllBattleTimes(req.params.q);
+    res.json(times);
+  })
   .get('/byDesigner/:KuskiIndex', async (req, res) => {
     const battles = await BattlesForDesigner(
       req.params.KuskiIndex,
@@ -494,8 +540,12 @@ router
     );
     res.json(battles);
   })
-  .get('/byPeriod/:Start/:End', async (req, res) => {
-    const battles = await BattlesBetween(req.params.Start, req.params.End);
+  .get('/byPeriod/:Start/:End/:Limit', async (req, res) => {
+    const battles = await BattlesBetween(
+      req.params.Start,
+      req.params.End,
+      req.params.Limit,
+    );
     res.json(battles);
   });
 

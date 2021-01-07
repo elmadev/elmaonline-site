@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
-
-import s from './Search.css';
 
 const Search = ({
   context: {
@@ -68,31 +66,29 @@ const Search = ({
   }, [q]);
 
   return (
-    <div className={s.container}>
-      <div className={s.results}>
+    <Container>
+      <Results>
         {t === 'level' && (
           <>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Levels ({levels.length}
                 {moreLevels && '+'})
-              </div>
+              </ResultGroupTitle>
               {levels.length !== 0 && (
                 <>
                   {levels.map(r => (
-                    <Link
+                    <ResultLink
                       to={`levels/${r.LevelIndex}`}
                       key={r.LevelIndex}
-                      className={s.resultLink}
                     >
-                      <div className={s.resultMainData}>{r.LevelName}.lev</div>
-                      <div className={s.resultSecondaryData}>
+                      <div>{r.LevelName}.lev</div>
+                      <ResultSecondaryData>
                         {r.LevelIndex} / {r.LongName || `Unnamed`}
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreLevels}
                     type="button"
                     onClick={() =>
@@ -103,10 +99,9 @@ const Search = ({
                     }
                   >
                     {moreLevels ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreLevels && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchMoreLevels({
@@ -116,47 +111,41 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
             </div>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Level packs ({levelPacks.length})
-              </div>
+              </ResultGroupTitle>
               {levelPacks.length !== 0 && (
                 <>
                   {levelPacks.map(l => (
                     <>
                       {l.LevelPack ? (
-                        <Link
+                        <ResultLink
                           to={`levels/packs/${l.LevelPack.LevelPackName}`}
                           key={l.LevelPack.LevelPackIndex}
-                          className={s.resultLink}
                         >
-                          <div className={s.resultMainData}>
-                            {l.LevelPack.LevelPackLongName}
-                          </div>
-                          <div className={s.resultSecondaryData}>
+                          <div>{l.LevelPack.LevelPackLongName}</div>
+                          <ResultSecondaryData>
                             {l.LevelPack.LevelPackName || `Unnamed`} /{' '}
                             <Kuski kuskiData={l.LevelPack.KuskiData} />
-                          </div>
-                        </Link>
+                          </ResultSecondaryData>
+                        </ResultLink>
                       ) : (
-                        <Link
+                        <ResultLink
                           to={`levels/packs/${l.LevelPackName}`}
                           key={l.LevelPackIndex}
-                          className={s.resultLink}
                         >
-                          <div className={s.resultMainData}>
-                            {l.LevelPackLongName}
-                          </div>
-                          <div className={s.resultSecondaryData}>
+                          <>{l.LevelPackLongName}</>
+                          <ResultSecondaryData>
                             {l.LevelPackName || `Unnamed`} /{' '}
                             <Kuski kuskiData={l.KuskiData} />
-                          </div>
-                        </Link>
+                          </ResultSecondaryData>
+                        </ResultLink>
                       )}
                     </>
                   ))}
@@ -168,20 +157,16 @@ const Search = ({
         {t === 'replay' && (
           <>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Replays by filename ({replaysByFilename.length}
                 {moreReplaysFile && '+'})
-              </div>
+              </ResultGroupTitle>
               {replaysByFilename.length !== 0 && (
                 <>
                   {replaysByFilename.map(r => (
-                    <Link
-                      to={`r/${r.UUID}`}
-                      key={r.UUID}
-                      className={s.resultLink}
-                    >
-                      <div className={s.resultMainData}>{r.RecFileName}</div>
-                      <div className={s.resultSecondaryData}>
+                    <ResultLink to={`r/${r.UUID}`} key={r.UUID}>
+                      <div>{r.RecFileName}</div>
+                      <ResultSecondaryData>
                         {(r.LevelData && `${r.LevelData.LevelName}.lev`) ||
                           'unknown'}{' '}
                         /{' '}
@@ -193,11 +178,10 @@ const Search = ({
                           parse="X"
                         />{' '}
                         / <Kuski kuskiData={r.UploadedByData} />
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreReplaysFile}
                     type="button"
                     onClick={() =>
@@ -208,10 +192,9 @@ const Search = ({
                     }
                   >
                     {moreReplaysFile ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreReplaysFile && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchmoreReplaysFile({
@@ -221,26 +204,22 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
             </div>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Replays driven by ({replaysByDriven.length}
                 {moreReplaysDriven && '+'})
-              </div>
+              </ResultGroupTitle>
               {replaysByDriven.length !== 0 && (
                 <>
                   {replaysByDriven.map(r => (
-                    <Link
-                      to={`r/${r.UUID}`}
-                      key={r.UUID}
-                      className={s.resultLink}
-                    >
-                      <div className={s.resultMainData}>{r.RecFileName}</div>
-                      <div className={s.resultSecondaryData}>
+                    <ResultLink to={`r/${r.UUID}`} key={r.UUID}>
+                      <div>{r.RecFileName}</div>
+                      <ResultSecondaryData>
                         {(r.LevelData && `${r.LevelData.LevelName}.lev`) ||
                           'unknown'}{' '}
                         /{' '}
@@ -252,11 +231,10 @@ const Search = ({
                           parse="X"
                         />{' '}
                         / <Kuski kuskiData={r.UploadedByData} />
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreReplaysDriven}
                     type="button"
                     onClick={() =>
@@ -267,10 +245,9 @@ const Search = ({
                     }
                   >
                     {moreReplaysDriven ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreReplaysDriven && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchMoreReplaysDriven({
@@ -280,26 +257,22 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
             </div>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Replays by level ({replaysByLevel.length}
                 {moreReplaysLevel && '+'})
-              </div>
+              </ResultGroupTitle>
               {replaysByLevel.length !== 0 && (
                 <>
                   {replaysByLevel.map(r => (
-                    <Link
-                      to={`r/${r.UUID}`}
-                      key={r.UUID}
-                      className={s.resultLink}
-                    >
-                      <div className={s.resultMainData}>{r.RecFileName}</div>
-                      <div className={s.resultSecondaryData}>
+                    <ResultLink to={`r/${r.UUID}`} key={r.UUID}>
+                      <div>{r.RecFileName}</div>
+                      <ResultSecondaryData>
                         {(r.LevelData && `${r.LevelData.LevelName}.lev`) ||
                           'unknown'}{' '}
                         /{' '}
@@ -311,11 +284,10 @@ const Search = ({
                           parse="X"
                         />{' '}
                         / <Kuski kuskiData={r.UploadedByData} />
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreReplaysLevel}
                     type="button"
                     onClick={() =>
@@ -326,10 +298,9 @@ const Search = ({
                     }
                   >
                     {moreReplaysLevel ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreReplaysLevel && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchMoreReplaysLevel({
@@ -339,7 +310,7 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
@@ -349,22 +320,19 @@ const Search = ({
         {t === 'battle' && (
           <>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Battles by level name ({battlesByFilename.length}
                 {moreBattleFile && '+'})
-              </div>
+              </ResultGroupTitle>
               {battlesByFilename.length !== 0 && (
                 <>
                   {battlesByFilename.map(b => (
-                    <Link
+                    <ResultLink
                       to={`battles/${b.BattleIndex}`}
                       key={b.BattleIndex}
-                      className={s.resultLink}
                     >
-                      <div className={s.resultMainData}>
-                        {b.LevelData.LevelName}.lev
-                      </div>
-                      <div className={s.resultSecondaryData}>
+                      <div>{b.LevelData.LevelName}.lev</div>
+                      <ResultSecondaryData>
                         {b.BattleIndex} / <Kuski kuskiData={b.KuskiData} /> /{' '}
                         {b.LevelIndex} /{' '}
                         <LocalTime
@@ -372,11 +340,10 @@ const Search = ({
                           format="DD.MM.YYYY HH:mm:ss"
                           parse="X"
                         />
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreBattleFile}
                     type="button"
                     onClick={() => {
@@ -387,10 +354,9 @@ const Search = ({
                     }}
                   >
                     {moreBattleFile ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreBattleFile && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchMoreBattlesFile({
@@ -400,28 +366,25 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
             </div>
             <div>
-              <div className={s.resultGroupTitle}>
+              <ResultGroupTitle>
                 Battles by designer ({battlesByDesigner.length}
                 {moreBattleDesigner && '+'})
-              </div>
+              </ResultGroupTitle>
               {battlesByDesigner.length !== 0 && (
                 <>
                   {battlesByDesigner.map(b => (
-                    <Link
+                    <ResultLink
                       to={`battles/${b.BattleIndex}`}
                       key={b.BattleIndex}
-                      className={s.resultLink}
                     >
-                      <div className={s.resultMainData}>
-                        {b.LevelData.LevelName}.lev
-                      </div>
-                      <div className={s.resultSecondaryData}>
+                      <div>{b.LevelData.LevelName}.lev</div>
+                      <ResultSecondaryData>
                         {b.BattleIndex} / <Kuski kuskiData={b.KuskiData} /> /{' '}
                         {b.LevelIndex} /{' '}
                         <LocalTime
@@ -429,11 +392,10 @@ const Search = ({
                           format="DD.MM.YYYY HH:mm:ss"
                           parse="X"
                         />
-                      </div>
-                    </Link>
+                      </ResultSecondaryData>
+                    </ResultLink>
                   ))}
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     disabled={!moreBattleDesigner}
                     type="button"
                     onClick={() => {
@@ -444,10 +406,9 @@ const Search = ({
                     }}
                   >
                     {moreBattleDesigner ? 'Show more' : 'No more results'}
-                  </button>
+                  </LoadMore>
                   {moreBattleDesigner && (
-                    <button
-                      className={s.loadMore}
+                    <LoadMore
                       type="button"
                       onClick={() => {
                         fetchMoreBattlesDesigner({
@@ -457,7 +418,7 @@ const Search = ({
                       }}
                     >
                       Show all results
-                    </button>
+                    </LoadMore>
                   )}
                 </>
               )}
@@ -466,26 +427,21 @@ const Search = ({
         )}
         {t === 'player' && (
           <div>
-            <div className={s.resultGroupTitle}>
+            <ResultGroupTitle>
               Players ({players.length}
               {morePlayers && '+'})
-            </div>
+            </ResultGroupTitle>
             {players.length !== 0 && (
               <>
                 {players.map(p => (
-                  <Link
-                    to={`kuskis/${p.Kuski}`}
-                    key={p.Kuski}
-                    className={s.resultLink}
-                  >
-                    <div className={s.resultMainData}>
+                  <ResultLink to={`kuskis/${p.Kuski}`} key={p.Kuski}>
+                    <div>
                       <Kuski team kuskiData={p} />
                     </div>
-                    <div className={s.resultSecondaryData} />
-                  </Link>
+                    <ResultSecondaryData />
+                  </ResultLink>
                 ))}
-                <button
-                  className={s.loadMore}
+                <LoadMore
                   disabled={!morePlayers}
                   type="button"
                   onClick={() => {
@@ -493,17 +449,16 @@ const Search = ({
                   }}
                 >
                   {morePlayers ? 'Show more' : 'No more results'}
-                </button>
+                </LoadMore>
                 {morePlayers && (
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     type="button"
                     onClick={() => {
                       fetchMorePlayers({ q, offset: players.length * -1 });
                     }}
                   >
                     Show all results
-                  </button>
+                  </LoadMore>
                 )}
               </>
             )}
@@ -511,24 +466,19 @@ const Search = ({
         )}
         {t === 'team' && (
           <div>
-            <div className={s.resultGroupTitle}>
+            <ResultGroupTitle>
               Teams ({teams.length}
               {moreTeams && '+'})
-            </div>
+            </ResultGroupTitle>
             {teams.length !== 0 && (
               <>
                 {teams.map(v => (
-                  <Link
-                    key={v.Team}
-                    className={s.resultLink}
-                    to={`team/${v.Team}`}
-                  >
-                    <div className={s.resultMainData}>{v.Team}</div>
-                    <div className={s.resultSecondaryData} />
-                  </Link>
+                  <ResultLink key={v.Team} to={`team/${v.Team}`}>
+                    <div>{v.Team}</div>
+                    <ResultSecondaryData />
+                  </ResultLink>
                 ))}
-                <button
-                  className={s.loadMore}
+                <LoadMore
                   disabled={!moreTeams}
                   type="button"
                   onClick={() => {
@@ -536,25 +486,76 @@ const Search = ({
                   }}
                 >
                   {moreTeams ? 'Show more' : 'No more results'}
-                </button>
+                </LoadMore>
                 {moreTeams && (
-                  <button
-                    className={s.loadMore}
+                  <LoadMore
                     type="button"
                     onClick={() => {
                       fetchMoreTeams({ q, offset: teams.length * -1 });
                     }}
                   >
                     Show all results
-                  </button>
+                  </LoadMore>
                 )}
               </>
             )}
           </div>
         )}
-      </div>
-    </div>
+      </Results>
+    </Container>
   );
 };
 
-export default withStyles(s)(Search);
+const Container = styled.div`
+  background: #fff;
+  min-height: 100%;
+`;
+
+const Results = styled.div`
+  display: flex;
+  > div {
+    flex: 1;
+  }
+  @media (max-width: 500px) {
+    flex-direction: column;
+    > div {
+      margin-bottom: 20px;
+    }
+  }
+`;
+
+const ResultLink = styled(Link)`
+  display: block;
+  padding: 5px 10px;
+  :hover {
+    text-decoration: underline;
+  }
+`;
+
+const ResultGroupTitle = styled.div`
+  padding: 10px;
+  font-weight: 600;
+`;
+
+const ResultSecondaryData = styled.div`
+  color: #8c8c8c;
+  font-size: 12px;
+`;
+
+const LoadMore = styled.button`
+  background: transparent;
+  font-weight: 600;
+  border: 0;
+  display: inline-block;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #219653;
+  :disabled {
+    cursor: default;
+    color: #8c8c8c;
+  }
+`;
+
+export default Search;

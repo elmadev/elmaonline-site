@@ -1,7 +1,6 @@
 import React from 'react';
-import { compose } from 'react-apollo';
 import m from 'moment';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import styled from 'styled-components';
 import { Tabs, Tab, Grid } from '@material-ui/core';
 
 import Header from 'components/Header';
@@ -14,8 +13,6 @@ import {
   BattleTypes,
   MinPlayed,
 } from 'components/Selectors';
-
-import s from './Ranking.css';
 
 const formatPeriod = (type, year, month, week, day) => {
   const monthFixed = `0${month}`.slice(-2);
@@ -73,7 +70,7 @@ class Ranking extends React.Component {
           <Tab label={`Weekly (${year}/${week})`} />
           <Tab label={`Daily (${year}/${month}/${day})`} />
         </Tabs>
-        <div className={s.root}>
+        <Container>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={8}>
               <Header>Ranking</Header>
@@ -185,10 +182,16 @@ class Ranking extends React.Component {
               </div>
             </Grid>
           </Grid>
-        </div>
+        </Container>
       </>
     );
   }
 }
 
-export default compose(withStyles(s))(Ranking);
+const Container = styled.div`
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+`;
+
+export default Ranking;

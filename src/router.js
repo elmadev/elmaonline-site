@@ -133,6 +133,10 @@ const routes = {
           /* webpackChunkName: 'forgot-password' */ './pages/forgot-password'
         ),
     },
+    {
+      path: '/replays',
+      load: () => import(/* webpackChunkName: 'replays' */ './pages/replays'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

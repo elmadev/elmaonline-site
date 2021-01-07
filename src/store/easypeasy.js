@@ -26,6 +26,8 @@ import Kuskis from 'pages/kuskis/store';
 import Level from 'pages/level/store';
 import Mod from 'pages/mod/store';
 import Battle from 'pages/battle/store';
+import Levels from 'pages/levels/store';
+import ReplayList from 'components/ReplayList/store';
 
 export default {
   ReplayComments,
@@ -43,6 +45,7 @@ export default {
   Search,
   Kuski,
   LevelsAdd,
+  Levels,
   Settings,
   Upload,
   Mod,
@@ -54,6 +57,7 @@ export default {
   Level,
   Battle,
   Login,
+  ReplayList,
   Page: {
     sideBarVisible: true,
     showSideBar: action(state => {

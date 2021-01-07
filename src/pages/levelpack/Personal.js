@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
 import { Edit } from '@material-ui/icons';
 import Time from 'components/Time';
@@ -8,10 +7,8 @@ import Feedback from 'components/Feedback';
 import Loading from 'components/Loading';
 import { recordsTT } from 'utils/calcs';
 import LegacyIcon from 'styles/LegacyIcon';
+import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 import LevelPopup from './LevelPopup';
-
-// eslint-disable-next-line css-modules/no-unused-class
-import s from './LevelPack.css';
 
 const Personal = ({
   times,
@@ -37,17 +34,17 @@ const Personal = ({
   return (
     <>
       <h2>Personal records</h2>
-      <div className={s.levels}>
-        <div className={s.tableHead}>
-          <span>Filename</span>
-          <span>Level name</span>
-          <span>
+      <ListContainer>
+        <ListHeader>
+          <ListCell width={100}>Filename</ListCell>
+          <ListCell width={320}>Level name</ListCell>
+          <ListCell width={200}>
             <ClickToEdit value={kuski} update={newKuski => getTimes(newKuski)}>
               {kuski} <EditIcon />
             </ClickToEdit>
-          </span>
-          <span />
-        </div>
+          </ListCell>
+          <ListCell />
+        </ListHeader>
         {setPersonalTimesLoading && <Loading />}
         {levels.length !== 0 && (
           <>
@@ -62,11 +59,12 @@ const Personal = ({
                 }}
                 selected={level === r.LevelIndex}
               >
-                <span>{r.Level.LevelName}</span>
-                <span>{r.Level.LongName}</span>
+                <ListCell width={100}>{r.Level.LevelName}</ListCell>
+                <ListCell width={320}>{r.Level.LongName}</ListCell>
                 {r.LevelBesttime.length > 0 ? (
                   <>
                     <TimeSpan
+                      width={200}
                       highlight={
                         r.LevelBesttime[0].TimeIndex >=
                         highlight[highlightWeeks]
@@ -75,33 +73,35 @@ const Personal = ({
                       <Time time={r.LevelBesttime[0].Time} />
                     </TimeSpan>
                     {r.LevelBesttime[0].Source !== undefined ? (
-                      <LegacyIcon
-                        source={r.LevelBesttime[0].Source}
-                        show={showLegacyIcon}
-                      />
+                      <ListCell right>
+                        <LegacyIcon
+                          source={r.LevelBesttime[0].Source}
+                          show={showLegacyIcon}
+                        />
+                      </ListCell>
                     ) : (
-                      <span />
+                      <ListCell />
                     )}
                   </>
                 ) : (
                   <>
-                    <span />
-                    <span />
+                    <ListCell />
+                    <ListCell />
                   </>
                 )}
               </TimeRow>
             ))}
             <TTRow>
-              <span />
-              <span>Total Time</span>
-              <span>
+              <ListCell />
+              <ListCell>Total Time</ListCell>
+              <ListCell>
                 <Time time={recordsTT(levels, 'LevelBesttime')} />
-              </span>
-              <span />
+              </ListCell>
+              <ListCell />
             </TTRow>
           </>
         )}
-      </div>
+      </ListContainer>
       {level !== -1 && (
         <LevelPopup
           highlight={highlight[highlightWeeks]}
@@ -128,7 +128,7 @@ const EditIcon = styled(Edit)`
   font-size: 18px !important;
 `;
 
-const TimeRow = styled.span`
+const TimeRow = styled(ListRow)`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   cursor: pointer;
   a {
@@ -143,7 +143,7 @@ const TimeRow = styled.span`
   }
 `;
 
-const TTRow = styled.div`
+const TTRow = styled(ListRow)`
   background: ${p => (p.selected ? '#219653' : 'transparent')};
   color: ${p => (p.selected ? '#fff' : 'inherit')};
   :hover {
@@ -152,9 +152,9 @@ const TTRow = styled.div`
   }
 `;
 
-const TimeSpan = styled.span`
+const TimeSpan = styled(ListCell)`
   background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
   width: auto !important;
 `;
 
-export default withStyles(s)(Personal);
+export default Personal;

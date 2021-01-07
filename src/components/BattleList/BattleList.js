@@ -11,13 +11,14 @@ import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
 import { toServerTime } from 'utils/time';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'styles/List';
 
-const BattleList = ({ start, end }) => {
+const BattleList = ({ start, end, limit = 250 }) => {
   const { battles } = useStoreState(state => state.BattleList);
   const { getBattles } = useStoreActions(actions => actions.BattleList);
   useEffect(() => {
     getBattles({
       start: toServerTime(start).format(),
       end: toServerTime(end).format(),
+      limit,
     });
   }, [start, end]);
   return (
@@ -99,7 +100,6 @@ const Container = styled.div`
   display: block;
   max-width: 100%;
   overflow: auto;
-  padding-bottom: 200px;
   a {
     color: black;
     display: table-row;
