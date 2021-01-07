@@ -55,27 +55,67 @@ const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
   return '';
 };
 
+const runData = runs => {
+  const kuskis = { BattleIndex: runs.rows[0].BattleIndex };
+  const checkFinish = run => {
+    return run.Finished === 'F' ? 1 : 0;
+  };
+  runs.rows.map(run => {
+    kuskis[run.KuskiIndex] = kuskis[run.KuskiIndex]
+      ? {
+          KuskiIndex: run.KuskiIndex,
+          Apples: kuskis[run.KuskiIndex].Apples
+            ? kuskis[run.KuskiIndex].Apples + run.Apples
+            : run.Apples,
+          PlayTime: kuskis[run.KuskiIndex].PlayTime
+            ? kuskis[run.KuskiIndex].PlayTime + run.Time
+            : run.Time,
+          Finishes: kuskis[run.KuskiIndex].Finishes
+            ? kuskis[run.KuskiIndex].Finishes + checkFinish(run)
+            : checkFinish(run),
+        }
+      : {
+          KuskiIndex: run.KuskiIndex,
+          Apples: run.Apples,
+          PlayTime: run.Time,
+        };
+    return run;
+  });
+  return kuskis;
+};
+
 const Battle = props => {
+  let runStats = null;
   const { BattleIndex } = props;
   const [extra, setExtra] = useState('');
-  const { allBattleTimes, battle, rankingHistory } = useStoreState(
-    state => state.Battle,
-  );
+  const {
+    allBattleTimes,
+    battle,
+    rankingHistory,
+    allBattleRuns,
+  } = useStoreState(state => state.Battle);
   const {
     getAllBattleTimes,
     getBattle,
     getRankingHistoryByBattle,
+    getAllBattleRuns,
   } = useStoreActions(state => state.Battle);
 
   useEffect(() => {
+    runStats = null;
     getAllBattleTimes(BattleIndex);
+    getAllBattleRuns(BattleIndex);
     getBattle(BattleIndex);
     getRankingHistoryByBattle(BattleIndex);
   }, [BattleIndex]);
 
+  if (allBattleRuns) runStats = runData(allBattleRuns);
+
   const isWindow = typeof window !== 'undefined';
 
   if (!battle) return <Root>Battle is unfinished</Root>;
+  if (runStats)
+    if (BattleIndex !== runStats.BattleIndex) return <Root>loading</Root>;
 
   return (
     <Root>
@@ -157,17 +197,20 @@ const Battle = props => {
       </RightBarContainer>
       <LevelStatsContainer>
         <Paper>
-          {battle.Results && (
+          {battle.Results && runStats && (
             <ListContainer>
               <ListHeader>
                 <ListCell right width={30}>
                   #
                 </ListCell>
                 <ListCell width={200}>Kuski</ListCell>
-                <ListCell right width={200}>
+                <ListCell right width={150}>
                   Time
                 </ListCell>
-                <ListCell>
+                <ListCell right>Time played</ListCell>
+                <ListCell right>Finishes</ListCell>
+                <ListCell right>Apples Taken</ListCell>
+                <ListCell right>
                   <Select
                     value={extra}
                     onChange={e => setExtra(e.target.value)}
@@ -204,10 +247,28 @@ const Battle = props => {
                             </>
                           )}
                         </ListCell>
-                        <ListCell right width={200}>
+                        <ListCell right width={150}>
                           <Time time={r.Time} apples={r.Apples} />
                         </ListCell>
-                        <ListCell>
+                        <ListCell right>
+                          {runStats ? (
+                            <Time
+                              time={runStats[r.KuskiIndex].PlayTime}
+                              apples={0}
+                            />
+                          ) : (
+                            '0,00'
+                          )}
+                        </ListCell>
+                        <ListCell right>
+                          {runStats && runStats[r.KuskiIndex].Finishes
+                            ? runStats[r.KuskiIndex].Finishes
+                            : '0'}
+                        </ListCell>
+                        <ListCell right>
+                          {runStats ? runStats[r.KuskiIndex].Apples : '0'}
+                        </ListCell>
+                        <ListCell right width={205}>
                           {getExtra(
                             r.KuskiIndex,
                             extra,

@@ -4,6 +4,7 @@ import {
   GetAllBattleTimes,
   BattleResults,
   RankingHistoryByBattle,
+  AllBattleRuns,
 } from 'data/api';
 
 export default {
@@ -24,6 +25,16 @@ export default {
     const allTimes = await GetAllBattleTimes(payload);
     if (allTimes.ok) {
       actions.setAllBattleTimes(allTimes.data);
+    }
+  }),
+  allBattleRuns: null,
+  setAllBattleRuns: action((state, payload) => {
+    state.allBattleRuns = payload;
+  }),
+  getAllBattleRuns: thunk(async (actions, payload) => {
+    const runs = await AllBattleRuns(payload);
+    if (runs.ok) {
+      actions.setAllBattleRuns(runs.data);
     }
   }),
   battle: null,

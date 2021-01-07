@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import add from 'date-fns/add';
 import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time } from '../data/models';
 
 const router = express.Router();
 
@@ -148,6 +148,14 @@ const BattlesSearchByDesigner = async (query, offset) => {
     ],
   });
   return byDesigner;
+};
+
+const AllBattleRuns = async BattleIndex => {
+  const runs = await Time.findAndCountAll({
+    order: [['TimeIndex', 'DESC']],
+    where: {BattleIndex},
+  });
+  return runs;
 };
 
 const BattleResults = async BattleIndex => {
@@ -523,6 +531,10 @@ router
     );
     res.json(battles);
 
+  })
+  .get('/allRuns/:BattleIndex', async (req, res) => {
+    const runs = await AllBattleRuns(req.params.BattleIndex);
+    res.json(runs);
   })
   .get('/byLevel/:LevelIndex', async (req, res) => {
     const battles = await BattlesForLevel(req.params.LevelIndex);
