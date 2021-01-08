@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { Paper } from 'styles/Paper';
+import _ from 'lodash';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'styles/List';
 import { BattleType } from 'components/Names';
 import Time from 'components/Time';
@@ -56,31 +57,16 @@ const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
 };
 
 const runData = runs => {
-  const kuskis = { BattleIndex: runs.rows[0].BattleIndex };
-  const checkFinish = run => {
-    return run.Finished === 'F' ? 1 : 0;
-  };
-  runs.rows.map(run => {
-    kuskis[run.KuskiIndex] = kuskis[run.KuskiIndex]
-      ? {
-          KuskiIndex: run.KuskiIndex,
-          Apples: kuskis[run.KuskiIndex].Apples
-            ? kuskis[run.KuskiIndex].Apples + run.Apples
-            : run.Apples,
-          PlayTime: kuskis[run.KuskiIndex].PlayTime
-            ? kuskis[run.KuskiIndex].PlayTime + run.Time
-            : run.Time,
-          Finishes: kuskis[run.KuskiIndex].Finishes
-            ? kuskis[run.KuskiIndex].Finishes + checkFinish(run)
-            : checkFinish(run),
-        }
-      : {
-          KuskiIndex: run.KuskiIndex,
-          Apples: run.Apples,
-          PlayTime: run.Time,
-        };
-    return run;
+  const a = _.groupBy(runs.rows, 'KuskiIndex');
+  const kuskis = _.mapValues(a, (value, key) => {
+    return {
+      KuskiIndex: key,
+      Apples: _.sumBy(value, 'Apples'),
+      Finishes: _.filter(value, { Finished: 'F' }).length,
+      PlayTime: _.sumBy(value, 'Time'),
+    };
   });
+  kuskis.BattleIndex = runs.rows[0].BattleIndex;
   return kuskis;
 };
 
