@@ -5,8 +5,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
 import { BattleType } from 'components/Names';
 import Link from 'components/Link';
 import ChatView from 'components/ChatView';
@@ -14,8 +16,19 @@ import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
 import { battleStatus } from 'utils/battle';
 
+const useStyles = makeStyles(theme => ({
+  margin: {
+    margin: theme.spacing(1),
+  },
+  button: {
+    fontWeight: 'inherit',
+    textTransform: 'initial',
+  },
+}));
+
 const RightBarContainer = props => {
   const { allBattleTimes, battle } = props;
+  const classes = useStyles();
 
   if (!battle) return <Root>loading...</Root>;
 
@@ -52,7 +65,37 @@ const RightBarContainer = props => {
                 </a>
               </div>
               <br />
-              <Link to={`/levels/${battle.LevelIndex}`}>Go to level page</Link>
+              <Link to={`/levels/${battle.LevelIndex}`}>
+                <Button size="small" color="primary" className={classes.button}>
+                  Go to level page
+                </Button>
+              </Link>
+              <RightLinkContainer>
+                <Link
+                  to={`/battles/${battle.BattleIndex - 1}`}
+                  className={classes.margin}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    className={classes.button}
+                  >
+                    Previous Battle{' '}
+                  </Button>
+                </Link>
+                <Link
+                  to={`/battles/${battle.BattleIndex + 1}`}
+                  className={classes.margin}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    className={classes.button}
+                  >
+                    Next Battle{' '}
+                  </Button>
+                </Link>
+              </RightLinkContainer>
             </BattleStyleDescription>
           </AccordionDetails>
         </Accordion>
@@ -103,12 +146,17 @@ const Root = styled.div`
 
 const BattleStyleDescription = styled.div`
   font-size: 14px;
+  width: 100%;
   .timeStamp {
     color: #7d7d7d;
   }
   .battleType {
     text-transform: lowercase;
   }
+`;
+
+const RightLinkContainer = styled.span`
+  float: right;
 `;
 
 export default RightBarContainer;
