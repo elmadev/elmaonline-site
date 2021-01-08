@@ -57,7 +57,6 @@ const Player = async (IdentifierType, KuskiIdentifier) => {
       'Kuski',
       'TeamIndex',
       'Country',
-      'Email',
       'RPlay',
       'RStartBattle',
       'RSpecialBattle',

@@ -1,6 +1,7 @@
 import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
+import { has } from 'lodash';
 import { Level, Time } from '../data/models';
 
 const router = express.Router();
@@ -49,9 +50,34 @@ const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
   return stats;
 };
 
+const UpdateLevel = async (LevelIndex, update) => {
+  const updateLevel = await Level.update(update, { where: { LevelIndex } });
+  return updateLevel;
+};
+
 router.get('/:LevelIndex', async (req, res) => {
   const data = await getLevel(req.params.LevelIndex);
   res.json(data);
+});
+
+router.post('/:LevelIndex', async (req, res) => {
+  const auth = authContext(req);
+  if (auth.mod) {
+    let update = { success: 0 };
+    if (has(req.body, 'Locked')) {
+      update = await UpdateLevel(req.params.LevelIndex, {
+        Locked: parseInt(req.body.Locked, 10),
+      });
+    }
+    if (has(req.body, 'Hidden')) {
+      update = await UpdateLevel(req.params.LevelIndex, {
+        Hidden: parseInt(req.body.Hidden, 10),
+      });
+    }
+    res.json(update);
+  } else {
+    res.sendStatus(401);
+  }
 });
 
 router.get('/leveldata/:LevelIndex', async (req, res) => {

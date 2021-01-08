@@ -119,6 +119,16 @@ LevelPack.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Level.belongsTo(Kuski, {
+  foreignKey: 'AddedBy',
+  as: 'KuskiData',
+});
+
+Level.hasMany(Battle, {
+  foreignKey: 'LevelIndex',
+  as: 'Battles',
+});
+
 LevelPack.hasMany(LevelPackLevel, {
   foreignKey: 'LevelPackIndex',
   as: 'Levels',

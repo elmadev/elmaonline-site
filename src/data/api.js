@@ -119,7 +119,7 @@ export const MultiRecords = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/multirecords`);
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
 export const LevelsSearch = data =>
-  api.get(`levelpack/searchLevel/${data.q}/${data.offset}`);
+  api.get(`levelpack/searchLevel/${data.q}/${data.offset}/${data.showLocked}`);
 export const LevelsSearchAll = data =>
   api.get(`levelpack/searchLevel/${data.q}`);
 export const AddLevelPack = data => api.post('levelpack/add', data);
@@ -193,6 +193,8 @@ export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
 export const LevelData = LevelIndex => api.get(`level/leveldata/${LevelIndex}`);
 export const LevelTimeStats = LevelIndex =>
   api.get(`level/timestats/${LevelIndex}`);
+export const UpdateLevel = data =>
+  api.post(`level/${data.LevelIndex}`, data.update);
 
 // ranking
 export const PersonalRanking = KuskiIndex =>
