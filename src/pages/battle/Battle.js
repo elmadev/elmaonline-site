@@ -50,24 +50,34 @@ const Battle = props => {
 
   const isWindow = typeof window !== 'undefined';
 
-  if (!battle) return <Root>Battle is unfinished</Root>;
-  if (runStats)
-    if (BattleIndex !== runStats.BattleIndex) return <Root>loading</Root>;
-
   return (
     <Root>
-      <RecView
-        isWindow={isWindow}
-        BattleIndex={BattleIndex}
-        levelIndex={battle.LevelIndex}
-        battleStatus={battleStatus(battle)}
-      />
-      <RightBarContainer battle={battle} allBattleTimes={allBattleTimes} />
-      <LevelStatsContainer
-        battle={battle}
-        rankingHistory={rankingHistory}
-        runStats={runStats}
-      />
+      {battle ? (
+        <RecView
+          isWindow={isWindow}
+          BattleIndex={BattleIndex}
+          levelIndex={battle.LevelIndex}
+          battleStatus={battleStatus(battle)}
+        />
+      ) : (
+        <div />
+      )}
+      {battle && allBattleTimes ? (
+        <RightBarContainer battle={battle} allBattleTimes={allBattleTimes} />
+      ) : (
+        <div />
+      )}
+      {battle && rankingHistory && runStats ? (
+        <LevelStatsContainer
+          battle={battle}
+          rankingHistory={rankingHistory}
+          runStats={runStats}
+        />
+      ) : (
+        <div>
+          <span>loading...</span>
+        </div>
+      )}
     </Root>
   );
 };

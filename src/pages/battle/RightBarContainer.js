@@ -14,6 +14,7 @@ import Link from 'components/Link';
 import ChatView from 'components/ChatView';
 import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
+import history from 'utils/history';
 import { battleStatus } from 'utils/battle';
 
 const useStyles = makeStyles(theme => ({
@@ -30,87 +31,81 @@ const RightBarContainer = props => {
   const { allBattleTimes, battle } = props;
   const classes = useStyles();
 
-  if (!battle) return <Root>loading...</Root>;
-
   return (
     <Root>
-      <div className="chatContainer">
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Typography variant="body2">Battle info</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <BattleStyleDescription>
+            {battle.Duration} minute{' '}
+            <span className="battleType">
+              <BattleType type={battle.BattleType} />
+            </span>{' '}
+            battle in{' '}
+            <a href={`/dl/level/${battle.LevelIndex}`}>
+              {battle.LevelData ? battle.LevelData.LevelName : '?'}
+              .lev
+            </a>{' '}
+            {battle.KuskiData.Kuski}
+            <div className="timeStamp">
+              Started{' '}
+              <LocalTime
+                date={battle.Started}
+                format="DD.MM.YYYY HH:mm:ss"
+                parse="X"
+              />
+            </div>
+            <div className="timeStamp">
+              <a href={`/dl/battlereplay/${battle.BattleIndex}`}>
+                Download replay
+              </a>
+            </div>
+            <br />
+            <Link to={`/levels/${battle.LevelIndex}`}>
+              <Button size="small" color="primary" className={classes.button}>
+                Go to level page
+              </Button>
+            </Link>
+            <RightLinkContainer>
+              <Button
+                size="small"
+                color="primary"
+                className={classes.button}
+                onClick={() =>
+                  history.push(`/battles/${battle.BattleIndex - 1}`)
+                }
+              >
+                Previous Battle{' '}
+              </Button>
+              <Button
+                size="small"
+                color="primary"
+                className={classes.button}
+                onClick={() =>
+                  history.push(`/battles/${battle.BattleIndex + 1}`)
+                }
+              >
+                Next Battle{' '}
+              </Button>
+            </RightLinkContainer>
+          </BattleStyleDescription>
+        </AccordionDetails>
+      </Accordion>
+      {battle.Finished === 1 && battle.BattleType === 'NM' && (
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography variant="body2">Battle info</Typography>
+            <Typography variant="body1">Leader history</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <BattleStyleDescription>
-              {battle.Duration} minute{' '}
-              <span className="battleType">
-                <BattleType type={battle.BattleType} />
-              </span>{' '}
-              battle in{' '}
-              <a href={`/dl/level/${battle.LevelIndex}`}>
-                {battle.LevelData ? battle.LevelData.LevelName : '?'}
-                .lev
-              </a>{' '}
-              {battle.KuskiData.Kuski}
-              <div className="timeStamp">
-                Started{' '}
-                <LocalTime
-                  date={battle.Started}
-                  format="DD.MM.YYYY HH:mm:ss"
-                  parse="X"
-                />
-              </div>
-              <div className="timeStamp">
-                <a href={`/dl/battlereplay/${battle.BattleIndex}`}>
-                  Download replay
-                </a>
-              </div>
-              <br />
-              <Link to={`/levels/${battle.LevelIndex}`}>
-                <Button size="small" color="primary" className={classes.button}>
-                  Go to level page
-                </Button>
-              </Link>
-              <RightLinkContainer>
-                <Link
-                  to={`/battles/${battle.BattleIndex - 1}`}
-                  className={classes.margin}
-                >
-                  <Button
-                    size="small"
-                    color="primary"
-                    className={classes.button}
-                  >
-                    Previous Battle{' '}
-                  </Button>
-                </Link>
-                <Link
-                  to={`/battles/${battle.BattleIndex + 1}`}
-                  className={classes.margin}
-                >
-                  <Button
-                    size="small"
-                    color="primary"
-                    className={classes.button}
-                  >
-                    Next Battle{' '}
-                  </Button>
-                </Link>
-              </RightLinkContainer>
-            </BattleStyleDescription>
+            {allBattleTimes !== null && allBattleTimes !== [] ? (
+              <LeaderHistory allFinished={allBattleTimes} />
+            ) : null}
           </AccordionDetails>
         </Accordion>
-        {battle.Finished === 1 && battle.BattleType === 'NM' && (
-          <Accordion defaultExpanded>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography variant="body1">Leader history</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {allBattleTimes !== null && allBattleTimes !== [] ? (
-                <LeaderHistory allFinished={allBattleTimes} />
-              ) : null}
-            </AccordionDetails>
-          </Accordion>
-        )}
+      )}
+      <div className="chatContainer">
         {!(battleStatus(battle) === 'Queued') && (
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMore />}>
