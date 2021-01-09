@@ -14,6 +14,7 @@ import {
   Team,
   BestMultitime,
   LegacyBesttime,
+  Battle,
 } from '../data/models';
 
 const router = express.Router();
@@ -275,8 +276,9 @@ const getPacksByQuery = async query => {
   );
 };
 
-const getLevelsByQuery = async (query, offset) => {
-  const levels = await Level.findAll({
+const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
+  let show = false;
+  const q = {
     attributes: [
       'LevelIndex',
       'LevelName',
@@ -288,18 +290,29 @@ const getLevelsByQuery = async (query, offset) => {
       'Locked',
       'SiteLock',
       'Hidden',
+      'Added',
+      'AddedBy',
     ],
     offset: searchOffset(offset),
     where: {
       LevelName: {
         [Op.like]: `${like(query)}%`,
       },
-      Locked: 0,
     },
     limit: searchLimit(offset),
     order: [['LevelName', 'ASC']],
-  });
-  return levels;
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      { model: Battle, as: 'Battles', attributes: ['BattleIndex'] },
+    ],
+  };
+  if (!isMod || (isMod && !parseInt(showLocked, 10))) {
+    q.where.Locked = 0;
+  } else {
+    show = true;
+  }
+  const levels = await Level.findAll(q);
+  return { levels, showLocked: show };
 };
 
 const getLevelsByQueryAll = async query => {
@@ -621,8 +634,14 @@ router
     const levs = await getLevelsByQueryAll(req.params.query);
     res.json(levs);
   })
-  .get('/searchLevel/:query/:offset', async (req, res) => {
-    const levs = await getLevelsByQuery(req.params.query, req.params.offset);
+  .get('/searchLevel/:query/:offset/:showLocked', async (req, res) => {
+    const auth = authContext(req);
+    const levs = await getLevelsByQuery(
+      req.params.query,
+      req.params.offset,
+      req.params.showLocked,
+      auth.mod,
+    );
     res.json(levs);
   })
   .post('/add', async (req, res) => {

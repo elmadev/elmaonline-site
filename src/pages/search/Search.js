@@ -1,15 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
+import { Switch } from '@material-ui/core';
+import { ListRow, ListCell, ListContainer, ListHeader } from 'styles/List';
+import { mod } from 'utils/nick';
 
 const Search = ({
   context: {
     query: { q, t },
   },
 }) => {
+  const [updated, setUpdated] = useState({});
   const {
     levelPacks,
     levels,
@@ -28,6 +32,7 @@ const Search = ({
     moreReplaysDriven,
     moreReplaysLevel,
     moreReplaysFile,
+    showLocked,
   } = useStoreState(state => state.Search);
   const {
     getLevels,
@@ -43,10 +48,11 @@ const Search = ({
     fetchMoreReplaysDriven,
     fetchMoreReplaysLevel,
     fetchmoreReplaysFile,
+    changeLevel,
   } = useStoreActions(actions => actions.Search);
   useEffect(() => {
     if (t === 'level') {
-      getLevels({ q: q.replace('?', '_'), offset: 0 });
+      getLevels({ q: q.replace('?', '_'), offset: 0, showLocked: 0 });
     }
     if (t === 'battle') {
       getBattles({
@@ -65,29 +71,144 @@ const Search = ({
     }
   }, [q]);
 
+  const updateHidden = (data, oldValue) => {
+    const newValue = 1 - oldValue;
+    changeLevel({ LevelIndex: data.LevelIndex, update: { Hidden: newValue } });
+    setUpdated({
+      ...updated,
+      [data.LevelIndex]: { Hidden: newValue, Locked: data.Locked },
+    });
+  };
+
+  const updateLocked = (data, oldValue) => {
+    const newValue = 1 - oldValue;
+    changeLevel({ LevelIndex: data.LevelIndex, update: { Locked: newValue } });
+    setUpdated({
+      ...updated,
+      [data.LevelIndex]: { Locked: newValue, Hidden: data.Hidden },
+    });
+  };
+
   return (
     <Container>
       <Results>
         {t === 'level' && (
-          <>
-            <div>
-              <ResultGroupTitle>
-                Levels ({levels.length}
-                {moreLevels && '+'})
-              </ResultGroupTitle>
+          <Flex>
+            <Flex2>
+              <Flex>
+                <ResultGroupTitle>
+                  Levels ({levels.length}
+                  {moreLevels && '+'})
+                </ResultGroupTitle>
+                {mod() === 1 && (
+                  <ResultGroupTitle thin>
+                    Show locked{' '}
+                    <SwitchThin
+                      checked={showLocked}
+                      onChange={() =>
+                        getLevels({
+                          q: q.replace('?', '_'),
+                          offset: 0,
+                          showLocked: showLocked ? 0 : 1,
+                        })
+                      }
+                      color="primary"
+                    />
+                  </ResultGroupTitle>
+                )}
+              </Flex>
               {levels.length !== 0 && (
                 <>
-                  {levels.map(r => (
-                    <ResultLink
-                      to={`levels/${r.LevelIndex}`}
-                      key={r.LevelIndex}
-                    >
-                      <div>{r.LevelName}.lev</div>
-                      <ResultSecondaryData>
-                        {r.LevelIndex} / {r.LongName || `Unnamed`}
-                      </ResultSecondaryData>
-                    </ResultLink>
-                  ))}
+                  <ListContainer>
+                    <ListHeader>
+                      <ListCell width={90}>Filename</ListCell>
+                      <ListCell width={60}>Index</ListCell>
+                      <ListCell>Level name</ListCell>
+                      <ListCell width={90}>Battles</ListCell>
+                      <ListCell width={140}>Added on</ListCell>
+                      <ListCell width={90}>Added by</ListCell>
+                      {mod() === 1 && showLocked && (
+                        <>
+                          <ListCell width={50}>Locked</ListCell>
+                          <ListCell width={50}>Hidden</ListCell>
+                        </>
+                      )}
+                    </ListHeader>
+                    {levels.map(r => (
+                      <ListRow>
+                        <ListCell width={90}>
+                          <ResultLink
+                            cell
+                            to={`levels/${r.LevelIndex}`}
+                            key={r.LevelIndex}
+                          >
+                            {r.LevelName}.lev
+                          </ResultLink>
+                        </ListCell>
+                        <ListCell width={60}>{r.LevelIndex}</ListCell>
+                        <ListCell>{r.LongName || `Unnamed`}</ListCell>
+                        <ListCell width={90}>
+                          {r.Battles.map(b => (
+                            <span>
+                              <Link to={`/battles/${b.BattleIndex}`}>
+                                {b.BattleIndex}
+                              </Link>{' '}
+                            </span>
+                          ))}
+                        </ListCell>
+                        <ListCell width={140}>
+                          <LocalTime
+                            date={r.Added}
+                            format="ddd D MMM YYYY HH:mm"
+                            parse="X"
+                          />
+                        </ListCell>
+                        <ListCell width={90}>
+                          {r.KuskiData && <Kuski kuskiData={r.KuskiData} />}
+                        </ListCell>
+                        {mod() === 1 && showLocked && (
+                          <>
+                            <ListCell width={50}>
+                              <SwitchThin
+                                checked={
+                                  updated[r.LevelIndex]
+                                    ? updated[r.LevelIndex].Locked
+                                    : r.Locked
+                                }
+                                onChange={() =>
+                                  updateLocked(
+                                    r,
+                                    updated[r.LevelIndex]
+                                      ? updated[r.LevelIndex].Locked
+                                      : r.Locked,
+                                  )
+                                }
+                                color="primary"
+                              />
+                            </ListCell>
+                            <ListCell width={50}>
+                              <SwitchThin
+                                checked={
+                                  updated[r.LevelIndex]
+                                    ? updated[r.LevelIndex].Hidden
+                                    : r.Hidden
+                                }
+                                onChange={() =>
+                                  updateHidden(
+                                    r,
+                                    updated[r.LevelIndex]
+                                      ? updated[r.LevelIndex].Hidden
+                                      : r.Hidden,
+                                  )
+                                }
+                                color="primary"
+                              />
+                            </ListCell>
+                          </>
+                        )}
+                      </ListRow>
+                    ))}
+                  </ListContainer>
                   <LoadMore
                     disabled={!moreLevels}
                     type="button"
@@ -115,8 +236,8 @@ const Search = ({
                   )}
                 </>
               )}
-            </div>
-            <div>
+            </Flex2>
+            <Flex1>
               <ResultGroupTitle>
                 Level packs ({levelPacks.length})
               </ResultGroupTitle>
@@ -151,8 +272,8 @@ const Search = ({
                   ))}
                 </>
               )}
-            </div>
-          </>
+            </Flex1>
+          </Flex>
         )}
         {t === 'replay' && (
           <>
@@ -506,6 +627,10 @@ const Search = ({
   );
 };
 
+const SwitchThin = styled(Switch)`
+  margin: -10px;
+`;
+
 const Container = styled.div`
   background: #fff;
   min-height: 100%;
@@ -524,9 +649,22 @@ const Results = styled.div`
   }
 `;
 
+const Flex = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const Flex1 = styled.div`
+  flex: 1;
+`;
+
+const Flex2 = styled.div`
+  flex: 2;
+`;
+
 const ResultLink = styled(Link)`
   display: block;
-  padding: 5px 10px;
+  padding: ${p => (p.cell ? 0 : '5px 10px')};
   :hover {
     text-decoration: underline;
   }
@@ -534,7 +672,7 @@ const ResultLink = styled(Link)`
 
 const ResultGroupTitle = styled.div`
   padding: 10px;
-  font-weight: 600;
+  font-weight: ${p => (p.thin ? 'normal' : 600)};
 `;
 
 const ResultSecondaryData = styled.div`
