@@ -53,6 +53,7 @@ import {
   battlequeue,
   battleend,
   battleresults,
+  eventsFile,
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
@@ -82,6 +83,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(fileUpload());
+app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
 
 //
 // Authentication
@@ -124,6 +126,9 @@ app.post('/events/battleend', (req, res) => {
 });
 app.post('/events/battleresults', (req, res) => {
   battleresults(req, res);
+});
+app.post('/events/file', (req, res) => {
+  eventsFile(req, res);
 });
 
 //
@@ -249,9 +254,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
       const readStream = new stream.PassThrough();
       readStream.end(zipData);
       res.set({
-        'Content-disposition': `attachment; filename=${
-          req.params.filename
-        }-all-recs.zip`,
+        'Content-disposition': `attachment; filename=${req.params.filename}-all-recs.zip`,
         'Content-Type': 'application/octet-stream',
       });
       readStream.pipe(res);
