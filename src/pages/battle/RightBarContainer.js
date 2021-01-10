@@ -39,6 +39,8 @@ const crippleOptions = battle => {
   if (battle.Drunk) crippleString += 'Drunk, ';
   if (battle.OneWheel) crippleString += 'One Wheel, ';
   if (battle.Multi) crippleString += 'Multi, ';
+  if (battle.Countdown)
+    crippleString += `${battle.Countdown} second countdown, `;
   return crippleString.substring(0, crippleString.length - 2);
 };
 
