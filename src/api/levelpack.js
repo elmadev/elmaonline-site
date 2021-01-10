@@ -342,7 +342,6 @@ const getLevelsByQueryAll = async query => {
       LevelName: {
         [Op.like]: `${like(query)}%`,
       },
-      Locked: 0,
     },
     limit: 100,
     order: [['LevelName', 'ASC']],
@@ -640,8 +639,13 @@ router
     res.json(packs);
   })
   .get('/searchLevel/:query', async (req, res) => {
-    const levs = await getLevelsByQueryAll(req.params.query);
-    res.json(levs);
+    const auth = authContext(req);
+    if (auth.auth) {
+      const levs = await getLevelsByQueryAll(req.params.query);
+      res.json(levs);
+    } else {
+      res.sendStatus(401);
+    }
   })
   .get('/searchLevel/:query/:offset/:showLocked', async (req, res) => {
     const auth = authContext(req);
