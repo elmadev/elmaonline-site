@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import add from 'date-fns/add';
 import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time, Multitime } from '../data/models';
 
 const router = express.Router();
 
@@ -153,9 +153,68 @@ const BattlesSearchByDesigner = async (query, offset) => {
 const AllBattleRuns = async BattleIndex => {
   const runs = await Time.findAndCountAll({
     order: [['TimeIndex', 'DESC']],
-    where: {BattleIndex},
+    attributes: [
+      'Driven',
+      'TimeIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Time',
+      'Apples',
+      'Finished',
+      'BattleIndex',
+      '24httIndex',
+      'MaxSpeed',
+      'ThrottleTime',
+      'BrakeTime',
+      'LeftVolt',
+      'RightVolt',
+      'SuperVolt',
+      'Turn',
+      'OneWheel',
+    ],
+    where: { BattleIndex },
   });
-  return runs;
+  if (runs.rows.length === 0) {
+    const multiRuns = await Multitime.findAndCountAll({
+      order: [['MultiTimeIndex', 'DESC']],
+      attributes: [
+        'Driven',
+        'MultiTimeIndex',
+        'KuskiIndex1',
+        'KuskiIndex2',
+        'LevelIndex',
+        'Time',
+        'Apples',
+        'Apples1',
+        'Apples2',
+        'Finished',
+        'BattleIndex',
+        // 'Time1',
+        // 'Time2',
+        // 'Finished1',
+        // 'Finished2',
+        // 'MaxSpeed1',
+        // 'MaxSpeed2',
+        // 'ThrottleTime1',
+        // 'ThrottleTime2',
+        // 'BrakeTime1',
+        // 'BrakeTime2',
+        // 'LeftVolt1',
+        // 'LeftVolt2',
+        // 'RightVolt1',
+        // 'RightVolt2',
+        // 'SuperVolt1',
+        // 'SuperVolt2',
+        // 'Turn1',
+        // 'Turn2',
+        // 'OneWheel1',
+        // 'OneWheel2',
+      ],
+      where: { BattleIndex },
+    });
+    return {...multiRuns, 'multi': 1};
+  };
+  return {...runs, 'multi': 0};
 };
 
 const BattleResults = async BattleIndex => {

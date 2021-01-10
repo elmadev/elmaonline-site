@@ -9,8 +9,22 @@ import RightBarContainer from './RightBarContainer';
 import LevelStatsContainer from './LevelStatsContainer';
 
 const runData = runs => {
-  const a = groupBy(runs.rows, 'KuskiIndex');
-  const kuskis = mapValues(a, (value, key) => {
+  if (runs.multi === 0) {
+    const kuskiRuns = groupBy(runs.rows, 'KuskiIndex');
+    const runStats = mapValues(kuskiRuns, (value, key) => {
+      return {
+        KuskiIndex: key,
+        Apples: sumBy(value, 'Apples'),
+        Finishes: filter(value, { Finished: 'F' }).length,
+        PlayTime: sumBy(value, 'Time'),
+      };
+    });
+
+    if (runs.rows[0]) runStats.BattleIndex = runs.rows[0].BattleIndex;
+    return runStats;
+  }
+  const kuskiRuns = groupBy(runs.rows, 'KuskiIndex1');
+  const runStats = mapValues(kuskiRuns, (value, key) => {
     return {
       KuskiIndex: key,
       Apples: sumBy(value, 'Apples'),
@@ -18,8 +32,8 @@ const runData = runs => {
       PlayTime: sumBy(value, 'Time'),
     };
   });
-  kuskis.BattleIndex = runs.rows[0].BattleIndex;
-  return kuskis;
+  if (runs.rows[0]) runStats.BattleIndex = runs.rows[0].BattleIndex;
+  return runStats;
 };
 
 const Battle = props => {
@@ -63,7 +77,11 @@ const Battle = props => {
         <div />
       )}
       {battle && allBattleTimes ? (
-        <RightBarContainer battle={battle} allBattleTimes={allBattleTimes} />
+        <RightBarContainer
+          battle={battle}
+          allBattleTimes={allBattleTimes}
+          aborted={battle.Aborted}
+        />
       ) : (
         <div />
       )}

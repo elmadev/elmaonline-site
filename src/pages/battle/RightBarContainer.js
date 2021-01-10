@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const RightBarContainer = props => {
-  const { allBattleTimes, battle } = props;
+  const { allBattleTimes, battle, aborted } = props;
   const classes = useStyles();
 
   return (
@@ -57,6 +57,7 @@ const RightBarContainer = props => {
                 parse="X"
               />
             </div>
+            <AbortedText>{aborted === 1 && 'Battle Aborted'}</AbortedText>
             <div className="timeStamp">
               <a href={`/dl/battlereplay/${battle.BattleIndex}`}>
                 Download replay
@@ -137,6 +138,10 @@ const Root = styled.div`
   .chatContainer {
     clear: both;
   }
+`;
+
+const AbortedText = styled.span`
+  color: Red;
 `;
 
 const BattleStyleDescription = styled.div`
