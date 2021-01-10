@@ -59,7 +59,7 @@ const LevelStatsContainer = props => {
               </ListCell>
               <ListCell width={200}>Kuski</ListCell>
               <ListCell right width={150}>
-                Time
+                Result
               </ListCell>
               <ListCell right>Time played</ListCell>
               <ListCell right>Finishes</ListCell>
@@ -102,7 +102,11 @@ const LevelStatsContainer = props => {
                         )}
                       </ListCell>
                       <ListCell right width={150}>
-                        <Time time={r.Time} apples={r.Apples} />
+                        {battle.BattleType !== 'SP' ? (
+                          <Time time={r.Time} apples={r.Apples} />
+                        ) : (
+                          (r.Time / 100).toFixed(2)
+                        )}
                       </ListCell>
                       <ListCell right>
                         {runStats ? (
