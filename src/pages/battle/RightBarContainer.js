@@ -27,6 +27,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const crippleOptions = battle => {
+  let crippleString = '';
+  if (battle.AllowStarter) crippleString += 'Allow Starter, ';
+  if (battle.AcceoptBugs) crippleString += 'Bugs Allowed, ';
+  if (battle.NoVolt) crippleString += 'No Volt, ';
+  if (battle.OneTurn) crippleString += 'One Turn, ';
+  if (battle.NoTurn) crippleString += 'No Turn, ';
+  if (battle.NoBrake) crippleString += 'No Brake, ';
+  if (battle.NoThrottle) crippleString += 'No Throttle, ';
+  if (battle.Drunk) crippleString += 'Drunk, ';
+  if (battle.OneWheel) crippleString += 'One Wheel, ';
+  if (battle.Multi) crippleString += 'Multi, ';
+  if (battle.CountDown) crippleString += 'No Brake, ';
+  return crippleString.substring(0, crippleString.length - 2);
+};
+
 const RightBarContainer = props => {
   const { allBattleTimes, battle, aborted } = props;
   const classes = useStyles();
@@ -47,8 +63,10 @@ const RightBarContainer = props => {
             <a href={`/dl/level/${battle.LevelIndex}`}>
               {battle.LevelData ? battle.LevelData.LevelName : '?'}
               .lev
-            </a>{' '}
+            </a>
+            {' by '}
             {battle.KuskiData.Kuski}
+            <div>{crippleOptions(battle)}</div>
             <div className="timeStamp">
               Started{' '}
               <LocalTime
