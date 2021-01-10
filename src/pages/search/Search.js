@@ -7,6 +7,7 @@ import Kuski from 'components/Kuski';
 import { Switch } from '@material-ui/core';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'styles/List';
 import { mod } from 'utils/nick';
+import { forEach } from 'lodash';
 
 const Search = ({
   context: {
@@ -70,13 +71,22 @@ const Search = ({
       getTeams({ q: q.replace('?', '_'), offset: 0 });
     }
   }, [q]);
+  useEffect(() => {
+    if (mod() === 1 && showLocked) {
+      const u = {};
+      forEach(levels, l => {
+        u[l.LevelIndex] = { Hidden: l.Hidden, Locked: l.Locked };
+      });
+      setUpdated(u);
+    }
+  }, [levels, showLocked]);
 
   const updateHidden = (data, oldValue) => {
     const newValue = 1 - oldValue;
     changeLevel({ LevelIndex: data.LevelIndex, update: { Hidden: newValue } });
     setUpdated({
       ...updated,
-      [data.LevelIndex]: { Hidden: newValue, Locked: data.Locked },
+      [data.LevelIndex]: { ...updated[data.LevelIndex], Hidden: newValue },
     });
   };
 
@@ -85,7 +95,7 @@ const Search = ({
     changeLevel({ LevelIndex: data.LevelIndex, update: { Locked: newValue } });
     setUpdated({
       ...updated,
-      [data.LevelIndex]: { Locked: newValue, Hidden: data.Hidden },
+      [data.LevelIndex]: { ...updated[data.LevelIndex], Locked: newValue },
     });
   };
 
@@ -125,7 +135,7 @@ const Search = ({
                       <ListCell width={60}>Index</ListCell>
                       <ListCell>Level name</ListCell>
                       <ListCell width={90}>Battles</ListCell>
-                      <ListCell width={140}>Added on</ListCell>
+                      <ListCell width={150}>Added on</ListCell>
                       <ListCell width={90}>Added by</ListCell>
                       {mod() === 1 && showLocked && (
                         <>
@@ -135,28 +145,30 @@ const Search = ({
                       )}
                     </ListHeader>
                     {levels.map(r => (
-                      <ListRow>
+                      <ListRow key={r.LevelIndex}>
                         <ListCell width={90}>
-                          <ResultLink
-                            cell
+                          <ResultLinkCell
                             to={`levels/${r.LevelIndex}`}
                             key={r.LevelIndex}
                           >
                             {r.LevelName}.lev
-                          </ResultLink>
+                          </ResultLinkCell>
                         </ListCell>
                         <ListCell width={60}>{r.LevelIndex}</ListCell>
                         <ListCell>{r.LongName || `Unnamed`}</ListCell>
                         <ListCell width={90}>
                           {r.Battles.map(b => (
-                            <span>
+                            <BattleIndex
+                              aborted={b.Aborted}
+                              key={b.BattleIndex}
+                            >
                               <Link to={`/battles/${b.BattleIndex}`}>
                                 {b.BattleIndex}
                               </Link>{' '}
-                            </span>
+                            </BattleIndex>
                           ))}
                         </ListCell>
-                        <ListCell width={140}>
+                        <ListCell width={150}>
                           <LocalTime
                             date={r.Added}
                             format="ddd D MMM YYYY HH:mm"
@@ -172,16 +184,11 @@ const Search = ({
                               <SwitchThin
                                 checked={
                                   updated[r.LevelIndex]
-                                    ? updated[r.LevelIndex].Locked
-                                    : r.Locked
+                                    ? updated[r.LevelIndex].Locked === 1
+                                    : false
                                 }
                                 onChange={() =>
-                                  updateLocked(
-                                    r,
-                                    updated[r.LevelIndex]
-                                      ? updated[r.LevelIndex].Locked
-                                      : r.Locked,
-                                  )
+                                  updateLocked(r, updated[r.LevelIndex].Locked)
                                 }
                                 color="primary"
                               />
@@ -190,16 +197,11 @@ const Search = ({
                               <SwitchThin
                                 checked={
                                   updated[r.LevelIndex]
-                                    ? updated[r.LevelIndex].Hidden
-                                    : r.Hidden
+                                    ? updated[r.LevelIndex].Hidden === 1
+                                    : false
                                 }
                                 onChange={() =>
-                                  updateHidden(
-                                    r,
-                                    updated[r.LevelIndex]
-                                      ? updated[r.LevelIndex].Hidden
-                                      : r.Hidden,
-                                  )
+                                  updateHidden(r, updated[r.LevelIndex].Hidden)
                                 }
                                 color="primary"
                               />
@@ -216,6 +218,7 @@ const Search = ({
                       fetchMoreLevels({
                         q,
                         offset: levels.length,
+                        showLocked: showLocked ? 1 : 0,
                       })
                     }
                   >
@@ -228,6 +231,7 @@ const Search = ({
                         fetchMoreLevels({
                           q,
                           offset: levels.length * -1,
+                          showLocked: showLocked ? 1 : 0,
                         });
                       }}
                     >
@@ -664,10 +668,14 @@ const Flex2 = styled.div`
 
 const ResultLink = styled(Link)`
   display: block;
-  padding: ${p => (p.cell ? 0 : '5px 10px')};
+  padding: 5px 10px;
   :hover {
     text-decoration: underline;
   }
+`;
+
+const ResultLinkCell = styled(ResultLink)`
+  padding: 0;
 `;
 
 const ResultGroupTitle = styled.div`
@@ -678,6 +686,12 @@ const ResultGroupTitle = styled.div`
 const ResultSecondaryData = styled.div`
   color: #8c8c8c;
   font-size: 12px;
+`;
+
+const BattleIndex = styled.span`
+  a {
+    color: ${p => (p.aborted ? 'red' : '#219653')};
+  }
 `;
 
 const LoadMore = styled.button`

@@ -51,7 +51,8 @@ export default {
   fetchMoreLevels: thunk(async (actions, payload) => {
     const levs = await LevelsSearch(payload);
     if (levs.ok) {
-      actions.setLevels(levs.data);
+      actions.setLevels(levs.data.levels);
+      actions.setShowLocked(levs.data.showLocked);
     }
   }),
   battlesByFilename: [],
