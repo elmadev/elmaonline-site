@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 const crippleOptions = battle => {
   let crippleString = '';
   if (battle.AllowStarter) crippleString += 'Allow Starter, ';
-  if (battle.AcceoptBugs) crippleString += 'Bugs Allowed, ';
+  if (battle.AcceptBugs) crippleString += 'Bugs Allowed, ';
   if (battle.NoVolt) crippleString += 'No Volt, ';
   if (battle.OneTurn) crippleString += 'One Turn, ';
   if (battle.NoTurn) crippleString += 'No Turn, ';
@@ -39,7 +39,6 @@ const crippleOptions = battle => {
   if (battle.Drunk) crippleString += 'Drunk, ';
   if (battle.OneWheel) crippleString += 'One Wheel, ';
   if (battle.Multi) crippleString += 'Multi, ';
-  if (battle.CountDown) crippleString += 'No Brake, ';
   return crippleString.substring(0, crippleString.length - 2);
 };
 
