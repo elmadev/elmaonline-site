@@ -39,6 +39,13 @@ const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
   return '';
 };
 
+const SpecialResult = (time, type) => {
+  if (type === 'SP') {
+    return (time / 100).toFixed(2);
+  }
+  return time;
+};
+
 const LevelStatsContainer = props => {
   const [extra, setExtra] = useState('');
   const { battle, rankingHistory, runStats } = props;
@@ -102,10 +109,11 @@ const LevelStatsContainer = props => {
                         )}
                       </ListCell>
                       <ListCell right width={150}>
-                        {battle.BattleType !== 'SP' ? (
+                        {battle.BattleType !== 'SP' &&
+                        battle.BattleType !== 'FC' ? (
                           <Time time={r.Time} apples={r.Apples} />
                         ) : (
-                          (r.Time / 100).toFixed(2)
+                          SpecialResult(r.Time, battle.BattleType)
                         )}
                       </ListCell>
                       <ListCell right>
