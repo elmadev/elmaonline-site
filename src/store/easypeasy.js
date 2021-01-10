@@ -27,6 +27,7 @@ import Level from 'pages/level/store';
 import Mod from 'pages/mod/store';
 import Battle from 'pages/battle/store';
 import Levels from 'pages/levels/store';
+import News from 'components/News/store';
 import ReplayList from 'components/ReplayList/store';
 
 export default {
@@ -49,6 +50,7 @@ export default {
   Settings,
   Upload,
   Mod,
+  News,
   Teams,
   Replay,
   ReplayByUUID,
