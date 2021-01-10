@@ -67,7 +67,7 @@ const RightBarContainer = props => {
             </a>
             {' by '}
             {battle.KuskiData.Kuski}
-            <div>{crippleOptions(battle)}</div>
+            <CrippleText>{crippleOptions(battle)}</CrippleText>
             <div className="timeStamp">
               Started{' '}
               <LocalTime
@@ -161,6 +161,10 @@ const Root = styled.div`
 
 const AbortedText = styled.span`
   color: Red;
+`;
+
+const CrippleText = styled.div`
+  font-weight: 340;
 `;
 
 const BattleStyleDescription = styled.div`
