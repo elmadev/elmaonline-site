@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Container, Box } from '@material-ui/core';
 import { useStoreState } from 'easy-peasy';
+import News from 'components/News';
 import WelcomeCard from './cards/WelcomeCard';
 import BattlesCard from './cards/BattlesCard';
 import ReplaysCard from './cards/ReplaysCard';
@@ -36,12 +37,22 @@ export default function Home() {
               <ReplaysCard />
             </Grid>
           </Grid>
-          <Grid container item xs={12} sm={5} alignContent="flex-start">
+          <Grid
+            container
+            spacing={3}
+            item
+            xs={12}
+            sm={5}
+            alignContent="flex-start"
+          >
             <Grid item xs={12}>
               <CurrentBattleCard />
             </Grid>
             <Grid item xs={12}>
               <FeedCard />
+            </Grid>
+            <Grid item xs={12}>
+              <News amount={5} />
             </Grid>
           </Grid>
         </Grid>
