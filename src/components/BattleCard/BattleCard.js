@@ -136,7 +136,11 @@ const Text = styled.div`
 `;
 
 BattleCard.propTypes = {
-  battle: PropTypes.shape().isRequired,
+  battle: PropTypes.shape(),
+};
+
+BattleCard.defaultProps = {
+  battle: null,
 };
 
 export default BattleCard;

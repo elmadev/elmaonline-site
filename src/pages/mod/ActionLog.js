@@ -29,7 +29,7 @@ const ActionLog = () => {
     <Container>
       <Grid container spacing={0}>
         <Grid item xs={12} sm={8}>
-          <Header h2>Error Log</Header>
+          <Header h2>Mod Log</Header>
           <Paper>
             <ListHeader>
               <ListCell>Mod</ListCell>
