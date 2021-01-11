@@ -1,17 +1,18 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 const Loading = () => (
   <Container>
-    <Spinner>
+    Loading..
+    {/* <Spinner>
       <Bounce1 />
       <Bounce2 />
       <Bounce />
-    </Spinner>
+    </Spinner> */}
   </Container>
 );
 
-const BounceDelay = keyframes`
+/* const BounceDelay = keyframes`
   0%,
   80%,
   100% {
@@ -20,13 +21,13 @@ const BounceDelay = keyframes`
   40% {
     transform: scale(1);
   }
-`;
+`; */
 
 const Container = styled.div`
   padding: 20px;
 `;
 
-const Spinner = styled.div`
+/* const Spinner = styled.div`
   width: 100px;
   text-align: center;
   margin: auto;
@@ -48,6 +49,6 @@ const Bounce1 = styled(Bounce)`
 
 const Bounce2 = styled(Bounce)`
   animation-delay: -0.16s;
-`;
+`; */
 
 export default Loading;

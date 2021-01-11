@@ -22,10 +22,11 @@ const Layout = ({ children }) => {
 };
 
 const ChildrenCon = styled.div`
-  height: 100%;
+  min-height: 100%;
   margin-top: -50px;
   padding-top: 50px;
   box-sizing: border-box;
+  background: #f1f1f1;
 `;
 
 const Container = styled.div`

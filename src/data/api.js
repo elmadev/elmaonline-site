@@ -109,9 +109,7 @@ export const TotalTimes = data =>
   api.get(`levelpack/${data.levelPackIndex}/totaltimes/${data.eolOnly}`);
 export const PersonalTimes = data =>
   api.get(
-    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${
-      data.eolOnly
-    }`,
+    `levelpack/${data.name}/personal/${data.PersonalKuskiIndex}/${data.eolOnly}`,
   );
 export const Records = data =>
   api.get(`levelpack/${data.name}/records/${data.eolOnly}`);
@@ -119,7 +117,7 @@ export const MultiRecords = LevelPackName =>
   api.get(`levelpack/${LevelPackName}/multirecords`);
 export const LevelPackSearch = q => api.get(`levelpack/search/${q}`);
 export const LevelsSearch = data =>
-  api.get(`levelpack/searchLevel/${data.q}/${data.offset}`);
+  api.get(`levelpack/searchLevel/${data.q}/${data.offset}/${data.showLocked}`);
 export const LevelsSearchAll = data =>
   api.get(`levelpack/searchLevel/${data.q}`);
 export const AddLevelPack = data => api.post('levelpack/add', data);
@@ -154,15 +152,11 @@ export const GetAllBattleTimes = query =>
   api.get(`battle/allBattleTimes/${query}`);
 export const BattlesByDesigner = data =>
   api.get(
-    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${
-      data.pageSize
-    }`,
+    `battle/byDesigner/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
 export const BattlesByPlayer = data =>
   api.get(
-    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${
-      data.pageSize
-    }`,
+    `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
 export const BattleListPeriod = data =>
   api.get(`battle/byPeriod/${data.start}/${data.end}/${data.limit}`);
@@ -193,6 +187,8 @@ export const Level = LevelIndex => api.get(`level/${LevelIndex}`);
 export const LevelData = LevelIndex => api.get(`level/leveldata/${LevelIndex}`);
 export const LevelTimeStats = LevelIndex =>
   api.get(`level/timestats/${LevelIndex}`);
+export const UpdateLevel = data =>
+  api.post(`level/${data.LevelIndex}`, data.update);
 
 // ranking
 export const PersonalRanking = KuskiIndex =>
@@ -217,3 +213,6 @@ export const ActionLog = data =>
   api.get(`mod/actionlog/${data.Kuski}/${data.ErrorTime}`);
 export const GiveRights = data => api.post('mod/giverights', data);
 export const IPlogs = KuskiIndex => api.get(`mod/iplogs/${KuskiIndex}`);
+
+// news
+export const News = amount => api.get(`news/${amount}`);
