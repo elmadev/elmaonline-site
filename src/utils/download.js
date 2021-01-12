@@ -15,6 +15,7 @@ import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
 import { filterResults, admins } from 'utils/cups';
+import jimp from 'jimp';
 import config from '../config';
 
 const getReplayDataByBattleId = async battleId => {
@@ -279,4 +280,27 @@ export const getEventReplays = async (CupIndex, filename, auth) => {
     }
   }
   return false;
+};
+
+export const getShirtByKuskiId = async KuskiIndex => {
+  const kuskiData = await Kuski.findOne({ where: { KuskiIndex } });
+  const image = await jimp.read(kuskiData.BmpData);
+  const alphaKey = jimp.intToRGBA(image.getPixelColor(0, 0));
+  const replaceColor = { r: 0, g: 0, b: 0, a: 0 };
+  image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
+    if (
+      image.bitmap.data[idx + 0] === alphaKey.r &&
+      image.bitmap.data[idx + 1] === alphaKey.g &&
+      image.bitmap.data[idx + 2] === alphaKey.b &&
+      image.bitmap.data[idx + 3] === alphaKey.a
+    ) {
+      image.bitmap.data[idx + 0] = replaceColor.r;
+      image.bitmap.data[idx + 1] = replaceColor.g;
+      image.bitmap.data[idx + 2] = replaceColor.b;
+      image.bitmap.data[idx + 3] = replaceColor.a;
+    }
+  });
+  image.rotate(90);
+  const imageBuffer = await image.getBufferAsync(jimp.MIME_PNG);
+  return { file: imageBuffer, filename: kuskiData.Kuski };
 };
