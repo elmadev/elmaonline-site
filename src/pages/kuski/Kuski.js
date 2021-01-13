@@ -30,14 +30,11 @@ const Kuski = props => {
     <Container>
       <Head>
         <Picture>
-          <img
-            src={`http://elmaonline.net/images/shirt/${kuski.KuskiIndex}`}
-            alt="shirt"
-          />
+          <img src={`/dl/shirt/${kuski.KuskiIndex}`} alt="shirt" />
         </Picture>
         <Profile>
           <Name>
-            <Flag nationality={name} />
+            <Flag nationality={kuski.Country} />
             {kuski.Kuski}
           </Name>
           <TeamNat>{kuski.TeamData && `Team: ${kuski.TeamData.Team}`}</TeamNat>

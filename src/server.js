@@ -42,6 +42,7 @@ import {
   getLevelPack,
   getReplayByCupTimeId,
   getEventReplays,
+  getShirtByKuskiId,
 } from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
@@ -147,6 +148,24 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
     res.set({
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/shirt/:id', async (req, res, next) => {
+  try {
+    const { file, filename } = await getShirtByKuskiId(req.params.id);
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'image/png',
     });
     readStream.pipe(res);
   } catch (e) {
