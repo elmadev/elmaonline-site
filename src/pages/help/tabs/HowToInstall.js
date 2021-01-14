@@ -30,7 +30,7 @@ const HowToInstall = () => {
       <Header h3>Issues</Header>
       If you run into issues you can ask someone in{' '}
       <a href="https://discord.gg/j5WMFC6">discord</a> who&apos;ll usually have
-      a solution
+      a solution. Tag @eolmod for a faster response.
     </Text>
   );
 };

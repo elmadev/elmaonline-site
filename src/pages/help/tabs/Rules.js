@@ -6,6 +6,20 @@ const Rules = () => {
   return (
     <Text>
       <Header h2>Rules</Header>
+      Disobeying the rules will get you a warning or ban in that particular
+      category. This means you can have multiple warnings at once in two
+      different categories. Some minor offenses might be overlooked the first
+      couple of times, but serious offenses will give immediate bans without
+      warnings. The banning tiers are as follows. The 2 week ban is repeatable
+      which means that minor offenses won&#39;t make you jump to the 1 year tier
+      of ban. Website offenses will result in playing bans.
+      <ul>
+        <li>1st time: Warning</li>
+        <li>2nd time: 1 week ban</li>
+        <li>3rd time: 2 week ban (repeatable)</li>
+        <li>4th time: 1 year ban</li>
+      </ul>
+      <Header h2>Not allowed</Header>
       <List>
         <li>
           <Header h3>Playing</Header>
@@ -27,7 +41,6 @@ const Rules = () => {
             Writing in other languages than English (Exceptions: very briefly or
             in private)
           </li>
-          <li>Repeatedly reconnecting (F12 spam)</li>
         </ol>
         <li>
           <Header h3>Starting battles</Header>

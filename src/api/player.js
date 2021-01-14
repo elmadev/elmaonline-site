@@ -105,10 +105,45 @@ const RemoveIgnore = async (KuskiIndex, IgnoredKuskiIndex) => {
   await Ignored.destroy({ where: { KuskiIndex, IgnoredKuskiIndex } });
 };
 
+const GetCrew = async () => {
+  const crew = await Kuski.findAll({
+    where: {
+      [Op.or]: [{ RStop: 1 }, { RMod: 1 }, { RAdmin: 1 }],
+    },
+    attributes: [
+      'KuskiIndex',
+      'Kuski',
+      'TeamIndex',
+      'Country',
+      'RPlay',
+      'RStartBattle',
+      'RSpecialBattle',
+      'RStartCup',
+      'RStart24htt',
+      'RStop',
+      'RMultiPlay',
+      'RChat',
+      'RBan',
+      'RMod',
+      'RAdmin',
+    ],
+    include: {
+      model: Team,
+      as: 'TeamData',
+      attributes: ['TeamIndex', 'Team'],
+    },
+  });
+  return crew;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await Players();
     res.json(data);
+  })
+  .get('/crew', async (req, res) => {
+    const crew = await GetCrew();
+    res.json(crew);
   })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);

@@ -17,6 +17,7 @@ import KuskiMap from 'pages/map/store';
 import LevelPack from 'pages/levelpack/store';
 import Search from 'pages/search/store';
 import Kuski from 'pages/kuski/store';
+import Help from 'pages/help/store';
 import LevelsAdd from 'pages/levels-add/store';
 import Settings from 'pages/settings/store';
 import Replay from 'pages/cupreplay/store';
@@ -45,6 +46,7 @@ export default {
   LevelPack,
   Search,
   Kuski,
+  Help,
   LevelsAdd,
   Levels,
   Settings,

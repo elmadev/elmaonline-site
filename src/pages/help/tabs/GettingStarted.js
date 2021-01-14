@@ -23,7 +23,7 @@ const GettingStarted = () => {
       best replays.
       <Header h3>More information</Header>
       For more details join the{' '}
-      <Link to="https://discord.gg/j5WMFC6">elma discord</Link> or visit{' '}
+      <Link to="https://discord.gg/j5WMFC6">Elma discord</Link> or visit the{' '}
       <Link to="http://wiki.elmaonline.net/Main_Page">Elma Wiki.</Link>
     </div>
   );
