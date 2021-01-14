@@ -42,6 +42,7 @@ import {
   getLevelPack,
   getReplayByCupTimeId,
   getEventReplays,
+  getShirtByKuskiId,
 } from 'utils/download';
 import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
 import createFetch from 'utils/createFetch';
@@ -53,6 +54,7 @@ import {
   battlequeue,
   battleend,
   battleresults,
+  eventsFile,
 } from 'utils/events';
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
@@ -82,6 +84,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(fileUpload());
+app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
 
 //
 // Authentication
@@ -125,6 +128,9 @@ app.post('/events/battleend', (req, res) => {
 app.post('/events/battleresults', (req, res) => {
   battleresults(req, res);
 });
+app.post('/events/file', (req, res) => {
+  eventsFile(req, res);
+});
 
 //
 // Discord bot
@@ -142,6 +148,24 @@ app.get('/dl/battlereplay/:id', async (req, res, next) => {
     res.set({
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
+    });
+    readStream.pipe(res);
+  } catch (e) {
+    next({
+      status: 403,
+      msg: e.message,
+    });
+  }
+});
+
+app.get('/dl/shirt/:id', async (req, res, next) => {
+  try {
+    const { file, filename } = await getShirtByKuskiId(req.params.id);
+    const readStream = new stream.PassThrough();
+    readStream.end(file);
+    res.set({
+      'Content-disposition': `attachment; filename=${filename}`,
+      'Content-Type': 'image/png',
     });
     readStream.pipe(res);
   } catch (e) {
@@ -249,9 +273,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
       const readStream = new stream.PassThrough();
       readStream.end(zipData);
       res.set({
-        'Content-disposition': `attachment; filename=${
-          req.params.filename
-        }-all-recs.zip`,
+        'Content-disposition': `attachment; filename=${req.params.filename}-all-recs.zip`,
         'Content-Type': 'application/octet-stream',
       });
       readStream.pipe(res);

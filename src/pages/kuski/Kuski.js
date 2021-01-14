@@ -1,209 +1,159 @@
-import React from 'react';
-import { graphql, compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import React, { useState, useEffect } from 'react';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
 import { Tabs, Tab } from '@material-ui/core';
 import styled from 'styled-components';
 
 import Flag from 'components/Flag';
 import ReplaysBy from 'components/ReplaysBy';
-import AchievementsCups from 'components/AchievementsCups';
-import AchievementsHacktober from 'components/AchievementsHacktober';
-import Header from 'components/Header';
-
 import PlayedBattles from './PlayedBattles';
 import DesignedBattles from './DesignedBattles';
 import KuskiHeader from './KuskiHeader';
 import LatestTimes from './LatestTimes';
-import kuskiQuery from './kuski.graphql';
-import s from './Kuski.css';
+import Info from './Info';
 
-import RPlay from '../../images/rights/RPlay.png';
-import RStartBattle from '../../images/rights/RStartBattle.png';
-import RSpecialBattle from '../../images/rights/RSpecialBattle.png';
-import RStartCup from '../../images/rights/RStartCup.png';
-import RStart24htt from '../../images/rights/RStart24htt.png';
-import RStop from '../../images/rights/RStop.png';
-import RMultiPlay from '../../images/rights/RMultiPlay.png';
-import RChat from '../../images/rights/RChat.png';
-import RBan from '../../images/rights/RBan.png';
-import RMod from '../../images/rights/RMod.png';
-import RAdmin from '../../images/rights/RAdmin.png';
+const Kuski = props => {
+  const [tab, setTab] = useState(0);
 
-class Kuski extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tab: 0,
-    };
-  }
+  const { name } = props;
 
-  render() {
-    const {
-      data: { getKuskiByName, loading },
-    } = this.props;
-    const { tab } = this.state;
+  const { getKuskiByName } = useStoreActions(state => state.Kuski);
+  const { kuski } = useStoreState(state => state.Kuski);
 
-    if (loading) return null;
-    if (!getKuskiByName) return <div>not found</div>;
+  useEffect(() => {
+    getKuskiByName(name);
+  }, [name]);
 
-    return (
-      <div className={s.kuski}>
-        <div className={s.head}>
-          <div className={s.picture}>
-            <img
-              src={`http://elmaonline.net/images/shirt/${
-                getKuskiByName.KuskiIndex
-              }`}
-              alt="shirt"
-            />
-          </div>
-          <div className={s.profile}>
-            <div className={s.name}>
-              <Flag nationality={getKuskiByName.Country} />
-              {getKuskiByName.Kuski}
-            </div>
-            <div className={s.teamNat}>
-              {getKuskiByName.TeamData &&
-                `Team: ${getKuskiByName.TeamData.Team}`}
-            </div>
-          </div>
-          <KuskiHeader
-            Kuski={getKuskiByName.Kuski}
-            KuskiIndex={getKuskiByName.KuskiIndex}
-          />
-        </div>
-        <Tabs
-          variant="scrollable"
-          scrollButtons="auto"
-          value={tab}
-          onChange={(e, t) => this.setState({ tab: t })}
-        >
-          <Tab label="Played Battles" />
-          <Tab label="Designed Battles" />
-          <Tab label="Latest times" />
-          <Tab label="Replays Uploaded" />
-          <Tab label="Replays Driven" />
-          <Tab label="Info" />
-        </Tabs>
-        {tab === 0 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <PlayedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
-          </div>
-        )}
-        {tab === 1 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <DesignedBattles KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
-          </div>
-        )}
-        {tab === 2 && <LatestTimes KuskiIndex={getKuskiByName.KuskiIndex} />}
-        {tab === 3 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <ReplaysBy
-                type="uploaded"
-                KuskiIndex={getKuskiByName.KuskiIndex}
-              />
-            </div>
-          </div>
-        )}
-        {tab === 4 && (
-          <div style={{ maxWidth: '100%', overflow: 'auto' }}>
-            <div className={s.recentBattles}>
-              <ReplaysBy type="driven" KuskiIndex={getKuskiByName.KuskiIndex} />
-            </div>
-          </div>
-        )}
-        {tab === 5 && (
-          <SubContainer>
-            <Header h3>Rights</Header>
-            <Rights>
-              {getKuskiByName.RPlay === 1 && (
-                <img src={RPlay} alt="RPlay" title="Play" />
-              )}
-              {getKuskiByName.RMultiPlay === 1 && (
-                <img src={RMultiPlay} alt="RMultiPlay" title="Multiplay" />
-              )}
-              {getKuskiByName.RChat === 1 && (
-                <img src={RChat} alt="RChat" title="Chat" />
-              )}
-              {getKuskiByName.RStartBattle === 1 && (
-                <img
-                  src={RStartBattle}
-                  alt="RStartBattle"
-                  title="Start battle"
-                />
-              )}
-              {getKuskiByName.RSpecialBattle === 1 && (
-                <img
-                  src={RSpecialBattle}
-                  alt="RSpecialBattle"
-                  title="Start special battle"
-                />
-              )}
-              {getKuskiByName.RStart24htt === 1 && (
-                <img
-                  src={RStart24htt}
-                  alt="RStart24htt"
-                  title="Start 24 hour TT"
-                />
-              )}
-              {getKuskiByName.RStartCup === 1 && (
-                <img src={RStartCup} alt="RStartCup" title="Start cup" />
-              )}
-              {getKuskiByName.RStop === 1 && (
-                <img src={RStop} alt="RStop" title="Abort/Stop battle" />
-              )}
-              {getKuskiByName.RBan === 1 && (
-                <img src={RBan} alt="RBan" title="Ban" />
-              )}
-              {getKuskiByName.RMod === 1 && (
-                <img src={RMod} alt="RMod" title="Mod" />
-              )}
-              {getKuskiByName.RAdmin === 1 && (
-                <img src={RAdmin} alt="RAdmin" title="Admin" />
-              )}
-            </Rights>
-            <AchievementsCups KuskiIndex={getKuskiByName.KuskiIndex} />
-            <AchievementsHacktober KuskiIndex={getKuskiByName.KuskiIndex} />
-          </SubContainer>
-        )}
-      </div>
-    );
-  }
-}
+  if (!kuski) return <div>not found</div>;
 
-const Rights = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  img {
-    padding: 8px;
-  }
-`;
-
-const SubContainer = styled.div`
-  margin-left: 8px;
-`;
-
-Kuski.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    getKuskiByName: PropTypes.shape.isRequired,
-  }).isRequired,
+  return (
+    <Container>
+      <Head>
+        <Picture>
+          <img src={`/dl/shirt/${kuski.KuskiIndex}`} alt="shirt" />
+        </Picture>
+        <Profile>
+          <Name>
+            <Flag nationality={kuski.Country} />
+            {kuski.Kuski}
+          </Name>
+          <TeamNat>{kuski.TeamData && `Team: ${kuski.TeamData.Team}`}</TeamNat>
+        </Profile>
+        <KuskiHeader Kuski={kuski.Kuski} KuskiIndex={kuski.KuskiIndex} />
+      </Head>
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        value={tab}
+        onChange={(e, t) => setTab(t)}
+      >
+        <Tab label="Played Battles" />
+        <Tab label="Designed Battles" />
+        <Tab label="Latest times" />
+        <Tab label="Replays Uploaded" />
+        <Tab label="Replays Driven" />
+        <Tab label="Info" />
+      </Tabs>
+      {tab === 0 && (
+        <Width100>
+          <PlayedBattles KuskiIndex={kuski.KuskiIndex} />
+        </Width100>
+      )}
+      {tab === 1 && (
+        <Width100>
+          <DesignedBattles KuskiIndex={kuski.KuskiIndex} />
+        </Width100>
+      )}
+      {tab === 2 && <LatestTimes KuskiIndex={kuski.KuskiIndex} />}
+      {tab === 3 && (
+        <Width100>
+          <ReplaysBy type="uploaded" KuskiIndex={kuski.KuskiIndex} />
+        </Width100>
+      )}
+      {tab === 4 && (
+        <Width100>
+          <ReplaysBy type="driven" KuskiIndex={kuski.KuskiIndex} />
+        </Width100>
+      )}
+      {tab === 5 && <Info kuskiInfo={kuski} />}
+    </Container>
+  );
 };
 
-export default compose(
-  withStyles(s),
-  graphql(kuskiQuery, {
-    options: ownProps => ({
-      variables: {
-        Name: ownProps.name,
-      },
-    }),
-  }),
-)(Kuski);
+Kuski.propTypes = {
+  name: PropTypes.string.isRequired,
+};
+
+const Width100 = styled.div`
+  max-width: 100%;
+  overflow: auto;
+`;
+
+const Container = styled.div`
+  min-height: 100%;
+  background: #fff;
+  padding-bottom: 200px;
+`;
+
+const Picture = styled.div`
+  height: 150px;
+  width: 150px;
+  flex: 0 0 150px;
+  border-radius: 50%;
+  margin: 20px;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    #f1f1f1 0,
+    #f1f1f1 50px
+  );
+  img {
+    margin: auto;
+    display: block;
+    padding: 10px;
+  }
+  @media (max-width: 940px) {
+    margin: 20px auto;
+  }
+`;
+
+const Profile = styled.div`
+  flex-direction: column;
+  justify-content: center;
+  flex: 0 0 200px;
+  @media (max-width: 940px) {
+    align-items: center;
+    flex: 1;
+  }
+`;
+
+const Name = styled.div`
+  font-weight: 500;
+  font-size: 30px;
+  span {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+`;
+
+const TeamNat = styled.div`
+  font-size: 16px;
+`;
+
+const Head = styled.div`
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  > * {
+    display: flex;
+  }
+  @media (max-width: 940px) {
+    flex-direction: column;
+    > * {
+      margin-bottom: 20px;
+    }
+  }
+`;
+
+export default Kuski;

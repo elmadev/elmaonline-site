@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import styled from 'styled-components';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
@@ -9,30 +6,7 @@ import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Link from 'components/Link';
 import LegacyIcon from 'styles/LegacyIcon';
-
-// eslint-disable-next-line css-modules/no-unused-class
-import s from './LevelPack.css';
-
-const GET_LEVEL = gql`
-  query($LevelIndex: Int!) {
-    getBestTimes(LevelIndex: $LevelIndex, Limit: 10) {
-      TimeIndex
-      KuskiIndex
-      Time
-      KuskiData {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-    }
-    getLevel(LevelIndex: $LevelIndex) {
-      LevelName
-      LongName
-    }
-  }
-`;
+import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 
 const LevelPopup = ({
   levelId,
@@ -41,6 +15,8 @@ const LevelPopup = ({
   highlight,
   multi,
   showLegacyIcon,
+  levelName,
+  longName,
 }) => {
   const {
     personalAllFinished,
@@ -79,126 +55,99 @@ const LevelPopup = ({
   const times = multi ? levelMultiBesttimes : levelBesttimes;
 
   return (
-    <div className={s.levelPopup}>
-      <Query query={GET_LEVEL} variables={{ LevelIndex: levelId }}>
-        {({ data: { getLevel }, loading }) => {
-          if (loading) return null;
-
-          return (
+    <LevelPopUpCon>
+      <LevelTimesContainer>
+        <Title>
+          <Link to={`/levels/${levelId}`}>{levelName}.lev</Link>
+          <br />
+          {longName}
+          <ClosePopUp
+            tabIndex="0"
+            role="button"
+            onClick={close}
+            onKeyPress={close}
+          >
+            &times;
+          </ClosePopUp>
+        </Title>
+        <h2>Top-{timesLimit.toLocaleString()} times</h2>
+        <ListContainer>
+          <ListHeader>
+            <ListCell width={40}>#</ListCell>
+            {!KuskiIndex && !multi && <ListCell width={220}>Kuski</ListCell>}
+            {multi && (
+              <>
+                <ListCell width={220}>Kuski</ListCell>
+                <ListCell width={220}>Kuski</ListCell>
+              </>
+            )}
+            <ListCell>Time</ListCell>
+            {times.length > 0 && times[0].Source !== undefined && <ListCell />}
+            {personalAllFinished.length > 0 &&
+              personalAllFinished[0].Source !== undefined && <ListCell />}
+          </ListHeader>
+          {!KuskiIndex ? (
             <>
-              <div className={s.levelTimesContainer}>
-                <div className={s.title}>
-                  <Link to={`/levels/${levelId}`}>
-                    {getLevel.LevelName}.lev
-                  </Link>
-                  <br />
-                  {getLevel.LongName}
-                  <div
-                    tabIndex="0"
-                    role="button"
-                    className={s.closePopup}
-                    onClick={close}
-                    onKeyPress={close}
-                  >
-                    &times;
-                  </div>
-                </div>
-                <h2>Top-{timesLimit.toLocaleString()} times</h2>
-                <div className={s.levelTimes}>
-                  <div className={s.tableHead}>
-                    <span>#</span>
-                    {!KuskiIndex && !multi && <span>Kuski</span>}
-                    {multi && (
+              {times.map((t, i) => {
+                return (
+                  <ListRow key={multi ? t.BestMultiTimeIndex : t.BestTimeIndex}>
+                    <ListCell width={40}>{i + 1}.</ListCell>
+                    {multi ? (
                       <>
-                        <span>Kuski</span>
-                        <span>Kuski</span>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.Kuski1Data} team flag />
+                        </ListCell>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.Kuski2Data} team flag />
+                        </ListCell>
+                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                          <Time time={t.Time} />
+                        </TimeSpan>
+                      </>
+                    ) : (
+                      <>
+                        <ListCell width={220}>
+                          <Kuski kuskiData={t.KuskiData} team flag />
+                        </ListCell>
+                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                          <Time time={t.Time} />
+                        </TimeSpan>
+                        {t.Source !== undefined && (
+                          <LegacyIcon source={t.Source} show={showLegacyIcon} />
+                        )}
                       </>
                     )}
-                    <span>Time</span>
-                    {times.length > 0 && times[0].Source !== undefined && (
-                      <span />
-                    )}
-                    {personalAllFinished.length > 0 &&
-                      personalAllFinished[0].Source !== undefined && <span />}
-                  </div>
-                  {!KuskiIndex ? (
-                    <>
-                      {times.map((t, i) => {
-                        return (
-                          <div
-                            key={multi ? t.BestMultiTimeIndex : t.BestTimeIndex}
-                          >
-                            <span>{i + 1}.</span>
-                            {multi ? (
-                              <>
-                                <span>
-                                  <Kuski kuskiData={t.Kuski1Data} team flag />
-                                </span>
-                                <span>
-                                  <Kuski kuskiData={t.Kuski2Data} team flag />
-                                </span>
-                                <TimeSpan highlight={t.TimeIndex >= highlight}>
-                                  <Time time={t.Time} />
-                                </TimeSpan>
-                              </>
-                            ) : (
-                              <>
-                                <span>
-                                  <Kuski kuskiData={t.KuskiData} team flag />
-                                </span>
-                                <TimeSpan highlight={t.TimeIndex >= highlight}>
-                                  <Time time={t.Time} />
-                                </TimeSpan>
-                                {t.Source !== undefined && (
-                                  <LegacyIcon
-                                    source={t.Source}
-                                    show={showLegacyIcon}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <>
-                      {personalAllFinished.map((t, i) => {
-                        return (
-                          <div key={`${t.TimeIndex}${t.Time}`}>
-                            <span>{i + 1}.</span>
-                            <TimeSpan highlight={t.TimeIndex >= highlight}>
-                              <Time time={t.Time} />
-                            </TimeSpan>
-                            {t.Source !== undefined && (
-                              <LegacyIcon
-                                source={t.Source}
-                                show={showLegacyIcon}
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-                <div className={s.showMore}>
-                  {timesLimit === 10 ? (
-                    <ShowMore onClick={() => setTimesLimit(10000)}>
-                      Show more
-                    </ShowMore>
-                  ) : (
-                    <ShowMore onClick={() => setTimesLimit(10)}>
-                      Show less
-                    </ShowMore>
-                  )}
-                </div>
-              </div>
+                  </ListRow>
+                );
+              })}
             </>
-          );
-        }}
-      </Query>
-    </div>
+          ) : (
+            <>
+              {personalAllFinished.map((t, i) => {
+                return (
+                  <ListRow key={`${t.TimeIndex}${t.Time}`}>
+                    <ListCell width={40}>{i + 1}.</ListCell>
+                    <TimeSpan highlight={t.TimeIndex >= highlight}>
+                      <Time time={t.Time} />
+                    </TimeSpan>
+                    {t.Source !== undefined && (
+                      <LegacyIcon source={t.Source} show={showLegacyIcon} />
+                    )}
+                  </ListRow>
+                );
+              })}
+            </>
+          )}
+        </ListContainer>
+        <ShowMoreCon>
+          {timesLimit === 10 ? (
+            <ShowMore onClick={() => setTimesLimit(10000)}>Show more</ShowMore>
+          ) : (
+            <ShowMore onClick={() => setTimesLimit(10)}>Show less</ShowMore>
+          )}
+        </ShowMoreCon>
+      </LevelTimesContainer>
+    </LevelPopUpCon>
   );
 };
 
@@ -207,8 +156,55 @@ const ShowMore = styled.span`
   cursor: pointer;
 `;
 
-const TimeSpan = styled.span`
+const TimeSpan = styled(ListCell)`
   background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
 `;
 
-export default withStyles(s)(LevelPopup);
+const ShowMoreCon = styled.div`
+  padding: 10px;
+  font-size: 14px;
+`;
+
+const LevelPopUpCon = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 800px;
+  height: 100vh;
+  background: #fff;
+  box-sizing: border-box;
+  padding-top: 50px;
+  border-left: 1px solid #eaeaea;
+  @media (max-width: 1150px) {
+    left: 650px;
+  }
+  @media (max-width: 999px) {
+    left: 50%;
+  }
+  @media (max-width: 600px) {
+    left: 0;
+  }
+`;
+
+const LevelTimesContainer = styled.div`
+  max-height: 100%;
+  overflow: auto;
+`;
+
+const Title = styled.div`
+  font-weight: 500;
+  padding: 10px;
+  position: relative;
+`;
+
+const ClosePopUp = styled.div`
+  position: absolute;
+  right: 0;
+  font-size: 25px;
+  top: 0;
+  padding: 10px;
+  padding-top: 0;
+  cursor: pointer;
+`;
+
+export default LevelPopup;

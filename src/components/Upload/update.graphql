@@ -1,6 +1,0 @@
-mutation updateReplay($ReplayIndex: Int!) {
-  updateReplay(ReplayIndex: $ReplayIndex) {
-    ReplayIndex
-    Unlisted
-  }
-}

@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import PropTypes from 'prop-types';
-import { graphql, compose, Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import styled from 'styled-components';
-import 'components/variables.css'; // probably won't work, not used in document
 import {
   Typography,
   Accordion,
@@ -25,82 +23,67 @@ import LeaderHistory from 'components/LeaderHistory';
 import { sortResults, battleStatus, getBattleType } from 'utils/battle';
 import RecView from './RecView';
 
-import battleQuery from './battle.graphql';
-
-const GET_BATTLE_TIMES = gql`
-  query($id: Int!) {
-    getBattleTimes(BattleIndex: $id) {
-      Time
-      KuskiIndex
-      KuskiIndex2
-      Apples
-      KuskiData {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-      KuskiData2 {
-        Kuski
-        Country
-        TeamData {
-          Team
-        }
-      }
-    }
+const getExtra = (KuskiIndex, extra, rankingHistory, battle) => {
+  let typeFilter = '';
+  let value = '';
+  if (Object.keys(rankingHistory).length === 0) return 'unavailable';
+  if (extra === '') {
+    return '';
   }
-`;
+  if (extra === 'RankingAll') {
+    typeFilter = 'All';
+    value = 'Ranking';
+  }
+  if (extra === 'RankingType') {
+    typeFilter = getBattleType(battle);
+    value = 'Ranking';
+  }
+  if (extra === 'RankingIncreaseAll') {
+    typeFilter = 'All';
+    value = 'Increase';
+  }
+  if (extra === 'RankingIncreaseType') {
+    typeFilter = getBattleType(battle);
+    value = 'Increase';
+  }
+  const filtered = rankingHistory.filter(
+    r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
+  );
+  if (filtered.length > 0) {
+    return parseInt(filtered[0][value], 10).toFixed(2);
+  }
+  return '';
+};
 
 const Battle = props => {
-  const [extra, setExtra] = useState('');
-
-  const getExtra = KuskiIndex => {
-    const {
-      data: { getRankingHistoryByBattle, getBattle },
-    } = props;
-    let typeFilter = '';
-    let value = '';
-    if (extra === 'RankingAll') {
-      typeFilter = 'All';
-      value = 'Ranking';
-    }
-    if (extra === 'RankingType') {
-      typeFilter = getBattleType(getBattle);
-      value = 'Ranking';
-    }
-    if (extra === 'RankingIncreaseAll') {
-      typeFilter = 'All';
-      value = 'Increase';
-    }
-    if (extra === 'RankingIncreaseType') {
-      typeFilter = getBattleType(getBattle);
-      value = 'Increase';
-    }
-    const filtered = getRankingHistoryByBattle.filter(
-      r => r.KuskiIndex === KuskiIndex && r.BattleType === typeFilter,
-    );
-    if (filtered.length > 0) {
-      return filtered[0][value];
-    }
-    return '';
-  };
-
   const { BattleIndex } = props;
+  const [extra, setExtra] = useState('');
+  const { allBattleTimes, battle, rankingHistory } = useStoreState(
+    state => state.Battle,
+  );
   const {
-    data: { getBattle, getAllBattleTimes },
-  } = props;
+    getAllBattleTimes,
+    getBattle,
+    getRankingHistoryByBattle,
+  } = useStoreActions(state => state.Battle);
+
+  useEffect(() => {
+    getAllBattleTimes(BattleIndex);
+    getBattle(BattleIndex);
+    getRankingHistoryByBattle(BattleIndex);
+  }, [BattleIndex]);
+
   const isWindow = typeof window !== 'undefined';
 
-  if (!getBattle) return <Root>Battle is unfinished</Root>;
+  if (!battle) return <Root>Battle is unfinished</Root>;
 
   return (
     <Root>
       <RecView
         isWindow={isWindow}
         BattleIndex={BattleIndex}
-        levelIndex={getBattle.LevelIndex}
-        battleStatus={battleStatus(getBattle)}
+        levelIndex={battle.LevelIndex}
+        battleStatus={battleStatus(battle)}
       />
       <RightBarContainer>
         <div className="chatContainer">
@@ -110,20 +93,20 @@ const Battle = props => {
             </AccordionSummary>
             <AccordionDetails>
               <BattleStyleDescription>
-                {getBattle.Duration} minute{' '}
+                {battle.Duration} minute{' '}
                 <span className="battleType">
-                  <BattleType type={getBattle.BattleType} />
+                  <BattleType type={battle.BattleType} />
                 </span>{' '}
                 battle in{' '}
-                <a href={`/dl/level/${getBattle.LevelIndex}`}>
-                  {getBattle.LevelData ? getBattle.LevelData.LevelName : '?'}
+                <a href={`/dl/level/${battle.LevelIndex}`}>
+                  {battle.LevelData ? battle.LevelData.LevelName : '?'}
                   .lev
                 </a>{' '}
-                {getBattle.KuskiData.Kuski}
+                {battle.KuskiData.Kuski}
                 <div className="timeStamp">
                   Started{' '}
                   <LocalTime
-                    date={getBattle.Started}
+                    date={battle.Started}
                     format="DD.MM.YYYY HH:mm:ss"
                     parse="X"
                   />
@@ -134,36 +117,37 @@ const Battle = props => {
                   </a>
                 </div>
                 <br />
-                <Link to={`/levels/${getBattle.LevelIndex}`}>
+                <Link to={`/levels/${battle.LevelIndex}`}>
                   Go to level page
                 </Link>
               </BattleStyleDescription>
             </AccordionDetails>
           </Accordion>
-          {getBattle.Finished === 1 && getBattle.BattleType === 'NM' && (
+          {battle.Finished === 1 && battle.BattleType === 'NM' && (
             <Accordion defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body1">Leader history</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <LeaderHistory allFinished={getAllBattleTimes} />
+                {allBattleTimes !== null && allBattleTimes !== [] ? (
+                  <LeaderHistory allFinished={allBattleTimes} />
+                ) : null}
               </AccordionDetails>
             </Accordion>
           )}
-          {!(battleStatus(getBattle) === 'Queued') && (
+          {!(battleStatus(battle) === 'Queued') && (
             <Accordion defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography variant="body1">Chat</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <ChatView
-                  start={Number(getBattle.Started)}
+                  start={Number(battle.Started)}
                   end={
-                    Number(getBattle.Started) +
-                    Number((getBattle.Duration + 2) * 60)
+                    Number(battle.Started) + Number((battle.Duration + 2) * 60)
                   }
                   // battleEndEvent: when the battle ends compared to the start prop
-                  battleEnd={Number(getBattle.Duration * 60)}
+                  battleEnd={Number(battle.Duration * 60)}
                   paginated
                 />
               </AccordionDetails>
@@ -173,7 +157,7 @@ const Battle = props => {
       </RightBarContainer>
       <LevelStatsContainer>
         <Paper>
-          {getBattle.Results && (
+          {battle.Results && (
             <ListContainer>
               <ListHeader>
                 <ListCell right width={30}>
@@ -204,17 +188,16 @@ const Battle = props => {
                   </Select>
                 </ListCell>
               </ListHeader>
-              <Query query={GET_BATTLE_TIMES} variables={{ id: BattleIndex }}>
-                {({ data: { getBattleTimes }, loading }) => {
-                  if (loading) return null;
-                  return [...getBattleTimes]
-                    .sort(sortResults(getBattle.BattleType))
-                    .map((r, i) => (
+              {[...battle.Results]
+                .sort(sortResults(battle.BattleType))
+                .map((r, i) => {
+                  return (
+                    <>
                       <ListRow key={r.KuskiIndex}>
                         <ListCell width={30}>{i + 1}.</ListCell>
-                        <ListCell width={200}>
+                        <ListCell width={battle.Multi === 1 ? 300 : 200}>
                           <Kuski kuskiData={r.KuskiData} flag team />
-                          {getBattle.Multi === 1 && (
+                          {battle.Multi === 1 && (
                             <>
                               {' '}
                               & <Kuski kuskiData={r.KuskiData2} flag team />
@@ -224,11 +207,18 @@ const Battle = props => {
                         <ListCell right width={200}>
                           <Time time={r.Time} apples={r.Apples} />
                         </ListCell>
-                        <ListCell>{getExtra(r.KuskiIndex)}</ListCell>
+                        <ListCell>
+                          {getExtra(
+                            r.KuskiIndex,
+                            extra,
+                            rankingHistory,
+                            battle,
+                          )}
+                        </ListCell>
                       </ListRow>
-                    ));
-                }}
-              </Query>
+                    </>
+                  );
+                })}
             </ListContainer>
           )}
         </Paper>
@@ -239,12 +229,6 @@ const Battle = props => {
 
 Battle.propTypes = {
   BattleIndex: PropTypes.number.isRequired,
-  data: PropTypes.shape({
-    Loading: PropTypes.bool,
-    getBattle: PropTypes.shape({
-      LevelIndex: PropTypes.number,
-    }),
-  }).isRequired,
 };
 
 const Root = styled.div`
@@ -278,12 +262,4 @@ const BattleStyleDescription = styled.div`
   }
 `;
 
-export default compose(
-  graphql(battleQuery, {
-    options: ownProps => ({
-      variables: {
-        BattleIndex: ownProps.BattleIndex,
-      },
-    }),
-  }),
-)(Battle);
+export default Battle;

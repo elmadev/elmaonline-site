@@ -1,6 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
+import { authContext } from 'utils/auth';
 import { Replay, Level, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -25,7 +26,7 @@ const attributes = [
 ];
 
 const getReplays = async (offset = 0, limit = 50) => {
-  const data = await Replay.findAll({
+  const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
@@ -216,6 +217,27 @@ const getReplaysSearchFilename = async (query, offset) => {
   return replays;
 };
 
+const InsertReplay = async (data, userid) => {
+  const insertData = { ...data, UploadedBy: userid };
+  if (insertData.DrivenBy !== 0) {
+    insertData.DrivenByText = '';
+  }
+  const replay = await Replay.create(insertData);
+  return replay;
+};
+
+const UpdateReplay = async (ReplayIndex, userid) => {
+  const replay = await Replay.findOne({
+    where: { ReplayIndex },
+  });
+  if (replay) {
+    if (replay.UploadedBy === userid) {
+      await replay.update({ Unlisted: 0 });
+    }
+  }
+  return replay;
+};
+
 const getReplaysByLevelIndex = async LevelIndex => {
   const replays = await Replay.findAll({
     attributes,
@@ -228,8 +250,28 @@ const getReplaysByLevelIndex = async LevelIndex => {
 
 router
   .get('/', async (req, res) => {
-    const data = await getReplays(req.query.offset, req.query.limit);
+    const offset = req.query.pageSize * req.query.page;
+    const limit = req.query.pageSize;
+    const data = await getReplays(offset, limit);
     res.json(data);
+  })
+  .post('/', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const insert = await InsertReplay(req.body, auth.userid);
+      res.json(insert);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/update', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const update = await UpdateReplay(req.body.ReplayIndex, auth.userid);
+      res.json(update);
+    } else {
+      res.sendStatus(401);
+    }
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayByReplayId(req.params.ReplayIndex);

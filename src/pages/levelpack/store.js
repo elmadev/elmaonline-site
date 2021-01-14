@@ -14,9 +14,20 @@ import {
   LevelPackAddLevel,
   LevelPackSortLevel,
   LevelPackSort,
+  LevelPack,
 } from 'data/api';
 
 export default {
+  levelPackInfo: {},
+  setLevelPackInfo: action((state, payload) => {
+    state.levelPackInfo = payload;
+  }),
+  getLevelPackInfo: thunk(async (actions, payload) => {
+    const get = await LevelPack(payload);
+    if (get.ok) {
+      actions.setLevelPackInfo(get.data);
+    }
+  }),
   highlight: [9999999999, 9999999999, 9999999999, 9999999999, 9999999999],
   setHighlight: action((state, payload) => {
     state.highlight = payload;

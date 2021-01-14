@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import add from 'date-fns/add';
 import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime } from '../data/models';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
 
 const router = express.Router();
 
@@ -150,6 +150,194 @@ const BattlesSearchByDesigner = async (query, offset) => {
   return byDesigner;
 };
 
+const BattleResults = async BattleIndex => {
+  const battleResults = await Battle.findOne({
+    attributes,
+    where: { BattleIndex /* Finished: 1 */ },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData2',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+  return battleResults;
+}
+
+const GetBattleData = async IndexList => {
+  const battleData = await Battle.findAll({
+    attributes: [
+      'BattleIndex',
+      'BattleType',
+      'KuskiIndex',
+      'LevelIndex',
+      'Started',
+      'Duration',
+    ],
+    where: {
+      BattleIndex: {
+        [Op.in]: IndexList.split(','),
+      },
+    },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+    ],
+    order: [['BattleIndex', 'DESC']],
+  });
+  return battleData;
+}
+
+
+const GetAllBattleTimes = async BattleIndex => {
+  const battleStatus = await Battle.findAll({
+    attributes: ['Finished'],
+    where: { BattleIndex },
+  });
+  let times;
+  if (battleStatus[0].dataValues.Finished === 1) {
+    times = await AllFinished.findAll({
+      where: { BattleIndex },
+      order: [['TimeIndex', 'ASC']],
+      include: [
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski', 'Country'],
+          include: [
+            {
+              model: Team,
+              as: 'TeamData',
+            },
+          ],
+        },
+      ],
+    });
+  } else {
+    times = [];
+  }
+  return times;
+}
+
+const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
+  let battleData = {};
+  const Results = [];
+  const battles = await Battletime.findAndCountAll({
+    attributes: ['BattleIndex'],
+    limit: parseInt(PageSize, 10),
+    offset: parseInt(Page * PageSize, 10),
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+    ],
+    where: {
+      KuskiIndex,
+    },
+    order: [['BattleIndex', 'DESC']],
+  })
+  .then(async data => {
+      const results = await Battletime.findAll({
+        where: {
+          BattleIndex: {
+            [Op.in]: data.rows.map(r => r.BattleIndex),
+          },
+        },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      });
+      const indexList = []; 
+
+      data.rows.map(r => {
+        indexList.push(r.BattleIndex);
+        return r;
+      });
+      
+      battleData = await GetBattleData(indexList.join(','));
+      battleData.map(b => {
+        Results.push(results.filter(r => r.BattleIndex === b.BattleIndex));
+        return b;
+      });
+      return {
+        page: parseInt(Page, 10),
+      };
+  });
+  return {...battles, rows: battleData, Results, PageSize};
+};
+
 const BattlesForLevel = async LevelIndex => {
   const battles = await Battle.findAll({
     attributes,
@@ -238,6 +426,65 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
   return byDesigner;
 };
 
+const BattlesBetween = async (Start, End, Limit = 250) => {
+  const battles = await Battle.findAll({
+    attributes: [
+      'BattleIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Started',
+      'Duration',
+      'BattleType',
+      'Aborted',
+      'InQueue',
+      'Finished',
+    ],
+    limit: parseInt(Limit, 10),
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+          },
+        ],
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+            include: [
+              {
+                model: Team,
+                as: 'TeamData',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [['Started', 'DESC']],
+    where: {
+      Started: {
+        [Op.between]: [Start, End],
+      },
+    },
+  });
+  return battles;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
@@ -260,15 +507,44 @@ router
     );
     res.json(battles);
   })
+  .get('/byBattleIndex/:BattleIndex', async (req, res) => {
+    const battle = await BattleResults(req.params.BattleIndex);
+    res.json(battle);
+  })
+  .get('/byBattleIndexList/:query', async (req, res) => {
+    const battle = await GetBattleData(req.params.query);
+    res.json(battle);
+  })
+  .get('/byPlayer/:KuskiIndex', async (req, res) => {
+    const battles = await BattlesSearchByKuski(
+      req.params.KuskiIndex,
+      req.query.page,
+      req.query.pageSize,
+    );
+    res.json(battles);
+
+  })
   .get('/byLevel/:LevelIndex', async (req, res) => {
     const battles = await BattlesForLevel(req.params.LevelIndex);
     res.json(battles);
+  })
+  .get('/allBattleTimes/:q', async (req, res) => {
+    const times = await GetAllBattleTimes(req.params.q);
+    res.json(times);
   })
   .get('/byDesigner/:KuskiIndex', async (req, res) => {
     const battles = await BattlesForDesigner(
       req.params.KuskiIndex,
       req.query.page,
       req.query.pageSize,
+    );
+    res.json(battles);
+  })
+  .get('/byPeriod/:Start/:End/:Limit', async (req, res) => {
+    const battles = await BattlesBetween(
+      req.params.Start,
+      req.params.End,
+      req.params.Limit,
     );
     res.json(battles);
   });

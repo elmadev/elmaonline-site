@@ -16,6 +16,7 @@ import Teams from './teams';
 import Level from './level';
 import Ranking from './ranking';
 import Mod from './mod';
+import News from './news';
 
 const router = express.Router();
 
@@ -39,6 +40,7 @@ router
   .use('/besttime', Besttime)
   .use('/battle', Battle)
   .use('/player', Player)
+  .use('/news', News)
   .use('/teams', Teams);
 
 export default router;

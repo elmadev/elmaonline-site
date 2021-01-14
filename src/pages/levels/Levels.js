@@ -1,82 +1,41 @@
-import React from 'react';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import withStyles from 'isomorphic-style-loader/withStyles';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Fab } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import Link from 'components/Link';
 import history from 'utils/history';
-import s from './Levels.css';
 
-const GET_LEVELPACKS = gql`
-  query {
-    getLevelPacks {
-      LevelPackIndex
-      LevelPackLongName
-      LevelPackName
-      LevelPackDesc
-      Levels {
-        LevelIndex
-      }
-    }
-  }
-`;
-/*
-const GET_LEVELPACK_LEVELS = gql`
-  query($id: Int!) {
-    getLevelPackLevels(LevelPackIndex: $id) {
-      LevelPackLevelIndex
-    }
-  }
-`;
-*/
 const promote = 'Int';
 
 const Levels = () => {
+  const { levelpacks } = useStoreState(state => state.Levels);
+  const { getLevelpacks } = useStoreActions(actions => actions.Levels);
+  useEffect(() => {
+    getLevelpacks();
+  }, []);
   return (
-    <div className={s.root}>
-      <Query query={GET_LEVELPACKS}>
-        {({ data, loading, error }) => {
-          if (loading) return null;
-          if (error) return <div>something went wrong</div>;
-
-          return [...data.getLevelPacks]
-            .sort((a, b) => {
-              if (a.LevelPackName === promote) return -1;
-              if (b.LevelPackName === promote) return 1;
-              return a.LevelPackName.toLowerCase().localeCompare(
-                b.LevelPackName.toLowerCase(),
-              );
-            })
-            .map(p => (
-              <div
-                key={p.LevelPackIndex}
-                className={`${s.levelPackContainer} ${
-                  p.LevelPackName === promote ? s.promote : ''
-                }`}
-              >
-                <Link to={`/levels/packs/${p.LevelPackName}`}>
-                  <div className={s.shortName}>{p.LevelPackName}</div>
-                  <div className={s.longName}>{p.LevelPackLongName}</div>
-                  {/* disabled until can make it faster
-                  <div className={s.levelCount}>
-                    <Query
-                      query={GET_LEVELPACK_LEVELS}
-                      variables={{ id: p.LevelPackIndex }}
-                    >
-                      {({ data, loading }) => {
-                        if (loading) return null;
-                        return data.getLevelPackLevels.length;
-                      }}
-                    </Query>{' '}
-                    <span>levels</span>
-                  </div> */}
-                </Link>
-              </div>
-            ));
-        }}
-      </Query>
+    <Container>
+      {levelpacks.length > 0 &&
+        levelpacks
+          .sort((a, b) => {
+            if (a.LevelPackName === promote) return -1;
+            if (b.LevelPackName === promote) return 1;
+            return a.LevelPackName.toLowerCase().localeCompare(
+              b.LevelPackName.toLowerCase(),
+            );
+          })
+          .map(p => (
+            <LevelPackContainer
+              promote={p.LevelPackName === promote}
+              key={p.LevelPackIndex}
+            >
+              <Link to={`/levels/packs/${p.LevelPackName}`}>
+                <ShortName>{p.LevelPackName}</ShortName>
+                <LongName>{p.LevelPackLongName}</LongName>
+              </Link>
+            </LevelPackContainer>
+          ))}
       <FabCon>
         <Fab
           color="primary"
@@ -86,7 +45,7 @@ const Levels = () => {
           <AddIcon />
         </Fab>
       </FabCon>
-    </div>
+    </Container>
   );
 };
 
@@ -96,4 +55,53 @@ const FabCon = styled.div`
   bottom: 30px;
 `;
 
-export default withStyles(s)(Levels);
+const Container = styled.div`
+  padding-bottom: 50px;
+  overflow: hidden;
+`;
+
+const LevelPackContainer = styled.div`
+  float: left;
+  width: ${p => (p.promote ? '40%' : '20%')};
+  height: ${p => (p.promote ? '200px' : '100px')};
+  padding-left: 1px;
+  padding-top: 1px;
+  box-sizing: border-box;
+  > a {
+    display: block;
+    background: #fff;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    color: inherit;
+    overflow: hidden;
+    position: relative;
+    :hover {
+      background: #f9f9f9;
+    }
+  }
+  @media (max-width: 1350px) {
+    width: ${p => (p.promote ? '50%' : '25%')};
+  }
+  @media (max-width: 1160px) {
+    width: calc(100% / 3);
+  }
+  @media (max-width: 730px) {
+    width: 50%;
+  }
+  @media (max-width: 480px) {
+    width: 100%;
+    height: unset;
+  }
+`;
+
+const ShortName = styled.div`
+  font-weight: 500;
+  color: #219653;
+`;
+
+const LongName = styled.div`
+  font-size: 13px;
+`;
+
+export default Levels;

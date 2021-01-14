@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { Grid, CircularProgress } from '@material-ui/core';
 import { Paper } from 'styles/Paper';
-import Login from 'components/Login';
+import Link from 'components/Link';
 import styled from 'styled-components';
 
 const Confirm = props => {
@@ -21,43 +21,38 @@ const Confirm = props => {
   return (
     <Container>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          {confirmSuccess === 1 && (
-            <Paper>
-              Your email has been confirmed. You can now login using the form on
-              the right.
-            </Paper>
-          )}
-          {confirmSuccess === 0 && (
-            <Paper>
-              <CircularProgress />
-            </Paper>
-          )}
-          {confirmSuccess === -1 && (
-            <Paper>
-              Email confirmation has failed. Either you are already confirmed
-              (check your play rights), or you have mistyped the confirm url
-              (check the link in the email), or there were a server error, try
-              reloading the page.
-            </Paper>
-          )}
-          {confirmSuccess === 2 && (
-            <Paper>
-              Your email has been confirmed. You can now login using the form on
-              the right. Your new password is: {password}
-            </Paper>
-          )}
-          {confirmSuccess === -2 && (
-            <Paper>
-              Email confirmation has failed. Either or you have mistyped the
-              confirm url (check the link in the email), or there were a server
-              error, try reloading the page.
-            </Paper>
-          )}
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Login />
-        </Grid>
+        {confirmSuccess === 1 && (
+          <Paper>
+            Your email has been confirmed. You can now{' '}
+            <Link to="/login">login</Link>.
+          </Paper>
+        )}
+        {confirmSuccess === 0 && (
+          <Paper>
+            <CircularProgress />
+          </Paper>
+        )}
+        {confirmSuccess === -1 && (
+          <Paper>
+            Email confirmation has failed. Either you are already confirmed
+            (check your play rights), or you have mistyped the confirm url
+            (check the link in the email), or there were a server error, try
+            reloading the page.
+          </Paper>
+        )}
+        {confirmSuccess === 2 && (
+          <Paper>
+            Your email has been confirmed. You can now
+            <Link to="/login">login</Link>. Your new password is: {password}
+          </Paper>
+        )}
+        {confirmSuccess === -2 && (
+          <Paper>
+            Email confirmation has failed. Either or you have mistyped the
+            confirm url (check the link in the email), or there were a server
+            error, try reloading the page.
+          </Paper>
+        )}
       </Grid>
     </Container>
   );

@@ -118,6 +118,25 @@ const routes = {
       path: '/confirm/:confirmCode',
       load: () => import(/* webpackChunkName: 'confirm' */ './pages/confirm'),
     },
+    {
+      path: '/login',
+      load: () => import(/* webpackChunkName: 'login' */ './pages/login'),
+    },
+    {
+      path: '/register',
+      load: () => import(/* webpackChunkName: 'register' */ './pages/register'),
+    },
+    {
+      path: '/forgot',
+      load: () =>
+        import(
+          /* webpackChunkName: 'forgot-password' */ './pages/forgot-password'
+        ),
+    },
+    {
+      path: '/replays',
+      load: () => import(/* webpackChunkName: 'replays' */ './pages/replays'),
+    },
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
       path: '(.*)',

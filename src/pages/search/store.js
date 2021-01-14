@@ -10,12 +10,14 @@ import {
   ReplaysSearchByLevel,
   ReplaysSearchByFilename,
   LevelsSearch,
+  UpdateLevel,
 } from 'data/api';
 
 export default {
   levelPacks: [],
   levels: [],
   moreLevels: true,
+  showLocked: false,
   setLevelPacks: action((state, payload) => {
     state.levelPacks = payload;
   }),
@@ -26,6 +28,9 @@ export default {
     } else {
       state.moreLevels = false;
     }
+  }),
+  setShowLocked: action((state, payload) => {
+    state.showLocked = payload;
   }),
   resetLevels: action(state => {
     state.levels = [];
@@ -39,13 +44,15 @@ export default {
     }
     const levs = await LevelsSearch(payload);
     if (levs.ok) {
-      actions.setLevels(levs.data);
+      actions.setLevels(levs.data.levels);
+      actions.setShowLocked(levs.data.showLocked);
     }
   }),
   fetchMoreLevels: thunk(async (actions, payload) => {
     const levs = await LevelsSearch(payload);
     if (levs.ok) {
-      actions.setLevels(levs.data);
+      actions.setLevels(levs.data.levels);
+      actions.setShowLocked(levs.data.showLocked);
     }
   }),
   battlesByFilename: [],
@@ -214,5 +221,8 @@ export default {
     if (replaysFile.ok) {
       actions.setReplaysByFilename(replaysFile.data);
     }
+  }),
+  changeLevel: thunk(async (actions, payload) => {
+    await UpdateLevel(payload);
   }),
 };

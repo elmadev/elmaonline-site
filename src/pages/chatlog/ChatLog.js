@@ -3,7 +3,6 @@ import { VariableSizeList } from 'react-window';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useDebounce } from 'use-debounce';
 import queryString from 'query-string';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import {
   TextField,
   TablePagination,
@@ -18,13 +17,12 @@ import {
 } from '@material-ui/core';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import styled from 'styled-components';
 
 import ChatView from 'components/ChatView';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
 import history from 'utils/history';
-
-import s from './ChatLog.css';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -223,9 +221,9 @@ const ChatLog = props => {
   const acClasses = useStyles();
 
   return (
-    <div className={s.chat}>
+    <Container>
       <Header h2>Chat Log Filter</Header>
-      <Grid container className={s.chatFilters} spacing={2} alignItems="center">
+      <ChatFilter container spacing={2} alignItems="center">
         <Grid item xs={12} sm={6} lg={3}>
           {playerList.length > 0 ? (
             <Autocomplete
@@ -312,7 +310,7 @@ const ChatLog = props => {
         </Grid>
 
         <Grid item xs>
-          <Typography component="div" classes={{ root: s.switch }}>
+          <Typography component="div">
             <Grid component="label" container alignItems="center" spacing={1}>
               <Grid item>ASC</Grid>
               <Grid item>
@@ -349,7 +347,7 @@ const ChatLog = props => {
             label="Count (slow!)"
           />
         </Grid>
-      </Grid>
+      </ChatFilter>
 
       <ChatView
         KuskiIds={KuskiIds}
@@ -364,7 +362,7 @@ const ChatLog = props => {
       />
 
       {chatLines && (
-        <TablePagination
+        <PaginationStyled
           component="div"
           count={chatLineCount}
           page={chatPage}
@@ -372,15 +370,28 @@ const ChatLog = props => {
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[10, 25, 50, 100, 250, 1000]}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-          classes={{
-            root: s.paginationRoot,
-            spacer: s.paginationSpacer,
-            toolbar: s.paginationToolbar,
-          }}
         />
       )}
-    </div>
+    </Container>
   );
 };
 
-export default withStyles(s)(ChatLog);
+const Container = styled.div`
+  padding: 10px;
+`;
+
+const ChatFilter = styled(Grid)`
+  padding-bottom: 10px;
+`;
+
+const PaginationStyled = styled(TablePagination)`
+  flex-wrap: wrap;
+  .MuiTablePagination-spacer {
+    display: none;
+  }
+  .MuiTablePagination-toolbar {
+    justify-content: center;
+  }
+`;
+
+export default ChatLog;

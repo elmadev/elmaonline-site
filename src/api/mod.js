@@ -1,7 +1,9 @@
 import express from 'express';
+import { eachSeries } from 'neo-async';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
 import { sendMessage } from 'utils/discord';
+import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {
   SiteSetting,
@@ -10,6 +12,7 @@ import {
   FlagBan,
   ActionLogs,
   Error,
+  Logs,
 } from '../data/models';
 import config from '../config';
 
@@ -99,14 +102,12 @@ const AcceptNick = async (data, modId) => {
   );
   sendMessage(
     config.discord.channels.admin,
-    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${
-      data.Setting
-    }`,
+    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${data.Setting}`,
   );
 };
 
-const getBanlists = async () => {
-  const bans = await Ban.findAll({
+const getBanlists = async KuskiIndex => {
+  const bansQuery = {
     where: { Expires: { [Op.gt]: fn('NOW') } },
     include: [
       {
@@ -115,8 +116,8 @@ const getBanlists = async () => {
         attributes: ['Kuski'],
       },
     ],
-  });
-  const flagbans = await FlagBan.findAll({
+  };
+  const flagsQuery = {
     where: { Expired: 0, Revoked: 0 },
     include: [
       {
@@ -125,8 +126,72 @@ const getBanlists = async () => {
         attributes: ['Kuski'],
       },
     ],
-  });
+  };
+  if (KuskiIndex) {
+    bansQuery.where = { ...bansQuery.where, KuskiIndex };
+    flagsQuery.where = { ...flagsQuery.where, KuskiIndex };
+  }
+  const bans = await Ban.findAll(bansQuery);
+  const flagbans = await FlagBan.findAll(flagsQuery);
   return { ips: bans, flags: flagbans };
+};
+
+const banKuski = async data => {
+  let add = 0;
+  switch (data.severity) {
+    case 'warning':
+      add = 365;
+      break;
+    case 'week':
+      add = 7;
+      break;
+    case 'twoweek':
+      add = 14;
+      break;
+    case 'year':
+      add = 365;
+      break;
+    default:
+  }
+  const ExpireDate = format(addDays(new Date(), add), 't');
+  const insert = await FlagBan.create({
+    KuskiIndex: data.KuskiIndex,
+    BanType: data.banType,
+    ExpireDate,
+    Reason: data.banText,
+    Severeness: data.severity,
+  });
+  await WriteActionLog(
+    data.modId,
+    data.KuskiIndex,
+    data.banType,
+    1,
+    insert.FlagBanIndex,
+    '',
+  );
+  if (data.severity !== 'warning') {
+    switch (data.banType) {
+      case 'PlayBan':
+        await Kuski.update(
+          { RPlay: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      case 'ChatBan':
+        await Kuski.update(
+          { RChat: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      case 'StartBan':
+        await Kuski.update(
+          { RStartBattle: 0, RSpecialBattle: 0 },
+          { where: { KuskiIndex: data.KuskiIndex } },
+        );
+        break;
+      default:
+    }
+  }
 };
 
 const getErrorLog = async (k, ErrorTime) => {
@@ -194,6 +259,51 @@ const getActionLog = async (k, LogTime) => {
   return logs;
 };
 
+const giveRights = async (Right, KuskiIndex, modId) => {
+  const findKuski = await Kuski.findOne({ where: { KuskiIndex } });
+  await findKuski.update({ [Right]: 1 });
+  await WriteActionLog(modId, KuskiIndex, Right, 1, 0, '');
+};
+
+const getIPlogs = async KuskiIndex => {
+  const data = await Logs.findAll({
+    where: { KuskiIndex },
+    order: [['LogIndex', 'DESC']],
+    limit: 1000,
+  });
+  return data;
+};
+
+const getExpired = async () => {
+  const data = FlagBan.findAll({
+    where: {
+      Expired: 0,
+      ExpireDate: { [Op.lt]: format(new Date(), 't') },
+    },
+  });
+  return data;
+};
+
+const expiredExpired = async (data, done) => {
+  await FlagBan.update(
+    { Expired: 1 },
+    { where: { FlagBanIndex: data.FlagBanIndex } },
+  );
+  const severenesses = ['year', 'week', 'twoweek'];
+  const types = {
+    PlayBan: 'RPlay',
+    ChatBan: 'RChat',
+    StartBan: 'RStartBattle',
+  };
+  if (severenesses.indexOf(data.Severeness) > -1) {
+    await Kuski.update(
+      { [types[data.BanType]]: 1 },
+      { where: { KuskiIndex: data.KuskiIndex } },
+    );
+  }
+  done();
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -226,8 +336,26 @@ router
   .get('/banlist', async (req, res) => {
     const auth = authContext(req);
     if (auth.mod) {
-      const data = await getBanlists();
+      const data = await getBanlists(0);
       res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/banlist/:KuskiIndex', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const data = await getBanlists(req.params.KuskiIndex);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/bankuski', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      await banKuski({ ...req.body, modId: auth.userid });
+      res.json({ success: 1 });
     } else {
       res.sendStatus(401);
     }
@@ -249,6 +377,36 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .post('/giverights', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      if (
+        req.body.Right === 'RBan' ||
+        (req.body.Right === 'RMod' && !auth.admin)
+      ) {
+        res.sendStatus(401);
+      } else {
+        await giveRights(req.body.Right, req.body.KuskiIndex, auth.userid);
+        res.json({ success: 1 });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/iplogs/:KuskiIndex', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.mod) {
+      const logs = await getIPlogs(req.params.KuskiIndex);
+      res.json(logs);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/unban', async (req, res) => {
+    const expired = await getExpired();
+    await eachSeries(expired, expiredExpired);
+    res.json(expired);
   });
 
 export default router;

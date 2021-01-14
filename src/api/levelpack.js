@@ -14,6 +14,7 @@ import {
   Team,
   BestMultitime,
   LegacyBesttime,
+  Battle,
 } from '../data/models';
 
 const router = express.Router();
@@ -40,13 +41,19 @@ const getRecords = async (LevelPackName, eol = 0) => {
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
-    order: [['Sort', 'ASC'], ['LevelPackLevelIndex', 'ASC']],
+    order: [
+      ['Sort', 'ASC'],
+      ['LevelPackLevelIndex', 'ASC'],
+    ],
     include: [
       {
         model: timeTable,
         as: timeTableAlias,
         attributes,
-        order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+        order: [
+          ['Time', 'ASC'],
+          ['TimeIndex', 'ASC'],
+        ],
         limit: 1,
         include: [
           {
@@ -95,7 +102,10 @@ const getMultiRecords = async LevelPackName => {
         model: BestMultitime,
         as: 'LevelMultiBesttime',
         attributes: ['MultiTimeIndex', 'Time', 'KuskiIndex1', 'KuskiIndex2'],
-        order: [['Time', 'ASC'], ['MultiTimeIndex', 'ASC']],
+        order: [
+          ['Time', 'ASC'],
+          ['MultiTimeIndex', 'ASC'],
+        ],
         limit: 1,
         include: [
           {
@@ -275,8 +285,9 @@ const getPacksByQuery = async query => {
   );
 };
 
-const getLevelsByQuery = async (query, offset) => {
-  const levels = await Level.findAll({
+const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
+  let show = false;
+  const q = {
     attributes: [
       'LevelIndex',
       'LevelName',
@@ -288,18 +299,29 @@ const getLevelsByQuery = async (query, offset) => {
       'Locked',
       'SiteLock',
       'Hidden',
+      'Added',
+      'AddedBy',
     ],
     offset: searchOffset(offset),
     where: {
       LevelName: {
         [Op.like]: `${like(query)}%`,
       },
-      Locked: 0,
     },
     limit: searchLimit(offset),
     order: [['LevelName', 'ASC']],
-  });
-  return levels;
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      { model: Battle, as: 'Battles', attributes: ['BattleIndex', 'Aborted'] },
+    ],
+  };
+  if (!isMod || (isMod && !parseInt(showLocked, 10))) {
+    q.where.Locked = 0;
+  } else {
+    show = true;
+  }
+  const levels = await Level.findAll(q);
+  return { levels, showLocked: show };
 };
 
 const getLevelsByQueryAll = async query => {
@@ -320,7 +342,6 @@ const getLevelsByQueryAll = async query => {
       LevelName: {
         [Op.like]: `${like(query)}%`,
       },
-      Locked: 0,
     },
     limit: 100,
     order: [['LevelName', 'ASC']],
@@ -538,7 +559,26 @@ const SortPack = async data => {
   return false;
 };
 
+const getPackByName = async LevelPackName => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  return packInfo;
+};
+
+const allPacks = async () => {
+  const data = await LevelPack.findAll({
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    order: [['LevelPackName', 'ASC']],
+  });
+  return data;
+};
+
 router
+  .get('/', async (req, res) => {
+    const data = await allPacks();
+    res.json(data);
+  })
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
     const tts = totalTimes(data);
@@ -599,11 +639,22 @@ router
     res.json(packs);
   })
   .get('/searchLevel/:query', async (req, res) => {
-    const levs = await getLevelsByQueryAll(req.params.query);
-    res.json(levs);
+    const auth = authContext(req);
+    if (auth.auth) {
+      const levs = await getLevelsByQueryAll(req.params.query);
+      res.json(levs);
+    } else {
+      res.sendStatus(401);
+    }
   })
-  .get('/searchLevel/:query/:offset', async (req, res) => {
-    const levs = await getLevelsByQuery(req.params.query, req.params.offset);
+  .get('/searchLevel/:query/:offset/:showLocked', async (req, res) => {
+    const auth = authContext(req);
+    const levs = await getLevelsByQuery(
+      req.params.query,
+      req.params.offset,
+      req.params.showLocked,
+      auth.mod,
+    );
     res.json(levs);
   })
   .post('/add', async (req, res) => {
@@ -681,6 +732,10 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .get('/:LevelPackName', async (req, res) => {
+    const data = await getPackByName(req.params.LevelPackName);
+    res.json(data);
   });
 
 export default router;

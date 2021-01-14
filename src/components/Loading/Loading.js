@@ -1,15 +1,54 @@
 import React from 'react';
-import withStyles from 'isomorphic-style-loader/withStyles';
-import s from './loading.css';
+import styled from 'styled-components';
 
 const Loading = () => (
-  <div className={s.loading}>
-    <div className={s.spinner}>
-      <div className={s.bounce1} />
-      <div className={s.bounce2} />
-      <div />
-    </div>
-  </div>
+  <Container>
+    Loading..
+    {/* <Spinner>
+      <Bounce1 />
+      <Bounce2 />
+      <Bounce />
+    </Spinner> */}
+  </Container>
 );
 
-export default withStyles(s)(Loading);
+/* const BounceDelay = keyframes`
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+`; */
+
+const Container = styled.div`
+  padding: 20px;
+`;
+
+/* const Spinner = styled.div`
+  width: 100px;
+  text-align: center;
+  margin: auto;
+`;
+
+const Bounce = styled.div`
+  width: 18px;
+  height: 18px;
+  background-color: #f1f1f1;
+  margin: 5px;
+  border-radius: 100%;
+  display: inline-block;
+  animation: ${BounceDelay} 1.4s infinite ease-in-out both;
+`;
+
+const Bounce1 = styled(Bounce)`
+  animation-delay: -0.32s;
+`;
+
+const Bounce2 = styled(Bounce)`
+  animation-delay: -0.16s;
+`; */
+
+export default Loading;

@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'react-apollo';
-import withStyles from 'isomorphic-style-loader/withStyles';
 import {
   Typography,
   Accordion,
@@ -9,6 +7,7 @@ import {
   AccordionDetails,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
+import styled from 'styled-components';
 import { Paper } from 'styles/Paper';
 
 import Recplayer from 'components/Recplayer';
@@ -22,8 +21,6 @@ import ReplayRating from 'components/ReplayRating';
 import AddComment from 'components/AddComment';
 import historyRefresh from 'utils/historyRefresh';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-
-import s from './Replay.css';
 
 const Replay = props => {
   const { ReplayUuid } = props;
@@ -42,12 +39,14 @@ const Replay = props => {
   if (!replay) return null;
 
   if (isWindow) {
-    link = `https://eol.ams3.digitaloceanspaces.com/${window.App.s3SubFolder}replays/${replay.UUID}/${replay.RecFileName}`;
+    link = `https://eol.ams3.digitaloceanspaces.com/${
+      window.App.s3SubFolder
+    }replays/${replay.UUID}/${replay.RecFileName}`;
   }
   return (
-    <div className={s.root}>
-      <div className={s.playerContainer}>
-        <div className={s.player}>
+    <Container>
+      <PlayerContainer>
+        <Player>
           {isWindow && (
             <Recplayer
               rec={link}
@@ -55,10 +54,10 @@ const Replay = props => {
               controls
             />
           )}
-        </div>
-      </div>
-      <div className={s.rightBarContainer}>
-        <div className={s.chatContainer}>
+        </Player>
+      </PlayerContainer>
+      <RightBarContainer>
+        <ChatContainer>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="body2">
@@ -66,7 +65,7 @@ const Replay = props => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails style={{ flexDirection: 'column' }}>
-              <div className={s.replayDescription}>
+              <ReplayDescription>
                 <div>
                   {isWindow ? (
                     <>
@@ -85,7 +84,7 @@ const Replay = props => {
                 <Link to={`/levels/${replay.LevelIndex}`}>
                   Go to level page
                 </Link>
-              </div>
+              </ReplayDescription>
               <div>
                 {replay.TAS === 1 && (
                   <span style={{ color: 'red' }}>(TAS)</span>
@@ -134,13 +133,13 @@ const Replay = props => {
               />
             </AccordionDetails>
           </Accordion>
-        </div>
-      </div>
-      <div className={s.levelStatsContainer}>
-        <Paper className={s.ReplayDescription}>
+        </ChatContainer>
+      </RightBarContainer>
+      <LevelStatsContainer>
+        <ReplayDescriptionPaper>
           <div>
             <div>{replay.Comment}</div>
-            <div className={s.battleTimestamp}>
+            <BattleTimestamp>
               Uploaded by{' '}
               {replay.UploadedByData ? replay.UploadedByData.Kuski : 'Unknown'}{' '}
               <LocalTime
@@ -148,23 +147,100 @@ const Replay = props => {
                 format="YYYY-MM-DD HH:mm:ss"
                 parse="X"
               />
-            </div>
+            </BattleTimestamp>
           </div>
           <ReplayRating ReplayIndex={replay.ReplayIndex} />
-        </Paper>
-      </div>
-      <div className={s.levelStatsContainer}>
-        <Paper className={s.battleDescription}>
+        </ReplayDescriptionPaper>
+      </LevelStatsContainer>
+      <LevelStatsContainer>
+        <BattleDescriptionPaper>
           <AddComment add={() => {}} type="replay" index={replay.ReplayIndex} />
           <ReplayComments ReplayIndex={replay.ReplayIndex} />
-        </Paper>
-      </div>
-    </div>
+        </BattleDescriptionPaper>
+      </LevelStatsContainer>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  padding: 7px;
+  @media (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+`;
+
+const PlayerContainer = styled.div`
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+  @media (max-width: 1400px) {
+    widtdh: 100%;
+  }
+`;
+
+const Player = styled.div`
+  background: #f1f1f1;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const RightBarContainer = styled.div`
+  float: right;
+  width: 30%;
+  padding: 7px;
+  box-sizing: border-box;
+  @media (max-width: 1400px) {
+    widtdh: 40%;
+  }
+  @media (max-width: 768px) {
+    widtdh: 100%;
+  }
+`;
+
+const LevelStatsContainer = styled.div`
+  width: 70%;
+  float: left;
+  padding: 7px;
+  box-sizing: border-box;
+  @media (max-width: 1400px) {
+    widtdh: 60%;
+  }
+  @media (max-width: 768px) {
+    widtdh: 100%;
+  }
+`;
+
+const BattleDescriptionPaper = styled(Paper)`
+  font-size: 14px;
+  padding: 7px;
+`;
+
+const ReplayDescriptionPaper = styled(Paper)`
+  font-size: 14px;
+  padding: 7px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const ReplayDescription = styled.div`
+  font-size: 14px;
+`;
+
+const BattleTimestamp = styled.div`
+  color: #7d7d7d;
+`;
+
+const ChatContainer = styled.div`
+  clear: both;
+`;
 
 Replay.propTypes = {
   ReplayUuid: PropTypes.string.isRequired,
 };
 
-export default compose(withStyles(s))(Replay);
+export default Replay;

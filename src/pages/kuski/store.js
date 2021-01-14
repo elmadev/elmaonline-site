@@ -7,6 +7,12 @@ import {
   Records,
   PersonalTimes,
   BattlesByDesigner,
+  GiveRights,
+  IPlogs,
+  BanlistKuski,
+  BanKuski,
+  UserInfoByIdentifier,
+  BattlesByPlayer,
 } from 'data/api';
 
 export default {
@@ -73,6 +79,63 @@ export default {
     const call = await BattlesByDesigner(payload);
     if (call.ok) {
       actions.setDesignedBattes(call.data);
+    }
+  }),
+  giveRights: thunk(async (actions, payload) => {
+    const post = await GiveRights(payload);
+    if (post.ok) {
+      actions.getKuskiByName(payload.name);
+    }
+  }),
+  iplogs: [],
+  setIplogs: action((state, payload) => {
+    state.iplogs = payload;
+  }),
+  getIplogs: thunk(async (actions, payload) => {
+    const get = await IPlogs(payload);
+    if (get.ok) {
+      actions.setIplogs(get.data);
+    }
+  }),
+  kuskiBans: { ips: [], flags: [] },
+  setKuskiBans: action((state, payload) => {
+    state.kuskiBans = payload;
+  }),
+  getKuskiBans: thunk(async (actions, payload) => {
+    const get = await BanlistKuski(payload);
+    if (get.ok) {
+      actions.setKuskiBans(get.data);
+    }
+  }),
+  banKuski: thunk(async (actions, payload) => {
+    const post = await BanKuski(payload);
+    if (post.ok) {
+      actions.getKuskiBans(payload.KuskiIndex);
+    }
+  }),
+  playedBattles: {
+    rows: [],
+  },
+  setPlayedBattles: action((state, payload) => {
+    state.playedBattles = payload;
+  }),
+  getPlayedBattles: thunk(async (actions, payload) => {
+    const battles = await BattlesByPlayer(payload);
+    if (battles.ok) {
+      actions.setPlayedBattles(battles.data);
+    }
+  }),
+  kuski: '',
+  setKuski: action((state, payload) => {
+    state.kuski = payload;
+  }),
+  getKuskiByName: thunk(async (actions, payload) => {
+    const kuski = await UserInfoByIdentifier({
+      IdentifierType: 'Kuski',
+      KuskiIdentifier: payload,
+    });
+    if (kuski.ok) {
+      actions.setKuski(kuski.data);
     }
   }),
 };
