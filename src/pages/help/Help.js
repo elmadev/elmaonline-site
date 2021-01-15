@@ -50,6 +50,7 @@ const Help = () => {
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <>
         <Header>Help</Header>
+        <a href="/dl/allshirts">dlshirt</a>
         <MainContainer>
           <LeftContainer>
             <Text>
