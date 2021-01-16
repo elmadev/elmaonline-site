@@ -87,6 +87,7 @@ const Crew = ({ crew }) => {
 const MainDiv = styled.div`
   width: 600px;
   display: flex;
+  padding-left: 8px;
 `;
 
 const LeftDiv = styled.div`

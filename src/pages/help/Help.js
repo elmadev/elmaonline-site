@@ -15,7 +15,10 @@ import GettingStarted from './tabs/GettingStarted';
 import Faq from './tabs/Faq';
 import Glossary from './tabs/Glossary';
 import Crew from './tabs/Crew';
+import DeveloperApi from './tabs/DeveloperApi';
+import Donate from './tabs/Donate';
 import Links from './tabs/Links';
+import EolFolder from './tabs/EolFolder';
 
 const useStyles = makeStyles(() => ({
   textButton: {
@@ -54,25 +57,16 @@ const Help = () => {
         <MainContainer>
           <LeftContainer>
             <Text>
-              <Header h2>1. Getting Started</Header>
+              <Header h3>1. Getting Started</Header>
             </Text>
             <Buttons>
-              <div>
-                <Button
-                  onClick={() => expand('gettingStarted')}
-                  color="primary"
-                  className={classes.textButton}
-                >
-                  1.1. Getting Started
-                </Button>
-              </div>
               <div>
                 <Button
                   onClick={() => expand('install')}
                   color="primary"
                   className={classes.textButton}
                 >
-                  1.2. How to install
+                  1.1. How to install
                 </Button>
               </div>
               <div>
@@ -81,10 +75,30 @@ const Help = () => {
                   color="primary"
                   className={classes.textButton}
                 >
-                  1.3. Register and connect online
+                  1.2. Register and connect online
                 </Button>
               </div>
-              <Header h2>2. Setting up EOL</Header>
+              <div>
+                <Button
+                  onClick={() => expand('gettingStarted')}
+                  color="primary"
+                  className={classes.textButton}
+                >
+                  1.3. Useful commands
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={() => expand('faq')}
+                  color="primary"
+                  className={classes.textButton}
+                >
+                  1.4. FAQ
+                </Button>
+              </div>
+            </Buttons>
+            <Header h3>2. Setting up EOL</Header>
+            <Buttons>
               <div>
                 <Button
                   onClick={() => expand('keyBindings')}
@@ -103,7 +117,18 @@ const Help = () => {
                   2.2. EOL Configuration
                 </Button>
               </div>
-              <Header h2>3. Playing online</Header>
+              <div>
+                <Button
+                  onClick={() => expand('eolFolder')}
+                  color="primary"
+                  className={classes.textButton}
+                >
+                  2.3. EOL files
+                </Button>
+              </div>
+            </Buttons>
+            <Header h3>3. Playing online</Header>
+            <Buttons>
               <div>
                 <Button
                   onClick={() => expand('playingBattles')}
@@ -124,29 +149,41 @@ const Help = () => {
               </div>
               <div>
                 <Button
-                  onClick={() => expand('glossary')}
-                  color="primary"
-                  className={classes.textButton}
-                >
-                  3.3. Glossary
-                </Button>
-              </div>
-              <div>
-                <Button
                   onClick={() => expand('etiquette')}
                   color="primary"
                   className={classes.textButton}
                 >
-                  3.4. Etiquette
+                  3.3. Etiquette
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('faq')}
+                  onClick={() => expand('glossary')}
                   color="primary"
                   className={classes.textButton}
                 >
-                  3.5. FAQ
+                  3.4. Glossary
+                </Button>
+              </div>
+            </Buttons>
+            <Header h3>4. The community</Header>
+            <Buttons>
+              <div>
+                <Button
+                  onClick={() => expand('crew')}
+                  color="primary"
+                  className={classes.textButton}
+                >
+                  4.1. Crew
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={() => expand('donate')}
+                  color="primary"
+                  className={classes.textButton}
+                >
+                  4.2. Donate
                 </Button>
               </div>
               <div>
@@ -155,16 +192,16 @@ const Help = () => {
                   color="primary"
                   className={classes.textButton}
                 >
-                  3.6. Links
+                  4.3. Links
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('crew')}
+                  onClick={() => expand('api')}
                   color="primary"
                   className={classes.textButton}
                 >
-                  3.7. Crew
+                  4.3. Developer API
                 </Button>
               </div>
             </Buttons>
@@ -181,8 +218,11 @@ const Help = () => {
               {info === 'playingBattles' && <PlayingBattles />}
               {info === 'etiquette' && <Etiquette />}
               {info === 'faq' && <Faq />}
+              {info === 'donate' && <Donate />}
+              {info === 'api' && <DeveloperApi />}
               {info === 'links' && <Links />}
               {info === 'crew' && <Crew crew={crew} />}
+              {info === 'eolFolder' && <EolFolder />}
             </ExpandContainer>
           </RightContainer>
         </MainContainer>

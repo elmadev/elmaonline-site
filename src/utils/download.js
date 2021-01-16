@@ -29,7 +29,6 @@ const getReplayDataByBattleId = async battleId => {
 const getAllShirtData = async () => {
   const kuskiData = await Kuski.findAll({
     attributes: ['Kuski', 'KuskiIndex', 'BmpCRC', 'BmpData'],
-    limit: 5, // for testing
     where: {
       BmpData: {
         [Op.ne]: null,

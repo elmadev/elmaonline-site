@@ -1,11 +1,12 @@
 import React from 'react';
 import Header from 'components/Header';
 import Link from 'components/Link';
+import styled from 'styled-components';
 
 const GettingStarted = () => {
   return (
-    <div>
-      <Header h2>Getting Started</Header>
+    <Text>
+      <Header h2>Useful information</Header>
       <Header h3>Useful commands</Header>
       Here are a handful of useful commands to help get you going:
       <ul>
@@ -25,8 +26,12 @@ const GettingStarted = () => {
       For more details join the{' '}
       <Link to="https://discord.gg/j5WMFC6">Elma discord</Link> or visit the{' '}
       <Link to="http://wiki.elmaonline.net/Main_Page">Elma Wiki.</Link>
-    </div>
+    </Text>
   );
 };
+
+const Text = styled.div`
+  padding-left: 8px;
+`;
 
 export default GettingStarted;

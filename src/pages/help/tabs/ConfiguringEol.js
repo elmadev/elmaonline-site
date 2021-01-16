@@ -1,9 +1,10 @@
 import React from 'react';
 import Header from 'components/Header';
+import styled from 'styled-components';
 
 const ConfiguringEol = () => {
   return (
-    <div>
+    <Text>
       <Header h2>Configuring EOL</Header>
       <Header h3>Players</Header>
       <div>
@@ -111,7 +112,12 @@ const ConfiguringEol = () => {
           <li>Zoom: How much the minimap is zoomed in or out.</li>
         </ul>
       </div>
-    </div>
+    </Text>
   );
 };
+
+const Text = styled.div`
+  padding-left: 8px;
+`;
+
 export default ConfiguringEol;

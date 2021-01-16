@@ -18,7 +18,9 @@ const useStyles = makeStyles({
   container: {
     border: '1px solid #bdbdbd',
     width: 710,
-    margin: '8px',
+  },
+  main: {
+    paddingLeft: '8px;',
   },
 });
 
@@ -99,7 +101,7 @@ const keyBindingRows = [
 const KeyBindings = () => {
   const classes = useStyles();
   return (
-    <div>
+    <div className={classes.main}>
       <Text>
         <Header h2>EOL key bindings</Header>
         <RowSpan>
