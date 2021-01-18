@@ -217,3 +217,6 @@ export const IPlogs = KuskiIndex => api.get(`mod/iplogs/${KuskiIndex}`);
 
 // news
 export const News = amount => api.get(`news/${amount}`);
+
+// donations
+export const GetDonations = () => api.get(`donate/`);

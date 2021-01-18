@@ -31,11 +31,12 @@ const Help = () => {
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState('gettingStarted');
 
-  const { crew } = useStoreState(state => state.Help);
-  const { getCrew } = useStoreActions(actions => actions.Help);
+  const { crew, donations } = useStoreState(state => state.Help);
+  const { getCrew, getDonations } = useStoreActions(actions => actions.Help);
 
   useEffect(() => {
     if (!crew) getCrew();
+    if (!donations) getDonations();
   });
 
   const classes = useStyles();
@@ -84,7 +85,7 @@ const Help = () => {
                   color="primary"
                   className={classes.textButton}
                 >
-                  1.3. Useful commands
+                  1.3. Useful information
                 </Button>
               </div>
               <div>
@@ -201,7 +202,7 @@ const Help = () => {
                   color="primary"
                   className={classes.textButton}
                 >
-                  4.3. Developer API
+                  4.4. Developer API
                 </Button>
               </div>
             </Buttons>
@@ -218,7 +219,7 @@ const Help = () => {
               {info === 'playingBattles' && <PlayingBattles />}
               {info === 'etiquette' && <Etiquette />}
               {info === 'faq' && <Faq />}
-              {info === 'donate' && <Donate />}
+              {info === 'donate' && <Donate donations={donations} />}
               {info === 'api' && <DeveloperApi />}
               {info === 'links' && <Links />}
               {info === 'crew' && <Crew crew={crew} />}
