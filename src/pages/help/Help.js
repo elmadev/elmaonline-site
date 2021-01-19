@@ -73,8 +73,6 @@ const Help = () => {
                 <Button
                   onClick={() => setInfo('connect')}
                   color="primary"
-                  disableElevation
-                  disableFocusRipple
                   className={
                     info === 'connect'
                       ? classes.selectedButton
