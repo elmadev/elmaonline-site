@@ -4,7 +4,7 @@ import Link from 'components/Link';
 import Flag from 'components/Flag';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { Grid, Table, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableCell, TableRow } from '@material-ui/core';
 import DonationsQR from './DonationsQR.png';
 
 const parseDonations = donations => {
@@ -52,106 +52,98 @@ const Donate = ({ donations }) => {
       <div className="main">
         <RightContainer>
           <Header h3>Donate</Header>
-          <Grid container spacing={1} direction="column">
-            <Grid item xs={12}>
-              Read the QR code or click the button underneath to donate via
-              paypal.
-            </Grid>
-            <Grid item xs={12}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  width: '80%',
-                }}
-              >
-                <img src={DonationsQR} alt="qr" />
-                <div style={{ alignSelf: 'center' }}>
-                  <form
-                    action="https://www.paypal.com/donate"
-                    method="post"
-                    target="_top"
-                  >
-                    <input
-                      type="hidden"
-                      name="hosted_button_id"
-                      value="526TTPQT9BUEN"
-                    />
-                    <input
-                      type="image"
-                      src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif"
-                      border="0"
-                      name="submit"
-                      title="PayPal - The safer, easier way to pay online!"
-                      alt="Donate with PayPal button"
-                    />
-                    <img
-                      alt=""
-                      border="0"
-                      src="https://www.paypal.com/en_DK/i/scr/pixel.gif"
-                      width="1"
-                      height="1"
-                    />
-                  </form>
-                </div>
+          <p>
+            Read the QR code or click the button underneath to donate via
+            paypal.
+          </p>
+          <p>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                width: '80%',
+              }}
+            >
+              <img src={DonationsQR} alt="qr" />
+              <div style={{ alignSelf: 'center' }}>
+                <form
+                  action="https://www.paypal.com/donate"
+                  method="post"
+                  target="_top"
+                >
+                  <input
+                    type="hidden"
+                    name="hosted_button_id"
+                    value="526TTPQT9BUEN"
+                  />
+                  <input
+                    type="image"
+                    src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif"
+                    border="0"
+                    name="submit"
+                    title="PayPal - The safer, easier way to pay online!"
+                    alt="Donate with PayPal button"
+                  />
+                  <img
+                    alt=""
+                    border="0"
+                    src="https://www.paypal.com/en_DK/i/scr/pixel.gif"
+                    width="1"
+                    height="1"
+                  />
+                </form>
               </div>
-            </Grid>
-            <Grid item xs={12}>
-              It is completely free to play EOL, however it costs a little sum
-              to keep the server running, which is what donations goes towards.
-            </Grid>
-            <Grid item xs={12}>
-              Donations are paid to a dedicated EOL paypal account, which is
-              only used for paying the server bill. Remember to let it redirect
-              you back here, otherwise we can&#39;t track your payment, it will
-              still be recieved however, only the payment status won&#39;t
-              update. No paypal account is needed.
-            </Grid>
-            <Grid item xs={12}>
-              Server costs are 26$ a month, paid the 27th every month. It should
-              be noted that donating does not guarantee any sort of uptime,
-              service or support.
-            </Grid>
-            <Grid item xs={12}>
-              <Header h3>Payment status</Header>
-              <Grid container spacing={1} direction="column">
-                <Grid item>
-                  <BoldText>{paymentDates.percentage.toFixed(2)}%</BoldText> of
-                  the next payment is paid.
-                </Grid>
-                <Grid item>
-                  Next payment: <BoldText>{paymentDates.date}</BoldText>.
-                </Grid>
-                <Grid item>
-                  Paid until: <BoldText>{paymentDates.nextPayment}</BoldText>.
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
+            </div>
+          </p>
+          <p>
+            It is completely free to play EOL, however it costs a little sum to
+            keep the server running, which is what donations goes towards.
+          </p>
+          <p>
+            Donations are paid to a dedicated EOL paypal account, which is only
+            used for paying the server bill. Remember to let it redirect you
+            back here, otherwise we can&#39;t track your payment, it will still
+            be recieved however, only the payment status won&#39;t update. No
+            paypal account is needed.
+          </p>
+          <p>
+            Server costs are 26$ a month, paid the 27th every month. It should
+            be noted that donating does not guarantee any sort of uptime,
+            service or support.
+          </p>
+          <Header h3>Payment status</Header>
+          <p>
+            <BoldText>{paymentDates.percentage.toFixed(2)}%</BoldText> of the
+            next payment is paid.
+          </p>
+          <p>
+            Next payment: <BoldText>{paymentDates.date}</BoldText>.
+          </p>
+          <p>
+            Paid until: <BoldText>{paymentDates.nextPayment}</BoldText>.
+          </p>
         </RightContainer>
         <div className="left">
-          <Grid item xs={12}>
-            <Header h3>Donator toplist</Header>
-            <Table size="small">
-              {donators.donators &&
-                donators.donators.map(r => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        <Flag nationality={r.Country} />{' '}
-                        <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>{' '}
-                        {r.Team && (
-                          <Link to={`/team/${r.Team}`}> [{r.Team}]</Link>
-                        )}
-                      </TableCell>
-                      <TableCell align="right">{`${r.Amount.toFixed(
-                        2,
-                      )}$`}</TableCell>
-                    </TableRow>
-                  );
-                })}
-            </Table>
-          </Grid>
+          <Header h3>Donator toplist</Header>
+          <Table size="small">
+            {donators.donators &&
+              donators.donators.map(r => {
+                return (
+                  <TableRow>
+                    <TableCell>
+                      <Flag nationality={r.Country} />{' '}
+                      <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>{' '}
+                      {r.Team && (
+                        <Link to={`/team/${r.Team}`}> [{r.Team}]</Link>
+                      )}
+                    </TableCell>
+                    <TableCell align="right">{`${r.Amount.toFixed(
+                      2,
+                    )}$`}</TableCell>
+                  </TableRow>
+                );
+              })}
+          </Table>
         </div>
       </div>
     </Text>

@@ -7,7 +7,7 @@ const DeveloperApi = () => {
     <div>
       <Text>
         <Header h2>Developer API</Header>
-        Coming soon...
+        <p>Coming soon...</p>
       </Text>
     </div>
   );

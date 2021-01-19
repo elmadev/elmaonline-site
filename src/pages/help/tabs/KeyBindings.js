@@ -101,9 +101,9 @@ const keyBindingRows = [
 const KeyBindings = () => {
   const classes = useStyles();
   return (
-    <div className={classes.main}>
-      <Text>
-        <Header h2>EOL key bindings</Header>
+    <Text>
+      <Header h2>EOL key bindings</Header>
+      <div>
         <RowSpan>
           EOL uses two option keys to fit all keys to the F-keys by default. By
           default, the option keys are:
@@ -114,7 +114,7 @@ const KeyBindings = () => {
           To change any of the bindings or to reset them to default, you can do
           it in eolconf.exe in your eol folder.
         </RowSpan>
-      </Text>
+      </div>
       <TableContainer className={classes.container}>
         <Table size="small" className={classes.table}>
           <TableHead>
@@ -138,13 +138,13 @@ const KeyBindings = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Text>
+      <p>
         In addition, there is a special combination of keys to enter a level in
         free camera mode. In level menu, hold F1 and press enter to enter the
         level. You can move your camera using the arrow keys and go faster by
         holding shift while moving.
-      </Text>
-    </div>
+      </p>
+    </Text>
   );
 };
 

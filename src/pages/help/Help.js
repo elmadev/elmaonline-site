@@ -25,10 +25,15 @@ const useStyles = makeStyles(() => ({
     textTransform: 'initial',
     fontWeight: 'inherit',
   },
+  selectedButton: {
+    textTransform: 'initial',
+    fontWeight: '550',
+    border: '2px solid rgba(33, 150, 83, 0.3)',
+    background: 'rgba(33, 150, 83, 0.1)',
+  },
 }));
 
 const Help = () => {
-  const [open, setOpen] = useState(false);
   const [info, setInfo] = useState('gettingStarted');
 
   const { crew, donations } = useStoreState(state => state.Help);
@@ -41,20 +46,10 @@ const Help = () => {
 
   const classes = useStyles();
 
-  const expand = type => {
-    if (type === info) {
-      setOpen(!open);
-    } else {
-      setOpen(true);
-    }
-    setInfo(type);
-  };
-
   return (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <>
         <Header>Help</Header>
-        <a href="/dl/allshirts">dlshirt</a>
         <MainContainer>
           <LeftContainer>
             <Text>
@@ -63,36 +58,52 @@ const Help = () => {
             <Buttons>
               <div>
                 <Button
-                  onClick={() => expand('install')}
+                  onClick={() => setInfo('install')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'install'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   1.1. How to install
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('connect')}
+                  onClick={() => setInfo('connect')}
                   color="primary"
-                  className={classes.textButton}
+                  disableElevation
+                  disableFocusRipple
+                  className={
+                    info === 'connect'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   1.2. Register and connect online
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('gettingStarted')}
+                  onClick={() => setInfo('gettingStarted')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'gettingStarted'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   1.3. Useful information
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('faq')}
+                  onClick={() => setInfo('faq')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'faq' ? classes.selectedButton : classes.textButton
+                  }
                 >
                   1.4. FAQ
                 </Button>
@@ -102,27 +113,39 @@ const Help = () => {
             <Buttons>
               <div>
                 <Button
-                  onClick={() => expand('keyBindings')}
+                  onClick={() => setInfo('keyBindings')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'keyBindings'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   2.1. EOL key bindings
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('configuringEol')}
+                  onClick={() => setInfo('configuringEol')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'configuringEol'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   2.2. EOL Configuration
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('eolFolder')}
+                  onClick={() => setInfo('eolFolder')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'eolFolder'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   2.3. EOL files
                 </Button>
@@ -132,36 +155,52 @@ const Help = () => {
             <Buttons>
               <div>
                 <Button
-                  onClick={() => expand('playingBattles')}
+                  onClick={() => setInfo('playingBattles')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'playingBattles'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   3.1. Playing Battles
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('rules')}
+                  onClick={() => setInfo('rules')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'rules'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   3.2. Rules
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('etiquette')}
+                  onClick={() => setInfo('etiquette')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'etiquette'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   3.3. Etiquette
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('glossary')}
+                  onClick={() => setInfo('glossary')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'glossary'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   3.4. Glossary
                 </Button>
@@ -171,36 +210,50 @@ const Help = () => {
             <Buttons>
               <div>
                 <Button
-                  onClick={() => expand('crew')}
+                  onClick={() => setInfo('crew')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'crew'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   4.1. Crew
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('donate')}
+                  onClick={() => setInfo('donate')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'donate'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   4.2. Donate
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('links')}
+                  onClick={() => setInfo('links')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'links'
+                      ? classes.selectedButton
+                      : classes.textButton
+                  }
                 >
                   4.3. Links
                 </Button>
               </div>
               <div>
                 <Button
-                  onClick={() => expand('api')}
+                  onClick={() => setInfo('api')}
                   color="primary"
-                  className={classes.textButton}
+                  className={
+                    info === 'api' ? classes.selectedButton : classes.textButton
+                  }
                 >
                   4.4. Developer API
                 </Button>

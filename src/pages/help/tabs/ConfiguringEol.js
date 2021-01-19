@@ -8,14 +8,14 @@ const ConfiguringEol = () => {
       <Header h2>Configuring EOL</Header>
       <Header h3>Players</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>1st nick: Your nickname</li>
           <li>Password: Your password</li>
-        </ul>
+        </StyledList>
       </div>
       <Header h3>Server setup</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>IP: The address to connect to. Current IP is 161.35.35.82</li>
           <li>TCP port: Port for TCP. Currently valid TCP port is 4460</li>
           <li>UDP port: Port for UDP. Currently valid UDP port is 4461</li>
@@ -27,11 +27,11 @@ const ConfiguringEol = () => {
             players&#39; frames. Use this option if you have troubles in seeing
             other players.
           </li>
-        </ul>
+        </StyledList>
       </div>
       <Header h3>Keys</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>
             Alovolt P1/P2: Is alovolt for player 1/2 enabled? If yes, then press
             the &quot;change&quot; button to set the button.
@@ -65,22 +65,22 @@ const ConfiguringEol = () => {
             Hotkeys: Enable/disable and set hotkeys for 1st/2nd/3rd function
             keys.
           </li>
-        </ul>
+        </StyledList>
       </div>
       <Header h3>Main menu</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>About EOL 1.3: About screen</li>
           <li>Lev Packs: Level pack screen</li>
           <li>Merge Replays: Merge replays -function</li>
           <li>Help: Help screen</li>
           <li>Best Times: Best Times screen</li>
           <li>Demo: Demo</li>
-        </ul>
+        </StyledList>
       </div>
       <Header h3>Screen</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>
             Resolution: Set the resolution that is used ingame. You can type
             arbitrary values in the box or choose from the list. Note that EOL
@@ -100,17 +100,17 @@ const ConfiguringEol = () => {
             the screen.
           </li>
           <li>Zoom textures: Are textures zoomed or not?</li>
-        </ul>
+        </StyledList>
       </div>
       <Header h3>Navigator</Header>
       <div>
-        <ul>
+        <StyledList>
           <li>
             Size: Size of the minimap. You can type arbitrary values or pick
             dimensions from the list.
           </li>
           <li>Zoom: How much the minimap is zoomed in or out.</li>
-        </ul>
+        </StyledList>
       </div>
     </Text>
   );
@@ -118,6 +118,12 @@ const ConfiguringEol = () => {
 
 const Text = styled.div`
   padding-left: 8px;
+`;
+
+const StyledList = styled.ul`
+  padding-inline-start: 25px;
+  margin-block-start: 0.4em;
+  margin-block-end: 0.4em;
 `;
 
 export default ConfiguringEol;
