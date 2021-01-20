@@ -121,7 +121,6 @@ const Text = styled.div`
 `;
 
 const StyledList = styled.ul`
-  padding-inline-start: 25px;
   margin-block-start: 0.4em;
   margin-block-end: 0.4em;
 `;

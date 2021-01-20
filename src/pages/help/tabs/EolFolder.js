@@ -54,8 +54,8 @@ const EolFolder = () => {
       </p>
       <p>
         When you are making a shirt, you should take into account that the game
-        expects a 8-bit color palette on the image. Failing to use a wrong color
-        palette will result in unexpected colors.
+        expects a 8-bit color palette on the image. Using a wrong color palette
+        will result in unexpected colors.
       </p>
       <p>
         If the shirt is not the right size, it will break the shirt into some
@@ -193,6 +193,21 @@ const EolFolder = () => {
     </TextBox>
   );
 
+  const makeLink = (expName, linkName, description) => {
+    return (
+      <TableRow>
+        <TableCell
+          className={exp === expName ? classes.highlight : classes.root}
+        >
+          <Clickable color="primary" onClick={() => setExp(expName)}>
+            {linkName}
+          </Clickable>{' '}
+          - {description}
+        </TableCell>
+      </TableRow>
+    );
+  };
+
   return (
     <div>
       <Text>
@@ -203,150 +218,42 @@ const EolFolder = () => {
           <Text>
             <Header h3>Folders</Header>
             <Table size="small">
-              <TableRow>
-                <TableCell
-                  className={exp === 'lev' ? classes.highlight : classes.root}
-                >
-                  <Clickable color="primary" onClick={() => setExp('lev')}>
-                    lev
-                  </Clickable>{' '}
-                  - Level folder
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'rec' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('rec')}>rec</Clickable> -
-                  Replay folder
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'bmp' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('bmp')}>bmp</Clickable> - The
-                  folder for custom shirts
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'lgr' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('lgr')}>lgr</Clickable> -
-                  Customize how the game looks
-                </TableCell>
-              </TableRow>
+              {makeLink('lev', 'lev', 'Level Folder')}
+              {makeLink('rec', 'rec', 'Replay Folder')}
+              {makeLink('bmp', 'bmp', 'The folder for custom shirts')}
+              {makeLink('lgr', 'lgr', 'Customize how the game looks')}
             </Table>
             <Header h3>Files</Header>
             <Table size="small">
-              <TableRow>
-                <TableCell
-                  className={exp === 'eol' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('eol')}>eol.exe</Clickable> -
-                  The game executable
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={
-                    exp === 'eolconf' ? classes.highlight : classes.root
-                  }
-                >
-                  <Clickable onClick={() => setExp('eolconf')}>
-                    eolconf.exe
-                  </Clickable>{' '}
-                  - Online settings
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={
-                    exp === 'startballe' ? classes.highlight : classes.root
-                  }
-                >
-                  <Clickable onClick={() => setExp('startballe')}>
-                    startballe.exe
-                  </Clickable>{' '}
-                  - Start battles
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={
-                    exp === 'elmares' ? classes.highlight : classes.root
-                  }
-                >
-                  <Clickable onClick={() => setExp('elmares')}>
-                    elma.res
-                  </Clickable>{' '}
-                  - Original Elasto Mania resource list file
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'bs' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('bs')}>bs.dll</Clickable> -
-                  Online patch functionality
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'state' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('state')}>
-                    state.dat
-                  </Clickable>{' '}
-                  - Local internal time storage
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'stats' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('stats')}>
-                    stats.txt
-                  </Clickable>{' '}
-                  - Local internal times in a text file format
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={
-                    exp === 'screenshots' ? classes.highlight : classes.root
-                  }
-                >
-                  <Clickable onClick={() => setExp('screenshots')}>
-                    snp*****.pcx
-                  </Clickable>{' '}
-                  - Screenshot files
-                </TableCell>
-              </TableRow>
+              {makeLink('eol', 'eol.exe', 'The game executable')}
+              {makeLink('eolconf', 'eolconf.exe', 'Online settings')}
+              {makeLink('startballe', 'startballe.exe', 'Start battles')}
+              {makeLink(
+                'elmares',
+                'elma.res',
+                'Original Elasto Mania resource list file',
+              )}
+              {makeLink('bs', 'bs.dll', 'Online patch functionality')}
+              {makeLink(
+                'state',
+                'state.dat',
+                'Local internal time storage file',
+              )}
+              {makeLink(
+                'stats',
+                'stats.txt',
+                'Local internal times in a text file format',
+              )}
+              {makeLink('screenshots', 'snp*****.pcx', 'Screenshot files')}
             </Table>
             <Header h3>Useful additions</Header>
             <Table size="small">
-              <TableRow>
-                <TableCell
-                  className={exp === 'ddraw' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('ddraw')}>
-                    ddraw.dll
-                  </Clickable>{' '}
-                  - A useful library to make the game smoother
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  className={exp === 'frate' ? classes.highlight : classes.root}
-                >
-                  <Clickable onClick={() => setExp('frate')}>
-                    f_rate.inf
-                  </Clickable>{' '}
-                  - Check your in-game fps
-                </TableCell>
-              </TableRow>
+              {makeLink(
+                'ddraw',
+                'ddraw.dll',
+                'A useful library to make the game smoother',
+              )}
+              {makeLink('f_rate', 'f_rate.inf', 'Check your in-game fps')}
             </Table>
           </Text>
         </LeftContainer>
