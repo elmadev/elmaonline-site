@@ -70,9 +70,15 @@ export function auth(body) {
 }
 
 export function authContext(req) {
+  let token = '';
   if (req.cookies.token) {
-    if (jws.verify(req.cookies.token, config.jwtAlgo, config.jwtSecret)) {
-      const userInfo = jws.decode(req.cookies.token);
+    token = req.cookies.token;
+  } else if (req.headers.authorization) {
+    token = req.headers.authorization;
+  }
+  if (token) {
+    if (jws.verify(token, config.jwtAlgo, config.jwtSecret)) {
+      const userInfo = jws.decode(token);
       const payload = JSON.parse(userInfo.payload);
       return {
         auth: true,
