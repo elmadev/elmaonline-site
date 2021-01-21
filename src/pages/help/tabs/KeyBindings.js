@@ -103,21 +103,29 @@ const KeyBindings = () => {
       <TableContainerStyled>
         <Table size="small" className="table">
           <TableHead>
-            <TableRow>
-              <TableCell>Button</TableCell>
-              <TableCell>Action</TableCell>
-              <TableCell>OPT1 + Button</TableCell>
-              <TableCell>OPT2 + Button</TableCell>
+            <TableRow key="table_header">
+              <TableCell key="button_header">Button</TableCell>
+              <TableCell key="action_header">Action</TableCell>
+              <TableCell key="action2_header">OPT1 + Button</TableCell>
+              <TableCell key="action3_header">OPT2 + Button</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {keyBindingRows &&
-              keyBindingRows.map(r => (
-                <TableRow>
-                  <TableCell key={r.button}>{r.button}</TableCell>
-                  <TableCell key={r.action}>{r.action}</TableCell>
-                  <TableCell key={r.action2}>{r.action2}</TableCell>
-                  <TableCell key={r.action3}>{r.action3}</TableCell>
+              keyBindingRows.map((r, i) => (
+                <TableRow key={`${i.toString()}row`}>
+                  <TableCell key={`${i.toString()}button`}>
+                    {r.button}
+                  </TableCell>
+                  <TableCell key={`${i.toString()}action`}>
+                    {r.action}
+                  </TableCell>
+                  <TableCell key={`${i.toString()}action2`}>
+                    {r.action2}
+                  </TableCell>
+                  <TableCell key={`${i.toString()}action3`}>
+                    {r.action3}
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

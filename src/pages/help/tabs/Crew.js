@@ -27,10 +27,10 @@ const Crew = ({ crew }) => {
               <Header h3>Admins</Header>
               <Table size="small">
                 <TableBody>
-                  {crewLists.admins.map(r => {
+                  {crewLists.admins.map((r, i) => {
                     return (
-                      <TableRow>
-                        <TableCell>
+                      <TableRow key={`${i.toString()}y`}>
+                        <TableCell key={`${i.toString()}u`}>
                           <Flag nationality={r.Country} />{' '}
                           <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
                           {r.TeamData && (
@@ -51,10 +51,10 @@ const Crew = ({ crew }) => {
               <Header h3>Moderators</Header>
               <Table size="small">
                 <TableBody>
-                  {crewLists.mods.map(r => {
+                  {crewLists.mods.map((r, i) => {
                     return (
-                      <TableRow>
-                        <TableCell>
+                      <TableRow key={`${i.toString()}a`}>
+                        <TableCell key={`${i.toString()}b`}>
                           <Flag nationality={r.Country} />{' '}
                           <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
                           {r.TeamData && (
@@ -76,10 +76,10 @@ const Crew = ({ crew }) => {
               <Header h3>Battle aborters</Header>
               <Table size="small">
                 <TableBody>
-                  {crewLists.aborters.map(r => {
+                  {crewLists.aborters.map((r, i) => {
                     return (
-                      <TableRow>
-                        <TableCell>
+                      <TableRow key={`${i.toString()}r`}>
+                        <TableCell key={`${i.toString()}k`}>
                           <Flag nationality={r.Country} />{' '}
                           <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
                           {r.TeamData && (

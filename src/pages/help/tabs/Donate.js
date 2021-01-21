@@ -56,45 +56,43 @@ const Donate = ({ donations }) => {
             Read the QR code or click the button underneath to donate via
             paypal.
           </p>
-          <p>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                width: '80%',
-              }}
-            >
-              <img src={DonationsQR} alt="qr" />
-              <div style={{ alignSelf: 'center' }}>
-                <form
-                  action="https://www.paypal.com/donate"
-                  method="post"
-                  target="_top"
-                >
-                  <input
-                    type="hidden"
-                    name="hosted_button_id"
-                    value="526TTPQT9BUEN"
-                  />
-                  <input
-                    type="image"
-                    src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif"
-                    border="0"
-                    name="submit"
-                    title="PayPal - The safer, easier way to pay online!"
-                    alt="Donate with PayPal button"
-                  />
-                  <img
-                    alt=""
-                    border="0"
-                    src="https://www.paypal.com/en_DK/i/scr/pixel.gif"
-                    width="1"
-                    height="1"
-                  />
-                </form>
-              </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              width: '80%',
+            }}
+          >
+            <img src={DonationsQR} alt="qr" />
+            <div style={{ alignSelf: 'center' }}>
+              <form
+                action="https://www.paypal.com/donate"
+                method="post"
+                target="_top"
+              >
+                <input
+                  type="hidden"
+                  name="hosted_button_id"
+                  value="526TTPQT9BUEN"
+                />
+                <input
+                  type="image"
+                  src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif"
+                  border="0"
+                  name="submit"
+                  title="PayPal - The safer, easier way to pay online!"
+                  alt="Donate with PayPal button"
+                />
+                <img
+                  alt=""
+                  border="0"
+                  src="https://www.paypal.com/en_DK/i/scr/pixel.gif"
+                  width="1"
+                  height="1"
+                />
+              </form>
             </div>
-          </p>
+          </div>
           <p>
             It is completely free to play EOL, however it costs a little sum to
             keep the server running, which is what donations goes towards.
@@ -128,19 +126,20 @@ const Donate = ({ donations }) => {
           <Table size="small">
             <TableBody>
               {donators.donators &&
-                donators.donators.map(r => {
+                donators.donators.map((r, i) => {
                   return (
-                    <TableRow>
-                      <TableCell>
+                    <TableRow key={`${i.toString()}r`}>
+                      <TableCell key={`${i.toString()}p`}>
                         <Flag nationality={r.Country} />{' '}
                         <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>{' '}
                         {r.Team && (
                           <Link to={`/team/${r.Team}`}> [{r.Team}]</Link>
                         )}
                       </TableCell>
-                      <TableCell align="right">{`${r.Amount.toFixed(
-                        2,
-                      )}$`}</TableCell>
+                      <TableCell
+                        align="right"
+                        key={`${i.toString()}a`}
+                      >{`${r.Amount.toFixed(2)}$`}</TableCell>
                     </TableRow>
                   );
                 })}
