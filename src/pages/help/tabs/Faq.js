@@ -7,6 +7,35 @@ const Faq = () => {
     <div>
       <Text>
         <Header h2>Frequently asked questions</Header>
+        <Header h3>Registration</Header>
+        <QuestionText>
+          Q: I did not receive an email after registration. What do I do?
+        </QuestionText>
+        <AnswerText>A: Contact @eolmod in the Elma discord</AnswerText>
+        <Header h3>General</Header>
+        <QuestionText>
+          Q: Why should I use EOL instead of the Steam version?
+        </QuestionText>
+        <AnswerText>
+          A: EOL (Elma Online) enhances the game with online capabilities, such
+          as the ability to see other players playing the same level, saving all
+          stats in a database and playing live battles in-game, along with the
+          chat.
+        </AnswerText>
+        <QuestionText>
+          Q: I have a feature suggestion. Who should I tell about it?
+        </QuestionText>
+        <AnswerText>
+          A: The Elma discord in general is a good place to discuss just about
+          anything related to this game. Keep in mind the eol patch itself is
+          hard and a lot of work to update which might make even good ideas not
+          easy to implement.
+        </AnswerText>
+        <QuestionText>Q: How do I know the time of a replay?</QuestionText>
+        <AnswerText>
+          A: In the replay menu, press ctrl + alt + enter. This will show the
+          time of the replay within small error margin.
+        </AnswerText>
         <Header h3>In-game errors</Header>
         <QuestionText>
           Q: I get &quot;tcp: can&#39;t connect to the server&quot; when I
@@ -27,12 +56,6 @@ const Faq = () => {
           running simultaneously. Close the extra executables and you should be
           good to go.
         </AnswerText>
-        <QuestionText>Q: How do I know the time of a replay?</QuestionText>
-        <Header h3>General</Header>
-        <AnswerText>
-          A: In the replay menu, press ctrl + alt + enter. This will show the
-          time of the replay within small error margin.
-        </AnswerText>
       </Text>
     </div>
   );
@@ -40,14 +63,20 @@ const Faq = () => {
 
 const QuestionText = styled.span`
   font-weight: 550;
+  font-size: 0.95em;
 `;
 
 const AnswerText = styled.div`
-  border: 1px solid #eee;
+  font-size: 0.93em;
 `;
 
 const Text = styled.div`
+  max-width: 900px;
   padding-left: 8px;
+  & h3 {
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
 `;
 
 export default Faq;

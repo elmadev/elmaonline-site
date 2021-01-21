@@ -74,6 +74,7 @@ const Etiquette = () => {
 
 const Text = styled.div`
   padding-left: 8px;
+  max-width: 900px;
 `;
 
 export default Etiquette;

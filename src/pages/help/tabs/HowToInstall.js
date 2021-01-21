@@ -37,6 +37,7 @@ const HowToInstall = () => {
 
 const Text = styled.div`
   padding-left: 8px;
+  max-width: 900px;
 `;
 
 const List = styled.ol`

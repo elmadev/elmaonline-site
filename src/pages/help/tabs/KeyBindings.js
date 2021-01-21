@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   Table,
   TableBody,
@@ -10,19 +9,6 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
-
-const useStyles = makeStyles({
-  table: {
-    width: 710,
-  },
-  container: {
-    border: '1px solid #bdbdbd',
-    width: 710,
-  },
-  main: {
-    paddingLeft: '8px;',
-  },
-});
 
 const createRow = (button, action, action2, action3) => {
   return { button, action, action2, action3 };
@@ -99,7 +85,6 @@ const keyBindingRows = [
 ];
 
 const KeyBindings = () => {
-  const classes = useStyles();
   return (
     <Text>
       <Header h2>EOL key bindings</Header>
@@ -115,8 +100,8 @@ const KeyBindings = () => {
           it in eolconf.exe in your eol folder.
         </RowSpan>
       </div>
-      <TableContainer className={classes.container}>
-        <Table size="small" className={classes.table}>
+      <TableContainerStyled>
+        <Table size="small" className="table">
           <TableHead>
             <TableRow>
               <TableCell>Button</TableCell>
@@ -137,7 +122,7 @@ const KeyBindings = () => {
               ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainerStyled>
       <p>
         In addition, there is a special combination of keys to enter a level in
         free camera mode. In level menu, hold F1 and press enter to enter the
@@ -147,6 +132,15 @@ const KeyBindings = () => {
     </Text>
   );
 };
+
+const TableContainerStyled = styled(TableContainer)`
+  && {
+    width: 710px;
+  }
+  & .table {
+    border: 1px solid rgba(224, 224, 224, 1);
+  }
+`;
 
 const Text = styled.div`
   padding-left: 8px;

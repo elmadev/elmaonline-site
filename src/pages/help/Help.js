@@ -32,91 +32,91 @@ const Help = () => {
 
   const makeButtons = (infoText, description) => {
     return (
-      <StyledButton>
-        <Button
+      <div>
+        <StyledButton
+          highlight={info === infoText}
           onClick={() => setInfo(infoText)}
           color="primary"
-          className={info === infoText ? 'selectedbutton' : 'textbutton'}
         >
           {description}
-        </Button>
-      </StyledButton>
+        </StyledButton>
+      </div>
     );
   };
 
   return (
-    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <>
-        <Header>Help</Header>
-        <MainContainer>
-          <LeftContainer>
-            <Text>
-              <Header h3>1. Getting Started</Header>
-            </Text>
-            <ButtonContainer>
-              {makeButtons('install', '1.1. How to install')}
-              {makeButtons('connect', '1.2. Register and connect online')}
-              {makeButtons('gettingStarted', '1.3. Useful information')}
-              {makeButtons('faq', '1.4. FAQ')}
-            </ButtonContainer>
-            <Header h3>2. Setting up EOL</Header>
-            <ButtonContainer>
-              {makeButtons('keyBindings', '2.1. EOL key bindings')}
-              {makeButtons('configuringEol', '2.2. EOL configuration')}
-              {makeButtons('eolFolder', '2.3. EOL files')}
-            </ButtonContainer>
-            <Header h3>3. Playing online</Header>
-            <ButtonContainer>
-              {makeButtons('playingBattles', '3.1. Playing Battles')}
-              {makeButtons('rules', '3.2. Rules')}
-              {makeButtons('etiquette', '3.3. Etiquette')}
-              {makeButtons('glossary', '3.4. Glossary')}
-            </ButtonContainer>
-            <Header h3>4. The community</Header>
-            <ButtonContainer>
-              {makeButtons('crew', '4.1. Crew')}
-              {makeButtons('donate', '4.2. Donate')}
-              {makeButtons('links', '4.3. Links')}
-              {makeButtons('api', '4.4. Developer API')}
-            </ButtonContainer>
-          </LeftContainer>
-          <RightContainer>
-            {info === 'gettingStarted' && <GettingStarted />}
-            {info === 'install' && <HowToInstall />}
-            {info === 'connect' && <RegisterAndConnect />}
-            {info === 'keyBindings' && <KeyBindings />}
-            {info === 'rules' && <Rules />}
-            {info === 'glossary' && <Glossary />}
-            {info === 'configuringEol' && <ConfiguringEol />}
-            {info === 'playingBattles' && <PlayingBattles />}
-            {info === 'etiquette' && <Etiquette />}
-            {info === 'faq' && <Faq />}
-            {info === 'donate' && <Donate donations={donations} />}
-            {info === 'api' && <DeveloperApi />}
-            {info === 'links' && <Links />}
-            {info === 'crew' && <Crew crew={crew} />}
-            {info === 'eolFolder' && <EolFolder />}
-          </RightContainer>
-        </MainContainer>
-      </>
-    </div>
+    <MainDiv>
+      <Header>Help</Header>
+      <MainContainer>
+        <LeftContainer>
+          <Text>
+            <Header h3>1. Getting Started</Header>
+          </Text>
+          <ButtonContainer>
+            {makeButtons('install', '1.1. How to install')}
+            {makeButtons('connect', '1.2. Register and connect online')}
+            {makeButtons('gettingStarted', '1.3. Useful information')}
+            {makeButtons('faq', '1.4. FAQ')}
+          </ButtonContainer>
+          <Header h3>2. Setting up EOL</Header>
+          <ButtonContainer>
+            {makeButtons('keyBindings', '2.1. EOL key bindings')}
+            {makeButtons('configuringEol', '2.2. EOL configuration')}
+            {makeButtons('eolFolder', '2.3. EOL files')}
+          </ButtonContainer>
+          <Header h3>3. Playing online</Header>
+          <ButtonContainer>
+            {makeButtons('playingBattles', '3.1. Playing Battles')}
+            {makeButtons('rules', '3.2. Rules')}
+            {makeButtons('etiquette', '3.3. Etiquette')}
+            {makeButtons('glossary', '3.4. Glossary')}
+          </ButtonContainer>
+          <Header h3>4. The community</Header>
+          <ButtonContainer>
+            {makeButtons('crew', '4.1. Crew')}
+            {makeButtons('donate', '4.2. Donate')}
+            {makeButtons('links', '4.3. Links')}
+            {makeButtons('api', '4.4. Developer API')}
+          </ButtonContainer>
+        </LeftContainer>
+        <RightContainer>
+          {info === 'gettingStarted' && <GettingStarted />}
+          {info === 'install' && <HowToInstall />}
+          {info === 'connect' && <RegisterAndConnect />}
+          {info === 'keyBindings' && <KeyBindings />}
+          {info === 'rules' && <Rules />}
+          {info === 'glossary' && <Glossary />}
+          {info === 'configuringEol' && <ConfiguringEol />}
+          {info === 'playingBattles' && <PlayingBattles />}
+          {info === 'etiquette' && <Etiquette />}
+          {info === 'faq' && <Faq />}
+          {info === 'donate' && <Donate donations={donations} />}
+          {info === 'api' && <DeveloperApi />}
+          {info === 'links' && <Links />}
+          {info === 'crew' && <Crew crew={crew} />}
+          {info === 'eolFolder' && <EolFolder />}
+        </RightContainer>
+      </MainContainer>
+    </MainDiv>
   );
 };
 
-const StyledButton = styled.div.attrs(props => ({
-  className: props.className,
-}))`
-  & .textbutton {
-    border: 2px solid transparent;
+const StyledButton = styled(Button)`
+  && {
+    border: ${p =>
+      p.highlight
+        ? '2px solid rgba(33, 150, 83, 0.3)'
+        : '2px solid transparent'};
     text-transform: initial;
-    font-weight: inherit;
+    font-weight: ${p => (p.highlight ? '550' : 'inherit')};
+    background: ${p => (p.highlight ? 'rgba(33, 150, 83, 0.1)' : 'initial')};
   }
-  & .selectedbutton {
-    text-transform: initial;
-    font-weight: 550;
-    border: 2px solid rgba(33, 150, 83, 0.3);
-    background: rgba(33, 150, 83, 0.1);
-  }
+`;
+
+const MainDiv = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const MainContainer = styled.div`
@@ -125,7 +125,7 @@ const MainContainer = styled.div`
 `;
 const LeftContainer = styled.div`
   float: left;
-  width: 35%;
+  width: 450px;
 `;
 const RightContainer = styled.div`
   float: right;

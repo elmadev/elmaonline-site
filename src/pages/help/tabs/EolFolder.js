@@ -2,21 +2,10 @@ import React, { useState } from 'react';
 import Link from 'components/Link';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { Table, TableCell, TableRow, makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles({
-  root: {
-    border: 'none',
-  },
-  highlight: {
-    border: 'none',
-    fontWeight: 550,
-  },
-});
+import { Table, TableCell, TableRow } from '@material-ui/core';
 
 const EolFolder = () => {
   const [exp, setExp] = useState({ lev: false, ddraw: false });
-  const classes = useStyles();
   const expandLev = (
     <TextBox>
       <Header h3>Level folder</Header>
@@ -92,6 +81,33 @@ const EolFolder = () => {
         There are a couple of different options, trying different ones for the
         best performance is recommended.
       </p>
+      <p>
+        Download here:{' '}
+        <Link to="./ddraws.zip" download>
+          Zip (local)
+        </Link>
+        {' - '}
+        <Link
+          to="https://docs.google.com/uc?authuser=0&id=0B1HOSlW-Ci3UZXJvVmFWSnVMUjg&export=download"
+          download
+        >
+          Rar (Google Docs)
+        </Link>
+      </p>
+      <p>
+        To use a any of these, unpack the archive and copy one of the .dll files
+        into your eol folder. You can try to change it if the performance is
+        suboptimal.
+      </p>
+      <p>
+        Note that your in-game editor might not work with this ddraw.dll, in
+        which case you might want to try swapping for another one or using an
+        excternal level editor such as{' '}
+        <Link to="https://mopolauta.moposite.com/viewtopic.php?f=3&t=6101">
+          SLE
+        </Link>
+        .
+      </p>
     </TextBox>
   );
   const expandStartballe = (
@@ -114,8 +130,7 @@ const EolFolder = () => {
       <Header h3>Screenshot files</Header>
       <p>
         Whenever you take a screenshot in-game, it is saved as snp*****.pcx in
-        your eol folder. To view them, you need a program that can open them,
-        such as IrfanView.
+        your eol folder. To view them, you need a program that can open them.
       </p>
     </TextBox>
   );
@@ -196,14 +211,12 @@ const EolFolder = () => {
   const makeLink = (expName, linkName, description) => {
     return (
       <TableRow>
-        <TableCell
-          className={exp === expName ? classes.highlight : classes.root}
-        >
+        <TableCellStyled highlight={exp === expName}>
           <Clickable color="primary" onClick={() => setExp(expName)}>
             {linkName}
           </Clickable>{' '}
           - {description}
-        </TableCell>
+        </TableCellStyled>
       </TableRow>
     );
   };
@@ -253,7 +266,7 @@ const EolFolder = () => {
                 'ddraw.dll',
                 'A useful library to make the game smoother',
               )}
-              {makeLink('f_rate', 'f_rate.inf', 'Check your in-game fps')}
+              {makeLink('frate', 'f_rate.inf', 'Check your in-game fps')}
             </Table>
           </Text>
         </LeftContainer>
@@ -277,6 +290,13 @@ const EolFolder = () => {
     </div>
   );
 };
+
+const TableCellStyled = styled(TableCell)`
+  && {
+    border: none;
+    font-weight: ${p => (p.highlight ? 550 : 'initial')};
+  }
+`;
 
 const Text = styled.div`
   padding-left: 8px;

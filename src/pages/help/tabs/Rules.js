@@ -25,7 +25,7 @@ const Rules = () => {
           <Header h3>Playing</Header>
         </li>
         <ol>
-          <li>Cheating in any way</li>
+          <li>Cheating in any way (*)</li>
           <li>
             Dis-/reconnecting to play battles before the countdown is over
           </li>
@@ -73,12 +73,63 @@ const Rules = () => {
           <li>Senseless nick/team changing</li>
         </ol>
       </List>
+      <p>
+        <b>(*)</b> In extreme cases these can give an immediate one year or even
+        permanent ban.
+      </p>
+      <Header h2>Elaborations</Header>
+      <Header h3>Chat</Header>
+      <p>
+        A few lines of non english here and there will be allowed. If you are
+        bad at english or talking to someone who is, it&#39;s fine to talk
+        another language shortly. But if it turns into a longer conversation
+        move it to private or elsewhere.
+      </p>
+      <Header h3>Starting battles</Header>
+      <p>
+        Allowed:
+        <ul>
+          <li>New levels never played by anyone</li>
+          <ul>
+            Remixes
+            <li>Internal remixes</li>
+            <li>Remixes of others&#39; levels</li>
+            <li>
+              But remember they have to be noticably different, especially when
+              it&#39;s internals (changing polygons required). And keep amount
+              of remixes to a minimum.
+            </li>
+          </ul>
+        </ul>
+        Not allowed:
+        <ul>
+          <li>Remixes only changing the starting position</li>
+          <li>Remixes with very small changes</li>
+          <li>Practice(/Train) levels</li>
+          <li>Mirrored levels</li>
+          <li>Scaled levels</li>
+          <li>Using the same level for a different battle type</li>
+        </ul>
+      </p>
+      <Header h3>Website</Header>
+      <p>
+        You should always use your &quot;official&quot; nick, as in the nick you
+        usually use, and the team you&#39;re a member of if any.
+      </p>
+      <Header h2>Final word</Header>
+      <p>
+        The admin group always has the final word, however if you feel
+        you&#39;re being treated unjustly, you can send a ban appeal and another
+        admin will look at it. Serious cases will always be discussed in the
+        admin group.
+      </p>
     </Text>
   );
 };
 
 const Text = styled.div`
   padding-left: 8px;
+  max-width: 900px;
 `;
 
 const List = styled.ol`
