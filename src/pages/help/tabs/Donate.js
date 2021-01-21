@@ -4,7 +4,7 @@ import Link from 'components/Link';
 import Flag from 'components/Flag';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { Table, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import DonationsQR from './DonationsQR.png';
 
 const parseDonations = donations => {
@@ -126,23 +126,25 @@ const Donate = ({ donations }) => {
         <div className="left">
           <Header h3>Donator toplist</Header>
           <Table size="small">
-            {donators.donators &&
-              donators.donators.map(r => {
-                return (
-                  <TableRow>
-                    <TableCell>
-                      <Flag nationality={r.Country} />{' '}
-                      <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>{' '}
-                      {r.Team && (
-                        <Link to={`/team/${r.Team}`}> [{r.Team}]</Link>
-                      )}
-                    </TableCell>
-                    <TableCell align="right">{`${r.Amount.toFixed(
-                      2,
-                    )}$`}</TableCell>
-                  </TableRow>
-                );
-              })}
+            <TableBody>
+              {donators.donators &&
+                donators.donators.map(r => {
+                  return (
+                    <TableRow>
+                      <TableCell>
+                        <Flag nationality={r.Country} />{' '}
+                        <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>{' '}
+                        {r.Team && (
+                          <Link to={`/team/${r.Team}`}> [{r.Team}]</Link>
+                        )}
+                      </TableCell>
+                      <TableCell align="right">{`${r.Amount.toFixed(
+                        2,
+                      )}$`}</TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
           </Table>
         </div>
       </div>

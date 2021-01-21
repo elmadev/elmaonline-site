@@ -114,10 +114,10 @@ const KeyBindings = () => {
             {keyBindingRows &&
               keyBindingRows.map(r => (
                 <TableRow>
-                  <TableCell>{r.button}</TableCell>
-                  <TableCell>{r.action}</TableCell>
-                  <TableCell>{r.action2}</TableCell>
-                  <TableCell>{r.action3}</TableCell>
+                  <TableCell key={r.button}>{r.button}</TableCell>
+                  <TableCell key={r.action}>{r.action}</TableCell>
+                  <TableCell key={r.action2}>{r.action2}</TableCell>
+                  <TableCell key={r.action3}>{r.action3}</TableCell>
                 </TableRow>
               ))}
           </TableBody>

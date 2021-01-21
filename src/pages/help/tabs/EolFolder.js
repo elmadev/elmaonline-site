@@ -211,7 +211,7 @@ const EolFolder = () => {
   const makeLink = (expName, linkName, description) => {
     return (
       <TableRow>
-        <TableCellStyled highlight={exp === expName}>
+        <TableCellStyled highlight={exp === expName ? 'true' : null}>
           <Clickable color="primary" onClick={() => setExp(expName)}>
             {linkName}
           </Clickable>{' '}

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Grid, Table, TableCell, TableRow } from '@material-ui/core';
+import { Grid, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import Link from 'components/Link';
 import Flag from 'components/Flag';
 import Header from 'components/Header';
@@ -26,44 +26,48 @@ const Crew = ({ crew }) => {
             <CrewContainer>
               <Header h3>Admins</Header>
               <Table size="small">
-                {crewLists.admins.map(r => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        <Flag nationality={r.Country} />{' '}
-                        <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
-                        {r.TeamData && (
-                          <Link to={`/team/${r.TeamData.Team}`}>
-                            {' '}
-                            [{r.TeamData.Team}]
-                          </Link>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                <TableBody>
+                  {crewLists.admins.map(r => {
+                    return (
+                      <TableRow>
+                        <TableCell>
+                          <Flag nationality={r.Country} />{' '}
+                          <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
+                          {r.TeamData && (
+                            <Link to={`/team/${r.TeamData.Team}`}>
+                              {' '}
+                              [{r.TeamData.Team}]
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
               </Table>
             </CrewContainer>
 
             <CrewContainer>
               <Header h3>Moderators</Header>
               <Table size="small">
-                {crewLists.mods.map(r => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        <Flag nationality={r.Country} />{' '}
-                        <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
-                        {r.TeamData && (
-                          <Link to={`/team/${r.TeamData.Team}`}>
-                            {' '}
-                            [{r.TeamData.Team}]
-                          </Link>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                <TableBody>
+                  {crewLists.mods.map(r => {
+                    return (
+                      <TableRow>
+                        <TableCell>
+                          <Flag nationality={r.Country} />{' '}
+                          <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
+                          {r.TeamData && (
+                            <Link to={`/team/${r.TeamData.Team}`}>
+                              {' '}
+                              [{r.TeamData.Team}]
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
               </Table>
             </CrewContainer>
           </Grid>
@@ -71,22 +75,24 @@ const Crew = ({ crew }) => {
             <CrewContainer>
               <Header h3>Battle aborters</Header>
               <Table size="small">
-                {crewLists.aborters.map(r => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        <Flag nationality={r.Country} />{' '}
-                        <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
-                        {r.TeamData && (
-                          <Link to={`/team/${r.TeamData.Team}`}>
-                            {' '}
-                            [{r.TeamData.Team}]
-                          </Link>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                <TableBody>
+                  {crewLists.aborters.map(r => {
+                    return (
+                      <TableRow>
+                        <TableCell>
+                          <Flag nationality={r.Country} />{' '}
+                          <Link to={`/kuskis/${r.Kuski}`}>{r.Kuski}</Link>
+                          {r.TeamData && (
+                            <Link to={`/team/${r.TeamData.Team}`}>
+                              {' '}
+                              [{r.TeamData.Team}]
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
               </Table>
             </CrewContainer>
           </Grid>
