@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'components/Link';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { Table, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 
 const EolFolder = () => {
   const [exp, setExp] = useState({ lev: false, ddraw: false });
@@ -231,42 +231,48 @@ const EolFolder = () => {
           <Text>
             <Header h3>Folders</Header>
             <Table size="small">
-              {makeLink('lev', 'lev', 'Level Folder')}
-              {makeLink('rec', 'rec', 'Replay Folder')}
-              {makeLink('bmp', 'bmp', 'The folder for custom shirts')}
-              {makeLink('lgr', 'lgr', 'Customize how the game looks')}
+              <TableBody>
+                {makeLink('lev', 'lev', 'Level Folder')}
+                {makeLink('rec', 'rec', 'Replay Folder')}
+                {makeLink('bmp', 'bmp', 'The folder for custom shirts')}
+                {makeLink('lgr', 'lgr', 'Customize how the game looks')}
+              </TableBody>
             </Table>
             <Header h3>Files</Header>
             <Table size="small">
-              {makeLink('eol', 'eol.exe', 'The game executable')}
-              {makeLink('eolconf', 'eolconf.exe', 'Online settings')}
-              {makeLink('startballe', 'startballe.exe', 'Start battles')}
-              {makeLink(
-                'elmares',
-                'elma.res',
-                'Original Elasto Mania resource list file',
-              )}
-              {makeLink('bs', 'bs.dll', 'Online patch functionality')}
-              {makeLink(
-                'state',
-                'state.dat',
-                'Local internal time storage file',
-              )}
-              {makeLink(
-                'stats',
-                'stats.txt',
-                'Local internal times in a text file format',
-              )}
-              {makeLink('screenshots', 'snp*****.pcx', 'Screenshot files')}
+              <TableBody>
+                {makeLink('eol', 'eol.exe', 'The game executable')}
+                {makeLink('eolconf', 'eolconf.exe', 'Online settings')}
+                {makeLink('startballe', 'startballe.exe', 'Start battles')}
+                {makeLink(
+                  'elmares',
+                  'elma.res',
+                  'Original Elasto Mania resource list file',
+                )}
+                {makeLink('bs', 'bs.dll', 'Online patch functionality')}
+                {makeLink(
+                  'state',
+                  'state.dat',
+                  'Local internal time storage file',
+                )}
+                {makeLink(
+                  'stats',
+                  'stats.txt',
+                  'Local internal times in a text file format',
+                )}
+                {makeLink('screenshots', 'snp*****.pcx', 'Screenshot files')}
+              </TableBody>
             </Table>
             <Header h3>Useful additions</Header>
             <Table size="small">
-              {makeLink(
-                'ddraw',
-                'ddraw.dll',
-                'A useful library to make the game smoother',
-              )}
-              {makeLink('frate', 'f_rate.inf', 'Check your in-game fps')}
+              <TableBody>
+                {makeLink(
+                  'ddraw',
+                  'ddraw.dll',
+                  'A useful library to make the game smoother',
+                )}
+                {makeLink('frate', 'f_rate.inf', 'Check your in-game fps')}
+              </TableBody>
             </Table>
           </Text>
         </LeftContainer>

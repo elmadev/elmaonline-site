@@ -86,31 +86,29 @@ const Rules = () => {
         move it to private or elsewhere.
       </p>
       <Header h3>Starting battles</Header>
-      <p>
-        Allowed:
+      Allowed:
+      <ul>
+        <li>New levels never played by anyone</li>
         <ul>
-          <li>New levels never played by anyone</li>
-          <ul>
-            Remixes
-            <li>Internal remixes</li>
-            <li>Remixes of others&#39; levels</li>
-            <li>
-              But remember they have to be noticably different, especially when
-              it&#39;s internals (changing polygons required). And keep amount
-              of remixes to a minimum.
-            </li>
-          </ul>
+          Remixes
+          <li>Internal remixes</li>
+          <li>Remixes of others&#39; levels</li>
+          <li>
+            But remember they have to be noticably different, especially when
+            it&#39;s internals (changing polygons required). And keep amount of
+            remixes to a minimum.
+          </li>
         </ul>
-        Not allowed:
-        <ul>
-          <li>Remixes only changing the starting position</li>
-          <li>Remixes with very small changes</li>
-          <li>Practice(/Train) levels</li>
-          <li>Mirrored levels</li>
-          <li>Scaled levels</li>
-          <li>Using the same level for a different battle type</li>
-        </ul>
-      </p>
+      </ul>
+      Not allowed:
+      <ul>
+        <li>Remixes only changing the starting position</li>
+        <li>Remixes with very small changes</li>
+        <li>Practice(/Train) levels</li>
+        <li>Mirrored levels</li>
+        <li>Scaled levels</li>
+        <li>Using the same level for a different battle type</li>
+      </ul>
       <Header h3>Website</Header>
       <p>
         You should always use your &quot;official&quot; nick, as in the nick you

@@ -34,7 +34,7 @@ const Help = () => {
     return (
       <div>
         <StyledButton
-          highlight={info === infoText}
+          highlight={info === infoText ? 'true' : null}
           onClick={() => setInfo(infoText)}
           color="primary"
         >
