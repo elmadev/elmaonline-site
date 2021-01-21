@@ -1,4 +1,5 @@
 import express from 'express';
+import { eachSeries } from 'neo-async';
 import { acceptNickMail } from 'utils/email';
 import { authContext } from 'utils/auth';
 import { sendMessage } from 'utils/discord';
@@ -101,9 +102,7 @@ const AcceptNick = async (data, modId) => {
   );
   sendMessage(
     config.discord.channels.admin,
-    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${
-      data.Setting
-    }`,
+    `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${data.Setting}`,
   );
 };
 
@@ -160,7 +159,7 @@ const banKuski = async data => {
     BanType: data.banType,
     ExpireDate,
     Reason: data.banText,
-    Severeness: data.banType,
+    Severeness: data.severity,
   });
   await WriteActionLog(
     data.modId,
@@ -275,6 +274,36 @@ const getIPlogs = async KuskiIndex => {
   return data;
 };
 
+const getExpired = async () => {
+  const data = FlagBan.findAll({
+    where: {
+      Expired: 0,
+      ExpireDate: { [Op.lt]: format(new Date(), 't') },
+    },
+  });
+  return data;
+};
+
+const expiredExpired = async (data, done) => {
+  await FlagBan.update(
+    { Expired: 1 },
+    { where: { FlagBanIndex: data.FlagBanIndex } },
+  );
+  const severenesses = ['year', 'week', 'twoweek'];
+  const types = {
+    PlayBan: 'RPlay',
+    ChatBan: 'RChat',
+    StartBan: 'RStartBattle',
+  };
+  if (severenesses.indexOf(data.Severeness) > -1) {
+    await Kuski.update(
+      { [types[data.BanType]]: 1 },
+      { where: { KuskiIndex: data.KuskiIndex } },
+    );
+  }
+  done();
+};
+
 router
   .get('/nickrequests', async (req, res) => {
     const auth = authContext(req);
@@ -373,6 +402,11 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .post('/unban', async (req, res) => {
+    const expired = await getExpired();
+    await eachSeries(expired, expiredExpired);
+    res.json(expired);
   });
 
 export default router;
