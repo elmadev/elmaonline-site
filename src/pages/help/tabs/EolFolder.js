@@ -7,28 +7,36 @@ import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 const MakeTab = ({ components }) => {
   return (
     <TextBox>
-      {components.map(p => (typeof p === 'string' ? <p>{p}</p> : p))}
+      {components.map((p, i) =>
+        typeof p === 'string' ? <p key={i.toString()}>{p}</p> : p,
+      )}
     </TextBox>
   );
 };
 
 const tabs = {
   lev: [
-    <Header h3>Level folder</Header>,
+    <Header h3 key="header">
+      Level folder
+    </Header>,
     `This is where the levels in the External File category in game are
       stored. If you download a level outside of eol, this is where it goes.`,
     `For you to be able to download battles, you need to have this folder.
       Not having the folder will cause the game to crash.`,
   ],
   rec: [
-    <Header h3>Replay folder</Header>,
+    <Header h3 key="header">
+      Replay folder
+    </Header>,
     `This is where the replays in the Replay menu in game are stored. If you
       download a replay outside of eol, this is where it goes.`,
     `For you to be able to download battle replays, you need to have this
       folder. Not having the folder will cause the game to crash.`,
   ],
   bmp: [
-    <Header h3>Bmp folder</Header>,
+    <Header h3 key="header">
+      Bmp folder
+    </Header>,
     `All players' custom shirts are stored here. You can make your own
         shirt if you wish, the best way to get started is to copy one from
         someone else for the shape and size and modify it from there. Name the
@@ -38,7 +46,7 @@ const tabs = {
         will result in unexpected colors.`,
     `If the shirt is not the right size, it will break the shirt into some
         interesting fractal shapes.`,
-    <p>
+    <p key="p">
       <span>Download all available shirts here: </span>
       <Link to="/dl/allshirts" download>
         Download
@@ -47,7 +55,9 @@ const tabs = {
   ],
 
   lgr: [
-    <Header h3>Lgr folder</Header>,
+    <Header h3 key="header">
+      Lgr folder
+    </Header>,
     `This is where the in-game Lgr's ("skins") are stored.`,
     `You will need to have a Default.lgr in this folder.`,
     `You can name any lgr you have as Default.lgr and you can use it as your
@@ -55,16 +65,25 @@ const tabs = {
         maker.`,
   ],
 
-  eol: [<Header h3>eol.exe</Header>, `This is the game executable file.`],
+  eol: [
+    <Header h3 key="header">
+      eol.exe
+    </Header>,
+    `This is the game executable file.`,
+  ],
 
   eolconf: [
-    <Header h3>eolconf.exe</Header>,
+    <Header h3 key="header">
+      eolconf.exe
+    </Header>,
     `Configure your eol here. For more information, check out the
       "Configuring EOL" section.`,
   ],
 
   startballe: [
-    <Header h3>startballe.exe</Header>,
+    <Header h3 key="header">
+      startballe.exe
+    </Header>,
     `Use this to start battles or perform moderator actions.`,
     `You need to be given rights to start battles, special battles or to
         abort/stop battles. The best way to get the rights to start battles is
@@ -74,20 +93,29 @@ const tabs = {
   ],
 
   elmares: [
-    <Header h3>elma.res</Header>,
+    <Header h3 key="header">
+      elma.res
+    </Header>,
     `The resource list file, including fonts, menu backgrounds, etc.`,
   ],
 
-  bs: [<Header h3>bs.dll</Header>, `The online functionality file for eol.`],
+  bs: [
+    <Header h3 key="header">
+      bs.dll
+    </Header>,
+    `The online functionality file for eol.`,
+  ],
 
   state: [
-    <Header h3>state.dat</Header>,
+    <Header h3 key="header">
+      state.dat
+    </Header>,
     `Your internal top10's and total times are here, along with
       multiplayer top10's and total times.`,
     `To combine two existing state.dat files, name one of them merge.dat and
       place them in the game folder. When you launch the game they will merge
       into state.dat and you can proceed to delete merge.dat.`,
-    <p>
+    <p key="p">
       <span>
         If you want to make sure you will not lose your progress, you can upload
         this file to for example{' '}
@@ -99,7 +127,9 @@ const tabs = {
   ],
 
   stats: [
-    <Header h3>stats.txt</Header>,
+    <Header h3 key="header">
+      stats.txt
+    </Header>,
     `Your internal top10's and total times will be displayed here, along
       with multiplayer top10's and total times.`,
     `Keep in mind this file is only updated whenever you close your game,
@@ -107,18 +137,22 @@ const tabs = {
   ],
 
   screenshots: [
-    <Header h3>Screenshot files</Header>,
+    <Header h3 key="header">
+      Screenshot files
+    </Header>,
     `Whenever you take a screenshot in-game, it is saved as snp*****.pcx in
       your eol folder. To view them, you need a program that can open them.`,
   ],
 
   ddraw: [
-    <Header h3>ddraw.dll</Header>,
+    <Header h3 key="header">
+      ddraw.dll
+    </Header>,
     `ddraw.dll is a library which will greatly increase your framerate by
         changing the rendering method.`,
     `There are a couple of different options, trying different ones for the
         best performance is recommended.`,
-    <p>
+    <p key="p">
       Download here:{' '}
       <Link to="./ddraws.zip" download>
         Zip (local)
@@ -134,7 +168,7 @@ const tabs = {
     `To use a any of these, unpack the archive and copy one of the .dll files
         into your eol folder. You can try to change it if the performance is
         suboptimal.`,
-    <p>
+    <p key="p2">
       Note that your in-game editor might not work with this ddraw.dll, in which
       case you might want to try swapping for another one or using an excternal
       level editor such as{' '}
@@ -146,11 +180,13 @@ const tabs = {
   ],
 
   frate: [
-    <Header h3>f_rate.inf</Header>,
+    <Header h3 key="header">
+      f_rate.inf
+    </Header>,
     `f_rate.inf is an optional addition to your game folder. It will display
       the framerate at the end of your previous run. You do not need to exit
       the game to be able to check your fps.`,
-    <p>
+    <p key="p">
       Download f_rate.inf here:{' '}
       <Link to="./f_rate.zip" download>
         Download
@@ -164,8 +200,11 @@ const EolFolder = () => {
 
   const makeLink = (expName, linkName, description) => {
     return (
-      <TableRow>
-        <TableCellStyled highlight={exp === expName ? 'true' : null}>
+      <TableRow key={expName}>
+        <TableCellStyled
+          highlight={exp === expName ? 'true' : null}
+          key={`${expName}cell`}
+        >
           <Clickable color="primary" onClick={() => setExp(expName)}>
             {linkName}
           </Clickable>{' '}
