@@ -60,6 +60,7 @@
     "graphql-tools": "^4.0.4",
     "history": "4.10.1",
     "isomorphic-style-loader": "^5.1.0",
+    "jimp": "^0.16.1",
     "jws": "^3.2.2",
     "level-editor-gui": "https://github.com/ville-j/level-editor-gui.git",
     "lodash": "^4.17.20",
