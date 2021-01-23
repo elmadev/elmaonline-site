@@ -48,11 +48,11 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
                 <TimeRow key={r.KuskiIndex}>
                   <ListCell width={70}>{no + 1}</ListCell>
                   <ListCell width={320}>{r.KuskiData.Kuski}</ListCell>
-                  <TimeSpan
+                  <ListCell
                     highlight={r.TimeIndex >= highlight[highlightWeeks]}
                   >
                     <Time time={r.tt} />
-                  </TimeSpan>
+                  </ListCell>
                   <ListCell />
                 </TimeRow>
               ))}
@@ -62,11 +62,6 @@ const TotalTimes = ({ highlight, highlightWeeks, levelPackIndex }) => {
     </>
   );
 };
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
-  width: auto !important;
-`;
 
 const TimeRow = styled(ListRow)`
   display: table-row;

@@ -63,7 +63,7 @@ const Personal = ({
                 <ListCell width={320}>{r.Level.LongName}</ListCell>
                 {r.LevelBesttime.length > 0 ? (
                   <>
-                    <TimeSpan
+                    <ListCell
                       width={200}
                       highlight={
                         r.LevelBesttime[0].TimeIndex >=
@@ -71,7 +71,7 @@ const Personal = ({
                       }
                     >
                       <Time time={r.LevelBesttime[0].Time} />
-                    </TimeSpan>
+                    </ListCell>
                     {r.LevelBesttime[0].Source !== undefined ? (
                       <ListCell right>
                         <LegacyIcon
@@ -150,11 +150,6 @@ const TTRow = styled(ListRow)`
     background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
     color: ${p => (p.selected ? '#fff' : 'inherit')};
   }
-`;
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
-  width: auto !important;
 `;
 
 export default Personal;

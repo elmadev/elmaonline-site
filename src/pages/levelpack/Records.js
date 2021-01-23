@@ -51,13 +51,13 @@ const Records = ({
                 <ListCell width={200}>
                   <Kuski kuskiData={r.LevelBesttime[0].KuskiData} team flag />
                 </ListCell>
-                <TimeSpan
+                <ListCell
                   highlight={
                     r.LevelBesttime[0].TimeIndex >= highlight[highlightWeeks]
                   }
                 >
                   <Time time={r.LevelBesttime[0].Time} />
-                </TimeSpan>
+                </ListCell>
                 {r.LevelBesttime[0].Source !== undefined && (
                   <ListCell right>
                     <LegacyIcon
@@ -124,10 +124,6 @@ const TTRow = styled(ListRow)`
     background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
     color: ${p => (p.selected ? '#fff' : 'inherit')};
   }
-`;
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
 `;
 
 export default Records;

@@ -61,14 +61,14 @@ const Records = ({ highlight, highlightWeeks, name }) => {
                     flag
                   />
                 </ListCell>
-                <TimeSpan
+                <ListCell
                   highlight={
                     r.LevelMultiBesttime[0].TimeIndex >=
                     highlight[highlightWeeks]
                   }
                 >
                   <Time time={r.LevelMultiBesttime[0].Time} />
-                </TimeSpan>
+                </ListCell>
               </>
             ) : (
               <>
@@ -124,10 +124,6 @@ const TTRow = styled(ListRow)`
     background: ${p => (p.selected ? '#219653' : '#f9f9f9')};
     color: ${p => (p.selected ? '#fff' : 'inherit')};
   }
-`;
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
 `;
 
 export default Records;
