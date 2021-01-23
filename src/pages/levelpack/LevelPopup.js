@@ -100,18 +100,18 @@ const LevelPopup = ({
                         <ListCell width={220}>
                           <Kuski kuskiData={t.Kuski2Data} team flag />
                         </ListCell>
-                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                        <ListCell highlight={t.TimeIndex >= highlight}>
                           <Time time={t.Time} />
-                        </TimeSpan>
+                        </ListCell>
                       </>
                     ) : (
                       <>
                         <ListCell width={220}>
                           <Kuski kuskiData={t.KuskiData} team flag />
                         </ListCell>
-                        <TimeSpan highlight={t.TimeIndex >= highlight}>
+                        <ListCell highlight={t.TimeIndex >= highlight}>
                           <Time time={t.Time} />
-                        </TimeSpan>
+                        </ListCell>
                         {t.Source !== undefined && (
                           <LegacyIcon source={t.Source} show={showLegacyIcon} />
                         )}
@@ -127,9 +127,9 @@ const LevelPopup = ({
                 return (
                   <ListRow key={`${t.TimeIndex}${t.Time}`}>
                     <ListCell width={40}>{i + 1}.</ListCell>
-                    <TimeSpan highlight={t.TimeIndex >= highlight}>
+                    <ListCell highlight={t.TimeIndex >= highlight}>
                       <Time time={t.Time} />
-                    </TimeSpan>
+                    </ListCell>
                     {t.Source !== undefined && (
                       <LegacyIcon source={t.Source} show={showLegacyIcon} />
                     )}
@@ -154,10 +154,6 @@ const LevelPopup = ({
 const ShowMore = styled.span`
   color: #219653;
   cursor: pointer;
-`;
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
 `;
 
 const ShowMoreCon = styled.div`

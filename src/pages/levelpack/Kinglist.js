@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import styled from 'styled-components';
 import Loading from 'components/Loading';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'styles/List';
 
@@ -46,12 +45,12 @@ const Kinglist = ({ highlight, highlightWeeks, levelPackIndex }) => {
                 <ListRow key={r.KuskiIndex}>
                   <ListCell width={70}>{no + 1}</ListCell>
                   <ListCell width={320}>{r.KuskiData.Kuski}</ListCell>
-                  <TimeSpan
+                  <ListCell
                     width={180}
                     highlight={r.TimeIndex >= highlight[highlightWeeks]}
                   >
                     {r.points}
-                  </TimeSpan>
+                  </ListCell>
                   <ListCell />
                 </ListRow>
               ))}
@@ -61,10 +60,5 @@ const Kinglist = ({ highlight, highlightWeeks, levelPackIndex }) => {
     </>
   );
 };
-
-const TimeSpan = styled(ListCell)`
-  background: ${p => (p.highlight ? '#dddddd' : 'transparent')};
-  width: auto !important;
-`;
 
 export default Kinglist;
