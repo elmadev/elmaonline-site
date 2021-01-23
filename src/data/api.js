@@ -174,6 +174,7 @@ export const Ignore = Kuski => api.post(`player/ignore/${Kuski}`);
 export const Ignored = () => api.get('player/ignored');
 export const Unignore = KuskiIndex => api.post(`player/unignore/${KuskiIndex}`);
 export const Players = () => api.get('player/');
+export const GetCrew = () => api.get('player/crew/');
 
 // teams
 export const Teams = () => api.get('teams');
@@ -216,3 +217,6 @@ export const IPlogs = KuskiIndex => api.get(`mod/iplogs/${KuskiIndex}`);
 
 // news
 export const News = amount => api.get(`news/${amount}`);
+
+// donations
+export const GetDonations = () => api.get(`donate/`);

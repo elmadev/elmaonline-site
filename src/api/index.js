@@ -17,6 +17,7 @@ import Level from './level';
 import Ranking from './ranking';
 import Mod from './mod';
 import News from './news';
+import Donate from './donate';
 
 const router = express.Router();
 
@@ -41,6 +42,7 @@ router
   .use('/battle', Battle)
   .use('/player', Player)
   .use('/news', News)
-  .use('/teams', Teams);
+  .use('/teams', Teams)
+  .use('/donate', Donate);
 
 export default router;
