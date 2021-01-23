@@ -1,7 +1,7 @@
 import { create } from 'apisauce';
 
 const isWindow = typeof window !== 'undefined';
-let baseURL = 'http://localhost:3000/api/';
+let baseURL = 'http://localhost:3003/api/';
 if (isWindow) {
   baseURL = `${window.location.protocol}//${window.location.host}/api/`;
 }
