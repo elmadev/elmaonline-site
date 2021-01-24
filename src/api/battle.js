@@ -2,8 +2,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
-import add from 'date-fns/add';
-import parse from 'date-fns/parse';
+import { add, parse, isAfter, parseISO } from 'date-fns';
 import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
 
 const router = express.Router();
@@ -427,7 +426,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
 };
 
 const BattlesBetween = async (Start, End, Limit = 250) => {
-  const battles = await Battle.findAll({
+  const query = {
     attributes: [
       'BattleIndex',
       'KuskiIndex',
@@ -475,13 +474,26 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
         ],
       },
     ],
-    order: [['Started', 'DESC']],
+    order: [['BattleIndex', 'DESC']],
     where: {
-      Started: {
-        [Op.between]: [Start, End],
-      },
+      Started: { [Op.between]: [Start, End] },
     },
-  });
+  };
+  if (isAfter(parseISO(End), new Date())) {
+    query.where = {
+      Started: {
+        [Op.or]: [
+          {
+            [Op.between]: [Start, End],
+          },
+          {
+            [Op.eq]: null
+          },
+        ]
+      },
+    };
+  }
+  const battles = await Battle.findAll(query);
   return battles;
 };
 
