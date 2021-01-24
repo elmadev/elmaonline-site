@@ -127,7 +127,6 @@ const CardFlex = styled(Card)`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
 `;
 
 const Text = styled.div`
