@@ -26,18 +26,18 @@ const parseDonations = donations => {
   return { donators, accountBalance };
 };
 
+const runningCosts = 45.0;
+
 const paymentInfo = balance => {
   const date = new Date(Date.now());
   const now = new Date(date);
-  date.setMonth(date.getMonth() + parseInt(balance / 26.0, 10));
-  if (now.getDate() <= 27) now.setDate(27);
-  else {
-    now.setMonth(now.getMonth() + 1).setDate(27);
-  }
+  date.setMonth(date.getMonth() + parseInt(balance / runningCosts, 10));
+  now.setMonth(now.getMonth() + 1);
+  now.setDate(1);
   return {
     date: date.toDateString(),
     nextPayment: now.toDateString(),
-    percentage: (balance / 26.0) * 100.0,
+    percentage: (balance / runningCosts) * 100.0,
   };
 };
 
@@ -99,15 +99,15 @@ const Donate = ({ donations }) => {
           </p>
           <p>
             Donations are paid to a dedicated EOL paypal account, which is only
-            used for paying the server bill. Remember to let it redirect you
-            back here, otherwise we can&#39;t track your payment, it will still
-            be recieved however, only the payment status won&#39;t update. No
-            paypal account is needed.
+            used for paying the server bill, and competition prizes. Remember to
+            let it redirect you back here, otherwise we can&#39;t track your
+            payment, it will still be recieved however, only the payment status
+            won&#39;t update. No paypal account is needed.
           </p>
           <p>
-            Server costs are 26$ a month, paid the 27th every month. It should
-            be noted that donating does not guarantee any sort of uptime,
-            service or support.
+            Server costs are ${runningCosts} a month, paid forward on the 1st of
+            every month. It should be noted that donating does not guarantee any
+            sort of uptime, service or support.
           </p>
           <Header h3>Payment status</Header>
           <p>
@@ -115,10 +115,10 @@ const Donate = ({ donations }) => {
             next payment is paid.
           </p>
           <p>
-            Next payment: <BoldText>{paymentDates.date}</BoldText>.
+            Next payment: <BoldText>{paymentDates.nextPayment}</BoldText>.
           </p>
           <p>
-            Paid until: <BoldText>{paymentDates.nextPayment}</BoldText>.
+            Paid until: <BoldText>{paymentDates.date}</BoldText>.
           </p>
         </RightContainer>
         <div className="left">
@@ -139,7 +139,7 @@ const Donate = ({ donations }) => {
                       <TableCell
                         align="right"
                         key={`${i.toString()}a`}
-                      >{`${r.Amount.toFixed(2)}$`}</TableCell>
+                      >{`$${r.Amount.toFixed(2)}`}</TableCell>
                     </TableRow>
                   );
                 })}
