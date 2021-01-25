@@ -9,16 +9,12 @@
 
 import path from 'path';
 import webpack from 'webpack';
-import AssetsPlugin from 'assets-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import overrideRules from './lib/overrideRules';
 import pkg from '../package.json';
 
 const isDebug = !process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose');
-const isAnalyze =
-  process.argv.includes('--analyze') || process.argv.includes('--analyse');
 
 const reScript = /\.(js|jsx|mjs)$/;
 const reGraphql = /\.(graphql|gql)$/;
@@ -304,74 +300,6 @@ const config = {
 };
 
 //
-// Configuration for the client-side bundle (client.js)
-// -----------------------------------------------------------------------------
-
-const clientConfig = {
-  ...config,
-
-  name: 'client',
-  target: 'web',
-
-  entry: {
-    client: ['@babel/polyfill', './src/client.js'],
-  },
-
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /node_modules/,
-          chunks: 'initial',
-          name: 'vendor',
-          enforce: true,
-        },
-      },
-    },
-  },
-
-  plugins: [
-    // Define free variables
-    // https://webpack.js.org/plugins/define-plugin/
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
-      'process.env.BROWSER': true,
-      __DEV__: isDebug,
-    }),
-
-    // Emit a file with assets paths
-    // https://github.com/sporto/assets-webpack-plugin#options
-    new AssetsPlugin({
-      path: path.resolve(__dirname, '../build'),
-      filename: 'assets.json',
-      prettyPrint: true,
-    }),
-
-    ...(isDebug
-      ? []
-      : [
-          // Decrease script evaluation time
-          // https://github.com/webpack/webpack/blob/master/examples/scope-hoisting/README.md
-          new webpack.optimize.ModuleConcatenationPlugin(),
-        ]),
-
-    // Webpack Bundle Analyzer
-    // https://github.com/th0r/webpack-bundle-analyzer
-    ...(isAnalyze ? [new BundleAnalyzerPlugin()] : []),
-  ],
-
-  // Some libraries import Node modules but don't use them in the browser.
-  // Tell Webpack to provide empty mocks for them so importing them works.
-  // https://webpack.js.org/configuration/node/
-  // https://github.com/webpack/node-libs-browser/tree/master/mock
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-  },
-};
-
-//
 // Configuration for the server-side bundle (server.js)
 // -----------------------------------------------------------------------------
 
@@ -484,4 +412,4 @@ const serverConfig = {
   },
 };
 
-export default [clientConfig, serverConfig];
+export default [serverConfig];

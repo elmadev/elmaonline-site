@@ -1,6 +1,0 @@
-{
-  "name": "LevelMap",
-  "version": "0.0.1",
-  "private": true,
-  "main": "./LevelMap.js"
-}
