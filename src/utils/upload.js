@@ -12,6 +12,7 @@ import {
   SiteCup,
   SiteCupTime,
   Kuski,
+  AllFinished,
 } from 'data/models';
 import config from '../config';
 
@@ -206,9 +207,7 @@ export function uploadReplayS3(replayFile, folder, filename) {
                       } else {
                         // find replay time and finished state
                         getReplayInfo(
-                          `.${
-                            config.publicFolder
-                          }/temp/${fileUuid}-${filename}`,
+                          `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
                         )
                           .then(replayData => {
                             // return all data
@@ -222,9 +221,7 @@ export function uploadReplayS3(replayFile, folder, filename) {
                             });
                             // delete file in temp folder
                             fs.unlink(
-                              `.${
-                                config.publicFolder
-                              }/temp/${fileUuid}-${filename}`,
+                              `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
                             );
                           })
                           .catch(error => {
@@ -246,6 +243,14 @@ export function uploadReplayS3(replayFile, folder, filename) {
     );
   });
 }
+
+const checkCupTime = async (KuskiIndex, LevelIndex, Time, cb) => {
+  const times = await AllFinished.findAll({
+    where: { KuskiIndex, LevelIndex },
+  });
+  const matches = times.findIndex(t => t.dataValues.Time === Time);
+  cb(matches);
+};
 
 export function uploadCupReplay(
   replayFile,
@@ -293,11 +298,14 @@ export function uploadCupReplay(
                         Comment,
                       ).then(() => {
                         fs.unlink(fileDir, () => {});
-                        resolve({
-                          CupIndex,
-                          Time: replayTime,
-                          Apples: replayData.apples,
-                          Finished: replayData.finished,
+                        checkCupTime(kuskiId, LevelIndex, replayTime, Match => {
+                          resolve({
+                            CupIndex,
+                            Time: replayTime,
+                            Apples: replayData.apples,
+                            Finished: replayData.finished,
+                            Match,
+                          });
                         });
                       });
                     }
