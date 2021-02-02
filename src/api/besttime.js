@@ -20,6 +20,7 @@ const levelInfo = async LevelIndex => {
 
 const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
   const lev = await levelInfo(LevelIndex);
+  if (!lev) return [];
   if (lev.Hidden) return [];
   if (lev.Locked) return [];
   let timeTable = Besttime;
@@ -28,7 +29,10 @@ const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
   }
   const times = await timeTable.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     limit: parseInt(limit, 10),
     include: [
       {
@@ -52,7 +56,10 @@ const getMultiTimes = async (LevelIndex, limit) => {
   if (lev.Hidden) return [];
   const times = await BestMultitime.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC'], ['MultiTimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['MultiTimeIndex', 'ASC'],
+    ],
     limit: parseInt(limit, 10),
     include: [
       {
@@ -117,16 +124,16 @@ router
     const data = await getTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
   })
+  .get('/latest/:KuskiIndex/:limit', async (req, res) => {
+    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
+    res.json(data);
+  })
   .get('/:LevelIndex/:limit/:eolOnly', async (req, res) => {
     const data = await getTimes(
       req.params.LevelIndex,
       req.params.limit,
       parseInt(req.params.eolOnly, 10),
     );
-    res.json(data);
-  })
-  .get('/latest/:KuskiIndex/:limit', async (req, res) => {
-    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
     res.json(data);
   });
 

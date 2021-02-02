@@ -309,7 +309,10 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
       },
     },
     limit: searchLimit(offset),
-    order: [['LevelName', 'ASC']],
+    order: [
+      ['LevelName', 'ASC'],
+      ['LevelIndex', 'ASC'],
+    ],
     include: [
       { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
       { model: Battle, as: 'Battles', attributes: ['BattleIndex', 'Aborted'] },
@@ -324,8 +327,8 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
   return { levels, showLocked: show };
 };
 
-const getLevelsByQueryAll = async query => {
-  const levels = await Level.findAll({
+const getLevelsByQueryAll = async (query, ShowLocked) => {
+  const q = {
     attributes: [
       'LevelIndex',
       'LevelName',
@@ -344,8 +347,15 @@ const getLevelsByQueryAll = async query => {
       },
     },
     limit: 100,
-    order: [['LevelName', 'ASC']],
-  });
+    order: [
+      ['LevelName', 'ASC'],
+      ['LevelIndex', 'ASC'],
+    ],
+  };
+  if (parseInt(ShowLocked, 10) === 0) {
+    q.where.Locked = 0;
+  }
+  const levels = await Level.findAll(q);
   return levels;
 };
 
@@ -638,10 +648,13 @@ router
     const packs = await getPacksByQuery(req.params.query);
     res.json(packs);
   })
-  .get('/searchLevel/:query', async (req, res) => {
+  .get('/searchLevel/:query/:ShowLocked', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      const levs = await getLevelsByQueryAll(req.params.query);
+      const levs = await getLevelsByQueryAll(
+        req.params.query,
+        req.params.ShowLocked,
+      );
       res.json(levs);
     } else {
       res.sendStatus(401);
