@@ -1,6 +1,5 @@
 import { forEach, has } from 'lodash';
 import moment from 'moment';
-import { zeroPad } from 'utils/time';
 
 export const admins = cup => {
   let a = [cup.KuskiIndex];
@@ -131,144 +130,6 @@ export const filterResults = (events, ownerId = [], loggedId = 0) => {
   return filtered;
 };
 
-export const calculateStandings = (events, cup, simple) => {
-  let standings = [];
-  let skipStandings = [];
-  const teamStandings = [];
-  const nationStandings = [];
-  let teamEntries = {};
-  let nationEntries = {};
-  forEach(events, event => {
-    teamEntries = {};
-    nationEntries = {};
-    forEach(event.CupTimes, (time, index) => {
-      // player standings
-      let existsIndex = -1;
-      const exists = standings.filter((x, i) => {
-        if (x.KuskiIndex === time.KuskiIndex) {
-          existsIndex = i;
-          return true;
-        }
-        return false;
-      });
-
-      const pointsDetailed = {
-        Points: time.Points,
-        LevelIndex: event.LevelIndex,
-        Position: index + 1,
-        TotalPlayers: event.CupTimes.length,
-        Skipped: false,
-      };
-
-      if (exists.length === 0) {
-        standings.push({
-          KuskiIndex: time.KuskiIndex,
-          Points: time.Points,
-          Kuski: time.KuskiData.Kuski,
-          KuskiData: time.KuskiData,
-          Events: 1,
-          AllPoints: [time.Points],
-          AllPointsDetailed: [pointsDetailed],
-        });
-      } else {
-        standings[existsIndex] = {
-          ...standings[existsIndex],
-          Points: standings[existsIndex].Points + time.Points,
-          Events: standings[existsIndex].Events + 1,
-          AllPoints: [...standings[existsIndex].AllPoints, time.Points],
-          AllPointsDetailed: [
-            ...standings[existsIndex].AllPointsDetailed,
-            pointsDetailed,
-          ],
-        };
-      }
-      // team standings
-      if (time.KuskiData.TeamIndex && !simple) {
-        const existsTeam = teamStandings.findIndex(
-          x => x.TeamIndex === time.KuskiData.TeamIndex,
-        );
-        if (existsTeam === -1) {
-          teamStandings.push({
-            TeamIndex: time.KuskiData.TeamIndex,
-            Points: time.Points,
-            Team: time.KuskiData.TeamData.Team,
-          });
-          teamEntries[time.KuskiData.TeamIndex] = 1;
-        } else if (
-          teamEntries[time.KuskiData.TeamIndex] < 3 ||
-          !teamEntries[time.KuskiData.TeamIndex]
-        ) {
-          teamStandings[existsTeam] = {
-            ...teamStandings[existsTeam],
-            Points: teamStandings[existsTeam].Points + time.Points,
-          };
-          if (teamEntries[time.KuskiData.TeamIndex]) {
-            teamEntries[time.KuskiData.TeamIndex] += 1;
-          } else {
-            teamEntries[time.KuskiData.TeamIndex] = 1;
-          }
-        }
-      }
-      // nation standings
-      if (!simple) {
-        const existsNation = nationStandings.findIndex(
-          x => x.Country === time.KuskiData.Country,
-        );
-        if (existsNation === -1) {
-          nationStandings.push({
-            Country: time.KuskiData.Country,
-            Points: time.Points,
-          });
-          nationEntries[time.KuskiData.Country] = 1;
-        } else if (
-          nationEntries[time.KuskiData.Country] < 3 ||
-          !nationEntries[time.KuskiData.Country]
-        ) {
-          nationStandings[existsNation] = {
-            ...nationStandings[existsNation],
-            Points: nationStandings[existsNation].Points + time.Points,
-          };
-          if (nationEntries[time.KuskiData.Country]) {
-            nationEntries[time.KuskiData.Country] += 1;
-          } else {
-            nationEntries[time.KuskiData.Country] = 1;
-          }
-        }
-      }
-    });
-  });
-  if (cup.Skips) {
-    skipStandings = standings.map(s => {
-      if (s.Events <= cup.Events - cup.Skips) {
-        return s;
-      }
-      const { AllPoints } = s;
-      let { Points, AllPointsDetailed } = s;
-      for (let i = 0; i < s.Events - (cup.Events - cup.Skips); i += 1) {
-        const min = Math.min(...AllPoints);
-        const removeIndex = AllPoints.findIndex(ap => ap === min);
-        AllPoints.splice(removeIndex, 1);
-        Points -= min;
-
-        const skippedLevel = AllPointsDetailed.find(apd => apd.Points === min);
-        AllPointsDetailed = AllPointsDetailed.map(apd => {
-          if (apd.LevelIndex === skippedLevel.LevelIndex) {
-            return { ...apd, Skipped: true };
-          }
-          return apd;
-        });
-      }
-      return { ...s, AllPoints, Points, AllPointsDetailed };
-    });
-    standings = skipStandings;
-  }
-  return {
-    player: standings.sort((a, b) => b.Points - a.Points),
-    team: teamStandings.sort((a, b) => b.Points - a.Points),
-    nation: nationStandings.sort((a, b) => b.Points - a.Points),
-  };
-};
-
 export const generateEvent = (event, cup, times, cuptimes) => {
   const insertBulk = [];
   const updateBulk = [];
@@ -318,17 +179,4 @@ export const generateEvent = (event, cup, times, cuptimes) => {
     }
   });
   return { insertBulk, updateBulk };
-};
-
-export const getPrivateCupRecUri = (
-  CupTimeIndex,
-  ShortName,
-  Kuski,
-  Code,
-  levelNumber,
-) => {
-  return `/dl/cupreplay/${CupTimeIndex}/${ShortName}${zeroPad(
-    levelNumber,
-    2,
-  )}${Kuski.substring(0, 6)}/${Code}`;
 };

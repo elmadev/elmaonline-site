@@ -5,7 +5,7 @@ import { authContext } from 'utils/auth';
 import { format } from 'date-fns';
 import moment from 'moment';
 import { filterResults, generateEvent, admins } from 'utils/cups';
-import { zeroPad } from 'utils/time';
+import { zeroPad } from 'utils/calcs';
 import { sendMessage } from 'utils/discord';
 import config from '../config';
 import {
