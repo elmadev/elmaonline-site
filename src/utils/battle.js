@@ -1,4 +1,4 @@
-const reversedBattleTypes = ['SL', 'SR', 'FT'];
+const reversedBattleTypes = ['SL', 'SR', 'FT', 'SP', 'FC'];
 
 const sortResults = battleType => (a, b) => {
   if (a.Time && b.Time) {
