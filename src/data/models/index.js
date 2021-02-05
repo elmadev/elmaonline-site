@@ -39,6 +39,7 @@ import ActionLogs from './ActionLogs';
 import Error from './Error';
 import Logs from './Logs';
 import News from './News';
+import Donate from './Donate';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -340,6 +341,11 @@ News.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Donate.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -386,4 +392,5 @@ export {
   Error,
   Logs,
   News,
+  Donate,
 }; // add the data model here as well so it exports

@@ -76,7 +76,7 @@ const Level = Model.define(
       defaultValue: '0000-00-00 00:00:00',
       allowNull: false,
       get() {
-        return moment(this.getDataValue('Driven')).format('X');
+        return moment(this.getDataValue('Added')).format('X');
       },
     },
   },

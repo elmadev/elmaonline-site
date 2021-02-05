@@ -10,6 +10,7 @@ import {
 } from 'data/models';
 import { eachSeries } from 'neo-async';
 import { forEach } from 'lodash';
+import { Op } from 'sequelize';
 import { uuid } from 'utils/calcs';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -24,6 +25,18 @@ const getReplayDataByBattleId = async battleId => {
     where: { BattleIndex: battleId },
   });
   return replayData;
+};
+
+const getAllShirtData = async () => {
+  const kuskiData = await Kuski.findAll({
+    attributes: ['Kuski', 'KuskiIndex', 'BmpCRC', 'BmpData'],
+    where: {
+      BmpData: {
+        [Op.ne]: null,
+      },
+    },
+  });
+  return kuskiData;
 };
 
 export function getReplayByBattleId(battleId) {
@@ -183,6 +196,31 @@ const zipLevelPack = levels => {
       resolve(zip);
     });
   });
+};
+
+async function zipAllShirts() {
+  const playerData = await getAllShirtData();
+  return new Promise(resolve => {
+    const shirtData = [];
+    const shirtDataIterator = async (player, done) => {
+      shirtData.push({
+        file: player.BmpData,
+        filename: `${player.Kuski}.bmp`,
+      });
+      done();
+    };
+    eachSeries(playerData, shirtDataIterator, async () => {
+      const zip = await zipFiles(shirtData);
+      resolve(zip);
+    });
+  });
+}
+
+export const getAllShirts = async () => {
+  const zip = await zipAllShirts();
+  const fileData = fs.readFileSync(zip);
+  fs.unlink(zip, () => {});
+  return fileData;
 };
 
 export const getLevelPack = async name => {

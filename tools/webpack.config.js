@@ -9,16 +9,12 @@
 
 import path from 'path';
 import webpack from 'webpack';
-import AssetsPlugin from 'assets-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import overrideRules from './lib/overrideRules';
 import pkg from '../package.json';
 
 const isDebug = !process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose');
-const isAnalyze =
-  process.argv.includes('--analyze') || process.argv.includes('--analyse');
 
 const reScript = /\.(js|jsx|mjs)$/;
 const reGraphql = /\.(graphql|gql)$/;
@@ -118,80 +114,9 @@ const config = {
               '@babel/plugin-proposal-class-properties',
               '@babel/plugin-syntax-dynamic-import',
               ['@babel/plugin-proposal-decorators', { legacy: true }],
-              'babel-plugin-styled-components',
             ],
           ],
         },
-      },
-
-      // Rules for GraphQL
-      {
-        test: reGraphql,
-        exclude: /node_modules/,
-        loader: 'graphql-tag/loader',
-      },
-
-      // Rules for Style Sheets
-      {
-        test: reStyle,
-        rules: [
-          // Convert CSS into JS module
-          {
-            issuer: { not: [reStyle] },
-            use: 'isomorphic-style-loader',
-          },
-
-          // Process external/third-party styles
-          {
-            exclude: path.resolve(__dirname, '../src'),
-            loader: 'css-loader',
-            options: {
-              sourceMap: isDebug,
-            },
-          },
-
-          // Process internal/project styles (from src folder)
-          {
-            include: path.resolve(__dirname, '../src'),
-            loader: 'css-loader',
-            options: {
-              // CSS Loader https://github.com/webpack/css-loader
-              importLoaders: 1,
-              sourceMap: isDebug,
-              // CSS Modules https://github.com/css-modules/css-modules
-              modules: true,
-              localIdentName: isDebug
-                ? '[name]-[local]-[hash:base64:5]'
-                : '[hash:base64:5]',
-            },
-          },
-
-          // Apply PostCSS plugins including autoprefixer
-          {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path: './tools/postcss.config.js',
-              },
-            },
-          },
-
-          // Compile Less to CSS
-          // https://github.com/webpack-contrib/less-loader
-          // Install dependencies before uncommenting: yarn add --dev less-loader less
-          // {
-          //   test: /\.less$/,
-          //   loader: 'less-loader',
-          // },
-
-          // Compile Sass to CSS
-          // https://github.com/webpack-contrib/sass-loader
-          // Install dependencies before uncommenting: yarn add --dev sass-loader node-sass
-          // {
-          //   test: /\.(scss|sass)$/,
-          //   loader: 'sass-loader',
-          // },
-        ],
       },
 
       // Rules for images
@@ -301,74 +226,6 @@ const config = {
   // Choose a developer tool to enhance debugging
   // https://webpack.js.org/configuration/devtool/#devtool
   devtool: isDebug ? 'cheap-module-inline-source-map' : 'source-map',
-};
-
-//
-// Configuration for the client-side bundle (client.js)
-// -----------------------------------------------------------------------------
-
-const clientConfig = {
-  ...config,
-
-  name: 'client',
-  target: 'web',
-
-  entry: {
-    client: ['@babel/polyfill', './src/client.js'],
-  },
-
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /node_modules/,
-          chunks: 'initial',
-          name: 'vendor',
-          enforce: true,
-        },
-      },
-    },
-  },
-
-  plugins: [
-    // Define free variables
-    // https://webpack.js.org/plugins/define-plugin/
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
-      'process.env.BROWSER': true,
-      __DEV__: isDebug,
-    }),
-
-    // Emit a file with assets paths
-    // https://github.com/sporto/assets-webpack-plugin#options
-    new AssetsPlugin({
-      path: path.resolve(__dirname, '../build'),
-      filename: 'assets.json',
-      prettyPrint: true,
-    }),
-
-    ...(isDebug
-      ? []
-      : [
-          // Decrease script evaluation time
-          // https://github.com/webpack/webpack/blob/master/examples/scope-hoisting/README.md
-          new webpack.optimize.ModuleConcatenationPlugin(),
-        ]),
-
-    // Webpack Bundle Analyzer
-    // https://github.com/th0r/webpack-bundle-analyzer
-    ...(isAnalyze ? [new BundleAnalyzerPlugin()] : []),
-  ],
-
-  // Some libraries import Node modules but don't use them in the browser.
-  // Tell Webpack to provide empty mocks for them so importing them works.
-  // https://webpack.js.org/configuration/node/
-  // https://github.com/webpack/node-libs-browser/tree/master/mock
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-  },
 };
 
 //
@@ -484,4 +341,4 @@ const serverConfig = {
   },
 };
 
-export default [clientConfig, serverConfig];
+export default [serverConfig];

@@ -1,6 +1,0 @@
-{
-  "name": "FieldBoolean",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./FieldBoolean.js"
-}

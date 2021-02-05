@@ -2,9 +2,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
-import add from 'date-fns/add';
-import parse from 'date-fns/parse';
-import { Battle, Level, Kuski, Team, Battletime, AllFinished } from '../data/models';
+import { add, parse, isAfter, parseISO } from 'date-fns';
+import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time, Multitime } from '../data/models';
 
 const router = express.Router();
 
@@ -148,6 +147,73 @@ const BattlesSearchByDesigner = async (query, offset) => {
     ],
   });
   return byDesigner;
+};
+
+const AllBattleRuns = async BattleIndex => {
+  const runs = await Time.findAndCountAll({
+    order: [['TimeIndex', 'DESC']],
+    attributes: [
+      'Driven',
+      'TimeIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Time',
+      'Apples',
+      'Finished',
+      'BattleIndex',
+      '24httIndex',
+      'MaxSpeed',
+      'ThrottleTime',
+      'BrakeTime',
+      'LeftVolt',
+      'RightVolt',
+      'SuperVolt',
+      'Turn',
+      'OneWheel',
+    ],
+    where: { BattleIndex },
+  });
+  if (runs.rows.length === 0) {
+    const multiRuns = await Multitime.findAndCountAll({
+      order: [['MultiTimeIndex', 'DESC']],
+      attributes: [
+        'Driven',
+        'MultiTimeIndex',
+        'KuskiIndex1',
+        'KuskiIndex2',
+        'LevelIndex',
+        'Time',
+        'Apples',
+        'Apples1',
+        'Apples2',
+        'Finished',
+        'BattleIndex',
+        // 'Time1',
+        // 'Time2',
+        // 'Finished1',
+        // 'Finished2',
+        // 'MaxSpeed1',
+        // 'MaxSpeed2',
+        // 'ThrottleTime1',
+        // 'ThrottleTime2',
+        // 'BrakeTime1',
+        // 'BrakeTime2',
+        // 'LeftVolt1',
+        // 'LeftVolt2',
+        // 'RightVolt1',
+        // 'RightVolt2',
+        // 'SuperVolt1',
+        // 'SuperVolt2',
+        // 'Turn1',
+        // 'Turn2',
+        // 'OneWheel1',
+        // 'OneWheel2',
+      ],
+      where: { BattleIndex },
+    });
+    return {...multiRuns, 'multi': 1};
+  };
+  return {...runs, 'multi': 0};
 };
 
 const BattleResults = async BattleIndex => {
@@ -427,7 +493,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
 };
 
 const BattlesBetween = async (Start, End, Limit = 250) => {
-  const battles = await Battle.findAll({
+  const query = {
     attributes: [
       'BattleIndex',
       'KuskiIndex',
@@ -475,13 +541,26 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
         ],
       },
     ],
-    order: [['Started', 'DESC']],
+    order: [['BattleIndex', 'DESC']],
     where: {
-      Started: {
-        [Op.between]: [Start, End],
-      },
+      Started: { [Op.between]: [Start, End] },
     },
-  });
+  };
+  if (isAfter(parseISO(End), new Date())) {
+    query.where = {
+      Started: {
+        [Op.or]: [
+          {
+            [Op.between]: [Start, End],
+          },
+          {
+            [Op.eq]: null
+          },
+        ]
+      },
+    };
+  }
+  const battles = await Battle.findAll(query);
   return battles;
 };
 
@@ -522,7 +601,10 @@ router
       req.query.pageSize,
     );
     res.json(battles);
-
+  })
+  .get('/allRuns/:BattleIndex', async (req, res) => {
+    const runs = await AllBattleRuns(req.params.BattleIndex);
+    res.json(runs);
   })
   .get('/byLevel/:LevelIndex', async (req, res) => {
     const battles = await BattlesForLevel(req.params.LevelIndex);
