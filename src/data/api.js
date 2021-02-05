@@ -158,6 +158,8 @@ export const BattlesByPlayer = data =>
   api.get(
     `battle/byPlayer/${data.KuskiIndex}?page=${data.page}&pageSize=${data.pageSize}`,
   );
+export const AllBattleRuns = BattleIndex =>
+  api.get(`battle/allRuns/${BattleIndex}`);
 export const BattleListPeriod = data =>
   api.get(`battle/byPeriod/${data.start}/${data.end}/${data.limit}`);
 
