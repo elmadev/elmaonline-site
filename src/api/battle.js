@@ -2,7 +2,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
-import { add, parse, isAfter, parseISO } from 'date-fns';
+import { add, parse } from 'date-fns';
 import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time, Multitime } from '../data/models';
 
 const router = express.Router();
@@ -493,6 +493,22 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
 };
 
 const BattlesBetween = async (Start, End, Limit = 250) => {
+  const from = await Battle.findAll({
+    attributes: ['BattleIndex'],
+    where: {
+      Started: { [Op.gt]: Start },
+    },
+    limit: 1,
+  });
+  if (from.length === 0) return [];
+  const to = await Battle.findAll({
+    attributes: ['BattleIndex'],
+    where: {
+      Started: { [Op.and]: [{ [Op.gt]: Start }, { [Op.lt]: End }] },
+    },
+    order: [['BattleIndex', 'DESC']],
+    limit: 1,
+  });
   const query = {
     attributes: [
       'BattleIndex',
@@ -504,6 +520,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
       'Aborted',
       'InQueue',
       'Finished',
+      'RecFileName',
     ],
     limit: parseInt(Limit, 10),
     include: [
@@ -543,23 +560,9 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
     ],
     order: [['BattleIndex', 'DESC']],
     where: {
-      Started: { [Op.between]: [Start, End] },
+      BattleIndex: { [Op.between]: [from[0].dataValues.BattleIndex, to[0].dataValues.BattleIndex] },
     },
   };
-  if (isAfter(parseISO(End), new Date())) {
-    query.where = {
-      Started: {
-        [Op.or]: [
-          {
-            [Op.between]: [Start, End],
-          },
-          {
-            [Op.eq]: null
-          },
-        ]
-      },
-    };
-  }
   const battles = await Battle.findAll(query);
   return battles;
 };
