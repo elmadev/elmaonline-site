@@ -493,22 +493,29 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
 };
 
 const BattlesBetween = async (Start, End, Limit = 250) => {
+  let fromIndex = 0;
+  let toIndex = 9999999999999;
   const from = await Battle.findAll({
     attributes: ['BattleIndex'],
     where: {
-      Started: { [Op.gt]: Start },
-    },
-    limit: 1,
-  });
-  if (from.length === 0) return [];
-  const to = await Battle.findAll({
-    attributes: ['BattleIndex'],
-    where: {
-      Started: { [Op.and]: [{ [Op.gt]: Start }, { [Op.lt]: End }] },
+      Started: { [Op.lt]: Start },
     },
     order: [['BattleIndex', 'DESC']],
     limit: 1,
   });
+  if (from.length === 0) return [];
+  fromIndex = from[0].dataValues.BattleIndex + 1;
+  const to = await Battle.findAll({
+    attributes: ['BattleIndex'],
+    where: {
+      Started: { [Op.gt]: End },
+    },
+    order: [['BattleIndex', 'ASC']],
+    limit: 1,
+  });
+  if (to.length > 0) {
+    toIndex = to[0].dataValues.BattleIndex - 1;
+  }
   const query = {
     attributes: [
       'BattleIndex',
@@ -560,7 +567,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
     ],
     order: [['BattleIndex', 'DESC']],
     where: {
-      BattleIndex: { [Op.between]: [from[0].dataValues.BattleIndex, to[0].dataValues.BattleIndex] },
+      BattleIndex: { [Op.between]: [fromIndex, toIndex] },
     },
   };
   const battles = await Battle.findAll(query);
