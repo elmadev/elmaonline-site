@@ -4,7 +4,8 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { uuid } from 'utils/calcs';
 import AWS from 'aws-sdk';
-import { format } from 'date-fns';
+import { MIMETYPES } from 'constants/lists';
+import { format, addDays, isAfter } from 'date-fns';
 
 import {
   Level,
@@ -13,6 +14,7 @@ import {
   SiteCupTime,
   Kuski,
   AllFinished,
+  Upload,
 } from 'data/models';
 import config from '../config';
 
@@ -151,17 +153,22 @@ const getReplayInfo = async dir => {
   return { finished, time, reason, apples: rec.apples };
 };
 
+export function s3Params(Key, Body) {
+  return {
+    Bucket: 'eol',
+    Key,
+    Body,
+    ACL: 'public-read',
+  };
+}
+
 export function uploadReplayS3(replayFile, folder, filename) {
   return new Promise(resolve => {
-    const bucketName = 'eol';
     const fileUuid = uuid();
-    const key = `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`;
-    const params = {
-      Bucket: bucketName,
-      Key: key,
-      Body: replayFile.data,
-      ACL: 'public-read',
-    };
+    const params = s3Params(
+      `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`,
+      replayFile.data,
+    );
     // save in temp folder to be able to read rec data
     replayFile.mv(
       `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
@@ -319,3 +326,92 @@ export function uploadCupReplay(
     });
   });
 }
+
+const putObject = params => {
+  return new Promise((resolve, reject) => {
+    s3.putObject(params, err => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+const deleteObject = (fileUuid, filename) => {
+  return new Promise((resolve, reject) => {
+    s3.deleteObject(
+      {
+        Bucket: 'eol',
+        Key: `${config.s3SubFolder}files/${fileUuid}/${filename}`,
+      },
+      err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      },
+    );
+  });
+};
+
+export const uploadFileS3 = async (
+  fileContent,
+  folder,
+  filename,
+  KuskiIndex,
+) => {
+  const fileUuid = uuid();
+  const params = s3Params(
+    `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`,
+    fileContent.data,
+  );
+  if (MIMETYPES.indexOf(fileContent.mimetype) > -1) {
+    params.ContentType = fileContent.mimetype;
+  }
+  try {
+    await putObject(params);
+    await Upload.create({
+      KuskiIndex,
+      Uuid: fileUuid,
+      Filename: filename,
+      UploadedOn: format(new Date(), 't'),
+      Expire: format(addDays(new Date(), 30), 't'),
+      Mimetype: fileContent.mimetype,
+    });
+  } catch (error) {
+    return { error, file: filename, size: fileContent.size };
+  }
+  return {
+    error: null,
+    file: filename,
+    uuid: fileUuid,
+    size: fileContent.size,
+  };
+};
+
+export const downloadFileS3 = async (Uuid, Filename) => {
+  let allow = true;
+  const file = await Upload.findOne({ where: { Uuid, Filename } });
+  if (file) {
+    if (file.Downloads > 0) {
+      if (file.Downloaded >= file.Downloads) {
+        allow = false;
+      }
+    }
+    if (file.Expire && isAfter(new Date(), new Date(file.Expire * 1000))) {
+      allow = false;
+    }
+    if (allow) {
+      file.update({ Downloaded: file.Downloaded + 1 });
+    } else {
+      await deleteObject(Uuid, Filename);
+      await file.destroy();
+    }
+  } else {
+    allow = false;
+  }
+  return allow;
+};

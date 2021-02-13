@@ -48,6 +48,7 @@
     "node-fetch": "^2.6.1",
     "pretty-error": "^2.1.1",
     "read-chunk": "^3.2.0",
+    "request": "^2.88.2",
     "sequelize": "^6.3.5",
     "serialize-javascript": "^5.0.1",
     "sib-api-v3-sdk": "7.2.4",
