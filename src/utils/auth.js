@@ -90,5 +90,5 @@ export function authContext(req) {
       };
     }
   }
-  return { auth: false };
+  return { auth: false, userid: 0 };
 }
