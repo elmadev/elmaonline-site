@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import PrettyError from 'pretty-error';
 import stream from 'stream';
 import cors from 'cors';
+import request from 'request';
 import fileUpload from 'express-fileupload';
 import {
   getReplayByBattleId,
@@ -15,7 +16,12 @@ import {
   getAllShirts,
   getShirtByKuskiId,
 } from 'utils/download';
-import { uploadReplayS3, uploadCupReplay } from 'utils/upload';
+import {
+  uploadReplayS3,
+  uploadCupReplay,
+  uploadFileS3,
+  downloadFileS3,
+} from 'utils/upload';
 import {
   chatline,
   besttime,
@@ -335,10 +341,8 @@ app.get('/run/legacytimes/:strategy', async (req, res) => {
 // Uploading files
 //--------------------------------------------
 app.post('/upload/:type', async (req, res) => {
-  const replayFile = req.files.file;
-  let folder = 'misc';
+  const getAuth = authContext(req);
   if (req.params.type === 'replay') {
-    folder = 'replays';
     const {
       file,
       uuid,
@@ -348,7 +352,7 @@ app.post('/upload/:type', async (req, res) => {
       error,
       MD5,
       replayInfo,
-    } = await uploadReplayS3(replayFile, folder, req.body.filename);
+    } = await uploadReplayS3(req.files.file, 'replays', req.body.filename);
     if (!error) {
       res.json({
         file,
@@ -367,11 +371,9 @@ app.post('/upload/:type', async (req, res) => {
     }
   }
   if (req.params.type === 'cupreplay') {
-    folder = 'cupreplays';
-    const getAuth = authContext(req);
     if (getAuth.auth) {
       const result = await uploadCupReplay(
-        replayFile,
+        req.files.file,
         req.body.filename,
         getAuth.userid,
         req.body.share,
@@ -381,6 +383,27 @@ app.post('/upload/:type', async (req, res) => {
     } else {
       res.sendStatus(401);
     }
+  }
+  if (req.params.type === 'file') {
+    const result = await uploadFileS3(
+      req.files.file,
+      'files',
+      req.body.filename,
+      getAuth.userid,
+    );
+    res.json(result);
+  }
+});
+app.get('/u/:uuid/:filename', async (req, res) => {
+  const allow = await downloadFileS3(req.params.uuid, req.params.filename);
+  if (allow) {
+    request
+      .get(
+        `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}files/${req.params.uuid}/${req.params.filename}`,
+      )
+      .pipe(res);
+  } else {
+    res.sendStatus(404);
   }
 });
 

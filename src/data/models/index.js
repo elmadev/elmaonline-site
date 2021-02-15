@@ -40,6 +40,7 @@ import Error from './Error';
 import Logs from './Logs';
 import News from './News';
 import Donate from './Donate';
+import Upload from './Upload';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -393,4 +394,5 @@ export {
   Logs,
   News,
   Donate,
+  Upload,
 }; // add the data model here as well so it exports
