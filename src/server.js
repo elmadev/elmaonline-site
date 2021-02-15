@@ -324,10 +324,7 @@ app.get('/run/email', async (req, res) => {
 app.get('/run/legacytimes/:strategy', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     res.json({ started: true });
-    await legacyTimes(
-      ['BaSk', 'BaSkG', 'BaSkP', 'SkHoyl', 'Skint', 'SkVar', 'SNTL'],
-      'skint',
-    );
+    await legacyTimes(req.params.strategy);
   } else {
     res.status(401);
     res.send('Unauthorized');

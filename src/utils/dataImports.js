@@ -18,6 +18,9 @@ import * as kuskiMapData from '../data/json/kuskimap.json';
 import * as skintPRsData from '../data/json/skintatious_PRs.json';
 import * as skintNonPRsData from '../data/json/skintatious_nonPRs.json';
 import * as skintKuskis from '../data/json/skintatious_kuskis.json';
+import * as kopaTimes from '../data/json/kopasite_time.json';
+import * as kopaKuskis from '../data/json/kopasite_kuski.json';
+import * as kopaLevels from '../data/json/kopasite_level.json';
 
 const addMarker = async Data => {
   let newMarker = false;
@@ -119,16 +122,26 @@ const createKuski = async (k, strategy) => {
   if (strategy === 'skint') {
     kuskiInfo = skintKuskis.default.filter(x => x.Kuski === k);
   }
+  if (strategy === 'kopa') {
+    kuskiInfo = kopaKuskis.default.rows.filter(x => x.Kuski === k);
+  }
   if (kuskiInfo.length > 0) {
     let nation = 'XX';
-    const countryInfo = await Country.findOne({
-      where: { Iso3: kuskiInfo[0].Country },
-    });
-    if (countryInfo) {
-      nation = countryInfo.Iso;
+    if (strategy === 'skint') {
+      const countryInfo = await Country.findOne({
+        where: { Iso3: kuskiInfo[0].Country },
+      });
+      if (countryInfo) {
+        nation = countryInfo.Iso;
+      }
+    }
+    if (strategy === 'kopa') {
+      if (kuskiInfo[0].Country) {
+        nation = kuskiInfo[0].Country;
+      }
     }
     let TeamIndex = 0;
-    if (kuskiInfo[0].Team !== 'NULL') {
+    if (kuskiInfo[0].Team !== 'NULL' && kuskiInfo[0].Team !== '') {
       const teamInfo = await Team.findOne({
         where: { Team: kuskiInfo[0].Team },
       });
@@ -181,6 +194,59 @@ const skint = json => {
   });
 };
 
+const kopa = () => {
+  return new Promise(resolve => {
+    const times = [];
+    const newKuskis = {};
+    eachSeries(
+      kopaTimes.default.rows,
+      async (time, done) => {
+        let kuskiId = 0;
+        if (time.KuskiIndex === 0) {
+          done();
+        } else {
+          if (newKuskis[time.KuskiIndex]) {
+            kuskiId = newKuskis[time.KuskiIndex];
+          } else {
+            const KuskiData = kopaKuskis.default.rows.filter(
+              k => k.KuskiIndex === time.KuskiIndex,
+            );
+            const KuskiSql = await Kuski.findOne({
+              where: { Kuski: KuskiData[0].Kuski },
+            });
+            if (KuskiSql) {
+              kuskiId = KuskiSql.KuskiIndex;
+            } else {
+              kuskiId = await createKuski(KuskiData[0].Kuski, 'kopa');
+            }
+            newKuskis[time.KuskiIndex] = kuskiId;
+          }
+          let levelId = 0;
+          const levelData = kopaLevels.default.rows.filter(
+            l => l.LevelIndex === time.LevelIndex,
+          );
+          if (levelData.length > 0) {
+            levelId = levelData[0].EOLIndex;
+          }
+          if (kuskiId !== 0 && levelId !== 0) {
+            times.push({
+              LevelIndex: levelId,
+              KuskiIndex: kuskiId,
+              Time: time.Time,
+              Driven: time.Driven,
+              Source: 2,
+            });
+          }
+          done();
+        }
+      },
+      () => {
+        resolve(times);
+      },
+    );
+  });
+};
+
 const insertFinished = times => {
   return new Promise(resolve => {
     LegacyFinished.bulkCreate(times).then(() => {
@@ -197,7 +263,14 @@ const insertBesttime = times => {
   });
 };
 
-export const legacyTimes = async (levelpacks, importStrategy) => {
+export const legacyTimes = async importStrategy => {
+  let levelpacks = [];
+  if (importStrategy === 'skint') {
+    levelpacks = ['BaSk', 'BaSkG', 'BaSkP', 'SkHoyl', 'Skint', 'SkVar', 'SNTL'];
+  }
+  if (importStrategy === 'kopa') {
+    levelpacks = ['TKT', 'TKTII', 'DCup03', '1337', 'cEp'];
+  }
   const packs = await getPacks(levelpacks);
   const updateBulk = [];
   const updatePacks = [];
@@ -229,6 +302,11 @@ export const legacyTimes = async (levelpacks, importStrategy) => {
     const skintBest = await skint(skintPRsData);
     finished = [...skintFinished, ...skintBest];
     besttime = skintBest;
+  }
+  if (importStrategy === 'kopa') {
+    const kopasiteTimes = await kopa();
+    finished = kopasiteTimes;
+    besttime = kopasiteTimes;
   }
   await insertFinished(finished);
   const insertToLegacyBesttime = [];
