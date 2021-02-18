@@ -461,7 +461,7 @@ const DeleteLevel = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
-  if (pack.KuskiIndex === data.KuskiIndex) {
+  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     await LevelPackLevel.destroy({
       where: {
         LevelIndex: data.LevelIndex,
@@ -483,7 +483,7 @@ const AddLevel = async data => {
   if (level.Locked) {
     return 'Level is locked.';
   }
-  if (pack.KuskiIndex === data.KuskiIndex) {
+  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     let Sort = '';
     if (data.levels > 0) {
       Sort = lastEntry(data.last.Sort);
@@ -504,7 +504,7 @@ const SortLevel = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
-  if (pack.KuskiIndex === data.KuskiIndex) {
+  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     const { LevelIndex } = data.levels[data.source.index];
     const beforeIndex =
       data.destination.index === 0
@@ -552,7 +552,7 @@ const SortPack = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
-  if (pack.KuskiIndex === data.KuskiIndex) {
+  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     const updateBulk = [];
     let Sort = '';
     forEach(data.levels, l => {
@@ -572,6 +572,7 @@ const SortPack = async data => {
 const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
   });
   return packInfo;
 };
@@ -688,6 +689,7 @@ router
       const del = await DeleteLevel({
         ...req.body,
         KuskiIndex: auth.userid,
+        mod: auth.mod,
       });
       if (del) {
         res.json({ success: 1 });
@@ -704,6 +706,7 @@ router
       const add = await AddLevel({
         ...req.body,
         KuskiIndex: auth.userid,
+        mod: auth.mod,
       });
       if (add) {
         res.json({ success: 0, error: add });
@@ -720,6 +723,7 @@ router
       const sort = await SortLevel({
         ...req.body,
         KuskiIndex: auth.userid,
+        mod: auth.mod,
       });
       if (sort) {
         res.json({ success: 1 });
@@ -736,6 +740,7 @@ router
       const sort = await SortPack({
         ...req.body,
         KuskiIndex: auth.userid,
+        mod: auth.mod,
       });
       if (sort) {
         res.json({ success: 1 });
