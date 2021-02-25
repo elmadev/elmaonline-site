@@ -1,5 +1,5 @@
 import express from 'express';
-import { Op } from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
 import {
@@ -8,6 +8,7 @@ import {
   Kuski,
   LegacyFinished,
   Team,
+  Multitime,
 } from '../data/models';
 
 const router = express.Router();
@@ -37,7 +38,51 @@ const getHighlights = async () => {
     where: { Driven: { [Op.lt]: format(subWeeks(new Date(), 4), 't') } },
     order: [['TimeIndex', 'DESC']],
   });
-  return { week, twoweek, threeweek, fourweek };
+  const multiWeek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+    ),
+  });
+  const multiTwoweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+    ),
+  });
+  const multiThreeweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+    ),
+  });
+  const multiFourweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+    ),
+  });
+
+  return {
+    single: [
+      9999999999,
+      week.TimeIndex,
+      twoweek.TimeIndex,
+      threeweek.TimeIndex,
+      fourweek.TimeIndex,
+    ],
+    multi: [
+      9999999999,
+      multiWeek.MultiTimeIndex,
+      multiTwoweek.MultiTimeIndex,
+      multiThreeweek.MultiTimeIndex,
+      multiFourweek.MultiTimeIndex,
+    ],
+  };
 };
 
 const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
@@ -50,7 +95,10 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   }
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
-    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
     limit: timeLimit > 10000 ? 10000 : timeLimit,
   });
@@ -119,7 +167,10 @@ const timesByLevel = async LevelIndex => {
   if (lev.Locked || lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     limit: 10000,
     include: [
       {
@@ -141,13 +192,7 @@ const timesByLevel = async LevelIndex => {
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
-    res.json([
-      9999999999,
-      data.week.TimeIndex,
-      data.twoweek.TimeIndex,
-      data.threeweek.TimeIndex,
-      data.fourweek.TimeIndex,
-    ]);
+    res.json(data);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
     const auth = authContext(req);
