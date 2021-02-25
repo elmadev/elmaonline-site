@@ -42,21 +42,21 @@ const getHighlights = async () => {
     order: [['MultiTimeIndex', 'DESC']],
     where: sequelize.where(
       sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
-      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+      { [Op.lt]: format(subWeeks(new Date(), 1), 't') },
     ),
   });
   const multiTwoweek = await Multitime.findOne({
     order: [['MultiTimeIndex', 'DESC']],
     where: sequelize.where(
       sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
-      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+      { [Op.lt]: format(subWeeks(new Date(), 2), 't') },
     ),
   });
   const multiThreeweek = await Multitime.findOne({
     order: [['MultiTimeIndex', 'DESC']],
     where: sequelize.where(
       sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
-      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+      { [Op.lt]: format(subWeeks(new Date(), 3), 't') },
     ),
   });
   const multiFourweek = await Multitime.findOne({
