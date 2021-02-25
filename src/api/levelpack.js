@@ -193,6 +193,184 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   return times.filter(t => !t.Level.Hidden);
 };
 
+const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  let timeTable = Besttime;
+  // let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex', 'LevelIndex'];
+  if (packInfo.Legacy && !eolOnly) {
+    timeTable = LegacyBesttime;
+    // timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
+
+  const packLevels = await LevelPackLevel.findAll({
+    where: {
+      LevelPackIndex: packInfo.dataValues.LevelPackIndex,
+    },
+    order: [
+      ['Sort', 'ASC'],
+      ['LevelPackLevelIndex', 'ASC'],
+    ],
+  }).then(data => data.map(r => r.LevelIndex));
+
+  const multiTimesByLevel = [];
+  // eslint-disable-next-line
+  const allMultiTimes = await BestMultitime.findAll({
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: {
+            KuskiIndex1: KuskiIndex,
+            KuskiIndex2: KuskiIndex,
+          },
+        },
+        {
+          LevelIndex: {
+            [Op.in]: packLevels,
+          },
+        },
+      ],
+    },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski1Data',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski2Data',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+    ],
+  }).then(data => {
+    packLevels.forEach(levIndex => {
+      const levelTimes = [...data].filter(r => {
+        return levIndex === r.LevelIndex;
+      });
+      if (levelTimes.length > 0)
+        multiTimesByLevel.push(levelTimes.sort((a, b) => a.Time - b.Time)[0]);
+    });
+  });
+  const singleTimesByLevel = await timeTable.findAll({
+    attributes,
+    where: {
+      [Op.and]: {
+        KuskiIndex,
+        LevelIndex: {
+          [Op.in]: packLevels,
+        },
+      },
+    },
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'LongName', 'Hidden'],
+      },
+    ],
+  });
+  if (packInfo.Legacy && !eolOnly) {
+    singleTimesByLevel
+      .filter(t => !t.LevelData.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
+  const timesData = packLevels.map(i => {
+    const singleTime = singleTimesByLevel.filter(r => i === r.LevelIndex)[0];
+    const multiTime = multiTimesByLevel.filter(r => i === r.LevelIndex)[0];
+    if (!singleTime && !multiTime) {
+      return {
+        LevelBesttime: {},
+        LevelMultiBesttime: {},
+        LevelCombinedBesttime: {},
+      };
+    }
+
+    let OtherKuski;
+
+    if (multiTime) {
+      OtherKuski =
+        multiTime.KuskiIndex1 === KuskiIndex
+          ? multiTime.Kuski2Data
+          : multiTime.Kuski1Data;
+      if (multiTime.KuskiIndex1 === multiTime.KuskiIndex2) OtherKuski = 'solo';
+    }
+
+    let LevelMultiBesttime;
+
+    if (multiTime) {
+      LevelMultiBesttime = {
+        Kuski: KuskiIndex,
+        OtherKuski,
+        Time: multiTime.Time,
+        MultiTimeIndex: multiTime.MultiTimeIndex,
+      };
+    }
+
+    if (!singleTime) {
+      return {
+        LevelBesttime: {},
+        LevelMultiBesttime,
+        LevelCombinedBesttime: LevelMultiBesttime,
+      };
+    }
+
+    const LevelBesttime = {
+      Kuski: KuskiIndex,
+      Time: singleTime.Time,
+      OtherKuski: 'single',
+      TimeIndex: singleTime.TimeIndex,
+      Source: attributes.indexOf('Source') !== -1 ? singleTime.Source : null,
+    };
+
+    if (!multiTime) {
+      return {
+        LevelBesttime,
+        LevelMultiBesttime: {},
+        LevelCombinedBesttime: LevelBesttime,
+      };
+    }
+
+    const LevelCombinedBesttime = {
+      Kuski: KuskiIndex,
+      OtherKuski,
+      Time:
+        multiTime.Time <= singleTime.Time ? multiTime.Time : singleTime.Time,
+    };
+    return { LevelBesttime, LevelMultiBesttime, LevelCombinedBesttime };
+  });
+
+  return {
+    packInfo,
+    packLevels,
+    timesData,
+    allMultiTimes,
+    KuskiIndex,
+  };
+};
+
 const getTimes = async (LevelPackIndex, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackIndex },
@@ -645,6 +823,22 @@ router
     const records = await getMultiRecords(req.params.LevelPackName);
     res.json(records);
   })
+  .get(
+    '/:LevelPackName/personalwithmulti/:KuskiIndex/:eolOnly',
+    async (req, res) => {
+      const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+      if (getKuskiIndex) {
+        const times = await getPersonalWithMulti(
+          req.params.LevelPackName,
+          getKuskiIndex.dataValues.KuskiIndex,
+          parseInt(req.params.eolOnly, 10),
+        );
+        res.json(times);
+      } else {
+        res.json({ error: 'Kuski does not exist' });
+      }
+    },
+  )
   .get('/search/:query', async (req, res) => {
     const packs = await getPacksByQuery(req.params.query);
     res.json(packs);
