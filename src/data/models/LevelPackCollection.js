@@ -9,6 +9,11 @@ const LevelPackCollection = Model.define('levelpack_collection', {
     primaryKey: true,
   },
   CollectionName: {
+    type: DataType.STRING(16),
+    allowNull: false,
+    defaultValue: '',
+  },
+  CollectionLongName: {
     type: DataType.STRING(50),
     allowNull: false,
     defaultValue: '',

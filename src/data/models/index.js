@@ -350,6 +350,16 @@ Donate.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+LevelPackCollection.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+LevelPackCollectionPack.belongsTo(LevelPack, {
+  foreignKey: 'LevelPackIndex',
+  as: 'PackData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

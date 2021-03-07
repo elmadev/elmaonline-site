@@ -16,6 +16,7 @@ import {
 } from '../data/models';
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
+import Collection from './levelpack_collection';
 
 const router = express.Router();
 
@@ -658,6 +659,7 @@ router
   })
   .use('/admin', Admin)
   .use('/favourite', Favourite)
+  .use('/collections', Collection)
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
     const tts = totalTimes(data);
