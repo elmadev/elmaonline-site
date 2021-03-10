@@ -26,7 +26,7 @@ const getLevelsFromName = async LevelName => {
   return levels;
 };
 
-const checksumFile = (hashName, path) =>
+export const checksumFile = (hashName, path) =>
   new Promise((resolve, reject) => {
     const hash = crypto.createHash(hashName);
     const stream = fs.createReadStream(path);
