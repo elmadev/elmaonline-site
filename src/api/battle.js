@@ -3,6 +3,7 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { add, parse } from 'date-fns';
+import { forEach, omit } from 'lodash';
 import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time, Multitime } from '../data/models';
 
 const router = express.Router();
@@ -33,6 +34,18 @@ const attributes = [
   'Countdown',
   'RecFileName',
 ];
+
+const filterBattles = (battles, amount) => {
+  const filtered = [];
+  forEach(battles, battle => {
+    if (!battle.Aborted) {
+      filtered.push(battle);
+    } else if (battle.Started) {
+      filtered.push(battle);
+    }
+  });
+  return filtered.slice(0, amount);
+};
 
 const BattlesByDate = async date => {
   try {
@@ -219,7 +232,7 @@ const AllBattleRuns = async BattleIndex => {
 const BattleResults = async BattleIndex => {
   const battleResults = await Battle.findOne({
     attributes,
-    where: { BattleIndex /* Finished: 1 */ },
+    where: { BattleIndex },
     include: [
       {
         model: Kuski,
@@ -267,6 +280,9 @@ const BattleResults = async BattleIndex => {
       },
     ],
   });
+  if (battleResults.dataValues.Aborted && !battleResults.dataValues.Started) {
+    return omit(battleResults.dataValues, ['LevelIndex', 'LevelData']);
+  }
   return battleResults;
 }
 
@@ -529,7 +545,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
       'Finished',
       'RecFileName',
     ],
-    limit: parseInt(Limit, 10),
+    limit: parseInt(Limit, 10) + 10,
     include: [
       {
         model: Kuski,
@@ -571,7 +587,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
     },
   };
   const battles = await Battle.findAll(query);
-  return battles;
+  return filterBattles(battles, parseInt(Limit, 10));
 };
 
 router
