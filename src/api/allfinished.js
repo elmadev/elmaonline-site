@@ -115,27 +115,6 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
-const getTimesInRange = async (LevelIndex, from, to) => {
-  const lev = await levelInfo(LevelIndex);
-  if (!lev || lev.Hidden) {
-    return [];
-  }
-
-  const times = await AllFinished.findAll({
-    where: { LevelIndex, Driven: { [Op.lt]: to, [Op.gt]: from } },
-    order: [['Driven', 'ASC']],
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['Kuski'],
-      },
-    ],
-    attributes: ['TimeIndex', 'Time', 'Driven'],
-  });
-  return times;
-};
-
 const getLatest = async (KuskiIndex, limit) => {
   const times = await AllFinished.findAll({
     where: { KuskiIndex },
@@ -267,14 +246,6 @@ router
       req.params.KuskiIndex,
       req.params.limit,
       LoggedIn,
-    );
-    res.json(data);
-  })
-  .get('/ranged/:LevelIndex/:from/:to', async (req, res) => {
-    const data = await getTimesInRange(
-      req.params.LevelIndex,
-      req.params.from,
-      req.params.to,
     );
     res.json(data);
   })
