@@ -93,7 +93,7 @@ const getLatest = async (KuskiIndex, limit) => {
   const times = await Besttime.findAll({
     where: { KuskiIndex },
     order: [['TimeIndex', 'DESC']],
-    attributes: ['TimeIndex', 'Time', /* 'Driven', */ 'LevelIndex'],
+    attributes: ['TimeIndex', 'Time', 'Driven', 'LevelIndex'],
     include: [
       {
         model: Level,
