@@ -20,9 +20,7 @@ const levelInfo = async LevelIndex => {
 
 const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
   const lev = await levelInfo(LevelIndex);
-  if (!lev) return [];
-  if (lev.Hidden) return [];
-  if (lev.Locked) return [];
+  if (!lev || lev.Locked || lev.Hidden) return [];
   let timeTable = Besttime;
   if (lev.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
@@ -53,7 +51,7 @@ const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
 
 const getMultiTimes = async (LevelIndex, limit) => {
   const lev = await levelInfo(LevelIndex);
-  if (lev.Hidden) return [];
+  if (!lev || lev.Locked || lev.Hidden) return [];
   const times = await BestMultitime.findAll({
     where: { LevelIndex },
     order: [
@@ -93,19 +91,19 @@ const getLatest = async (KuskiIndex, limit) => {
   const times = await Besttime.findAll({
     where: { KuskiIndex },
     order: [['TimeIndex', 'DESC']],
-    attributes: ['TimeIndex', 'Time', /* 'Driven', */ 'LevelIndex'],
+    attributes: ['TimeIndex', 'Time', 'Driven', 'LevelIndex'],
     include: [
       {
         model: Level,
         as: 'LevelData',
-        attributes: ['LevelName', 'Hidden'],
+        attributes: ['LevelName', 'Locked', 'Hidden'],
       },
     ],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
   return times.filter(t => {
     if (t.LevelData) {
-      if (t.LevelData.Hidden) {
+      if (t.LevelData.Locked || t.LevelData.Hidden) {
         return false;
       }
     } else {

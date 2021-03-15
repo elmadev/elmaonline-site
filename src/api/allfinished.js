@@ -87,7 +87,7 @@ const getHighlights = async () => {
 
 const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   const lev = await levelInfo(LevelIndex);
-  if (!lev) return [];
+  if (!lev || lev.Locked) return [];
   if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
   let timeLimit = parseInt(limit, 10);
   if (lev.Legacy) {
@@ -117,9 +117,7 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
 
 const getTimesInRange = async (LevelIndex, from, to) => {
   const lev = await levelInfo(LevelIndex);
-  if (!lev || lev.Hidden) {
-    return [];
-  }
+  if (!lev || lev.Locked || lev.Hidden) return [];
 
   const times = await AllFinished.findAll({
     where: { LevelIndex, Driven: { [Op.lt]: to, [Op.gt]: from } },
@@ -145,14 +143,14 @@ const getLatest = async (KuskiIndex, limit) => {
       {
         model: Level,
         as: 'LevelData',
-        attributes: ['LevelName', 'Hidden'],
+        attributes: ['LevelName', 'Locked', 'Hidden'],
       },
     ],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
   return times.filter(t => {
     if (t.LevelData) {
-      if (t.LevelData.Hidden) {
+      if (t.LevelData.Locked || t.LevelData.Hidden) {
         return false;
       }
     } else {
@@ -164,7 +162,7 @@ const getLatest = async (KuskiIndex, limit) => {
 
 const timesByLevel = async LevelIndex => {
   const lev = await levelInfo(LevelIndex);
-  if (lev.Locked || lev.Hidden) return [];
+  if (!lev || lev.Locked || lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex },
     order: [
