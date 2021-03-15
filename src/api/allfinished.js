@@ -115,25 +115,6 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
-const getTimesInRange = async (LevelIndex, from, to) => {
-  const lev = await levelInfo(LevelIndex);
-  if (!lev || lev.Locked || lev.Hidden) return [];
-
-  const times = await AllFinished.findAll({
-    where: { LevelIndex, Driven: { [Op.lt]: to, [Op.gt]: from } },
-    order: [['Driven', 'ASC']],
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['Kuski'],
-      },
-    ],
-    attributes: ['TimeIndex', 'Time', 'Driven'],
-  });
-  return times;
-};
-
 const getLatest = async (KuskiIndex, limit) => {
   const times = await AllFinished.findAll({
     where: { KuskiIndex },
@@ -187,6 +168,68 @@ const timesByLevel = async LevelIndex => {
   return times;
 };
 
+/**
+ * Get leader history for level
+ */
+const getLeaderHistoryForLevel = async (
+  LevelIndex,
+  KuskiIndex,
+  BattleIndex,
+  from,
+  to,
+) => {
+  // Check that level isn't locked or hidden
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Locked || lev.Hidden) {
+    return [];
+  }
+
+  // Create where clause
+  const where = {
+    LevelIndex,
+    ...(KuskiIndex && { KuskiIndex }),
+    ...(BattleIndex && { BattleIndex }),
+    ...(from && to && { Driven: { [Op.between]: [from, to] } }),
+  };
+
+  // Get all times
+  const times = await AllFinished.findAll({
+    attributes: ['Time', 'TimeIndex'],
+    where,
+    order: [['TimeIndex', 'ASC']],
+  });
+
+  // Build leader history
+  const leaderHistory = [];
+  let currentBest;
+
+  times.forEach(time => {
+    if (!currentBest || currentBest > time.Time) {
+      leaderHistory.push(time);
+      currentBest = time.Time;
+    }
+  });
+
+  // Populate leader history with extra data
+  const leaderHistoryWithData = await AllFinished.findAll({
+    attributes: ['TimeIndex', 'Time', 'Driven'],
+    where: {
+      TimeIndex: {
+        [Op.in]: leaderHistory.map(r => r.TimeIndex),
+      },
+    },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+
+  return leaderHistoryWithData;
+};
+
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
@@ -206,11 +249,13 @@ router
     );
     res.json(data);
   })
-  .get('/ranged/:LevelIndex/:from/:to', async (req, res) => {
-    const data = await getTimesInRange(
+  .get('/leaderhistory/:LevelIndex', async (req, res) => {
+    const data = await getLeaderHistoryForLevel(
       req.params.LevelIndex,
-      req.params.from,
-      req.params.to,
+      req.query.KuskiIndex,
+      req.query.BattleIndex,
+      req.query.from,
+      req.query.to,
     );
     res.json(data);
   })
