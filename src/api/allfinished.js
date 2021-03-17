@@ -192,19 +192,34 @@ const getLeaderHistoryForLevel = async (
     ...(from && to && { Driven: { [Op.between]: [from, to] } }),
   };
 
-  // Get all times
+  // Get first 100 times
   const times = await AllFinished.findAll({
     attributes: ['Time', 'TimeIndex'],
     where,
     order: [['TimeIndex', 'ASC']],
+    limit: 100,
   });
 
-  // Build leader history
+  // Build leader history for first 100 times
   const leaderHistory = [];
   let currentBest;
 
   times.forEach(time => {
     if (!currentBest || currentBest > time.Time) {
+      leaderHistory.push(time);
+      currentBest = time.Time;
+    }
+  });
+
+  // Get rest of the times
+  const restOfTimes = await AllFinished.findAll({
+    attributes: ['Time', 'TimeIndex'],
+    where: { ...where, Time: { [Op.lt]: currentBest } },
+    order: [['TimeIndex', 'ASC']],
+  });
+
+  restOfTimes.forEach(time => {
+    if (currentBest > time.Time) {
       leaderHistory.push(time);
       currentBest = time.Time;
     }
