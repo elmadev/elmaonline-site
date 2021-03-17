@@ -244,6 +244,18 @@ const getReplaysByLevelIndex = async LevelIndex => {
     where: { LevelIndex, Unlisted: 0 },
     limit: 100,
     order: [['ReplayIndex', 'DESC']],
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'DrivenByData',
+      },
+    ],
   });
   return replays;
 };

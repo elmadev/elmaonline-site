@@ -1,5 +1,5 @@
 import express from 'express';
-import { Op } from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
 import {
@@ -8,6 +8,7 @@ import {
   Kuski,
   LegacyFinished,
   Team,
+  Multitime,
 } from '../data/models';
 
 const router = express.Router();
@@ -37,12 +38,56 @@ const getHighlights = async () => {
     where: { Driven: { [Op.lt]: format(subWeeks(new Date(), 4), 't') } },
     order: [['TimeIndex', 'DESC']],
   });
-  return { week, twoweek, threeweek, fourweek };
+  const multiWeek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 1), 't') },
+    ),
+  });
+  const multiTwoweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 2), 't') },
+    ),
+  });
+  const multiThreeweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 3), 't') },
+    ),
+  });
+  const multiFourweek = await Multitime.findOne({
+    order: [['MultiTimeIndex', 'DESC']],
+    where: sequelize.where(
+      sequelize.fn('UNIX_TIMESTAMP', sequelize.col('Driven')),
+      { [Op.lt]: format(subWeeks(new Date(), 4), 't') },
+    ),
+  });
+
+  return {
+    single: [
+      9999999999,
+      week.TimeIndex,
+      twoweek.TimeIndex,
+      threeweek.TimeIndex,
+      fourweek.TimeIndex,
+    ],
+    multi: [
+      9999999999,
+      multiWeek.MultiTimeIndex,
+      multiTwoweek.MultiTimeIndex,
+      multiThreeweek.MultiTimeIndex,
+      multiFourweek.MultiTimeIndex,
+    ],
+  };
 };
 
 const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   const lev = await levelInfo(LevelIndex);
-  if (!lev) return [];
+  if (!lev || lev.Locked) return [];
   if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
   let timeLimit = parseInt(limit, 10);
   if (lev.Legacy) {
@@ -50,7 +95,10 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   }
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
-    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
     limit: timeLimit > 10000 ? 10000 : timeLimit,
   });
@@ -67,27 +115,6 @@ const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
-const getTimesInRange = async (LevelIndex, from, to) => {
-  const lev = await levelInfo(LevelIndex);
-  if (!lev || lev.Hidden) {
-    return [];
-  }
-
-  const times = await AllFinished.findAll({
-    where: { LevelIndex, Driven: { [Op.lt]: to, [Op.gt]: from } },
-    order: [['Driven', 'ASC']],
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['Kuski'],
-      },
-    ],
-    attributes: ['TimeIndex', 'Time', 'Driven'],
-  });
-  return times;
-};
-
 const getLatest = async (KuskiIndex, limit) => {
   const times = await AllFinished.findAll({
     where: { KuskiIndex },
@@ -97,14 +124,14 @@ const getLatest = async (KuskiIndex, limit) => {
       {
         model: Level,
         as: 'LevelData',
-        attributes: ['LevelName', 'Hidden'],
+        attributes: ['LevelName', 'Locked', 'Hidden'],
       },
     ],
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   });
   return times.filter(t => {
     if (t.LevelData) {
-      if (t.LevelData.Hidden) {
+      if (t.LevelData.Locked || t.LevelData.Hidden) {
         return false;
       }
     } else {
@@ -116,10 +143,13 @@ const getLatest = async (KuskiIndex, limit) => {
 
 const timesByLevel = async LevelIndex => {
   const lev = await levelInfo(LevelIndex);
-  if (lev.Locked || lev.Hidden) return [];
+  if (!lev || lev.Locked || lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex },
-    order: [['Time', 'ASC'], ['TimeIndex', 'ASC']],
+    order: [
+      ['Time', 'ASC'],
+      ['TimeIndex', 'ASC'],
+    ],
     limit: 10000,
     include: [
       {
@@ -138,16 +168,72 @@ const timesByLevel = async LevelIndex => {
   return times;
 };
 
+/**
+ * Get leader history for level
+ */
+const getLeaderHistoryForLevel = async (
+  LevelIndex,
+  KuskiIndex,
+  BattleIndex,
+  from,
+  to,
+) => {
+  // Check that level isn't locked or hidden
+  const lev = await levelInfo(LevelIndex);
+  if (lev.Locked || lev.Hidden) {
+    return [];
+  }
+
+  // Create where clause
+  const where = {
+    LevelIndex,
+    ...(KuskiIndex && { KuskiIndex }),
+    ...(BattleIndex && { BattleIndex }),
+    ...(from && to && { Driven: { [Op.between]: [from, to] } }),
+  };
+
+  // Get all times
+  const times = await AllFinished.findAll({
+    attributes: ['Time', 'TimeIndex'],
+    where,
+    order: [['TimeIndex', 'ASC']],
+  });
+
+  // Build leader history
+  const leaderHistory = [];
+  let currentBest;
+
+  times.forEach(time => {
+    if (!currentBest || currentBest > time.Time) {
+      leaderHistory.push(time);
+      currentBest = time.Time;
+    }
+  });
+
+  // Populate leader history with extra data
+  const leaderHistoryWithData = await AllFinished.findAll({
+    attributes: ['TimeIndex', 'Time', 'Driven'],
+    where: {
+      TimeIndex: {
+        [Op.in]: leaderHistory.map(r => r.TimeIndex),
+      },
+    },
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ],
+  });
+
+  return leaderHistoryWithData;
+};
+
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
-    res.json([
-      9999999999,
-      data.week.TimeIndex,
-      data.twoweek.TimeIndex,
-      data.threeweek.TimeIndex,
-      data.fourweek.TimeIndex,
-    ]);
+    res.json(data);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
     const auth = authContext(req);
@@ -163,11 +249,13 @@ router
     );
     res.json(data);
   })
-  .get('/ranged/:LevelIndex/:from/:to', async (req, res) => {
-    const data = await getTimesInRange(
+  .get('/leaderhistory/:LevelIndex', async (req, res) => {
+    const data = await getLeaderHistoryForLevel(
       req.params.LevelIndex,
-      req.params.from,
-      req.params.to,
+      req.query.KuskiIndex,
+      req.query.BattleIndex,
+      req.query.from,
+      req.query.to,
     );
     res.json(data);
   })

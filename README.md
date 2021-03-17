@@ -45,6 +45,8 @@ The config is set up to use a test database. Bear in mind the following:
 - time, battle and allfinished tables only have a subset of live (last year or two) to keep size down
 - Passwords, emails and private comments have been stripped
 
+Explanation of database structure can be found in [this google sheet](https://docs.google.com/spreadsheets/d/15fNKf2ihV4HvmVZwxg2D18ITvcbCE1nva5NTFlYJOgg/edit?usp=sharing).
+
 ## Communication
 
 Feel free to create issues here on github in order to discuss things related to the project. You can also join the [elma discord](https://discord.gg/j5WMFC6) #developers channel to chat.

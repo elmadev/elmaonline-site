@@ -1,10 +1,8 @@
 import express from 'express';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
-import { eachSeries } from 'neo-async';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
-import { firstEntry, lastEntry, inBetween } from 'utils/sort';
 import {
   Besttime,
   LevelPackLevel,
@@ -16,6 +14,9 @@ import {
   LegacyBesttime,
   Battle,
 } from '../data/models';
+import Admin from './levelpack_admin';
+import Favourite from './levelpack_favourite';
+import Collection from './levelpack_collection';
 
 const router = express.Router();
 
@@ -191,6 +192,184 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
       });
   }
   return times.filter(t => !t.Level.Hidden);
+};
+
+const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+  let timeTable = Besttime;
+  // let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex', 'LevelIndex'];
+  if (packInfo.Legacy && !eolOnly) {
+    timeTable = LegacyBesttime;
+    // timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
+  }
+
+  const packLevels = await LevelPackLevel.findAll({
+    where: {
+      LevelPackIndex: packInfo.dataValues.LevelPackIndex,
+    },
+    order: [
+      ['Sort', 'ASC'],
+      ['LevelPackLevelIndex', 'ASC'],
+    ],
+  }).then(data => data.map(r => r.LevelIndex));
+
+  const multiTimesByLevel = [];
+  // eslint-disable-next-line
+  const allMultiTimes = await BestMultitime.findAll({
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: {
+            KuskiIndex1: KuskiIndex,
+            KuskiIndex2: KuskiIndex,
+          },
+        },
+        {
+          LevelIndex: {
+            [Op.in]: packLevels,
+          },
+        },
+      ],
+    },
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski1Data',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'Kuski2Data',
+        include: [
+          {
+            model: Team,
+            as: 'TeamData',
+            attributes: ['Team'],
+          },
+        ],
+      },
+    ],
+  }).then(data => {
+    packLevels.forEach(levIndex => {
+      const levelTimes = [...data].filter(r => {
+        return levIndex === r.LevelIndex;
+      });
+      if (levelTimes.length > 0)
+        multiTimesByLevel.push(levelTimes.sort((a, b) => a.Time - b.Time)[0]);
+    });
+  });
+  const singleTimesByLevel = await timeTable.findAll({
+    attributes,
+    where: {
+      [Op.and]: {
+        KuskiIndex,
+        LevelIndex: {
+          [Op.in]: packLevels,
+        },
+      },
+    },
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'LongName', 'Hidden'],
+      },
+    ],
+  });
+  if (packInfo.Legacy && !eolOnly) {
+    singleTimesByLevel
+      .filter(t => !t.LevelData.Hidden)
+      .map(t => {
+        return {
+          ...t.dataValues,
+          LevelBesttime: t.dataValues.LevelLegacyBesttime,
+        };
+      });
+  }
+  const timesData = packLevels.map(i => {
+    const singleTime = singleTimesByLevel.filter(r => i === r.LevelIndex)[0];
+    const multiTime = multiTimesByLevel.filter(r => i === r.LevelIndex)[0];
+    if (!singleTime && !multiTime) {
+      return {
+        LevelBesttime: {},
+        LevelMultiBesttime: {},
+        LevelCombinedBesttime: {},
+      };
+    }
+
+    let OtherKuski;
+
+    if (multiTime) {
+      OtherKuski =
+        multiTime.KuskiIndex1 === KuskiIndex
+          ? multiTime.Kuski2Data
+          : multiTime.Kuski1Data;
+      if (multiTime.KuskiIndex1 === multiTime.KuskiIndex2) OtherKuski = 'solo';
+    }
+
+    let LevelMultiBesttime;
+
+    if (multiTime) {
+      LevelMultiBesttime = {
+        Kuski: KuskiIndex,
+        OtherKuski,
+        Time: multiTime.Time,
+        MultiTimeIndex: multiTime.MultiTimeIndex,
+      };
+    }
+
+    if (!singleTime) {
+      return {
+        LevelBesttime: {},
+        LevelMultiBesttime,
+        LevelCombinedBesttime: LevelMultiBesttime,
+      };
+    }
+
+    const LevelBesttime = {
+      Kuski: KuskiIndex,
+      Time: singleTime.Time,
+      OtherKuski: 'single',
+      TimeIndex: singleTime.TimeIndex,
+      Source: attributes.indexOf('Source') !== -1 ? singleTime.Source : null,
+    };
+
+    if (!multiTime) {
+      return {
+        LevelBesttime,
+        LevelMultiBesttime: {},
+        LevelCombinedBesttime: LevelBesttime,
+      };
+    }
+
+    const LevelCombinedBesttime = {
+      Kuski: KuskiIndex,
+      OtherKuski,
+      Time:
+        multiTime.Time <= singleTime.Time ? multiTime.Time : singleTime.Time,
+    };
+    return { LevelBesttime, LevelMultiBesttime, LevelCombinedBesttime };
+  });
+
+  return {
+    packInfo,
+    packLevels,
+    timesData,
+    allMultiTimes,
+    KuskiIndex,
+  };
 };
 
 const getTimes = async (LevelPackIndex, eolOnly = 0) => {
@@ -457,118 +636,6 @@ const AddLevelPack = async data => {
   return NewPack;
 };
 
-const DeleteLevel = async data => {
-  const pack = await LevelPack.findOne({
-    where: { LevelPackIndex: data.LevelPackIndex },
-  });
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    await LevelPackLevel.destroy({
-      where: {
-        LevelIndex: data.LevelIndex,
-        LevelPackIndex: data.LevelPackIndex,
-      },
-    });
-    return true;
-  }
-  return false;
-};
-
-const AddLevel = async data => {
-  const pack = await LevelPack.findOne({
-    where: { LevelPackIndex: data.LevelPackIndex },
-  });
-  const level = await Level.findOne({
-    where: { LevelIndex: data.LevelIndex },
-  });
-  if (level.Locked) {
-    return 'Level is locked.';
-  }
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    let Sort = '';
-    if (data.levels > 0) {
-      Sort = lastEntry(data.last.Sort);
-    } else {
-      Sort = firstEntry();
-    }
-    await LevelPackLevel.create({
-      LevelPackIndex: data.LevelPackIndex,
-      LevelIndex: data.LevelIndex,
-      Sort,
-    });
-    return '';
-  }
-  return 'This is not your level pack';
-};
-
-const SortLevel = async data => {
-  const pack = await LevelPack.findOne({
-    where: { LevelPackIndex: data.LevelPackIndex },
-  });
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    const { LevelIndex } = data.levels[data.source.index];
-    const beforeIndex =
-      data.destination.index === 0
-        ? data.destination.index
-        : data.destination.index - 1;
-    const midIndex = data.destination.index;
-    const afterIndex =
-      data.destination.index === data.levels.length - 1
-        ? data.destination.index
-        : data.destination.index + 1;
-    let Sort = '';
-    if (data.source.index > data.destination.index) {
-      Sort = inBetween(
-        data.levels[beforeIndex].Sort,
-        data.levels[midIndex].Sort,
-        -1,
-      );
-    } else {
-      Sort = inBetween(
-        data.levels[midIndex].Sort,
-        data.levels[afterIndex].Sort,
-        1,
-      );
-    }
-    await LevelPackLevel.update(
-      { Sort },
-      {
-        where: { LevelPackIndex: data.LevelPackIndex, LevelIndex },
-      },
-    );
-    return true;
-  }
-  return false;
-};
-
-const SortPackUpdate = async (data, done) => {
-  await LevelPackLevel.update(
-    { Sort: data.Sort },
-    { where: { LevelPackLevelIndex: data.LevelPackLevelIndex } },
-  );
-  done();
-};
-
-const SortPack = async data => {
-  const pack = await LevelPack.findOne({
-    where: { LevelPackIndex: data.LevelPackIndex },
-  });
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    const updateBulk = [];
-    let Sort = '';
-    forEach(data.levels, l => {
-      if (!Sort) {
-        Sort = firstEntry();
-      } else {
-        Sort = lastEntry(Sort);
-      }
-      updateBulk.push({ LevelPackLevelIndex: l.LevelPackLevelIndex, Sort });
-    });
-    await eachSeries(updateBulk, SortPackUpdate);
-    return true;
-  }
-  return false;
-};
-
 const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
@@ -590,6 +657,9 @@ router
     const data = await allPacks();
     res.json(data);
   })
+  .use('/admin', Admin)
+  .use('/favourite', Favourite)
+  .use('/collections', Collection)
   .get('/:LevelPackIndex/totaltimes', async (req, res) => {
     const data = await getTimes(req.params.LevelPackIndex);
     const tts = totalTimes(data);
@@ -645,6 +715,22 @@ router
     const records = await getMultiRecords(req.params.LevelPackName);
     res.json(records);
   })
+  .get(
+    '/:LevelPackName/personalwithmulti/:KuskiIndex/:eolOnly',
+    async (req, res) => {
+      const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+      if (getKuskiIndex) {
+        const times = await getPersonalWithMulti(
+          req.params.LevelPackName,
+          getKuskiIndex.dataValues.KuskiIndex,
+          parseInt(req.params.eolOnly, 10),
+        );
+        res.json(times);
+      } else {
+        res.json({ error: 'Kuski does not exist' });
+      }
+    },
+  )
   .get('/search/:query', async (req, res) => {
     const packs = await getPacksByQuery(req.params.query);
     res.json(packs);
@@ -679,74 +765,6 @@ router
         KuskiIndex: auth.userid,
       });
       res.json(add);
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/admin/deleteLevel', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const del = await DeleteLevel({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (del) {
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/admin/addLevel', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const add = await AddLevel({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (add) {
-        res.json({ success: 0, error: add });
-      } else {
-        res.json({ success: 1 });
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/admin/sortLevel', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const sort = await SortLevel({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (sort) {
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/admin/sort', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const sort = await SortPack({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (sort) {
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
-      }
     } else {
       res.sendStatus(401);
     }
