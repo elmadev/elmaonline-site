@@ -35,6 +35,9 @@ const getRecords = async (LevelPackName, eol = 0) => {
   let timeTable = Besttime;
   let timeTableAlias = 'LevelBesttime';
   const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  if (!packInfo) {
+    return [];
+  }
   if (packInfo.Legacy && !eol) {
     timeTable = LegacyBesttime;
     timeTableAlias = 'LevelLegacyBesttime';
