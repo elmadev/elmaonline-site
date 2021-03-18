@@ -372,24 +372,26 @@ const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   };
 };
 
-const getTimes = async (LevelPackIndex, eolOnly = 0) => {
+const getTimes = async (LevelPackName, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
-    where: { LevelPackIndex },
+    where: { LevelPackName },
   });
   let timeTable = Besttime;
   let timeTableAlias = 'LevelBesttime';
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
   if (packInfo.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
     timeTableAlias = 'LevelLegacyBesttime';
+    attributes.push('Source');
   }
   const times = await LevelPackLevel.findAll({
-    where: { LevelPackIndex },
-    attributes: ['LevelIndex'],
+    where: { LevelPackIndex: packInfo.LevelPackIndex },
+    attributes: ['LevelIndex', 'Sort'],
     include: [
       {
         model: timeTable,
         as: timeTableAlias,
-        attributes: ['TimeIndex', 'Time', 'KuskiIndex'],
+        attributes,
         include: [
           {
             model: Kuski,
@@ -401,7 +403,7 @@ const getTimes = async (LevelPackIndex, eolOnly = 0) => {
       {
         model: Level,
         as: 'Level',
-        attributes: ['Hidden'],
+        attributes: ['LevelName', 'LongName', 'Hidden'],
       },
     ],
   });
@@ -569,6 +571,34 @@ const totalTimes = times => {
   return tts.filter(x => x.count === times.length);
 };
 
+const sortPacks = (a, b) => {
+  if (a.Sort > b.Sort) {
+    return 1;
+  }
+  return 0;
+};
+
+const sortTimes = (a, b) => {
+  if (a.Time === b.Time) {
+    return a.TimeIndex - b.TimeIndex;
+  }
+  return a.Time - b.Time;
+};
+
+const findRecords = times => {
+  const recs = [];
+  forEach(times.sort(sortPacks), level => {
+    if (!level.Level.Hidden) {
+      recs.push({
+        LevelIndex: level.LevelIndex,
+        Level: level.Level,
+        LevelBesttime: level.LevelBesttime.sort(sortTimes)[0],
+      });
+    }
+  });
+  return recs;
+};
+
 const pointList = [
   40,
   30,
@@ -660,20 +690,22 @@ router
   .use('/admin', Admin)
   .use('/favourite', Favourite)
   .use('/collections', Collection)
-  .get('/:LevelPackIndex/totaltimes', async (req, res) => {
-    const data = await getTimes(req.params.LevelPackIndex);
+  .get('/:LevelPackName/stats', async (req, res) => {
+    const data = await getTimes(req.params.LevelPackName);
     const tts = totalTimes(data);
     const points = kinglist(data);
-    res.json({ tts, points });
+    const records = findRecords(data);
+    res.json({ tts, points, records });
   })
-  .get('/:LevelPackIndex/totaltimes/:eolOnly', async (req, res) => {
+  .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
     const data = await getTimes(
-      req.params.LevelPackIndex,
+      req.params.LevelPackName,
       parseInt(req.params.eolOnly, 10),
     );
     const tts = totalTimes(data);
     const points = kinglist(data);
-    res.json({ tts, points });
+    const records = findRecords(data);
+    res.json({ tts, points, records });
   })
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
     const getKuskiIndex = await getKuski(req.params.KuskiIndex);
