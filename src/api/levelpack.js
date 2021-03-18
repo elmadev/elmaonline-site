@@ -27,73 +27,6 @@ const getKuski = async k => {
   return findKuski;
 };
 
-const getRecords = async (LevelPackName, eol = 0) => {
-  const packInfo = await LevelPack.findOne({
-    attributes: ['LevelPackIndex', 'Legacy'],
-    where: { LevelPackName },
-  });
-  let timeTable = Besttime;
-  let timeTableAlias = 'LevelBesttime';
-  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
-  if (!packInfo) {
-    return [];
-  }
-  if (packInfo.Legacy && !eol) {
-    timeTable = LegacyBesttime;
-    timeTableAlias = 'LevelLegacyBesttime';
-    attributes.push('Source');
-  }
-  const times = await LevelPackLevel.findAll({
-    where: { LevelPackIndex: packInfo.LevelPackIndex },
-    order: [
-      ['Sort', 'ASC'],
-      ['LevelPackLevelIndex', 'ASC'],
-    ],
-    include: [
-      {
-        model: timeTable,
-        as: timeTableAlias,
-        attributes,
-        order: [
-          ['Time', 'ASC'],
-          ['TimeIndex', 'ASC'],
-        ],
-        limit: 1,
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'Country'],
-            as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-                attributes: ['Team'],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        model: Level,
-        as: 'Level',
-        attributes: ['LevelName', 'LongName', 'Hidden'],
-      },
-    ],
-  });
-  if (packInfo.Legacy && !eol) {
-    return times
-      .filter(t => !t.Level.Hidden)
-      .map(t => {
-        return {
-          ...t.dataValues,
-          LevelBesttime: t.dataValues.LevelLegacyBesttime,
-        };
-      });
-  }
-  return times.filter(t => !t.Level.Hidden);
-};
-
 const getMultiRecords = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
@@ -734,17 +667,6 @@ router
     } else {
       res.json({ error: 'Kuski does not exist' });
     }
-  })
-  .get('/:LevelPackName/records', async (req, res) => {
-    const records = await getRecords(req.params.LevelPackName);
-    res.json(records);
-  })
-  .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
-    const records = await getRecords(
-      req.params.LevelPackName,
-      parseInt(req.params.eolOnly, 10),
-    );
-    res.json(records);
   })
   .get('/:LevelPackName/multirecords', async (req, res) => {
     const records = await getMultiRecords(req.params.LevelPackName);
