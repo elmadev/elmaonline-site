@@ -15,6 +15,23 @@ const GetMembers = async t => {
       {
         model: Kuski,
         as: 'Members',
+        attributes: [
+          'KuskiIndex',
+          'Kuski',
+          'TeamIndex',
+          'Country',
+          'RPlay',
+          'RStartBattle',
+          'RSpecialBattle',
+          'RStartCup',
+          'RStart24htt',
+          'RStop',
+          'RMultiPlay',
+          'RChat',
+          'RBan',
+          'RMod',
+          'RAdmin',
+        ],
       },
     ],
   });
