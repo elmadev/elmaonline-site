@@ -207,10 +207,12 @@ const getReplaysSearchFilename = async (query, offset) => {
       {
         model: Kuski,
         as: 'UploadedByData',
+        attributes: ['KuskiIndex', 'Kuski', 'Country', 'TeamIndex'],
       },
       {
         model: Kuski,
         as: 'DrivenByData',
+        attributes: ['KuskiIndex', 'Kuski', 'Country', 'TeamIndex'],
       },
     ],
   });
