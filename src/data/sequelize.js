@@ -10,13 +10,45 @@ const sequelize = new Sequelize(uri, {
     freezeTableName: true,
     timestamps: false,
     hooks: {
-      beforeFind: options => {
-        const newOptions = options;
-        newOptions.benchmark = true;
-        newOptions.logging = (q, b) => {
-          log('global', q, b);
+      beforeFind: o => {
+        const n = o;
+        n.benchmark = true;
+        n.logging = (q, b) => {
+          log('find', q, b);
         };
-        return newOptions;
+        return n;
+      },
+      beforeCreate: (d, o) => {
+        const n = o;
+        n.benchmark = true;
+        n.logging = (q, b) => {
+          log('create', q, b);
+        };
+        return n;
+      },
+      beforeDestroy: (d, o) => {
+        const n = o;
+        n.benchmark = true;
+        n.logging = (q, b) => {
+          log('destroy', q, b);
+        };
+        return n;
+      },
+      beforeUpdate: (d, o) => {
+        const n = o;
+        n.benchmark = true;
+        n.logging = (q, b) => {
+          log('update', q, b);
+        };
+        return n;
+      },
+      beforeCount: o => {
+        const n = o;
+        n.benchmark = true;
+        n.logging = (q, b) => {
+          log('count', q, b);
+        };
+        return n;
       },
     },
   },
