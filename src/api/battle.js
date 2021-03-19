@@ -280,6 +280,9 @@ const BattleResults = async BattleIndex => {
       },
     ],
   });
+  if (!battleResults) {
+    return null;
+  }
   if (battleResults.dataValues.Aborted && !battleResults.dataValues.Started) {
     return omit(battleResults.dataValues, ['LevelIndex', 'LevelData']);
   }
@@ -331,6 +334,9 @@ const GetAllBattleTimes = async BattleIndex => {
     where: { BattleIndex },
   });
   let times;
+  if (battleStatus.length === 0) {
+    return [];
+  }
   if (battleStatus[0].dataValues.Finished === 1) {
     times = await AllFinished.findAll({
       where: { BattleIndex },
