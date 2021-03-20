@@ -511,10 +511,7 @@ const sortPacks = (a, b) => {
   if (a.Sort === b.Sort) {
     return a.LevelPackLevelIndex - b.LevelPackLevelIndex;
   }
-  if (a.Sort > b.Sort) {
-    return 1;
-  }
-  return 0;
+  return `${a.Sort}`.localeCompare(`${b.Sort}`);
 };
 
 const sortTimes = (a, b) => {
