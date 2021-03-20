@@ -508,6 +508,9 @@ const totalTimes = times => {
 };
 
 const sortPacks = (a, b) => {
+  if (a.Sort === b.Sort) {
+    return a.LevelPackLevelIndex - b.LevelPackLevelIndex;
+  }
   if (a.Sort > b.Sort) {
     return 1;
   }
@@ -527,6 +530,7 @@ const findRecords = times => {
     if (!level.Level.Hidden) {
       recs.push({
         LevelIndex: level.LevelIndex,
+        Sort: level.Sort,
         Level: level.Level,
         LevelBesttime: level.LevelBesttime.sort(sortTimes)[0],
       });
