@@ -508,10 +508,10 @@ const totalTimes = times => {
 };
 
 const sortPacks = (a, b) => {
-  if (a.Sort > b.Sort) {
-    return 1;
+  if (a.Sort === b.Sort) {
+    return a.LevelPackLevelIndex - b.LevelPackLevelIndex;
   }
-  return 0;
+  return `${a.Sort}`.localeCompare(`${b.Sort}`);
 };
 
 const sortTimes = (a, b) => {
@@ -527,6 +527,7 @@ const findRecords = times => {
     if (!level.Level.Hidden) {
       recs.push({
         LevelIndex: level.LevelIndex,
+        Sort: level.Sort,
         Level: level.Level,
         LevelBesttime: level.LevelBesttime.sort(sortTimes)[0],
       });
