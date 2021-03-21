@@ -162,94 +162,93 @@ export function s3Params(Key, Body) {
   };
 }
 
-export function uploadReplayS3(replayFile, folder, filename) {
+const move = (file, dest) => {
+  return new Promise((resolve, reject) => {
+    file.mv(dest, mvErr => {
+      if (mvErr) {
+        reject(mvErr);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+const s3PutObject = params => {
   return new Promise(resolve => {
-    const fileUuid = uuid();
+    s3.putObject(params, err => {
+      resolve(err);
+    });
+  });
+};
+
+export const uploadReplayS3 = async (replayFile, folder, filename) => {
+  try {
+    let fileUuid = uuid();
     const params = s3Params(
       `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`,
       replayFile.data,
     );
+    let filepath = `.${config.publicFolder}/temp/${fileUuid}-${filename}`;
+    // for local testing without s3 access
+    if (config.accessKeyId === 'local') {
+      fileUuid = `local${fileUuid.substring(5, 10)}`;
+      filepath = `.${config.publicFolder}/temp/${fileUuid}-${filename}`;
+    }
     // save in temp folder to be able to read rec data
-    replayFile.mv(
-      `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-      mvErr => {
-        if (mvErr) {
-          resolve({ error: mvErr, replayInfo: null });
-        } else {
-          // check duplicate
-          checksumFile(
-            'md5',
-            `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-          ).then(MD5 => {
-            getReplaysByMd5(MD5).then(replaysMD5 => {
-              if (replaysMD5.length > 0) {
-                resolve({
-                  error: 'Duplicate',
-                  replayInfo: replaysMD5,
-                  file: filename,
-                });
-              } else {
-                // find LevelIndex
-                findLevelIndexFromReplay(
-                  `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-                ).then(LevelIndex => {
-                  if (LevelIndex === 0) {
-                    resolve({
-                      error: 'Level not found',
-                      replayInfo: null,
-                      file: filename,
-                    });
-                    fs.unlink(
-                      `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-                    );
-                  } else {
-                    // upload to s3
-                    s3.putObject(params, err => {
-                      if (err) {
-                        resolve({
-                          error: err,
-                          replayInfo: null,
-                          file: filename,
-                        });
-                      } else {
-                        // find replay time and finished state
-                        getReplayInfo(
-                          `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-                        )
-                          .then(replayData => {
-                            // return all data
-                            resolve({
-                              file: filename,
-                              uuid: fileUuid,
-                              time: replayData.time,
-                              finished: +replayData.finished,
-                              LevelIndex,
-                              MD5,
-                            });
-                            // delete file in temp folder
-                            fs.unlink(
-                              `.${config.publicFolder}/temp/${fileUuid}-${filename}`,
-                            );
-                          })
-                          .catch(error => {
-                            resolve({
-                              error,
-                              replayInfo: null,
-                              file: filename,
-                            });
-                          });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          });
-        }
-      },
-    );
-  });
-}
+    await move(replayFile, filepath);
+    // check duplicate
+    const MD5 = await checksumFile('md5', filepath);
+    const replaysMD5 = await getReplaysByMd5(MD5);
+    if (replaysMD5.length > 0) {
+      return {
+        error: 'Duplicate',
+        replayInfo: replaysMD5,
+        file: filename,
+      };
+    }
+    // find LevelIndex
+    const LevelIndex = await findLevelIndexFromReplay(filepath);
+    if (LevelIndex === 0) {
+      await fs.promises.unlink(filepath);
+      return {
+        error: 'Level not found',
+        replayInfo: null,
+        file: filename,
+      };
+    }
+    // upload to s3
+    if (config.accessKeyId !== 'local') {
+      const s3Err = await s3PutObject(params);
+      if (s3Err) {
+        return {
+          error: s3Err,
+          replayInfo: null,
+          file: filename,
+        };
+      }
+    }
+    // find replay time and finished state
+    const replayData = await getReplayInfo(filepath);
+    if (config.accessKeyId !== 'local') {
+      await fs.promises.unlink(filepath);
+    }
+    return {
+      file: filename,
+      uuid: fileUuid,
+      time: replayData.time,
+      finished: +replayData.finished,
+      LevelIndex,
+      MD5,
+    };
+  } catch (error) {
+    return {
+      error,
+      replayInfo: null,
+      file: filename,
+    };
+  }
+};
 
 const checkCupTime = async (KuskiIndex, LevelIndex, Time, cb) => {
   const times = await AllFinished.findAll({
