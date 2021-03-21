@@ -684,7 +684,7 @@ router
               .trim()
               .toLowerCase()}: <${config.discord.url}cup/${
               req.body.ShortName
-            }>`,
+            }/events/${getEventNumber(eventData[0])}/interviews>`,
           );
           res.json({ success: 1 });
         } else {
