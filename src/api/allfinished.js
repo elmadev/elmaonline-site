@@ -146,11 +146,8 @@ const timesByLevel = async LevelIndex => {
   if (!lev || lev.Locked || lev.Hidden) return [];
   const times = await AllFinished.findAll({
     where: { LevelIndex },
-    attributes: ['Time', 'TimeIndex'],
-    order: [
-      ['Time', 'ASC'],
-      ['TimeIndex', 'ASC'],
-    ],
+    attributes: ['Time', 'TimeIndex', 'Driven'],
+    order: [['Time', 'ASC']],
     limit: 10000,
     include: [
       {
