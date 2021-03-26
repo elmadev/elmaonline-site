@@ -2,7 +2,7 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Replay, Level, Kuski } from '../data/models';
+import { Replay, Level, Kuski, Tag } from '../data/models';
 
 const router = express.Router();
 
@@ -32,6 +32,13 @@ const getReplays = async (offset = 0, limit = 50) => {
     where: { Unlisted: 0 },
     order: [['Uploaded', 'DESC']],
     include: [
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
       {
         model: Level,
         attributes: ['LevelName'],
@@ -111,6 +118,13 @@ const getReplayByUUID = async replayUUID => {
   const data = await Replay.findOne({
     where: { UUID: replayUUID },
     include: [
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
       {
         model: Level,
         attributes: ['LevelName'],
@@ -225,6 +239,18 @@ const InsertReplay = async (data, userid) => {
     insertData.DrivenByText = '';
   }
   const replay = await Replay.create(insertData);
+
+  // Set tags
+  const tags = insertData.Tags.filter(tag => !tag.Hidden).map(
+    tag => tag.TagIndex,
+  );
+  // Add DNF tag when needed
+  if (!replay.Finished) {
+    const dnfTag = await Tag.findOne({ where: { Name: 'DNF' } });
+    tags.push(dnfTag.TagIndex);
+  }
+  await replay.setTags(tags);
+
   return replay;
 };
 
