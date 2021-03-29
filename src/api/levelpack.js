@@ -2,6 +2,7 @@ import express from 'express';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
+import { checkSchema, validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -611,12 +612,49 @@ const getPackByName = async LevelPackName => {
   return packInfo;
 };
 
+const getPackByIndex = async LevelPackIndex => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackIndex },
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+  });
+  return packInfo;
+};
+
 const allPacks = async () => {
   const data = await LevelPack.findAll({
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
     order: [['LevelPackName', 'ASC']],
   });
   return data;
+};
+
+// @see https://express-validator.github.io/docs/schema-validation.html
+// /update uses these except for LevelPackName.
+// /add could use these but it already had client-side validation so for
+// right now, it does not.
+const validators = {
+  LevelPackName: {
+    isLength: {
+      errorMessage: 'Pack Name should contain between 2 and 16 characters.',
+      options: { min: 2, max: 16 },
+    },
+    isAlphaNumeric: {
+      errorMessage:
+        'Pack Name should contain only letters and numbers, no spaces.',
+    },
+  },
+  LevelPackLongName: {
+    isLength: {
+      errorMessage: 'Long Name should contain between 2 and 30 characters.',
+      options: { min: 2, max: 30 },
+    },
+  },
+  LevelPackDesc: {
+    isLength: {
+      errorMessage: 'Description should contain 255 characters or less.',
+      options: { min: 0, max: 255 },
+    },
+  },
 };
 
 router
@@ -727,6 +765,45 @@ router
       res.sendStatus(401);
     }
   })
+  .post(
+    '/update/:index',
+    checkSchema(
+      {
+        // LevelPackName: validators.LevelPackName,
+        LevelPackLongName: validators.LevelPackLongName,
+        LevelPackDesc: validators.LevelPackDesc,
+      },
+      ['body'],
+    ),
+    async (req, res) => {
+      const validate = validationResult(req);
+
+      if (validate.errors && validate.errors.length) {
+        res.json({
+          errors: validate.errors.map(e => e.msg),
+        });
+        return;
+      }
+
+      const pack = await getPackByIndex(req.params.index || 0);
+
+      const auth = authContext(req);
+
+      if (!(auth.mod || (pack && pack.KuskiIndex === auth.userid))) {
+        res.json({ error: 'Not authorized.' });
+        return;
+      }
+
+      pack.LevelPackLongName = req.body.LevelPackLongName;
+      pack.LevelPackDesc = req.body.LevelPackDesc;
+
+      await pack.save();
+      res.json({
+        success: true,
+        LevelPack: pack,
+      });
+    },
+  )
   .get('/:LevelPackName', async (req, res) => {
     const data = await getPackByName(req.params.LevelPackName);
     res.json(data);

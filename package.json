@@ -37,6 +37,7 @@
     "elmajs": "^1.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
+    "express-validator": "^6.10.0",
     "jimp": "^0.16.1",
     "jws": "^3.2.2",
     "lodash": "^4.17.20",
