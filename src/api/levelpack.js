@@ -2,7 +2,6 @@ import express from 'express';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
-import { checkSchema, validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -18,6 +17,7 @@ import {
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
 import Collection from './levelpack_collection';
+import { checkSchemaAndBail } from '../utils/middleware';
 
 const router = express.Router();
 
@@ -767,24 +767,14 @@ router
   })
   .post(
     '/update/:index',
-    checkSchema(
+    ...checkSchemaAndBail(
       {
-        // LevelPackName: validators.LevelPackName,
         LevelPackLongName: validators.LevelPackLongName,
         LevelPackDesc: validators.LevelPackDesc,
       },
       ['body'],
     ),
     async (req, res) => {
-      const validate = validationResult(req);
-
-      if (validate.errors && validate.errors.length) {
-        res.json({
-          errors: validate.errors.map(e => e.msg),
-        });
-        return;
-      }
-
       const pack = await getPackByIndex(req.params.index || 0);
 
       const auth = authContext(req);
