@@ -19,6 +19,7 @@ import Mod from './mod';
 import News from './news';
 import Donate from './donate';
 import Upload from './upload';
+import Tag from './tag';
 
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router
   .use('/news', News)
   .use('/teams', Teams)
   .use('/donate', Donate)
-  .use('/upload', Upload);
+  .use('/upload', Upload)
+  .use('/tag', Tag);
 
 export default router;
