@@ -133,6 +133,25 @@ const cripple = content => {
   return '';
 };
 
+const extraRules = content => {
+  let text = ' (';
+  if (content.seeOthers) {
+    text += 'others shown, ';
+  }
+  if (!content.seeTimes) {
+    text += 'times hidden, ';
+  }
+  if (content.acceptBugs) {
+    text += 'bugs allowed, ';
+  }
+  if (text.length > 2) {
+    text = text.substring(0, text.length - 2);
+    text += ')';
+    return text;
+  }
+  return '';
+};
+
 function discordChatline(content) {
   const ts = moment(content.timestamp, 'YYYY-MM-DD HH:mm:ss UTC').format(
     'HH:mm:ss',
@@ -169,7 +188,7 @@ const battleToString = battle => {
   let text = `${config.discord.icons.started} **`;
   text += battleIn(battle.battleType, battle.level);
   text += `${cripple(battle)} started by ${battle.designer},`;
-  text += ` ${battle.durationMinutes} mins**\n`;
+  text += ` ${battle.durationMinutes} mins${extraRules(battle)}**\n`;
   text += `More info: <${config.discord.url}battles/${battle.battleIndex}>`;
   return text;
 };
