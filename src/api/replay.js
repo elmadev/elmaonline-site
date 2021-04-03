@@ -25,7 +25,7 @@ const attributes = [
   'Nitro',
 ];
 
-const getReplays = async (offset = 0, limit = 50) => {
+const getReplays = async (offset = 0, limit = 50, tags = []) => {
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
@@ -38,6 +38,7 @@ const getReplays = async (offset = 0, limit = 50) => {
         through: {
           attributes: [],
         },
+        ...(tags.length && { where: { TagIndex: tags } }),
       },
       {
         model: Level,
@@ -51,7 +52,7 @@ const getReplays = async (offset = 0, limit = 50) => {
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
+        attributes: ['Kuski', 'Country', 'KuskiIndex'],
         as: 'DrivenByData',
       },
     ],
@@ -290,9 +291,9 @@ const getReplaysByLevelIndex = async LevelIndex => {
 
 router
   .get('/', async (req, res) => {
-    const offset = req.query.pageSize * req.query.page;
+    const offset = req.query.pageSize * req.query.page || 0;
     const limit = req.query.pageSize;
-    const data = await getReplays(offset, limit);
+    const data = await getReplays(offset, limit, req.query.tags);
     res.json(data);
   })
   .post('/', async (req, res) => {
