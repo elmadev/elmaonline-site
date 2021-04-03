@@ -374,6 +374,11 @@ Replay.belongsToMany(Tag, {
   as: 'Tags',
 });
 
+Replay.hasMany(ReplayRating, {
+  foreignKey: 'ReplayIndex',
+  as: 'Rating',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

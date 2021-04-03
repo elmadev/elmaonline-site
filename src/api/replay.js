@@ -2,7 +2,8 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Replay, Level, Kuski, Tag } from '../data/models';
+import { Replay, Level, Kuski, Tag, ReplayRating } from '../data/models';
+import sequelize from '../data/sequelize';
 
 const router = express.Router();
 
@@ -31,7 +32,24 @@ const getReplays = async (offset = 0, limit = 50, tags = []) => {
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
     order: [['Uploaded', 'DESC']],
+    attributes: {
+      include: [
+        [
+          sequelize.literal(`(
+                  SELECT avg(Vote)
+                  FROM replay_rating
+                  WHERE
+                  replay_rating.ReplayIndex = replay.ReplayIndex
+              )`),
+          'ratingAvg',
+        ],
+      ],
+    },
     include: [
+      {
+        model: ReplayRating,
+        as: 'Rating',
+      },
       {
         model: Tag,
         as: 'Tags',
