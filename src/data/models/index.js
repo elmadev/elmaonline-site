@@ -222,9 +222,14 @@ WeeklyBest.belongsTo(WeeklyWRs, {
   as: 'WeeklyWR',
 });
 
-Ranking.belongsTo(Kuski, {
+Ranking.hasOne(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+Kuski.hasOne(Ranking, {
+  foreignKey: 'KuskiIndex',
+  as: 'RankingData',
 });
 
 RankingYearly.belongsTo(Kuski, {

@@ -2,7 +2,7 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Team, Kuski, Ignored } from '../data/models';
+import { Team, Kuski, Ignored, Ranking } from '../data/models';
 
 const router = express.Router();
 
@@ -28,15 +28,24 @@ const Players = async () => {
   const get = await Kuski.findAll({
     attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Confirmed'],
     order: [['Kuski', 'ASC']],
+    where: {
+      Confirmed: 1,
+    },
     include: [
       {
         model: Team,
         as: 'TeamData',
         attributes: ['Team'],
       },
+      {
+        model: Ranking,
+        as: 'RankingData',
+        attributes: ['PlayedAll', 'WinsAll', 'DesignedAll', 'RankingAll'],
+      },
     ],
   });
-  return get.filter(k => k.Confirmed);
+
+  return get;
 };
 
 const TeamsSearch = async (query, offset) => {
