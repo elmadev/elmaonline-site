@@ -26,17 +26,30 @@ const attributes = [
   'Nitro',
 ];
 
-const getReplays = async (offset = 0, limit = 50, tags = []) => {
+const getReplays = async (
+  offset = 0,
+  limit = 50,
+  tags = [],
+  sortBy = 'uploaded',
+  order = 'desc',
+) => {
+  const getOrder = () => {
+    if (sortBy === 'rating') {
+      return [sequelize.literal(`ratingAvg ${order}`)];
+    }
+    return [['Uploaded', order]];
+  };
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
-    order: [['Uploaded', 'DESC']],
+    order: getOrder(),
     attributes: {
       include: [
         [
           sequelize.literal(`(
-                  SELECT avg(Vote)
+                  SELECT round(avg(Vote), 1)
                   FROM replay_rating
                   WHERE
                   replay_rating.ReplayIndex = replay.ReplayIndex
@@ -311,7 +324,13 @@ router
   .get('/', async (req, res) => {
     const offset = req.query.pageSize * req.query.page || 0;
     const limit = req.query.pageSize;
-    const data = await getReplays(offset, limit, req.query.tags);
+    const data = await getReplays(
+      offset,
+      limit,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+    );
     res.json(data);
   })
   .post('/', async (req, res) => {
