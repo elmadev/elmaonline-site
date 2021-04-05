@@ -68,6 +68,7 @@ const Player = async (IdentifierType, KuskiIdentifier) => {
       'RBan',
       'RMod',
       'RAdmin',
+      'BmpCRC',
     ],
     include: [
       {
