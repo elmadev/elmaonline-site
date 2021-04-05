@@ -2,7 +2,8 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Replay, Level, Kuski, Tag } from '../data/models';
+import { Replay, Level, Kuski, Tag, ReplayRating } from '../data/models';
+import sequelize from '../data/sequelize';
 
 const router = express.Router();
 
@@ -25,19 +26,50 @@ const attributes = [
   'Nitro',
 ];
 
-const getReplays = async (offset = 0, limit = 50) => {
+const getReplays = async (
+  offset = 0,
+  limit = 50,
+  tags = [],
+  sortBy = 'uploaded',
+  order = 'desc',
+) => {
+  const getOrder = () => {
+    if (sortBy === 'rating') {
+      return [sequelize.literal(`ratingAvg ${order}`)];
+    }
+    return [['Uploaded', order]];
+  };
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
-    order: [['Uploaded', 'DESC']],
+    order: getOrder(),
+    attributes: {
+      include: [
+        [
+          sequelize.literal(`(
+                  SELECT round(avg(Vote), 1)
+                  FROM replay_rating
+                  WHERE
+                  replay_rating.ReplayIndex = replay.ReplayIndex
+              )`),
+          'ratingAvg',
+        ],
+      ],
+    },
     include: [
+      {
+        model: ReplayRating,
+        as: 'Rating',
+      },
       {
         model: Tag,
         as: 'Tags',
         through: {
           attributes: [],
         },
+        ...(tags.length && { where: { TagIndex: tags } }),
       },
       {
         model: Level,
@@ -51,7 +83,7 @@ const getReplays = async (offset = 0, limit = 50) => {
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
+        attributes: ['Kuski', 'Country', 'KuskiIndex'],
         as: 'DrivenByData',
       },
     ],
@@ -290,9 +322,15 @@ const getReplaysByLevelIndex = async LevelIndex => {
 
 router
   .get('/', async (req, res) => {
-    const offset = req.query.pageSize * req.query.page;
+    const offset = req.query.pageSize * req.query.page || 0;
     const limit = req.query.pageSize;
-    const data = await getReplays(offset, limit);
+    const data = await getReplays(
+      offset,
+      limit,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+    );
     res.json(data);
   })
   .post('/', async (req, res) => {
