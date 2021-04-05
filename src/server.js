@@ -141,17 +141,24 @@ app.get('/dl/allshirts', async (req, res, next) => {
 
 app.get('/dl/shirt/:id', async (req, res, next) => {
   try {
-    const { file, filename } = await getShirtByKuskiId(req.params.id);
-    const readStream = new stream.PassThrough();
-    readStream.end(file);
-    res.set({
-      'Content-disposition': `attachment; filename=${filename}`,
-      'Content-Type': 'image/png',
-    });
-    readStream.pipe(res);
+    const { file, filename, error } = await getShirtByKuskiId(req.params.id);
+    if (error) {
+      next({
+        status: 404,
+        msg: error,
+      });
+    } else {
+      const readStream = new stream.PassThrough();
+      readStream.end(file);
+      res.set({
+        'Content-disposition': `attachment; filename=${filename}`,
+        'Content-Type': 'image/png',
+      });
+      readStream.pipe(res);
+    }
   } catch (e) {
     next({
-      status: 403,
+      status: 500,
       msg: e.message,
     });
   }

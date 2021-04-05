@@ -322,6 +322,9 @@ export const getEventReplays = async (CupIndex, filename, auth) => {
 
 export const getShirtByKuskiId = async KuskiIndex => {
   const kuskiData = await Kuski.findOne({ where: { KuskiIndex } });
+  if (kuskiData.BmpCRC === 0) {
+    return { file: null, filename: '', error: 'no bmp data' };
+  }
   const image = await jimp.read(kuskiData.BmpData);
   const alphaKey = jimp.intToRGBA(image.getPixelColor(0, 0));
   const replaceColor = { r: 0, g: 0, b: 0, a: 0 };

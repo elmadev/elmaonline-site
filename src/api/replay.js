@@ -83,7 +83,7 @@ const getReplays = async (
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country', 'KuskiIndex'],
+        attributes: ['Kuski', 'Country', 'KuskiIndex', 'BmpCRC'],
         as: 'DrivenByData',
       },
     ],
