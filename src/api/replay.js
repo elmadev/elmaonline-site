@@ -45,6 +45,14 @@ const getReplays = async (
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
     order: getOrder(),
+    group: ['ReplayIndex'],
+    ...(tags.length && {
+      having: sequelize.literal(`(
+        SELECT count('TagIndex')
+        FROM replay_tags
+        WHERE replay_tags.ReplayIndex = replay.ReplayIndex
+        AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`),
+    }),
     attributes: {
       include: [
         [
@@ -69,7 +77,6 @@ const getReplays = async (
         through: {
           attributes: [],
         },
-        ...(tags.length && { where: { TagIndex: tags } }),
       },
       {
         model: Level,
