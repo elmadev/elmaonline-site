@@ -227,6 +227,11 @@ Ranking.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Kuski.hasOne(Ranking, {
+  foreignKey: 'KuskiIndex',
+  as: 'RankingData',
+});
+
 RankingYearly.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
