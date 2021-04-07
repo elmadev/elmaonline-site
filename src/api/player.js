@@ -40,7 +40,13 @@ const Players = async () => {
       {
         model: Ranking,
         as: 'RankingData',
-        attributes: ['PlayedAll', 'WinsAll', 'DesignedAll', 'RankingAll'],
+        attributes: [
+          'PlayedAll',
+          'WinsAll',
+          'DesignedAll',
+          'RankingAll',
+          'Played5All',
+        ],
       },
     ],
   });
