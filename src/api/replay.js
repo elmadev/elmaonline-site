@@ -322,6 +322,13 @@ const getReplaysByLevelIndex = async LevelIndex => {
         attributes: ['Kuski', 'Country'],
         as: 'DrivenByData',
       },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
     ],
   });
   return replays;
