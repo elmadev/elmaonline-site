@@ -44,6 +44,8 @@ import Upload from './Upload';
 import LevelPackFavourite from './LevelPackFavourite';
 import LevelPackCollection from './LevelPackCollection';
 import LevelPackCollectionPack from './LevelPackCollectionPack';
+import Tag from './Tag';
+import ReplayTags from './ReplayTags';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -225,6 +227,11 @@ Ranking.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Kuski.hasOne(Ranking, {
+  foreignKey: 'KuskiIndex',
+  as: 'RankingData',
+});
+
 RankingYearly.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -360,6 +367,23 @@ LevelPackCollectionPack.belongsTo(LevelPack, {
   as: 'PackData',
 });
 
+Tag.belongsToMany(Replay, {
+  through: ReplayTags,
+  foreignKey: 'TagIndex',
+  as: 'Replays',
+});
+
+Replay.belongsToMany(Tag, {
+  through: ReplayTags,
+  foreignKey: 'ReplayIndex',
+  as: 'Tags',
+});
+
+Replay.hasMany(ReplayRating, {
+  foreignKey: 'ReplayIndex',
+  as: 'Rating',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -411,4 +435,5 @@ export {
   LevelPackFavourite,
   LevelPackCollection,
   LevelPackCollectionPack,
+  Tag,
 }; // add the data model here as well so it exports

@@ -1,6 +1,7 @@
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
 import { eachSeries } from 'neo-async';
+import { create } from 'apisauce';
 import {
   KuskiMap,
   SiteSetting,
@@ -15,12 +16,128 @@ import {
   Team,
 } from '../data/models';
 import * as kuskiMapData from '../data/json/kuskimap.json';
-import * as skintPRsData from '../data/json/skintatious_PRs.json';
-import * as skintNonPRsData from '../data/json/skintatious_nonPRs.json';
-import * as skintKuskis from '../data/json/skintatious_kuskis.json';
-import * as kopaTimes from '../data/json/kopasite_time.json';
-import * as kopaKuskis from '../data/json/kopasite_kuski.json';
-import * as kopaLevels from '../data/json/kopasite_level.json';
+
+const api = create({
+  baseURL: 'https://eol.ams3.digitaloceanspaces.com/import/',
+  headers: {
+    Accept: 'application/json',
+    'Cache-Control': 'no-cache',
+  },
+});
+
+const getJson = file => api.get(`${file}.json`);
+
+const mopoCountries = [
+  'US',
+  'AU',
+  'AT',
+  'BE',
+  'BY',
+  'BR',
+  'GB',
+  'CA',
+  'CL',
+  'GR',
+  'CZ',
+  'DK',
+  'NL',
+  'EG',
+  'EE',
+  'FI',
+  'FR',
+  'DE',
+  'HU',
+  'IS',
+  'IL',
+  'LV',
+  '',
+  'NZ',
+  'NO',
+  'PL',
+  'PT',
+  'RO',
+  'RU',
+  'CH',
+  'SK',
+  'SI',
+  'ES',
+  'SE',
+  'TR',
+  'UA',
+  'VE',
+  'YU',
+  'AR',
+  'LT',
+  'CN',
+  'JP',
+  'RS',
+  'ME',
+  'HR',
+  'MK',
+  '',
+  'BA',
+  'FO',
+  'BG',
+  '',
+];
+
+const ints = [
+  0,
+  2,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  15,
+  59,
+  78,
+  109,
+  139,
+  219,
+  71,
+  51,
+  165,
+  57,
+  128,
+  197,
+  43,
+  107,
+  98,
+  100,
+  175,
+  192,
+  38,
+  198,
+  31,
+  16,
+  18,
+  164,
+  66,
+  131,
+  156,
+  357,
+  45,
+  13,
+  408,
+  412,
+  24,
+  416,
+  415,
+  95,
+  29,
+  33,
+  46,
+  21,
+  52,
+  257,
+  135,
+  133,
+  413,
+  17,
+];
 
 const addMarker = async Data => {
   let newMarker = false;
@@ -113,17 +230,20 @@ const updateLegacyPack = async (LevelPackIndex, done) => {
   done();
 };
 
-const createKuski = async (k, strategy) => {
+const createKuski = async (k, strategy, kuskiList, teams = []) => {
   const kuskiData = await Kuski.findOne({ where: { Kuski: k } });
   if (kuskiData) {
     return kuskiData.KuskiIndex;
   }
   let kuskiInfo = [];
   if (strategy === 'skint') {
-    kuskiInfo = skintKuskis.default.filter(x => x.Kuski === k);
+    kuskiInfo = kuskiList.filter(x => x.Kuski === k);
   }
   if (strategy === 'kopa') {
-    kuskiInfo = kopaKuskis.default.rows.filter(x => x.Kuski === k);
+    kuskiInfo = kuskiList.rows.filter(x => x.Kuski === k);
+  }
+  if (strategy === 'mopo') {
+    kuskiInfo = kuskiList.rows.filter(x => x.nick === k);
   }
   if (kuskiInfo.length > 0) {
     let nation = 'XX';
@@ -138,6 +258,17 @@ const createKuski = async (k, strategy) => {
     if (strategy === 'kopa') {
       if (kuskiInfo[0].Country) {
         nation = kuskiInfo[0].Country;
+      }
+    }
+    if (strategy === 'mopo') {
+      if (mopoCountries[kuskiInfo[0].country]) {
+        nation = mopoCountries[kuskiInfo[0].country];
+      }
+      if (kuskiInfo[0].team <= 1) {
+        kuskiInfo[0].Team = '';
+      } else {
+        const teamInfo = teams.rows.filter(x => x.id === kuskiInfo[0].team);
+        kuskiInfo[0].Team = teamInfo[0].name;
       }
     }
     let TeamIndex = 0;
@@ -160,19 +291,19 @@ const createKuski = async (k, strategy) => {
   return 0;
 };
 
-const skint = json => {
+const skint = (json, kuskiList) => {
   return new Promise(resolve => {
     const times = [];
     const newKuskis = {};
     eachSeries(
-      json.default,
+      json,
       async (time, done) => {
         let kuskiId = time.KuskiIndex;
         if (kuskiId === 0) {
           if (newKuskis[time.Kuski.toLowerCase()]) {
             kuskiId = newKuskis[time.Kuski.toLowerCase()];
           } else {
-            kuskiId = await createKuski(time.Kuski, 'skint');
+            kuskiId = await createKuski(time.Kuski, 'skint', kuskiList);
             newKuskis[time.Kuski.toLowerCase()] = kuskiId;
           }
         }
@@ -194,12 +325,12 @@ const skint = json => {
   });
 };
 
-const kopa = () => {
+const kopa = (kopaTimes, kopaKuskis, kopaLevels) => {
   return new Promise(resolve => {
     const times = [];
     const newKuskis = {};
     eachSeries(
-      kopaTimes.default.rows,
+      kopaTimes.rows,
       async (time, done) => {
         let kuskiId = 0;
         if (time.KuskiIndex === 0) {
@@ -208,7 +339,7 @@ const kopa = () => {
           if (newKuskis[time.KuskiIndex]) {
             kuskiId = newKuskis[time.KuskiIndex];
           } else {
-            const KuskiData = kopaKuskis.default.rows.filter(
+            const KuskiData = kopaKuskis.rows.filter(
               k => k.KuskiIndex === time.KuskiIndex,
             );
             const KuskiSql = await Kuski.findOne({
@@ -217,12 +348,16 @@ const kopa = () => {
             if (KuskiSql) {
               kuskiId = KuskiSql.KuskiIndex;
             } else {
-              kuskiId = await createKuski(KuskiData[0].Kuski, 'kopa');
+              kuskiId = await createKuski(
+                KuskiData[0].Kuski,
+                'kopa',
+                kopaKuskis,
+              );
             }
             newKuskis[time.KuskiIndex] = kuskiId;
           }
           let levelId = 0;
-          const levelData = kopaLevels.default.rows.filter(
+          const levelData = kopaLevels.rows.filter(
             l => l.LevelIndex === time.LevelIndex,
           );
           if (levelData.length > 0) {
@@ -235,6 +370,57 @@ const kopa = () => {
               Time: time.Time,
               Driven: time.Driven,
               Source: 2,
+            });
+          }
+          done();
+        }
+      },
+      () => {
+        resolve(times);
+      },
+    );
+  });
+};
+
+const mopo = (mopoTimes, mopoKuskis, mopoTeams) => {
+  return new Promise(resolve => {
+    const times = [];
+    const newKuskis = {};
+    eachSeries(
+      mopoTimes.rows,
+      async (time, done) => {
+        let kuskiId = 0;
+        if (time.KuskiIndex === 0) {
+          done();
+        } else {
+          if (newKuskis[time.KuskiIndex]) {
+            kuskiId = newKuskis[time.KuskiIndex];
+          } else {
+            const KuskiData = mopoKuskis.rows.filter(
+              k => k.id === time.KuskiIndex,
+            );
+            const KuskiSql = await Kuski.findOne({
+              where: { Kuski: KuskiData[0].nick },
+            });
+            if (KuskiSql) {
+              kuskiId = KuskiSql.KuskiIndex;
+            } else {
+              let { nick } = KuskiData[0];
+              if (nick.length > 15) {
+                nick = nick.substring(0, 15);
+              }
+              kuskiId = await createKuski(nick, 'mopo', mopoKuskis, mopoTeams);
+            }
+            newKuskis[time.KuskiIndex] = kuskiId;
+          }
+          const levelId = ints[time.LevelIndex];
+          if (kuskiId !== 0 && levelId) {
+            times.push({
+              LevelIndex: levelId,
+              KuskiIndex: kuskiId,
+              Time: time.Time,
+              Driven: time.Driven,
+              Source: 1,
             });
           }
           done();
@@ -269,7 +455,62 @@ export const legacyTimes = async importStrategy => {
     levelpacks = ['BaSk', 'BaSkG', 'BaSkP', 'SkHoyl', 'Skint', 'SkVar', 'SNTL'];
   }
   if (importStrategy === 'kopa') {
-    levelpacks = ['TKT', 'TKTII', 'DCup03', '1337', 'cEp'];
+    levelpacks = [
+      'TKT',
+      'TKTII',
+      'DCup03',
+      '1337',
+      'cEp',
+      'FSDC1L',
+      'ILDC',
+      'dakar',
+      'dakar2',
+      'MIRROR',
+      'MAX',
+      'INTilt',
+      'wke',
+      'umiz',
+      'qumiz',
+      'OBLP',
+      'NP',
+      'Qsla',
+      'Gsla',
+      'Faza',
+      'GS',
+      'semen',
+      'VSK',
+      'BZAL',
+      'kachi',
+      'Haru',
+      'Pablo',
+      'Jeppe',
+      'GAB',
+      'Found',
+      'HALF1',
+      'HALF2',
+      'EPLP',
+      'Tube',
+      'FMPi',
+      'RIP',
+      'vzh',
+      'Hoyl',
+      'RHP',
+      'FMH',
+      'Danpe',
+      'Ilevs',
+      'Bhoyl',
+      'AZHP',
+      'MCHM',
+      'MOPCU',
+      'LI',
+      'MCLE',
+      'MOPLGR',
+      'OLP',
+      'LOM',
+    ];
+  }
+  if (importStrategy === 'mopo') {
+    levelpacks = ['Int'];
   }
   const packs = await getPacks(levelpacks);
   const updateBulk = [];
@@ -298,38 +539,73 @@ export const legacyTimes = async importStrategy => {
   let finished = [];
   let besttime = [];
   if (importStrategy === 'skint') {
-    const skintFinished = await skint(skintNonPRsData);
-    const skintBest = await skint(skintPRsData);
+    const skintKuskis = await getJson('skintatious_kuskis');
+    const skintNonPRsData = await getJson('skintatious_nonPRs');
+    const skintFinished = await skint(skintNonPRsData.data, skintKuskis.data);
+    const skintPRsData = await getJson('skintatious_nonPRs');
+    const skintBest = await skint(skintPRsData.data, skintKuskis.data);
     finished = [...skintFinished, ...skintBest];
     besttime = skintBest;
   }
   if (importStrategy === 'kopa') {
-    const kopasiteTimes = await kopa();
+    const kopaTimes = await getJson('kopasite_time');
+    const kopaKuskis = await getJson('kopasite_kuski');
+    const kopaLevels = await getJson('kopasite_level');
+    const kopasiteTimes = await kopa(
+      kopaTimes.data,
+      kopaKuskis.data,
+      kopaLevels.data,
+    );
     finished = kopasiteTimes;
     besttime = kopasiteTimes;
+  }
+  if (importStrategy === 'mopo') {
+    const mopoTimes = await getJson('moposite_records');
+    const mopoKuskis = await getJson('moposite_users');
+    const mopoTeams = await getJson('moposite_teams');
+    const mopositeTimes = await mopo(mopoTimes, mopoKuskis, mopoTeams);
+    finished = mopositeTimes;
+    besttime = mopositeTimes;
   }
   await insertFinished(finished);
   const insertToLegacyBesttime = [];
   eachSeries(
     besttime,
     async (time, done) => {
-      const exists = await LegacyBesttime.findOne({
-        where: { LevelIndex: time.LevelIndex, KuskiIndex: time.KuskiIndex },
-      });
-      if (exists) {
-        if (exists.Time > time.Time) {
-          await exists.update({
+      const existsIndex = insertLegacyBesttimeEOL.findIndex(
+        b =>
+          b.LevelIndex === time.LevelIndex && b.KuskiIndex === time.KuskiIndex,
+      );
+      if (existsIndex > -1) {
+        if (insertLegacyBesttimeEOL[existsIndex].Time > time.Time) {
+          await LegacyBesttime.update(
+            {
+              TimeIndex: 0,
+              Time: time.Time,
+              Driven: time.Driven,
+              Source: time.Source,
+            },
+            {
+              where: {
+                LevelIndex: time.LevelIndex,
+                KuskiIndex: time.KuskiIndex,
+              },
+            },
+          );
+          insertLegacyBesttimeEOL[existsIndex] = {
+            ...insertLegacyBesttimeEOL[existsIndex],
             TimeIndex: 0,
             Time: time.Time,
             Driven: time.Driven,
             Source: time.Source,
-          });
+          };
           done();
         } else {
           done();
         }
       } else {
         insertToLegacyBesttime.push(time);
+        insertLegacyBesttimeEOL.push(time);
         done();
       }
     },

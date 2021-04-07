@@ -2165,6 +2165,14 @@ anymatch@~3.1.1:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+apisauce@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/apisauce/-/apisauce-2.0.1.tgz#cf5af56ea6ff5145e6eeb8d4ba471c7e0662b8c4"
+  integrity sha512-mJBw3pKmtfVoP6oifnf7/iRJQtNkVb6GkYsVOXN2pidootj1mhGBtzYHOX9FVBzAz5QV2GMu8IJtiNIgZ44kHQ==
+  dependencies:
+    axios "^0.21.1"
+    ramda "^0.25.0"
+
 aproba@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
@@ -2476,6 +2484,13 @@ axios@0.19.0:
   dependencies:
     follow-redirects "1.5.10"
     is-buffer "^2.0.2"
+
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -4992,6 +5007,14 @@ express-fileupload@^1.2.0:
   dependencies:
     busboy "^0.3.1"
 
+express-validator@^6.10.0:
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/express-validator/-/express-validator-6.10.0.tgz#66f70f73d04fb55c227401c75fe3713879c9cb70"
+  integrity sha512-gDtepU94EpUzgFvKO/8JzjZ4uqIF4xHekjYtcNgFDiBK6Hob3MQhPU8s/c3NaWd1xi5e5nA0oVmOJ0b0ZBO36Q==
+  dependencies:
+    lodash "^4.17.20"
+    validator "^13.5.2"
+
 express@^4.16.3, express@^4.17.1:
   version "4.17.1"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.1.tgz#4491fc38605cf51f8629d39c2b5d026f98a4c134"
@@ -5342,6 +5365,11 @@ follow-redirects@1.5.10:
   integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
   dependencies:
     debug "=3.1.0"
+
+follow-redirects@^1.10.0:
+  version "1.13.3"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.3.tgz#e5598ad50174c1bc4e872301e82ac2cd97f90267"
+  integrity sha512-DUgl6+HDzB0iEptNQEXLx/KhTmDb8tZUHSeLqpnjpknR70H0nC2t9N73BK6fN4hOvJ84pKlIQVQ4k5FFlBedKA==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -9585,6 +9613,11 @@ railroad-diagrams@^1.0.0:
   resolved "https://registry.yarnpkg.com/railroad-diagrams/-/railroad-diagrams-1.0.0.tgz#eb7e6267548ddedfb899c1b90e57374559cddb7e"
   integrity sha1-635iZ1SN3t+4mcG5Dlc3RVnN234=
 
+ramda@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
+  integrity sha512-GXpfrYVPwx3K7RQ6aYT8KPS8XViSXUVJT1ONhoKPE9VAleW42YE+U+8VEyGWt41EnEQW7gwecYJriTI0pKoecQ==
+
 randexp@0.4.6:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/randexp/-/randexp-0.4.6.tgz#e986ad5e5e31dae13ddd6f7b3019aa7c87f60ca3"
@@ -11965,6 +11998,11 @@ validator@^10.11.0:
   version "10.11.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-10.11.0.tgz#003108ea6e9a9874d31ccc9e5006856ccd76b228"
   integrity sha512-X/p3UZerAIsbBfN/IwahhYaBbY68EN/UQBWHtsbXGT5bfrH/p4NQzUCG1kF/rtKaNpnJ7jAu6NGTdSNtyNIXMw==
+
+validator@^13.5.2:
+  version "13.5.2"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.5.2.tgz#c97ae63ed4224999fb6f42c91eaca9567fe69a46"
+  integrity sha512-mD45p0rvHVBlY2Zuy3F3ESIe1h5X58GPfAtslBjY7EtTqGquZTj+VX/J4RnHWN8FKq0C9WRVt1oWAcytWRuYLQ==
 
 vary@^1, vary@~1.1.2:
   version "1.1.2"
