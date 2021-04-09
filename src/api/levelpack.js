@@ -479,14 +479,16 @@ const getLevelsByQueryAll = async (query, ShowLocked) => {
 
 const totalTimes = times => {
   const tts = [];
+  const kuskis = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
       forEach(level.LevelBesttime, time => {
-        const findKuski = tts.findIndex(x => x.KuskiIndex === time.KuskiIndex);
+        const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
           tts[findKuski] = {
-            ...tts[findKuski],
+            KuskiData: time.KuskiData,
             tt: tts[findKuski].tt + time.Time,
+            KuskiIndex: time.KuskiIndex,
             count: tts[findKuski].count + 1,
             TimeIndex:
               time.TimeIndex > tts[findKuski].TimeIndex
@@ -501,6 +503,7 @@ const totalTimes = times => {
             count: 1,
             TimeIndex: time.TimeIndex,
           });
+          kuskis.push(time.KuskiIndex);
         }
       });
     }
@@ -562,19 +565,19 @@ const pointList = [
 
 const kinglist = times => {
   const points = [];
+  const kuskis = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
       const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
       let no = 0;
       forEach(sortedTimes, data => {
         const time = data.dataValues;
-        const findKuski = points.findIndex(
-          x => x.KuskiIndex === time.KuskiIndex,
-        );
+        const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
           points[findKuski] = {
-            ...points[findKuski],
+            KuskiData: time.KuskiData,
             points: points[findKuski].points + pointList[no],
+            KuskiIndex: time.KuskiIndex,
             TimeIndex:
               time.TimeIndex > points[findKuski].TimeIndex
                 ? time.TimeIndex
@@ -587,6 +590,7 @@ const kinglist = times => {
             KuskiIndex: time.KuskiIndex,
             TimeIndex: time.TimeIndex,
           });
+          kuskis.push(time.KuskiIndex);
         }
         no += 1;
         if (no >= pointList.length) {
