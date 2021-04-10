@@ -21,10 +21,14 @@ import {
 
 const router = express.Router();
 
-const getCups = async () => {
-  const data = await SiteCupGroup.findAll({
+const getCups = async (ongoing = false) => {
+  const query = {
     where: { Hidden: 0 },
-  });
+  };
+  if (ongoing) {
+    query.where.Finished = 0;
+  }
+  const data = await SiteCupGroup.findAll(query);
   return data;
 };
 
@@ -442,6 +446,10 @@ router
   .get('/', async (req, res) => {
     const data = await getCups();
     res.json(data);
+  })
+  .get('/ongoing', async (req, res) => {
+    const cups = await getCups(true);
+    res.json(cups);
   })
   .get('/:ShortName', async (req, res) => {
     const data = await getCup(req.params.ShortName);
