@@ -41,6 +41,11 @@ module.exports = {
     database: 'eolwebtest',
   },
 
+  redis: {
+    host: 'redis.elma.online',
+    pass: 'b14d9aca-96fe-11eb-a8b3-0242ac130003',
+  },
+
   // files
   publicFolder: '/public',
   s3SubFolder: 'test/',
