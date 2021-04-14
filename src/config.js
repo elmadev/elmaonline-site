@@ -80,6 +80,7 @@ module.exports = {
   // running scripts
   run: {
     ranking: 'ueMDaaSlyhNsYGUCGnq0FChDg0DSaPsRb3-gdMXz',
+    playStats: 'asdigbaksdyg12kuhasdfjyhgkjhasd',
   },
 
   // Discord, with no token it will not attempt to connect

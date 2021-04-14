@@ -35,9 +35,14 @@ import {
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
 import { kuskimap, email, legacyTimes } from 'utils/dataImports';
+import { LevelStats, LevelStatsUpdate } from 'data/models';
 import { updateRanking, deleteRanking } from './ranking';
 import config from './config';
 import apiRoutes from './api';
+import {
+  doAll as doAllLevelStats,
+  doNext as doNextLevelStats,
+} from './api/levelstats';
 
 const app = express();
 
@@ -48,6 +53,9 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+if (process.env.NODE_ENV === 'development') {
+  app.set('json spaces', 2);
+}
 app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
@@ -292,6 +300,47 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
       status: 403,
       msg: e.message,
     });
+  }
+});
+
+//
+// playStats
+//--------------------------------------------
+
+// cron
+app.get('/run/levelstats/do-next/:limit', async (req, res) => {
+  if (req.header('Authorization') === config.run.playstats) {
+    const limit = +req.params.limit;
+    const [update, moreExist] = await doNextLevelStats(limit);
+    res.json({
+      update,
+      moreExist,
+    });
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+app.get('/run/levelstats/sync', async (req, res) => {
+  if (req.header('Authorization') === config.run.playStats) {
+    await LevelStats.sync({ alter: false });
+    await LevelStatsUpdate.sync({ alter: false });
+    res.json('Success');
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+// destructive, and very slow
+app.get('/run/levelstats/do-all/:batchSize', async (req, res) => {
+  if (req.header('Authorization') === config.run.playStats) {
+    const updates = await doAllLevelStats(req.params.batchSize);
+    res.json(updates);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
   }
 });
 
