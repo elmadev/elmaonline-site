@@ -35,7 +35,6 @@ import {
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
 import { kuskimap, email, legacyTimes } from 'utils/dataImports';
-import { createTimeBeatenNotification } from 'utils/notifications';
 import { updateRanking, deleteRanking } from './ranking';
 import config from './config';
 import apiRoutes from './api';
@@ -77,8 +76,7 @@ app.use('/api', apiRoutes);
 app.post('/events/chatline', (req, res) => {
   chatline(req, res);
 });
-app.post('/events/besttime', async (req, res) => {
-  await createTimeBeatenNotification(req.body);
+app.post('/events/besttime', (req, res) => {
   besttime(req, res);
 });
 app.post('/events/bestmultitime', (req, res) => {
