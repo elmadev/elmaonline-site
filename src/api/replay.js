@@ -154,7 +154,7 @@ const getReplayByUploadedBy = async KuskiIndex => {
 };
 
 const getReplayByUUID = async replayUUID => {
-  const data = await Replay.findOne({
+  const query = {
     where: { UUID: replayUUID },
     include: [
       {
@@ -180,7 +180,17 @@ const getReplayByUUID = async replayUUID => {
         as: 'DrivenByData',
       },
     ],
-  });
+  };
+  if (replayUUID.includes(',')) {
+    query.where = {
+      UUID: {
+        [Op.in]: replayUUID.split(','),
+      },
+    };
+    const data = await Replay.findAll(query);
+    return data;
+  }
+  const data = await Replay.findOne(query);
   return data;
 };
 
