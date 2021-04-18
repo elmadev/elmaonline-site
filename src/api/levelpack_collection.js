@@ -62,7 +62,7 @@ const SearchPacks = async query => {
 };
 
 const AddPack = async data => {
-  const coll = LevelPackCollection.findOne({
+  const coll = await LevelPackCollection.findOne({
     where: { LevelPackCollectionIndex: data.LevelPackCollectionIndex },
   });
   if (coll.KuskiIndex === data.KuskiIndex || data.mod) {
@@ -76,7 +76,7 @@ const AddPack = async data => {
 };
 
 const DeletePack = async data => {
-  const coll = LevelPackCollection.findOne({
+  const coll = await LevelPackCollection.findOne({
     where: { LevelPackCollectionIndex: data.LevelPackCollectionIndex },
   });
   if (coll.KuskiIndex === data.KuskiIndex || data.mod) {
