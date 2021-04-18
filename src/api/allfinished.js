@@ -85,7 +85,7 @@ const getHighlights = async () => {
   };
 };
 
-const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
+export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked) return [];
   if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];

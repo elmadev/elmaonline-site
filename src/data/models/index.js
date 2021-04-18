@@ -46,6 +46,7 @@ import LevelPackCollection from './LevelPackCollection';
 import LevelPackCollectionPack from './LevelPackCollectionPack';
 import Tag from './Tag';
 import ReplayTags from './ReplayTags';
+import Notification from './Notification';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -257,6 +258,11 @@ ReplayComment.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+ReplayComment.belongsTo(Replay, {
+  foreignKey: 'ReplayIndex',
+  as: 'Replay',
+});
+
 BestMultitime.belongsTo(Multitime, {
   foreignKey: 'MultiTimeIndex',
   as: 'TimeData',
@@ -436,4 +442,5 @@ export {
   LevelPackCollection,
   LevelPackCollectionPack,
   Tag,
+  Notification,
 }; // add the data model here as well so it exports

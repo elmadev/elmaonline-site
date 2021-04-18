@@ -1,5 +1,6 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
+import { createNewCommentNotification } from 'utils/notifications';
 import { ReplayComment, Kuski } from '../data/models';
 
 const router = express.Router();
@@ -21,6 +22,7 @@ const getReplayCommentsByReplayId = async ReplayIndex => {
 
 const addReplayComment = async Data => {
   const NewReplayComment = await ReplayComment.create(Data);
+  await createNewCommentNotification(NewReplayComment);
   return NewReplayComment;
 };
 
