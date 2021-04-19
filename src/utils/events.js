@@ -9,6 +9,7 @@ import {
 } from 'utils/discord';
 import util from 'util';
 import fs from 'fs';
+import { createTimeBeatenNotification } from 'utils/notifications';
 import { updateRanking } from '../ranking';
 import config from '../config';
 
@@ -30,6 +31,8 @@ export function chatline(req, res) {
 }
 
 export function besttime(req, res) {
+  createTimeBeatenNotification(req.body);
+
   checkAuth(req, res, () => {
     res.json({ success: 1 });
     discordBesttime(req.body);
