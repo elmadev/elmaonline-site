@@ -1,7 +1,7 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
 import { createNewCommentNotification } from 'utils/notifications';
-import { ReplayComment, Kuski } from '../data/models';
+import { ReplayComment, Kuski, Replay } from 'data/models';
 
 const router = express.Router();
 
@@ -27,8 +27,43 @@ const addReplayComment = async Data => {
 };
 
 router
-  .get('/', (req, res) => {
-    res.sendStatus(404);
+  .get('/', async (req, res) => {
+    const comments = await ReplayComment.findAll({
+      attributes: ['ReplayIndex', 'KuskiIndex', 'Entered', 'Text'],
+      order: [['Entered', 'DESC']],
+      include: [
+        {
+          model: Kuski,
+          attributes: ['Kuski', 'Country'],
+          as: 'KuskiData',
+        },
+        {
+          model: Replay,
+          attributes: [
+            'UUID',
+            'RecFileName',
+            'ReplayTime',
+            'Finished',
+            'Uploaded',
+          ],
+          as: 'Replay',
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'DrivenByData',
+            },
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'UploadedByData',
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json(comments.filter(c => c.Replay !== null));
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayCommentsByReplayId(req.params.ReplayIndex);

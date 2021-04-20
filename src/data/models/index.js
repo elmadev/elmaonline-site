@@ -258,11 +258,6 @@ ReplayComment.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
-ReplayComment.belongsTo(Replay, {
-  foreignKey: 'ReplayIndex',
-  as: 'Replay',
-});
-
 BestMultitime.belongsTo(Multitime, {
   foreignKey: 'MultiTimeIndex',
   as: 'TimeData',
@@ -388,6 +383,16 @@ Replay.belongsToMany(Tag, {
 Replay.hasMany(ReplayRating, {
   foreignKey: 'ReplayIndex',
   as: 'Rating',
+});
+
+Replay.hasMany(ReplayComment, {
+  foreignKey: 'ReplayIndex',
+  as: 'Comments',
+});
+
+ReplayComment.belongsTo(Replay, {
+  foreignKey: 'ReplayIndex',
+  as: 'Replay',
 });
 
 function sync(...args) {
