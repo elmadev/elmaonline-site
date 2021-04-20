@@ -1,7 +1,25 @@
 import fs from 'fs';
 import moment from 'moment';
+import config from '../config';
 
 export function log(func, query, benchmark) {
+  if (config.consoleQueries) {
+    const max = 2000;
+
+    if (query.length > max) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Query: ${func}`,
+        `${benchmark}ms`,
+        `(Truncated to${max})`,
+        query.substring(0, max),
+      );
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(`Query: ${func}`, `${benchmark}ms`, query);
+    }
+  }
+
   let folder = './events/dblog/';
   if (process.env.NODE_ENV === 'production') {
     folder = '../events/dblog/';
