@@ -31,6 +31,7 @@ router
     const comments = await ReplayComment.findAll({
       attributes: ['ReplayIndex', 'KuskiIndex', 'Entered', 'Text'],
       order: [['Entered', 'DESC']],
+      where: {},
       include: [
         {
           model: Kuski,
@@ -40,13 +41,18 @@ router
         {
           model: Replay,
           attributes: [
+            'ReplayIndex',
             'UUID',
             'RecFileName',
             'ReplayTime',
             'Finished',
             'Uploaded',
+            'Unlisted',
           ],
           as: 'Replay',
+          where: {
+            Unlisted: 0,
+          },
           include: [
             {
               model: Kuski,
