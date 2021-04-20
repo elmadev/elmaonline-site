@@ -1,9 +1,8 @@
 import express from 'express';
-import { forEach } from 'lodash';
+import { forEach, sumBy } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
-import * as _ from 'lodash';
 import {
   Besttime,
   LevelPackLevel,
@@ -84,12 +83,27 @@ const getMultiRecords = async LevelPackName => {
   return times.filter(t => !t.Level.Hidden);
 };
 
-// for int total times only for now.
+// for internal total times only
 const getIntBestTimes = async KuskiIndex => {
   const IntLevelPackIndex = 84;
 
-  const q =
-    'SELECT * FROM legacybesttime WHERE KuskiIndex = ? ' +
+  const pack = await LevelPack.findOne({
+    where: {
+      LevelPackIndex: IntLevelPackIndex,
+    },
+  });
+
+  let q = '';
+
+  // internals not yet legacy on live, but are on dev.
+  if (pack.Legacy) {
+    q += 'SELECT * FROM legacybesttime ';
+  } else {
+    q += 'SELECT * FROM besttime ';
+  }
+
+  q += 'WHERE KuskiIndex = ? ';
+  q +=
     'AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ?)';
 
   const [besttimes] = await sequelize.query(q, {
@@ -98,10 +112,10 @@ const getIntBestTimes = async KuskiIndex => {
 
   return {
     besttimes,
-    finishedCount: besttimes.length,
+    finishCount: besttimes.length,
     levelCount: 54,
     allFinished: besttimes.length > 53,
-    timeSum: _.sumBy(besttimes, 'Time'),
+    timeSum: sumBy(besttimes, 'Time'),
   };
 };
 
