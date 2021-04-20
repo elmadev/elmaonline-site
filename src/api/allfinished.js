@@ -2,6 +2,7 @@ import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
+import { get, set } from 'utils/redis';
 import {
   AllFinished,
   Level,
@@ -246,7 +247,13 @@ const getLeaderHistoryForLevel = async (
 
 router
   .get('/highlight', async (req, res) => {
+    const cache = await get('allfinished-highlight');
+    if (cache) {
+      res.json(cache);
+      return;
+    }
     const data = await getHighlights();
+    set('allfinished-highlight', data, 1440);
     res.json(data);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {

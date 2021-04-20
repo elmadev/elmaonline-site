@@ -2,6 +2,7 @@ import express from 'express';
 import { forEach } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
+import { get, set } from 'utils/redis';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -677,6 +678,13 @@ router
     res.json({ tts, points, records });
   })
   .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
+    if (req.query.cache === '1') {
+      const data = await get(`levelpack-stats-${req.params.LevelPackName}`);
+      if (data) {
+        res.json(data);
+        return;
+      }
+    }
     const data = await getTimes(
       req.params.LevelPackName,
       parseInt(req.params.eolOnly, 10),
@@ -684,6 +692,11 @@ router
     const tts = totalTimes(data);
     const points = kinglist(data);
     const records = findRecords(data);
+    set(`levelpack-stats-${req.params.LevelPackName}`, {
+      tts,
+      points,
+      records,
+    });
     res.json({ tts, points, records });
   })
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
