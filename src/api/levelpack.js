@@ -1,5 +1,5 @@
 import express from 'express';
-import { forEach } from 'lodash';
+import { forEach, sumBy } from 'lodash';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
@@ -18,6 +18,7 @@ import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
 import Collection from './levelpack_collection';
 import { checkSchemaAndBail } from '../utils/middleware';
+import sequelize from '../data/sequelize';
 
 const router = express.Router();
 
@@ -81,6 +82,45 @@ const getMultiRecords = async LevelPackName => {
   });
   return times.filter(t => !t.Level.Hidden);
 };
+
+// for internal total times only
+const getIntBestTimes = async KuskiIndex => {
+  const IntLevelPackIndex = 84;
+
+  const pack = await LevelPack.findOne({
+    where: {
+      LevelPackIndex: IntLevelPackIndex,
+    },
+  });
+
+  let q = '';
+
+  // internals not yet legacy on live, but are on dev.
+  if (pack.Legacy) {
+    q += 'SELECT * FROM legacybesttime ';
+  } else {
+    q += 'SELECT * FROM besttime ';
+  }
+
+  q += 'WHERE KuskiIndex = ? ';
+  q +=
+    'AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ?)';
+
+  const [besttimes] = await sequelize.query(q, {
+    replacements: [+KuskiIndex, IntLevelPackIndex],
+  });
+
+  return {
+    besttimes,
+    finishCount: besttimes.length,
+    levelCount: 54,
+    allFinished: besttimes.length > 53,
+    timeSum: sumBy(besttimes, 'Time'),
+  };
+};
+
+// not right now
+// const getBestTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {};
 
 const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
@@ -669,6 +709,10 @@ router
   .use('/admin', Admin)
   .use('/favourite', Favourite)
   .use('/collections', Collection)
+  .get('/internals/besttimes/:KuskiIndex', async (req, res) => {
+    const besttimes = await getIntBestTimes(+req.params.KuskiIndex);
+    res.json(besttimes);
+  })
   .get('/:LevelPackName/stats', async (req, res) => {
     const data = await getTimes(req.params.LevelPackName);
     const tts = totalTimes(data);
