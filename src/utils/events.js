@@ -31,9 +31,8 @@ export function chatline(req, res) {
 }
 
 export function besttime(req, res) {
-  createTimeBeatenNotification(req.body);
-
   checkAuth(req, res, () => {
+    createTimeBeatenNotification(req.body);
     res.json({ success: 1 });
     discordBesttime(req.body);
   });
