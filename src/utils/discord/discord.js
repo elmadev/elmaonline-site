@@ -84,6 +84,10 @@ const alignTime = time => {
   return alignedTime;
 };
 
+const linkLevel = (name, id) => {
+  return `[${name}](https://elma.online/levels/${id})`;
+};
+
 const formatLevel = level => {
   if (
     level.substring(0, 6) === 'QWQUU0' &&
@@ -164,8 +168,9 @@ function discordChatline(content) {
 
 function discordBesttime(content) {
   if (!content.battleIndex) {
-    let text = `${formatLevel(content.level)}:`;
-    text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
+    const level = formatLevel(content.level);
+    const linkedLevel = linkLevel(level, content.levelIndex);
+    let text = `${linkedLevel}: ${content.time} by ${content.kuski} (${content.position}.)`;
     if (content.position === 1) {
       text += ' :first_place:';
     }
@@ -174,12 +179,13 @@ function discordBesttime(content) {
 }
 
 function discordBestmultitime(content) {
+  const level = formatLevel(content.level);
+  const linkedLevel = linkLevel(level, content.levelIndex);
+
   if (!content.battleIndex) {
     sendMessage(
       config.discord.channels.times,
-      `${formatLevel(content.level)}: ${content.time} (M) by ${
-        content.kuski1
-      } & ${content.kuski2} (${content.position}.)`,
+      `${linkedLevel}: ${content.time} (M) by ${content.kuski1} & ${content.kuski2} (${content.position}.)`,
     );
   }
 }
