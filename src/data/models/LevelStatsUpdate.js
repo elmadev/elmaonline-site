@@ -38,7 +38,7 @@ class LevelStatsUpdate extends Model {
 
   static getLastTimeIndexProcessed = async () =>
     getCol(
-      'SELECT MAX(TimeIndex1) maxIndex from levelStatsUpdate_dev4',
+      'SELECT MAX(TimeIndex1) maxIndex from levelstatsupdate',
       {},
       'maxIndex',
     );
