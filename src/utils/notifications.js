@@ -8,6 +8,10 @@ export const createNewCommentNotification = async replayComment => {
   const replay = await replayComment.getReplay();
   const kuski = await replayComment.getKuskiData();
 
+  if (replayComment.KuskiIndex === replay.UploadedBy) {
+    return;
+  }
+
   await Notification.create({
     KuskiIndex: replay.UploadedBy,
     CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
