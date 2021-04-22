@@ -100,11 +100,11 @@ export const ddl = {
     allowNull: true,
   },
 
-  KuskisF: {
+  KuskiCountF: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
-  KuskiAll: {
+  KuskiCountAll: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
@@ -224,10 +224,10 @@ class LevelStats extends Model {
       LeaderCount: LeaderHistory.length,
       UniqueLeaderCount: _.uniqBy(LeaderHistory, 'KuskiIndex').length,
       ...battleWinnerColumns,
-      KuskiIdsAll,
+      KuskiCountF: KuskiIdsF.length,
+      KuskiCountAll: KuskiIdsAll.length,
       KuskiIdsF,
-      KuskisAll: KuskiIdsAll.length,
-      KuskisF: KuskiIdsF.length,
+      KuskiIdsAll,
     });
 
     // add already calculated top times to update
