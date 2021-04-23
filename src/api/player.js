@@ -2,7 +2,16 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Team, Kuski, Ignored, Ranking } from '../data/models';
+import { getCol } from 'utils/sequelize';
+import { pick, omit } from 'lodash';
+import {
+  Team,
+  Kuski,
+  Ignored,
+  Ranking,
+  LevelStats,
+  Level,
+} from '../data/models';
 
 const router = express.Router();
 
@@ -160,6 +169,101 @@ router
   .get('/crew', async (req, res) => {
     const crew = await GetCrew();
     res.json(crew);
+  })
+  .get('/wr-count/:KuskiIndex', async (req, res) => {
+    const q = `
+    SELECT COUNT(s.LevelIndex) countWrs from levelstats s
+    INNER JOIN level l ON l.LevelIndex = s.LevelIndex
+    WHERE s.TopKuskiIndex0 = ?
+    AND l.Locked = 0 AND l.Hidden = 0 AND l.ForceHide = 0
+    `;
+
+    const countWrs = await getCol(
+      q,
+      {
+        replacements: [Number(req.params.KuskiIndex)],
+      },
+      'countWrs',
+    );
+
+    res.json(countWrs);
+  })
+  .get('/wrs/:KuskiIndex', async (req, res) => {
+    const offset = Number(req.query.offset || 0);
+    const limit = Number(req.query.limit || 50);
+
+    // theres a decent chance that sort/limit is unnecessary and
+    // we can just query all and do this in client.
+    // But I don't know yet.
+    const orderBy = {
+      Driven: ['TopDriven0', 'ASC'],
+      // length of WR
+      Time: ['TopTime0', 'ASC'],
+      // aggregate level stuff
+      TimeAll: ['TimeAll', 'DESC'],
+      AttemptsAll: ['AttemptsAll', 'DESC'],
+      // # of kuskis that finished the level
+      KuskiCountF: ['KuskiCountF', 'DESC'],
+      // probably the best measure of overall wr difficulty
+      LeaderCount: ['LeaderCount', 'DESC'],
+    }[req.query.sort] || ['TopDriven0', 'ASC'];
+
+    if (req.params.reverse) {
+      orderBy[1] = orderBy[1] === 'ASC' ? 'DESC' : 'ASC';
+    }
+
+    let wrs = await LevelStats.findAll({
+      attributes: [
+        'LevelIndex',
+        ['TopTime0', 'Time'],
+        ['TopDriven0', 'Driven'],
+        ['TopTimeIndex0', 'TimeIndex'],
+        'TimeAll',
+        'TimeF',
+        'AttemptsAll',
+        'AttemptsF',
+        'KuskiCountF',
+        'LeaderCount',
+      ],
+      where: {
+        TopKuskiIndex0: Number(req.params.KuskiIndex),
+      },
+      include: [
+        {
+          model: Level,
+          as: 'LevelData',
+          attributes: ['LevelIndex', 'LevelName', 'LongName'],
+          where: {
+            Locked: 0,
+            Hidden: 0,
+            ForceHide: 0,
+          },
+        },
+      ],
+      order: [orderBy],
+      limit: [offset, limit],
+    });
+
+    // remove locked/hidden
+    wrs = wrs.filter(row => row.LevelData !== null);
+
+    // move stats into own object
+    wrs = wrs.map(row => {
+      const cols = ['Time', 'TimeIndex', 'Driven', 'LevelData'];
+
+      // a hack but pick/omit doesn't like model instances
+      // eslint-disable-next-line no-param-reassign
+      row = JSON.parse(JSON.stringify(row));
+
+      return {
+        ...pick(row, cols),
+        LevelStatsData: {
+          ...omit(row, cols),
+        },
+      };
+    });
+
+    res.json(wrs.filter(row => row.LevelData !== null));
   })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);
