@@ -567,8 +567,8 @@ export const mergeKuskis = (times, prev) => {
   }
 
   // asc
-  all = _.sortBy(all).reverse();
-  finished = _.sortBy(finished).reverse();
+  all = _.sortBy(all);
+  finished = _.sortBy(finished);
 
   return [all, finished];
 };
