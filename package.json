@@ -42,6 +42,7 @@
     "jimp": "^0.16.1",
     "jws": "^3.2.2",
     "lodash": "^4.17.20",
+    "lodash-contrib": "^4.1200.1",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0",

@@ -1,5 +1,14 @@
 import express from 'express';
-import { forEach, sumBy } from 'lodash';
+import {
+  forEach,
+  sumBy,
+  flatMap,
+  values,
+  groupBy,
+  toPairs,
+  uniq,
+} from 'lodash';
+import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
@@ -672,6 +681,100 @@ const allPacks = async () => {
   return data;
 };
 
+const allPacksStats = async () => {
+  // likely returning more data than we need.
+  // might be worth removing some in order to optimize.
+  // have to see how this runs in production first.
+  const q = `
+  SELECT packlev.LevelPackIndex,
+         AVG(KuskiCountAll) AvgKuskiPerLevel,
+         SUM(TimeAll) as TimeAll, SUM(AttemptsAll) as AttemptsAll,
+         SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
+         MIN(TopTime0) ShortestWrTime, MAX(TopTime0) as LongestWrTime,
+         AVG(TopTime0) AvgWrTime,
+         COUNT(s.LevelIndex) CountLevels,
+         COUNT(AttemptsF > 0) CountLevelsFinished,
+         GROUP_CONCAT(s.TopKuskiIndex0) WorldRecordKuskiIds
+  FROM levelstats s
+      INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+  GROUP BY LevelPackIndex`;
+
+  let [stats] = await sequelize.query(q, { replacements: [] });
+
+  // convert KuskiIds from comma sep list to array.
+  stats = stats.map(s => {
+    const WorldRecordKuskiIds = (s.WorldRecordKuskiIds || '')
+      .split(',')
+      .map(Number);
+
+    const KuskiWrFreq = frequencies(WorldRecordKuskiIds);
+
+    const TopWrCount = Math.max(...values(KuskiWrFreq));
+
+    // handles ties between kuskis
+    const TopWrKuskiIds = toPairs(KuskiWrFreq)
+      .filter(p => p[1] === TopWrCount)
+      .map(p => Number(p[0]));
+
+    const TimeAll = Number(s.TimeAll);
+    const AttemptsAll = Number(s.AttemptsAll);
+    const TimeF = Number(s.TimeF);
+    const AttemptsF = Number(s.AttemptsF);
+
+    return {
+      ...s,
+      KuskiWrFreq,
+      AvgKuskiPerLevel: Number(s.AvgKuskiPerLevel),
+      TimeAll,
+      AttemptsAll,
+      TimeF,
+      AttemptsF,
+      AvgWrTime: Number(s.AvgWrTime),
+      AvgTimeAll: AttemptsAll > 0 ? TimeAll / AttemptsAll : 0,
+      AvgTimeF: AttemptsF > 0 ? TimeF / AttemptsF : 0,
+
+      // gonna delete this index later on
+      TopWrKuskiIds,
+      TopWrCount,
+      WorldRecordKuskiIds: undefined,
+    };
+  });
+
+  const KuskiIds = uniq(flatMap(stats, s => s.TopWrKuskiIds));
+
+  // now, pretend to be an ORM
+  const Kuskis = await Kuski.findAll({
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Confirmed'],
+    where: {
+      KuskiIndex: KuskiIds,
+    },
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team'],
+      },
+    ],
+  });
+
+  const KuskisById = groupBy(Kuskis, 'KuskiIndex');
+
+  // replace the top WR kuski IDs with objects
+  stats = stats.map(s => {
+    const TopWrKuskis = s.TopWrKuskiIds.map(
+      id => KuskisById[`${id}`] || null,
+    ).filter(Boolean);
+
+    return {
+      ...s,
+      TopWrKuskiIds: undefined,
+      TopWrKuskis,
+    };
+  });
+
+  return stats;
+};
+
 // @see https://express-validator.github.io/docs/schema-validation.html
 // /update uses these except for LevelPackName.
 // /add could use these but it already had client-side validation so for
@@ -705,6 +808,11 @@ router
   .get('/', async (req, res) => {
     const data = await allPacks();
     res.json(data);
+  })
+  .get('/stats', async (req, res) => {
+    const stats = await allPacksStats();
+
+    res.json(stats);
   })
   .use('/admin', Admin)
   .use('/favourite', Favourite)
