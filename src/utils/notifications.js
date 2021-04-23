@@ -1,6 +1,8 @@
 import DataType from 'sequelize';
+import { groupBy } from 'lodash';
 import { getTimes } from '../api/besttime';
 import { getTimes as getAllTimes } from '../api/allfinished';
+import { getFavouritedBy } from '../api/level';
 import { Notification } from '../data/models';
 
 // Creates notification for uploader of the replay
@@ -61,4 +63,26 @@ export const createTimeBeatenNotification = async body => {
       });
     }
   }
+};
+
+// Creates notification if user has favourited the levelpack level belongs to
+export const createBestTimeNotification = async body => {
+  if (body.position !== 1) {
+    return;
+  }
+
+  const favouritedBy = await getFavouritedBy(body.levelIndex);
+  const groupedByKuski = groupBy(favouritedBy, 'KuskiIndex');
+
+  Object.entries(groupedByKuski).forEach(async ([KuskiIndex, levPacks]) => {
+    await Notification.create({
+      KuskiIndex,
+      CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
+      Type: 'besttime',
+      Meta: JSON.stringify({
+        ...body,
+        levPacks,
+      }),
+    });
+  });
 };
