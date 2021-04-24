@@ -208,7 +208,7 @@ router
       LeaderCount: ['LeaderCount', 'DESC'],
     }[req.query.sort] || ['TopDriven0', 'ASC'];
 
-    if (req.params.reverse) {
+    if (req.query.reverse) {
       orderBy[1] = orderBy[1] === 'ASC' ? 'DESC' : 'ASC';
     }
 
