@@ -52,6 +52,22 @@ app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
 
+app.use(async (req, res, next) => {
+  if (config.consoleEndpoints) {
+    const t1 = new Date().getTime();
+
+    res.on('finish', function() {
+      const t2 = new Date().getTime();
+      const dt = t2 - t1;
+
+      // eslint-disable-next-line no-console
+      console.log(req.method, req.originalUrl, `${dt}ms`);
+    });
+  }
+
+  next();
+});
+
 //
 // Authentication
 // -----------------------------------------------------------------------------

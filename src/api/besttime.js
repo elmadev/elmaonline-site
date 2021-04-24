@@ -18,7 +18,7 @@ const levelInfo = async LevelIndex => {
   return lev;
 };
 
-const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
+export const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked || lev.Hidden) return [];
   let timeTable = Besttime;

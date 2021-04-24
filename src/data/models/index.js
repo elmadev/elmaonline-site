@@ -46,6 +46,7 @@ import LevelPackCollection from './LevelPackCollection';
 import LevelPackCollectionPack from './LevelPackCollectionPack';
 import Tag from './Tag';
 import ReplayTags from './ReplayTags';
+import Notification from './Notification';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -384,6 +385,16 @@ Replay.hasMany(ReplayRating, {
   as: 'Rating',
 });
 
+Replay.hasMany(ReplayComment, {
+  foreignKey: 'ReplayIndex',
+  as: 'Comments',
+});
+
+ReplayComment.belongsTo(Replay, {
+  foreignKey: 'ReplayIndex',
+  as: 'Replay',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -436,4 +447,5 @@ export {
   LevelPackCollection,
   LevelPackCollectionPack,
   Tag,
+  Notification,
 }; // add the data model here as well so it exports

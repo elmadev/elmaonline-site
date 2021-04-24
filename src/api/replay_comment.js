@@ -1,6 +1,7 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
-import { ReplayComment, Kuski } from '../data/models';
+import { createNewCommentNotification } from 'utils/notifications';
+import { ReplayComment, Kuski, Replay } from 'data/models';
 
 const router = express.Router();
 
@@ -21,12 +22,54 @@ const getReplayCommentsByReplayId = async ReplayIndex => {
 
 const addReplayComment = async Data => {
   const NewReplayComment = await ReplayComment.create(Data);
+  await createNewCommentNotification(NewReplayComment);
   return NewReplayComment;
 };
 
 router
-  .get('/', (req, res) => {
-    res.sendStatus(404);
+  .get('/', async (req, res) => {
+    const comments = await ReplayComment.findAll({
+      attributes: ['ReplayIndex', 'KuskiIndex', 'Entered', 'Text'],
+      order: [['Entered', 'DESC']],
+      where: {},
+      include: [
+        {
+          model: Kuski,
+          attributes: ['Kuski', 'Country'],
+          as: 'KuskiData',
+        },
+        {
+          model: Replay,
+          attributes: [
+            'ReplayIndex',
+            'UUID',
+            'RecFileName',
+            'ReplayTime',
+            'Finished',
+            'Uploaded',
+            'Unlisted',
+          ],
+          as: 'Replay',
+          where: {
+            Unlisted: 0,
+          },
+          include: [
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'DrivenByData',
+            },
+            {
+              model: Kuski,
+              attributes: ['Kuski', 'Country'],
+              as: 'UploadedByData',
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json(comments.filter(c => c.Replay !== null));
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayCommentsByReplayId(req.params.ReplayIndex);

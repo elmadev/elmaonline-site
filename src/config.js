@@ -22,6 +22,9 @@ module.exports = {
   // Node.js app
   port: process.env.PORT || 3003,
 
+  consoleEndpoints: false,
+  consoleQueries: false,
+
   // API Gateway
   api: {
     // API URL to be used in the client-side code

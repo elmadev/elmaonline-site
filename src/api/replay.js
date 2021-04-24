@@ -181,10 +181,10 @@ const getReplayByUUID = async replayUUID => {
       },
     ],
   };
-  if (replayUUID.includes(',')) {
+  if (replayUUID.includes(';')) {
     query.where = {
       UUID: {
-        [Op.in]: replayUUID.split(','),
+        [Op.in]: replayUUID.split(';'),
       },
     };
     const data = await Replay.findAll(query);
