@@ -29,44 +29,54 @@ export const createNewCommentNotification = async replayComment => {
 
 // Creates notification for the previous record holder
 export const createTimeBeatenNotification = async body => {
-  if (body.position === 1) {
-    const top2 = await getTimes(body.levelIndex, 2, 0);
-    // If theres only one time, do nothing
-    if (top2.length === 1) {
-      return;
-    }
+  if (body.battleIndex) {
+    return;
+  }
 
-    // Fetch top2 times for new leader
-    const top2ForNewLeader = await getAllTimes(
-      body.levelIndex,
-      body.kuskiIndex,
-      2,
-    );
+  if (body.position !== 1) {
+    return;
+  }
 
-    // Check if someone's time was really beaten
-    let timeBeaten = true;
-    if (
-      top2ForNewLeader.length === 2 &&
-      top2[1].Time > top2ForNewLeader[1].Time
-    ) {
-      timeBeaten = false;
-    }
+  const top2 = await getTimes(body.levelIndex, 2, 0);
+  // If theres only one time, do nothing
+  if (top2.length === 1) {
+    return;
+  }
 
-    if (timeBeaten) {
-      await Notification.create({
-        KuskiIndex: top2[1].KuskiIndex,
-        CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
-        Type: 'beaten',
-        Meta: JSON.stringify({
-          ...body,
-        }),
-      });
-    }
+  // Fetch top2 times for new leader
+  const top2ForNewLeader = await getAllTimes(
+    body.levelIndex,
+    body.kuskiIndex,
+    2,
+  );
+
+  // Check if someone's time was really beaten
+  let timeBeaten = true;
+  if (
+    top2ForNewLeader.length === 2 &&
+    top2[1].Time > top2ForNewLeader[1].Time
+  ) {
+    timeBeaten = false;
+  }
+
+  if (timeBeaten) {
+    await Notification.create({
+      KuskiIndex: top2[1].KuskiIndex,
+      CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
+      Type: 'beaten',
+      Meta: JSON.stringify({
+        ...body,
+      }),
+    });
   }
 };
 
 // Creates notification if user has favourited the levelpack level belongs to
 export const createBestTimeNotification = async body => {
+  if (body.battleIndex) {
+    return;
+  }
+
   if (body.position !== 1) {
     return;
   }
