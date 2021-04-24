@@ -697,12 +697,14 @@ const allPacksStats = async () => {
          GROUP_CONCAT(s.TopKuskiIndex0) WorldRecordKuskiIds
   FROM levelstats s
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+      INNER JOIN level ON level.LevelIndex = s.LevelIndex
+      WHERE level.Locked = 0 AND level.Hidden = 0
   GROUP BY LevelPackIndex`;
 
   let [stats] = await sequelize.query(q, { replacements: [] });
 
-  // convert KuskiIds from comma sep list to array.
   stats = stats.map(s => {
+    // from comma sep list to array
     const WorldRecordKuskiIds = (s.WorldRecordKuskiIds || '')
       .split(',')
       .map(Number);
@@ -733,7 +735,7 @@ const allPacksStats = async () => {
       AvgTimeAll: AttemptsAll > 0 ? TimeAll / AttemptsAll : 0,
       AvgTimeF: AttemptsF > 0 ? TimeF / AttemptsF : 0,
 
-      // gonna delete this index later on
+      // TopWrKuskiIds gets deleted later
       TopWrKuskiIds,
       TopWrCount,
       WorldRecordKuskiIds: undefined,
@@ -761,6 +763,7 @@ const allPacksStats = async () => {
 
   // replace the top WR kuski IDs with objects
   stats = stats.map(s => {
+    // filter in case of deleted kuskis
     const TopWrKuskis = s.TopWrKuskiIds.map(
       id => KuskisById[`${id}`] || null,
     ).filter(Boolean);

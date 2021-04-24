@@ -170,7 +170,7 @@ router
     const crew = await GetCrew();
     res.json(crew);
   })
-  .get('/wr-count/:KuskiIndex', async (req, res) => {
+  .get('/record-count/:KuskiIndex', async (req, res) => {
     const q = `
     SELECT COUNT(s.LevelIndex) countWrs from levelstats s
     INNER JOIN level l ON l.LevelIndex = s.LevelIndex
@@ -188,7 +188,7 @@ router
 
     res.json(countWrs);
   })
-  .get('/wrs/:KuskiIndex', async (req, res) => {
+  .get('/records/:KuskiIndex', async (req, res) => {
     const offset = Number(req.query.offset || 0);
     const limit = Number(req.query.limit || 50);
 
@@ -212,7 +212,7 @@ router
       orderBy[1] = orderBy[1] === 'ASC' ? 'DESC' : 'ASC';
     }
 
-    let wrs = await LevelStats.findAll({
+    let records = await LevelStats.findAll({
       attributes: [
         'LevelIndex',
         ['TopTime0', 'Time'],
@@ -236,7 +236,6 @@ router
           where: {
             Locked: 0,
             Hidden: 0,
-            ForceHide: 0,
           },
         },
       ],
@@ -245,10 +244,10 @@ router
     });
 
     // remove locked/hidden
-    wrs = wrs.filter(row => row.LevelData !== null);
+    records = records.filter(row => row.LevelData !== null);
 
     // move stats into own object
-    wrs = wrs.map(row => {
+    records = records.map(row => {
       const cols = ['Time', 'TimeIndex', 'Driven', 'LevelData'];
 
       // a hack but pick/omit doesn't like model instances
@@ -263,7 +262,7 @@ router
       };
     });
 
-    res.json(wrs.filter(row => row.LevelData !== null));
+    res.json(records);
   })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);
