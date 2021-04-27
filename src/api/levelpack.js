@@ -1,13 +1,5 @@
 import express from 'express';
-import {
-  forEach,
-  sumBy,
-  flatMap,
-  values,
-  groupBy,
-  toPairs,
-  uniq,
-} from 'lodash';
+import { forEach, sumBy, flatMap, values, toPairs, uniq } from 'lodash';
 import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
@@ -690,6 +682,8 @@ const allPacksStats = async () => {
          AVG(KuskiCountAll) AvgKuskiPerLevel,
          SUM(TimeAll) as TimeAll, SUM(AttemptsAll) as AttemptsAll,
          SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
+         SUM(TimeD) as TimeD, SUM(AttemptsD) as AttemptsD,
+         SUM(TimeE) as TimeE, SUM(AttemptsE) as AttemptsE,
          MIN(TopTime0) ShortestWrTime, MAX(TopTime0) as LongestWrTime,
          AVG(TopTime0) AvgWrTime,
          COUNT(s.LevelIndex) CountLevels,
@@ -727,10 +721,16 @@ const allPacksStats = async () => {
       ...s,
       KuskiWrFreq,
       AvgKuskiPerLevel: Number(s.AvgKuskiPerLevel),
-      TimeAll,
-      AttemptsAll,
-      TimeF,
       AttemptsF,
+      AttemptsE: Number(s.AttemptsE),
+      AttemptsD: Number(s.AttemptsD),
+      AttemptsAll,
+
+      TimeF,
+      TimeE: Number(s.TimeE),
+      TimeD: Number(s.TimeD),
+      TimeAll,
+
       AvgWrTime: Number(s.AvgWrTime),
       AvgTimeAll: AttemptsAll > 0 ? TimeAll / AttemptsAll : 0,
       AvgTimeF: AttemptsF > 0 ? TimeF / AttemptsF : 0,
@@ -759,7 +759,10 @@ const allPacksStats = async () => {
     ],
   });
 
-  const KuskisById = groupBy(Kuskis, 'KuskiIndex');
+  const KuskisById = Kuskis.reduce((acc, k) => {
+    acc[k.KuskiIndex] = k;
+    return acc;
+  }, {});
 
   // replace the top WR kuski IDs with objects
   stats = stats.map(s => {
@@ -770,7 +773,7 @@ const allPacksStats = async () => {
 
     return {
       ...s,
-      TopWrKuskiIds: undefined,
+      // TopWrKuskiIds: undefined,
       TopWrKuskis,
     };
   });
