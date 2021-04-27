@@ -563,7 +563,11 @@ export const legacyTimes = async importStrategy => {
     const mopoTimes = await getJson('moposite_records');
     const mopoKuskis = await getJson('moposite_users');
     const mopoTeams = await getJson('moposite_teams');
-    const mopositeTimes = await mopo(mopoTimes, mopoKuskis, mopoTeams);
+    const mopositeTimes = await mopo(
+      mopoTimes.data,
+      mopoKuskis.data,
+      mopoTeams.data,
+    );
     finished = mopositeTimes;
     besttime = mopositeTimes;
   }
@@ -578,26 +582,43 @@ export const legacyTimes = async importStrategy => {
       );
       if (existsIndex > -1) {
         if (insertLegacyBesttimeEOL[existsIndex].Time > time.Time) {
-          await LegacyBesttime.update(
-            {
+          const insertIndex = insertToLegacyBesttime.findIndex(
+            b =>
+              b.LevelIndex === time.LevelIndex &&
+              b.KuskiIndex === time.KuskiIndex,
+          );
+          if (insertIndex > -1) {
+            insertToLegacyBesttime[insertIndex] = {
               TimeIndex: 0,
               Time: time.Time,
               Driven: time.Driven,
               Source: time.Source,
-            },
-            {
-              where: {
-                LevelIndex: time.LevelIndex,
-                KuskiIndex: time.KuskiIndex,
+              KuskiIndex: time.KuskiIndex,
+              LevelIndex: time.LevelIndex,
+            };
+          } else {
+            await LegacyBesttime.update(
+              {
+                TimeIndex: 0,
+                Time: time.Time,
+                Driven: time.Driven,
+                Source: time.Source,
               },
-            },
-          );
+              {
+                where: {
+                  LevelIndex: time.LevelIndex,
+                  KuskiIndex: time.KuskiIndex,
+                },
+              },
+            );
+          }
           insertLegacyBesttimeEOL[existsIndex] = {
-            ...insertLegacyBesttimeEOL[existsIndex],
             TimeIndex: 0,
             Time: time.Time,
             Driven: time.Driven,
             Source: time.Source,
+            KuskiIndex: time.KuskiIndex,
+            LevelIndex: time.LevelIndex,
           };
           done();
         } else {
