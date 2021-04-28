@@ -1,5 +1,5 @@
 import express from 'express';
-import * as _ from 'lodash';
+import { groupBy, forEach, values } from 'lodash';
 import moment from 'moment';
 import { getPerfTracker, aggregateTrackers } from 'utils/perf';
 import { Op } from 'sequelize';
@@ -25,7 +25,7 @@ export const doNext = async limit => {
 
   track('get_times');
 
-  const timesByLevel = _.groupBy(times, 'LevelIndex');
+  const timesByLevel = groupBy(times, 'LevelIndex');
 
   // ids mapped to LevelStats objects, or null
   const exLevelStats = await LevelStats.mapIds(Object.keys(timesByLevel));
@@ -35,7 +35,7 @@ export const doNext = async limit => {
   const trackers = [];
   const updates = [];
 
-  _.forEach(timesByLevel, (levelTimes, LevelIndex) => {
+  forEach(timesByLevel, (levelTimes, LevelIndex) => {
     const [update, perfTracker] = LevelStats.buildUpdate(
       levelTimes,
       exLevelStats[LevelIndex],
@@ -71,8 +71,8 @@ export const doNext = async limit => {
         maxPossibleCountTimes: limit,
         actualCountTimes: times.length,
         countLevels: Object.keys(exLevelStats).length,
-        countExLevels: _.values(exLevelStats).filter(l => l !== null).length,
-        countNotExLevels: _.values(exLevelStats).filter(l => l === null).length,
+        countExLevels: values(exLevelStats).filter(l => l !== null).length,
+        countNotExLevels: values(exLevelStats).filter(l => l === null).length,
         buildUpdatesPerf: aggregateTrackers(trackers),
         // useful? Idk
         // levelIds: Object.keys(levelStats).map(k => +k),

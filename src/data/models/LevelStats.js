@@ -1,6 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
-import * as _ from 'lodash';
-import { strict as assert } from 'assert';
+import { includes, range, toPairs, uniqBy, isEmpty } from 'lodash';
 import * as PlayStats from './PlayStats';
 import sequelize from '../sequelize';
 import { getPerfTracker } from '../../utils/perf';
@@ -12,7 +11,7 @@ const countTopXTimes = 10;
 // an array of arrays.
 // if you slice and flatten, you'll get a one dimensional array of
 // specified length. (eg. usage: query level stats with only top 3 times)
-export const topXTimesColumns = _.range(0, countTopXTimes).map(i => {
+export const topXTimesColumns = range(0, countTopXTimes).map(i => {
   return [
     `TopTime${i}`,
     `TopKuskiIndex${i}`,
@@ -39,7 +38,7 @@ export const ddl = {
   ...(() => {
     const ret = {};
 
-    _.range(0, countTopXTimes).forEach(x => {
+    range(0, countTopXTimes).forEach(x => {
       ret[`TopTime${x}`] = {
         type: Sequelize.INTEGER,
         allowNull: true,
@@ -134,7 +133,7 @@ export const ddl = {
   TopXTimes: {
     type: Sequelize.VIRTUAL,
     get() {
-      return _.range(0, countTopXTimes).map(i => {
+      return range(0, countTopXTimes).map(i => {
         // must have same indexes as times table, or code elsewhere will break.
         return {
           KuskiIndex: this.getDataValue(`TopKuskiIndex${i}`),
@@ -148,7 +147,7 @@ export const ddl = {
 };
 
 // array of non virtual column names
-const cols = _.toPairs(ddl)
+const cols = toPairs(ddl)
   .filter(arr => arr[1].type !== Sequelize.VIRTUAL)
   .map(arr => arr[0]);
 
@@ -168,7 +167,7 @@ class LevelStats extends Model {
   // useful for using .bulkCreate() to upsert
   static getUpdateOnDuplicateKeys = () => {
     return cols.filter(
-      key => !_.includes(['LevelStatsIndex', 'LevelIndex'], key),
+      key => !includes(['LevelStatsIndex', 'LevelIndex'], key),
     );
   };
 
@@ -183,7 +182,8 @@ class LevelStats extends Model {
   static buildUpdate = (times, prev, LastPossibleTimeIndex) => {
     const track = getPerfTracker('buildUpdate');
 
-    assert(prev === null || _.isObjectLike(prev), `bad type: ${typeof prev}`);
+    // eslint-disable-next-line no-param-reassign
+    prev = isEmpty(prev) ? null : prev;
 
     const aggs = PlayStats.aggregateTimes(times, prev);
 
@@ -222,7 +222,7 @@ class LevelStats extends Model {
       LastPossibleTimeIndex,
       LeaderHistory,
       LeaderCount: LeaderHistory.length,
-      UniqueLeaderCount: _.uniqBy(LeaderHistory, 'KuskiIndex').length,
+      UniqueLeaderCount: uniqBy(LeaderHistory, 'KuskiIndex').length,
       ...battleWinnerColumns,
       KuskiCountF: KuskiIdsF.length,
       KuskiCountAll: KuskiIdsAll.length,
@@ -231,7 +231,7 @@ class LevelStats extends Model {
     });
 
     // add already calculated top times to update
-    _.range(0, countTopXTimes).forEach(i => {
+    range(0, countTopXTimes).forEach(i => {
       if (newTopTimes[i] && newTopTimes[i].TimeIndex) {
         update[`TopTime${i}`] = newTopTimes[i].Time;
         update[`TopKuskiIndex${i}`] = newTopTimes[i].KuskiIndex;

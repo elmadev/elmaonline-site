@@ -3,10 +3,18 @@
 // LevelStatsDaily, KuskiLevelStats
 import Sequelize from 'sequelize';
 import sequelize from 'data/sequelize';
-import * as _ from 'lodash';
+import {
+  uniq,
+  includes,
+  sortBy,
+  orderBy,
+  sumBy,
+  maxBy,
+  mapValues,
+  isEmpty,
+} from 'lodash';
 import moment from 'moment';
 import { getCol } from 'utils/sequelize';
-import { strict as assert } from 'assert';
 
 // times longer than this can be treated as this
 // instead, to deter ppl from inflating playtime on their levels.
@@ -163,7 +171,7 @@ export const buildCommonUpdate = (aggs, prev) => {
     LastDrivenAll: 'max',
   };
 
-  return _.mapValues(cols, (value, index) => {
+  return mapValues(cols, (value, index) => {
     if (typeof value === 'function') {
       return value(aggs, prev);
     }
@@ -199,16 +207,16 @@ const sumGroup = (times, base, col) => {
   // eslint-disable-next-line no-param-reassign
   col = col || base;
   return {
-    [`${base}F`]: _.sumBy(times, time =>
+    [`${base}F`]: sumBy(times, time =>
       time.Finished === 'F' ? getter(time, col) : 0,
     ),
-    [`${base}E`]: _.sumBy(times, time =>
+    [`${base}E`]: sumBy(times, time =>
       time.Finished === 'E' ? getter(time, col) : 0,
     ),
-    [`${base}D`]: _.sumBy(times, time =>
+    [`${base}D`]: sumBy(times, time =>
       time.Finished === 'D' ? getter(time, col) : 0,
     ),
-    [`${base}All`]: _.sumBy(times, time =>
+    [`${base}All`]: sumBy(times, time =>
       timeFinishedAll(time) ? getter(time, col) : 0,
     ),
   };
@@ -221,7 +229,7 @@ const maxGroup = (times, base, col) => {
 
   const getMaxFromTimes = (iteratee, fromObj) => {
     if (times.length > 0) {
-      const maxTimeObject = _.maxBy(times, iteratee);
+      const maxTimeObject = maxBy(times, iteratee);
       return maxTimeObject[fromObj];
     }
 
@@ -271,10 +279,10 @@ export const aggregateTimes = times => {
     ...sumGroup(times, 'Turn'),
 
     // almost like a sumGroup but not quite
-    AttemptsF: _.sumBy(times, t => (t.Finished === 'F' ? 1 : 0)),
-    AttemptsE: _.sumBy(times, t => (t.Finished === 'E' ? 1 : 0)),
-    AttemptsD: _.sumBy(times, t => (t.Finished === 'D' ? 1 : 0)),
-    AttemptsAll: _.sumBy(times, t => (timeFinishedAll(t) ? 1 : 0)),
+    AttemptsF: sumBy(times, t => (t.Finished === 'F' ? 1 : 0)),
+    AttemptsE: sumBy(times, t => (t.Finished === 'E' ? 1 : 0)),
+    AttemptsD: sumBy(times, t => (t.Finished === 'D' ? 1 : 0)),
+    AttemptsAll: sumBy(times, t => (timeFinishedAll(t) ? 1 : 0)),
 
     // MAX
     ...maxGroup(times, 'MaxSpeed'),
@@ -385,7 +393,7 @@ export const getTimesInInterval = async (
  */
 export const getTopTimes = (times, n) => {
   // times driven earlier take precedence
-  const sorted = _.orderBy(times, ['Time', 'Driven'], ['ASC', 'ASC']);
+  const sorted = orderBy(times, ['Time', 'Driven'], ['ASC', 'ASC']);
 
   return sorted.slice(0, n);
 };
@@ -413,14 +421,15 @@ export const getTopFinishes = (times, n) => {
  * @returns {Array<Object>} - has length of count or less.
  */
 export const mergeTopTimes = (times, prev, maxCount) => {
-  assert(prev === null || _.isObjectLike(prev), `bad type: ${typeof prev}`);
+  // eslint-disable-next-line no-param-reassign
+  prev = isEmpty(prev) ? null : prev;
 
   const finishes = times.filter(t => t.Finished === 'F');
 
   const allFinished = finishes.concat(prev ? prev.TopXTimes : []);
 
   // sort by time asc, with earlier driven times taking precedence
-  const sorted = _.orderBy(
+  const sorted = orderBy(
     allFinished,
     ['Time', 'Driven', 'TimeIndex'],
     ['ASC', 'ASC', 'ASC'],
@@ -436,7 +445,7 @@ export const mergeTopTimes = (times, prev, maxCount) => {
       return;
     }
 
-    if (!_.includes(kuskis, t.KuskiIndex)) {
+    if (!includes(kuskis, t.KuskiIndex)) {
       // t could have all indexes from times table or just these 4
       topX.push({
         Time: t.Time,
@@ -454,11 +463,12 @@ export const mergeTopTimes = (times, prev, maxCount) => {
 /**
  *
  * @param {Array<Object>}times
- * @param {Array} prev
+ * @param {Object|null} prev
  * @returns {Array<Object>}
  */
 export const mergeLeaderHistory = (times, prev) => {
-  assert(prev === null || _.isObjectLike(prev), `bad type: ${typeof prev}`);
+  // eslint-disable-next-line no-param-reassign
+  prev = isEmpty(prev) ? null : prev;
 
   const newFinished = times.filter(t => t.Finished === 'F');
 
@@ -468,7 +478,7 @@ export const mergeLeaderHistory = (times, prev) => {
 
   // order by driven date (/ time index) then we'll iterate and collect
   // all world records.
-  const ordered = _.orderBy(all, ['TimeIndex'], ['ASC']);
+  const ordered = orderBy(all, ['TimeIndex'], ['ASC']);
 
   let best = 9999999999;
   const leaders = [];
@@ -495,7 +505,8 @@ export const mergeLeaderHistory = (times, prev) => {
  * @returns {{BattleTopDriven: null|int, BattleTopKuskiIndex: null|int, BattleTopTime: null|int, BattleTopTimeIndex: null|int, BattleTopBattleIndex: null|int}|null}
  */
 export const mergeBattleWinner = (times, prev) => {
-  assert(prev === null || _.isObjectLike(prev), `bad type: ${typeof prev}`);
+  // eslint-disable-next-line no-param-reassign
+  prev = isEmpty(prev) ? null : prev;
 
   const battleTimesFinished = times.filter(
     t => t.Finished === 'F' && t.BattleIndex !== null && t.BattleIndex > 0,
@@ -542,12 +553,20 @@ export const mergeBattleWinner = (times, prev) => {
 };
 
 export const mergeKuskis = (times, prev) => {
+  // eslint-disable-next-line no-param-reassign
+  prev = isEmpty(prev) ? null : prev;
+
   // for faster lookup
   const allMap = {};
   const finishedMap = {};
 
   times.forEach(t => {
     const i = t.KuskiIndex;
+
+    // saw some -1's somehow ?
+    if (i < 1) {
+      return;
+    }
 
     if (!allMap[i] && timeFinishedAll(t)) {
       allMap[i] = 1;
@@ -558,17 +577,16 @@ export const mergeKuskis = (times, prev) => {
     }
   });
 
-  let all = Object.keys(allMap).map(Number);
-  let finished = Object.keys(finishedMap).map(Number);
+  let KuskiIdsAll = Object.keys(allMap).map(Number);
+  let KuskiIdsF = Object.keys(finishedMap).map(Number);
 
   if (prev !== null) {
-    all = all.concat(prev.KuskiIdsAll);
-    finished = finished.concat(prev.KuskiIdsF);
+    KuskiIdsAll = uniq(KuskiIdsAll.concat(prev.KuskiIdsAll));
+    KuskiIdsF = uniq(KuskiIdsF.concat(prev.KuskiIdsF));
   }
 
-  // asc
-  all = _.sortBy(all);
-  finished = _.sortBy(finished);
+  KuskiIdsAll = sortBy(KuskiIdsAll);
+  KuskiIdsF = sortBy(KuskiIdsF);
 
-  return [all, finished];
+  return [KuskiIdsAll, KuskiIdsF];
 };

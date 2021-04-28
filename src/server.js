@@ -309,7 +309,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
 
 // cron
 app.get('/run/levelstats/do-next/:limit', async (req, res) => {
-  if (req.header('Authorization') === config.run.playstats) {
+  if (req.header('Authorization') === config.run.playStats) {
     const limit = +req.params.limit;
     const [update, moreExist] = await doNextLevelStats(limit);
     res.json({

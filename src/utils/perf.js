@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
 import { performance } from 'perf_hooks';
+import { flatMap, groupBy, mapValues, sumBy } from 'lodash';
 
 // helps generate a simple array with time differences in mili-seconds.
 // usage: const track = getPerfTracker(); track(1); track(2); console.log track(null);
@@ -44,13 +44,13 @@ export const getPerfTracker = (desc0 = 'start') => {
 // the same description each time you call track().
 export const aggregateTrackers = trackers => {
   // all events in single array
-  const allEvents = _.flatMap(trackers, tr => tr.events);
+  const allEvents = flatMap(trackers, tr => tr.events);
 
   // ie. { desc1: [ ev1, ev2 ], desc2: ... }
-  const grouped = _.groupBy(allEvents, ev => ev.desc);
+  const grouped = groupBy(allEvents, ev => ev.desc);
 
   // the sum of sinceLast for all events with same description.
-  return _.mapValues(grouped, evs => {
-    return _.sumBy(evs, ev => ev.sinceLast);
+  return mapValues(grouped, evs => {
+    return sumBy(evs, ev => ev.sinceLast);
   });
 };
