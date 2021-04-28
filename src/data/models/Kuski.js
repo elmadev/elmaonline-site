@@ -1,5 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
+import Team from './Team';
 
 const Kuski = Model.define(
   'kuski',
@@ -115,6 +116,16 @@ const Kuski = Model.define(
   },
   {
     indexes: [{ fields: ['Kuski', 'TeamIndex', 'Country'] }],
+    defaultScope: {
+      attributes: ['Kuski', 'Country'],
+      include: [
+        {
+          model: Team,
+          as: 'TeamData',
+          attributes: { exclude: 'Locked' },
+        },
+      ],
+    },
   },
 );
 
