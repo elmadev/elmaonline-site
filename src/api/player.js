@@ -83,14 +83,6 @@ const Player = async (IdentifierType, KuskiIdentifier) => {
       'RBan',
       'RMod',
       'RAdmin',
-      'BmpCRC',
-    ],
-    include: [
-      {
-        model: Team,
-        as: 'TeamData',
-        attributes: ['Team', 'Locked'],
-      },
     ],
   };
   query.where[IdentifierType] = KuskiIdentifier;

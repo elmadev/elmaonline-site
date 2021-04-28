@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { add, parse } from 'date-fns';
 import { forEach, omit } from 'lodash';
-import { Battle, Level, Kuski, Team, Battletime, AllFinished, Time, Multitime } from '../data/models';
+import { Battle, Level, Kuski, Battletime, AllFinished, Time, Multitime } from '../data/models';
 
 const router = express.Router();
 
@@ -71,13 +71,6 @@ const BattlesByDate = async date => {
         {
           model: Kuski,
           as: 'KuskiData',
-          attributes: ['Kuski', 'Country'],
-          include: [
-            {
-              model: Team,
-              as: 'TeamData',
-            },
-          ],
         },
         {
           model: Battletime,
@@ -85,14 +78,7 @@ const BattlesByDate = async date => {
           include: [
             {
               model: Kuski,
-              attributes: ['Kuski', 'Country'],
               as: 'KuskiData',
-              include: [
-                {
-                  model: Team,
-                  as: 'TeamData',
-                },
-              ],
             },
           ],
         },
@@ -236,14 +222,7 @@ const BattleResults = async BattleIndex => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
       {
         model: Level,
@@ -256,25 +235,11 @@ const BattleResults = async BattleIndex => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData2',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
         ],
       },
@@ -307,14 +272,7 @@ const GetBattleData = async IndexList => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
       {
         model: Level,
@@ -345,13 +303,6 @@ const GetAllBattleTimes = async BattleIndex => {
         {
           model: Kuski,
           as: 'KuskiData',
-          attributes: ['Kuski', 'Country'],
-          include: [
-            {
-              model: Team,
-              as: 'TeamData',
-            },
-          ],
         },
       ],
     });
@@ -371,14 +322,7 @@ const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
     ],
     where: {
@@ -396,14 +340,7 @@ const BattlesSearchByKuski = async (KuskiIndex, Page, PageSize) => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
         ],
       });
@@ -434,14 +371,7 @@ const BattlesForLevel = async LevelIndex => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
       {
         model: Level,
@@ -454,14 +384,7 @@ const BattlesForLevel = async LevelIndex => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
         ],
       },
@@ -497,14 +420,7 @@ const BattlesForDesigner = async (KuskiIndex, page = 0, pageSize = 25) => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
         ],
       },
@@ -554,14 +470,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
       {
         model: Level,
@@ -574,14 +483,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
         include: [
           {
             model: Kuski,
-            attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                as: 'TeamData',
-              },
-            ],
           },
         ],
       },
