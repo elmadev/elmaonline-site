@@ -4,6 +4,7 @@ const { forEach } = require('lodash');
 const config = require('../../config');
 const createBN = require('./battleNotifier');
 const logger = require('./logger');
+const notifMessage = require('./notifications');
 
 const client = new Discord.Client();
 
@@ -255,6 +256,23 @@ function discordBattleresults(content) {
   sendMessage(config.discord.channels.battle, text);
 }
 
+/* Notifications */
+
+const discordNotification = async (userId, type, meta) => {
+  let user;
+  try {
+    user = await client.users.fetch(userId);
+    const text = notifMessage(type, meta, config.discord.url);
+    if (text) {
+      await user.send(text);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
+};
+
 /* Battle Notifier */
 
 const spacesRegexp = / +/;
@@ -302,4 +320,5 @@ module.exports = {
   discordBattlequeue,
   discordBattleEnd,
   discordBattleresults,
+  discordNotification,
 };

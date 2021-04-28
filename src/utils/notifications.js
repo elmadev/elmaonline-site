@@ -1,9 +1,37 @@
 import DataType from 'sequelize';
 import { groupBy } from 'lodash';
+import { notificationMail } from 'utils/email';
+import { discordNotification } from 'utils/discord';
 import { getTimes } from '../api/besttime';
 import { getTimes as getAllTimes } from '../api/allfinished';
 import { getFavouritedBy } from '../api/level';
-import { Notification } from '../data/models';
+import { Notification, Setting, Kuski } from '../data/models';
+
+const sendThirdParty = async (KuskiIndex, type, meta) => {
+  const KuskiInfo = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: ['Kuski', 'Email'],
+  });
+  const Settings = await Setting.findOne({
+    where: { KuskiIndex },
+  });
+  let Email = 0;
+  let Discord = 0;
+  if (Settings) {
+    if (Settings.SendEmail && KuskiInfo.Email) {
+      Email = 1;
+    }
+    if (Settings.SendDiscord && Settings.DiscordId) {
+      Discord = 1;
+    }
+  }
+  if (Email) {
+    await notificationMail(KuskiInfo, type, meta);
+  }
+  if (Discord) {
+    await discordNotification(Settings.DiscordId, type, meta);
+  }
+};
 
 // Creates notification for uploader of the replay
 export const createNewCommentNotification = async replayComment => {
@@ -24,6 +52,13 @@ export const createNewCommentNotification = async replayComment => {
       replayName: replay.RecFileName,
       replayUUID: replay.UUID,
     }),
+  });
+
+  await sendThirdParty(replay.UploadedBy, 'comment', {
+    ...replayComment.dataValues,
+    kuski: kuski.Kuski,
+    replayName: replay.RecFileName,
+    replayUUID: replay.UUID,
   });
 };
 
@@ -68,6 +103,9 @@ export const createTimeBeatenNotification = async body => {
         ...body,
       }),
     });
+    await sendThirdParty(top2[1].KuskiIndex, 'beaten', {
+      ...body,
+    });
   }
 };
 
@@ -93,6 +131,10 @@ export const createBestTimeNotification = async body => {
         ...body,
         levPacks,
       }),
+    });
+    await sendThirdParty(KuskiIndex, 'besttime', {
+      ...body,
+      levPacks,
     });
   });
 };
