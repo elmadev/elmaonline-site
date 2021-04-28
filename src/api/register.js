@@ -11,14 +11,14 @@ import config from '../config';
 const router = express.Router();
 
 const getKuskiData = async nick => {
-  const data = await Kuski.findAll({
+  const data = await Kuski.scope('allAttributes').findAll({
     where: { Kuski: nick },
   });
   return data;
 };
 
 const checkEmail = async m => {
-  const data = await Kuski.findAll({
+  const data = await Kuski.scope('allAttributes').findAll({
     where: { Email: m },
   });
   return data;
@@ -43,7 +43,7 @@ const createTeam = async data => {
 
 const updateConfirm = async ConfirmCode => {
   let findKuski = false;
-  findKuski = await Kuski.findOne({
+  findKuski = await Kuski.scope('allAttributes').findOne({
     where: { ConfirmCode },
   });
   if (findKuski) {
@@ -60,7 +60,7 @@ const updateConfirm = async ConfirmCode => {
 
 const ResetPasswordConfirm = async (Email, ConfirmCode) => {
   let findReset = false;
-  findReset = await Kuski.findOne({
+  findReset = await Kuski.scope('allAttributes').findOne({
     where: { Email },
   });
   if (findReset) {
@@ -73,7 +73,7 @@ const ResetPasswordConfirm = async (Email, ConfirmCode) => {
 
 const UpdatePasswordConfirm = async (ConfirmCode, Password) => {
   let findReset = false;
-  findReset = await Kuski.findOne({
+  findReset = await Kuski.scope('allAttributes').findOne({
     where: { ConfirmCode },
   });
   if (findReset) {

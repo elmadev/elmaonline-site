@@ -117,7 +117,7 @@ const Kuski = Model.define(
   {
     indexes: [{ fields: ['Kuski', 'TeamIndex', 'Country'] }],
     defaultScope: {
-      attributes: ['Kuski', 'Country'],
+      attributes: ['Kuski', 'KuskiIndex', 'Country'],
       include: [
         {
           model: Team,
@@ -125,6 +125,11 @@ const Kuski = Model.define(
           attributes: { exclude: 'Locked' },
         },
       ],
+    },
+    scopes: {
+      allAttributes: {
+        attributes: { exclude: [] },
+      },
     },
   },
 );
