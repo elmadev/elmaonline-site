@@ -687,8 +687,8 @@ const allPacksStats = async () => {
          MIN(TopTime0) ShortestWrTime, MAX(TopTime0) as LongestWrTime,
          AVG(TopTime0) AvgWrTime,
          COUNT(s.LevelIndex) CountLevels,
-         COUNT(AttemptsF > 0) CountLevelsFinished,
-         GROUP_CONCAT(s.TopKuskiIndex0) WorldRecordKuskiIds
+         COUNT(TopKuskiIndex0) CountLevelsFinished,
+         GROUP_CONCAT(TopKuskiIndex0) WorldRecordKuskiIds
   FROM levelstats s
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
       INNER JOIN level ON level.LevelIndex = s.LevelIndex
@@ -773,7 +773,7 @@ const allPacksStats = async () => {
 
     return {
       ...s,
-      // TopWrKuskiIds: undefined,
+      TopWrKuskiIds: undefined,
       TopWrKuskis,
     };
   });
