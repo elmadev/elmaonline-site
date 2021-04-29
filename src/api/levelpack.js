@@ -684,11 +684,11 @@ const allPacksStats = async () => {
          SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
          SUM(TimeD) as TimeD, SUM(AttemptsD) as AttemptsD,
          SUM(TimeE) as TimeE, SUM(AttemptsE) as AttemptsE,
-         MIN(TopTime0) ShortestWrTime, MAX(TopTime0) as LongestWrTime,
-         AVG(TopTime0) AvgWrTime,
-         COUNT(s.LevelIndex) CountLevels,
-         COUNT(TopKuskiIndex0) CountLevelsFinished,
-         GROUP_CONCAT(TopKuskiIndex0) WorldRecordKuskiIds
+         MIN(TopTime0) MinRecordTime, MAX(TopTime0) as MaxRecordTime,
+         AVG(TopTime0) AvgRecordTime,
+         COUNT(s.LevelIndex) LevelCountAll,
+         COUNT(TopKuskiIndex0) LevelCountF,
+         GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
   FROM levelstats s
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
       INNER JOIN level ON level.LevelIndex = s.LevelIndex
@@ -699,50 +699,37 @@ const allPacksStats = async () => {
 
   stats = stats.map(s => {
     // from comma sep list to array
-    const WorldRecordKuskiIds = (s.WorldRecordKuskiIds || '')
-      .split(',')
-      .map(Number);
+    const RecordKuskiIds = (s.RecordKuskiIds || '').split(',').map(Number);
 
-    const KuskiWrFreq = frequencies(WorldRecordKuskiIds);
+    const KuskiRecordFreq = frequencies(RecordKuskiIds);
 
-    const TopWrCount = Math.max(...values(KuskiWrFreq));
+    const TopRecordCount = Math.max(...values(KuskiRecordFreq));
 
     // handles ties between kuskis
-    const TopWrKuskiIds = toPairs(KuskiWrFreq)
-      .filter(p => p[1] === TopWrCount)
+    const TopRecordKuskiIds = toPairs(KuskiRecordFreq)
+      .filter(p => p[1] === TopRecordCount)
       .map(p => Number(p[0]));
-
-    const TimeAll = Number(s.TimeAll);
-    const AttemptsAll = Number(s.AttemptsAll);
-    const TimeF = Number(s.TimeF);
-    const AttemptsF = Number(s.AttemptsF);
 
     return {
       ...s,
-      KuskiWrFreq,
-      AvgKuskiPerLevel: Number(s.AvgKuskiPerLevel),
-      AttemptsF,
+      AttemptsF: Number(s.AttemptsF),
       AttemptsE: Number(s.AttemptsE),
       AttemptsD: Number(s.AttemptsD),
-      AttemptsAll,
-
-      TimeF,
+      AttemptsAll: Number(s.AttemptsAll),
+      TimeF: Number(s.TimeF),
       TimeE: Number(s.TimeE),
       TimeD: Number(s.TimeD),
-      TimeAll,
-
-      AvgWrTime: Number(s.AvgWrTime),
-      AvgTimeAll: AttemptsAll > 0 ? TimeAll / AttemptsAll : 0,
-      AvgTimeF: AttemptsF > 0 ? TimeF / AttemptsF : 0,
-
-      // TopWrKuskiIds gets deleted later
-      TopWrKuskiIds,
-      TopWrCount,
-      WorldRecordKuskiIds: undefined,
+      TimeAll: Number(s.TimeAll),
+      AvgRecordTime: Number(s.AvgRecordTime),
+      AvgKuskiPerLevel: Number(s.AvgKuskiPerLevel),
+      KuskiRecordFreq,
+      TopRecordKuskiIds,
+      TopRecordCount,
+      RecordKuskiIds: undefined,
     };
   });
 
-  const KuskiIds = uniq(flatMap(stats, s => s.TopWrKuskiIds));
+  const KuskiIds = uniq(flatMap(stats, s => s.TopRecordKuskiIds));
 
   // now, pretend to be an ORM
   const Kuskis = await Kuski.findAll({
@@ -767,14 +754,14 @@ const allPacksStats = async () => {
   // replace the top WR kuski IDs with objects
   stats = stats.map(s => {
     // filter in case of deleted kuskis
-    const TopWrKuskis = s.TopWrKuskiIds.map(
+    const TopRecordKuskis = s.TopRecordKuskiIds.map(
       id => KuskisById[`${id}`] || null,
     ).filter(Boolean);
 
     return {
       ...s,
-      TopWrKuskiIds: undefined,
-      TopWrKuskis,
+      TopRecordKuskiIds: undefined,
+      TopRecordKuskis,
     };
   });
 
