@@ -321,7 +321,7 @@ export const getEventReplays = async (CupIndex, filename, auth) => {
 };
 
 export const getShirtByKuskiId = async KuskiIndex => {
-  const kuskiData = await Kuski.scope('allAttributes').findOne({
+  const kuskiData = await Kuski.scope(null).findOne({
     where: { KuskiIndex },
   });
   if (kuskiData.BmpCRC === 0) {

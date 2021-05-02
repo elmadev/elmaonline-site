@@ -126,11 +126,6 @@ const Kuski = Model.define(
         },
       ],
     },
-    scopes: {
-      allAttributes: {
-        attributes: { exclude: [] },
-      },
-    },
   },
 );
 
