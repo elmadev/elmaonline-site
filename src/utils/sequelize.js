@@ -46,7 +46,7 @@ export const JsonUpdate = (self, col, callable, save, df = {}) => {
   }
 
   // eslint-disable-next-line no-param-reassign
-  self.dataValues[col] = JSON.stringify(value);
+  self.set(col, JSON.stringify(value));
 
   if (save) {
     self.save();

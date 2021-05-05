@@ -26,6 +26,7 @@ export const ddl = {
   },
   // JSON
   Debug: {
+    // get/set here to handle json might break updateDebug fn in model.
     type: Sequelize.TEXT('long'),
   },
 };
