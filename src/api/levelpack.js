@@ -674,9 +674,12 @@ const allPacks = async () => {
 };
 
 const allPacksStats = async () => {
-  // likely returning more data than we need.
-  // might be worth removing some in order to optimize.
-  // have to see how this runs in production first.
+  // not checking level locked status, since:
+  // the query often runs slow the first time it's run which
+  // might be due to sql loading the level blobs into memory.
+  // levelpacks should not contain locked levels,
+  // and we're not exposing any level specific information, only
+  // aggregates for groups of levels.
   const q = `
   SELECT packlev.LevelPackIndex,
          AVG(KuskiCountAll) AvgKuskiPerLevel,
@@ -691,8 +694,6 @@ const allPacksStats = async () => {
          GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
   FROM levelstats s
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
-      INNER JOIN level ON level.LevelIndex = s.LevelIndex
-      WHERE level.Locked = 0 AND level.Hidden = 0
   GROUP BY LevelPackIndex`;
 
   let [stats] = await sequelize.query(q, { replacements: [] });
