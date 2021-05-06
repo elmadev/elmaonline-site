@@ -172,39 +172,33 @@ router
   })
   .get('/record-count/:KuskiIndex', async (req, res) => {
     const q = `
-    SELECT COUNT(s.LevelIndex) countWrs from levelstats s
+    SELECT COUNT(s.LevelIndex) countRecords from levelstats s
     INNER JOIN level l ON l.LevelIndex = s.LevelIndex
     WHERE s.TopKuskiIndex0 = ?
     AND l.Locked = 0 AND l.Hidden = 0 AND l.ForceHide = 0
     `;
 
-    const countWrs = await getCol(
+    const countRecords = await getCol(
       q,
       {
         replacements: [Number(req.params.KuskiIndex)],
       },
-      'countWrs',
+      'countRecords',
     );
 
-    res.json(countWrs);
+    res.json(countRecords);
   })
   .get('/records/:KuskiIndex', async (req, res) => {
     const offset = Number(req.query.offset || 0);
     const limit = Number(req.query.limit || 50);
 
-    // theres a decent chance that sort/limit is unnecessary and
-    // we can just query all and do this in client.
-    // But I don't know yet.
     const orderBy = {
-      Driven: ['TopDriven0', 'ASC'],
-      // length of WR
+      Driven: ['TopDriven0', 'DESC'],
       Time: ['TopTime0', 'ASC'],
-      // aggregate level stuff
       TimeAll: ['TimeAll', 'DESC'],
       AttemptsAll: ['AttemptsAll', 'DESC'],
-      // # of kuskis that finished the level
       KuskiCountF: ['KuskiCountF', 'DESC'],
-      // probably the best measure of overall wr difficulty
+      KuskiCountAll: ['KuskiCountAll', 'DESC'],
       LeaderCount: ['LeaderCount', 'DESC'],
     }[req.query.sort] || ['TopDriven0', 'ASC'];
 
@@ -223,6 +217,7 @@ router
         'AttemptsAll',
         'AttemptsF',
         'KuskiCountF',
+        'KuskiCountAll',
         'LeaderCount',
       ],
       where: {
