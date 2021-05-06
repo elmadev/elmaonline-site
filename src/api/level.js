@@ -3,6 +3,7 @@ import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
 import { has } from 'lodash';
 import { Level, Time, LevelStats } from '../data/models';
+import connection from '../data/sequelize';
 
 const router = express.Router();
 
@@ -64,6 +65,28 @@ const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
   });
 
   return stats;
+};
+
+export const getFavouritedBy = async LevelIndex => {
+  const query = `
+    SELECT
+      fav.KuskiIndex,
+      pack.LevelPackIndex,
+      pack.LevelPackName
+    FROM
+      levelpack_favourite fav
+      INNER JOIN levelpack pack ON pack.LevelPackIndex = fav.LevelPackIndex
+    WHERE
+      fav.LevelPackIndex IN(
+        SELECT
+          LevelPackIndex FROM levelpack_level
+        WHERE
+          LevelIndex = ${LevelIndex})
+    `;
+
+  const [favouritedBy] = await connection.query(query);
+
+  return favouritedBy;
 };
 
 const UpdateLevel = async (LevelIndex, update) => {
