@@ -1,5 +1,3 @@
-// checks the current state of the database and processes the next X
-// times, resulting in updates to levelStats and levelStatsUpdates.
 import { forEach, groupBy, values } from 'lodash';
 import moment from 'moment';
 import { Op } from 'sequelize';
@@ -8,6 +6,8 @@ import * as PlayStats from '../data/models/PlayStats';
 import { LevelStats, LevelStatsUpdate } from '../data/models';
 import { aggregateTrackers, getPerfTracker } from './perf';
 
+// checks the current state of the database and processes the next X
+// times, resulting in updates to levelStats and levelStatsUpdates.
 export const doNext = async limit => {
   const track = getPerfTracker();
 
