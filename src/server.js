@@ -334,9 +334,12 @@ app.get('/run/levelstats/sync', async (req, res) => {
 });
 
 // destructive, and very slow
-app.get('/run/levelstats/do-all/:batchSize', async (req, res) => {
+app.get('/run/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
-    const updates = await doAllLevelStats(req.params.batchSize);
+    const updates = await doAllLevelStats(
+      +req.params.batchSize,
+      +req.params.sleepMs,
+    );
     res.json(updates);
   } else {
     res.status(401);

@@ -104,7 +104,7 @@ export const doNext = async limit => {
 };
 
 // delete and re-build everything
-export const doAll = async batchSize => {
+export const doAll = async (batchSize, sleepMs) => {
   const updates = [];
 
   const maxTimeIndex = await PlayStats.getMaxTimeIndex();
@@ -134,6 +134,11 @@ export const doAll = async batchSize => {
     [update, moreExist] = await doNext(batchSize);
 
     updates.push(update);
+
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise(resolve => {
+      setTimeout(resolve, sleepMs);
+    });
 
     // more times could be driven during each process,
     // so don't go over the max time index that existed
