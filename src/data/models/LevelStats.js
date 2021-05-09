@@ -31,6 +31,7 @@ export const ddl = {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
+
   ...PlayStats.getCommonCols(),
 
   // ie. TopKuskiIndex0, TopTime0 ... TopTimeIndex9, TopDriven9
