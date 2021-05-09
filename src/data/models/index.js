@@ -324,6 +324,11 @@ SiteSetting.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Setting.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 Ban.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
