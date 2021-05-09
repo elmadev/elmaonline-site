@@ -42,7 +42,7 @@ import apiRoutes from './api';
 import {
   doAll as doAllLevelStats,
   doNext as doNextLevelStats,
-} from './api/levelstats';
+} from './utils/levelstats';
 
 const app = express();
 

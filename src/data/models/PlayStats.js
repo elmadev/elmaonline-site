@@ -431,7 +431,7 @@ export const mapTimeDriven = times => {
   });
 };
 
-const getMinTimeIndex = async () => {
+export const getMinTimeIndex = async () => {
   const ret = await getCol(
     'SELECT MIN(TimeIndex) minIndex FROM time',
     {},
@@ -441,7 +441,7 @@ const getMinTimeIndex = async () => {
   return +ret;
 };
 
-const getMaxTimeIndex = async () => {
+export const getMaxTimeIndex = async () => {
   const ret = await getCol(
     'SELECT MAX(TimeIndex) maxIndex FROM time',
     {},
