@@ -566,7 +566,7 @@ export const mergeTopTimes = (times, prev, maxCount) => {
         KuskiIndex: t.KuskiIndex,
         TimeIndex: t.TimeIndex,
         Driven: t.Driven,
-        BattleIndex: t.BattleIndex > 0,
+        BattleIndex: t.BattleIndex > 0 ? t.BattleIndex : null,
       });
       kuskis.push(t.KuskiIndex);
     }
