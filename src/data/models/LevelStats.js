@@ -14,9 +14,10 @@ const countTopXTimes = 10;
 export const topXTimesColumns = range(0, countTopXTimes).map(i => {
   return [
     `TopTime${i}`,
-    `TopKuskiIndex${i}`,
-    `TopTimeIndex${i}`,
     `TopDriven${i}`,
+    `TopTimeIndex${i}`,
+    `TopKuskiIndex${i}`,
+    `TopBattleIndex${i}`,
   ];
 });
 
@@ -45,7 +46,7 @@ export const ddl = {
         allowNull: true,
       };
 
-      ret[`TopKuskiIndex${x}`] = {
+      ret[`TopDriven${x}`] = {
         type: Sequelize.INTEGER,
         allowNull: true,
       };
@@ -55,7 +56,12 @@ export const ddl = {
         allowNull: true,
       };
 
-      ret[`TopDriven${x}`] = {
+      ret[`TopKuskiIndex${x}`] = {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      };
+
+      ret[`TopBattleIndex${x}`] = {
         type: Sequelize.INTEGER,
         allowNull: true,
       };
@@ -68,7 +74,7 @@ export const ddl = {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
-  BattleTopKuskiIndex: {
+  BattleTopDriven: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
@@ -76,7 +82,7 @@ export const ddl = {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
-  BattleTopDriven: {
+  BattleTopKuskiIndex: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
@@ -137,10 +143,11 @@ export const ddl = {
       return range(0, countTopXTimes).map(i => {
         // must have same indexes as times table, or code elsewhere will break.
         return {
-          KuskiIndex: this.getDataValue(`TopKuskiIndex${i}`),
           Time: this.getDataValue(`TopTime${i}`),
-          TimeIndex: this.getDataValue(`TopTimeIndex${i}`),
           Driven: this.getDataValue(`TopDriven${i}`),
+          TimeIndex: this.getDataValue(`TopTimeIndex${i}`),
+          KuskiIndex: this.getDataValue(`TopKuskiIndex${i}`),
+          BattleIndex: this.getDataValue(`TopBattleIndex${i}`),
         };
       });
     },
@@ -235,14 +242,16 @@ class LevelStats extends Model {
     range(0, countTopXTimes).forEach(i => {
       if (newTopTimes[i] && newTopTimes[i].TimeIndex) {
         update[`TopTime${i}`] = newTopTimes[i].Time;
-        update[`TopKuskiIndex${i}`] = newTopTimes[i].KuskiIndex;
-        update[`TopTimeIndex${i}`] = newTopTimes[i].TimeIndex;
         update[`TopDriven${i}`] = newTopTimes[i].Driven;
+        update[`TopTimeIndex${i}`] = newTopTimes[i].TimeIndex;
+        update[`TopKuskiIndex${i}`] = newTopTimes[i].KuskiIndex;
+        update[`TopBattleIndex${i}`] = newTopTimes[i].BattleIndex;
       } else {
         update[`TopTime${i}`] = null;
-        update[`TopKuskiIndex${i}`] = null;
-        update[`TopTimeIndex${i}`] = null;
         update[`TopDriven${i}`] = null;
+        update[`TopTimeIndex${i}`] = null;
+        update[`TopKuskiIndex${i}`] = null;
+        update[`TopBattleIndex${i}`] = null;
       }
     });
 

@@ -212,6 +212,7 @@ router
         ['TopTime0', 'Time'],
         ['TopDriven0', 'Driven'],
         ['TopTimeIndex0', 'TimeIndex'],
+        ['TopBattleIndex0', 'BattleIndex'],
         'TimeAll',
         'TimeF',
         'AttemptsAll',
@@ -243,7 +244,7 @@ router
 
     // move stats into own object
     records = records.map(row => {
-      const cols = ['Time', 'TimeIndex', 'Driven', 'LevelData'];
+      const cols = ['Time', 'Driven', 'TimeIndex', 'BattleIndex', 'LevelData'];
 
       // a hack but pick/omit doesn't like model instances
       // eslint-disable-next-line no-param-reassign

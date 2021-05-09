@@ -566,6 +566,7 @@ export const mergeTopTimes = (times, prev, maxCount) => {
         KuskiIndex: t.KuskiIndex,
         TimeIndex: t.TimeIndex,
         Driven: t.Driven,
+        BattleIndex: t.BattleIndex > 0,
       });
       kuskis.push(t.KuskiIndex);
     }
@@ -606,9 +607,9 @@ export const mergeLeaderHistory = (times, prev) => {
 
   return leaders.map(t => ({
     Time: t.Time,
-    KuskiIndex: t.KuskiIndex,
-    TimeIndex: t.TimeIndex,
     Driven: t.Driven,
+    TimeIndex: t.TimeIndex,
+    KuskiIndex: t.KuskiIndex,
     BattleIndex: t.BattleIndex,
   }));
 };
@@ -616,7 +617,7 @@ export const mergeLeaderHistory = (times, prev) => {
 /**
  * @param {Array<Object>} times
  * @param {LevelStats|null} prev
- * @returns {{BattleTopDriven: null|int, BattleTopKuskiIndex: null|int, BattleTopTime: null|int, BattleTopTimeIndex: null|int, BattleTopBattleIndex: null|int}|null}
+ * @returns {object}
  */
 export const mergeBattleWinner = (times, prev) => {
   // eslint-disable-next-line no-param-reassign
