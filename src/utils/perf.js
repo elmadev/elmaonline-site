@@ -24,7 +24,7 @@ export const getPerfTracker = (desc0 = 'start') => {
       // timestamp at last even or at start
       const timeLast =
         data.events.length > 0
-          ? data.start + data.events[0].sinceStart
+          ? data.start + data.events[data.events.length - 1].sinceStart
           : data.start;
 
       data.events.push({
