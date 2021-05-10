@@ -311,10 +311,9 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
 app.get('/run/levelstats/do-next/:limit', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
     const limit = +req.params.limit;
-    const [update, moreExist] = await doNextLevelStats(limit);
+    const result = await doNextLevelStats(limit);
     res.json({
-      update,
-      moreExist,
+      result,
     });
   } else {
     res.status(401);

@@ -1,5 +1,6 @@
 import express from 'express';
 import sequelize from 'data/sequelize';
+import { mapValues, isEqual } from 'lodash';
 import { LevelStats, Level, Time } from '../data/models';
 
 const router = express.Router();
@@ -12,12 +13,21 @@ const router = express.Router();
 // does not check locked/hidden, do that beforehand
 // if serving data to public.
 const mockUpdate = async LevelIndex => {
-  const times = await Time.findAll({
+  let times = await Time.findAll({
     where: {
       LevelIndex,
     },
     order: [['TimeIndex', 'ASC']],
   });
+
+  // sequelize instances give Driven timestamp as string
+  if (times) {
+    times = times.map(t => {
+      const obj = t.toJSON();
+      obj.Driven = Number(obj.Driven);
+      return obj;
+    });
+  }
 
   const [update, perf] = LevelStats.buildUpdate(times, null, null);
 
@@ -35,6 +45,35 @@ const mockUpdate = async LevelIndex => {
     replacements: [LevelIndex],
   });
 
+  const exLevelStats = await LevelStats.findOne({ where: { LevelIndex } });
+
+  const compare = mapValues(
+    exLevelStats ? exLevelStats.toJSON() : {},
+    (val, key) => {
+      // no need to compare this derived column
+      if (key === 'TopXTimes') {
+        return '__not_applicable';
+      }
+
+      if (isEqual(val, update[key])) {
+        return '__equal';
+      }
+
+      // good to know this value, but, update doesn't
+      // have it, so don't compare.
+      if (key === 'LastPossibleTimeIndex') {
+        return val;
+      }
+
+      // same with this.
+      if (key === 'LevelStatsIndex') {
+        return val;
+      }
+
+      return ['Ex levelStats, mock:', val, update[key]];
+    },
+  );
+
   return {
     times: times.length,
     level: await Level.findOne({
@@ -43,6 +82,7 @@ const mockUpdate = async LevelIndex => {
     }),
     timeAggregates,
     update,
+    compare,
     perf,
   };
 };

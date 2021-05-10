@@ -9,7 +9,7 @@ import {
   sortBy,
   orderBy,
   sumBy,
-  maxBy,
+  max,
   mapValues,
   isEmpty,
 } from 'lodash';
@@ -123,9 +123,9 @@ export const getCommonCols = () => ({
  * @returns {Object}
  */
 export const buildCommonUpdate = (aggs, prev) => {
-  // might convert null to empty object
+  // prev might be null, we want obj for this fn.
   // eslint-disable-next-line no-param-reassign
-  prev = prev || {};
+  prev = isEmpty(prev) || prev === null ? {} : prev;
 
   // indexes are database columns.
   // values can be functions which take (aggs, prev || {})
@@ -193,11 +193,11 @@ export const buildCommonUpdate = (aggs, prev) => {
     }
 
     if (value === 'sum') {
-      return aggs[index] + (prev[index] || 0);
+      return Number(aggs[index]) + Number(prev[index] || 0);
     }
 
     if (value === 'max') {
-      return Math.max(aggs[index], prev[index] || 0);
+      return Math.max(Number(aggs[index]), Number(prev[index] || 0));
     }
 
     return value;
@@ -238,36 +238,28 @@ const sumGroup = (times, base, col) => {
   };
 };
 
+const getMaxColFromTimes = (times, Finished, col) => {
+  let filtered = times;
+
+  if (Finished === 'all') {
+    filtered = filtered.filter(timeFinishedAll);
+  } else {
+    filtered = filtered.filter(t => t.Finished === Finished);
+  }
+
+  return filtered.length > 0 ? max(filtered.map(t => t[col])) : 0;
+};
+
 // helper for aggregating times
 const maxGroup = (times, base, col) => {
   // eslint-disable-next-line no-param-reassign
   col = col || base;
 
-  const getMaxFromTimes = (iteratee, fromObj) => {
-    if (times.length > 0) {
-      const maxTimeObject = maxBy(times, iteratee);
-      return maxTimeObject[fromObj];
-    }
-
-    return 0;
-  };
-
   return {
-    [`${base}F`]: getMaxFromTimes(
-      time => (time.Finished === 'F' ? getter(time, col) : 0),
-      col,
-    ),
-    [`${base}E`]: getMaxFromTimes(
-      time => (time.Finished === 'E' ? getter(time, col) : 0),
-      col,
-    ),
-    [`${base}D`]: getMaxFromTimes(
-      time => (time.Finished === 'D' ? getter(time, col) : 0),
-      col,
-    ),
-    [`${base}All`]: getMaxFromTimes(time => {
-      return timeFinishedAll(time) ? getter(time, col) : 0;
-    }, col),
+    [`${base}F`]: getMaxColFromTimes(times, 'F', col),
+    [`${base}E`]: getMaxColFromTimes(times, 'E', col),
+    [`${base}D`]: getMaxColFromTimes(times, 'D', col),
+    [`${base}All`]: getMaxColFromTimes(times, 'all', col),
   };
 };
 
