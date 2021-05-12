@@ -1,5 +1,14 @@
 import express from 'express';
-import { forEach, sumBy } from 'lodash';
+import {
+  forEach,
+  sumBy,
+  flatMap,
+  values,
+  toPairs,
+  uniq,
+  groupBy,
+} from 'lodash';
+import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
@@ -672,6 +681,126 @@ const allPacks = async () => {
   return data;
 };
 
+const levelStats = async LevelPackIndex => {
+  const q = `
+    SELECT packlev.LevelPackIndex,
+           packlev.LevelIndex,
+           TimeF,
+           TimeAll,
+           AttemptsF,
+           AttemptsAll,
+           KuskiCountF,
+           KuskiCountAll,
+           LeaderCount,
+           LastDrivenF,
+           LastDrivenAll,
+           BrakeTimeF,
+           ThrottleTimeF
+    FROM levelpack_level packlev
+        INNER JOIN levelstats stats ON stats.LevelIndex = packlev.LevelIndex
+     WHERE LevelPackIndex = ?`;
+
+  const [stats] = await sequelize.query(q, { replacements: [+LevelPackIndex] });
+
+  return groupBy(stats, 'LevelIndex');
+};
+
+const allPacksStats = async () => {
+  // not checking level locked status, since:
+  // the query often runs slow the first time it's run which
+  // might be due to sql loading the level blobs into memory.
+  // levelpacks should not contain locked levels,
+  // and we're not exposing any level specific information, only
+  // aggregates for groups of levels.
+  const q = `
+  SELECT packlev.LevelPackIndex,
+         AVG(KuskiCountAll) AvgKuskiPerLevel,
+         SUM(TimeAll) as TimeAll, SUM(AttemptsAll) as AttemptsAll,
+         SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
+         SUM(TimeD) as TimeD, SUM(AttemptsD) as AttemptsD,
+         SUM(TimeE) as TimeE, SUM(AttemptsE) as AttemptsE,
+         MIN(TopTime0) MinRecordTime, MAX(TopTime0) as MaxRecordTime,
+         AVG(TopTime0) AvgRecordTime,
+         COUNT(s.LevelIndex) LevelCountAll,
+         COUNT(TopKuskiIndex0) LevelCountF,
+         GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
+  FROM levelstats s
+      INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+  GROUP BY LevelPackIndex`;
+
+  let [stats] = await sequelize.query(q, { replacements: [] });
+
+  stats = stats.map(s => {
+    // from comma sep list to array
+    const RecordKuskiIds = (s.RecordKuskiIds || '').split(',').map(Number);
+
+    const KuskiRecordFreq = frequencies(RecordKuskiIds);
+
+    const TopRecordCount = Math.max(...values(KuskiRecordFreq));
+
+    // handles ties between kuskis
+    const TopRecordKuskiIds = toPairs(KuskiRecordFreq)
+      .filter(p => p[1] === TopRecordCount)
+      .map(p => Number(p[0]));
+
+    return {
+      ...s,
+      AttemptsF: Number(s.AttemptsF),
+      AttemptsE: Number(s.AttemptsE),
+      AttemptsD: Number(s.AttemptsD),
+      AttemptsAll: Number(s.AttemptsAll),
+      TimeF: Number(s.TimeF),
+      TimeE: Number(s.TimeE),
+      TimeD: Number(s.TimeD),
+      TimeAll: Number(s.TimeAll),
+      AvgRecordTime: Number(s.AvgRecordTime),
+      AvgKuskiPerLevel: Number(s.AvgKuskiPerLevel),
+      KuskiRecordFreq,
+      TopRecordKuskiIds,
+      TopRecordCount,
+      RecordKuskiIds: undefined,
+    };
+  });
+
+  const KuskiIds = uniq(flatMap(stats, s => s.TopRecordKuskiIds));
+
+  // now, pretend to be an ORM
+  const Kuskis = await Kuski.findAll({
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Confirmed'],
+    where: {
+      KuskiIndex: KuskiIds,
+    },
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team'],
+      },
+    ],
+  });
+
+  const KuskisById = Kuskis.reduce((acc, k) => {
+    acc[k.KuskiIndex] = k;
+    return acc;
+  }, {});
+
+  // replace the top WR kuski IDs with objects
+  stats = stats.map(s => {
+    // filter in case of deleted kuskis
+    const TopRecordKuskis = s.TopRecordKuskiIds.map(
+      id => KuskisById[`${id}`] || null,
+    ).filter(Boolean);
+
+    return {
+      ...s,
+      TopRecordKuskiIds: undefined,
+      TopRecordKuskis,
+    };
+  });
+
+  return stats;
+};
+
 // @see https://express-validator.github.io/docs/schema-validation.html
 // /update uses these except for LevelPackName.
 // /add could use these but it already had client-side validation so for
@@ -704,6 +833,25 @@ const validators = {
 router
   .get('/', async (req, res) => {
     const data = await allPacks();
+    res.json(data);
+  })
+  .get('/stats', async (req, res) => {
+    const stats = await allPacksStats();
+
+    res.json(stats);
+  })
+  .get('/level-stats/:byName/:identifier', async (req, res) => {
+    let LevelPackIndex;
+
+    if (req.params.byName === '1') {
+      const pack = await getPackByName(req.params.identifier);
+      LevelPackIndex = pack ? pack.LevelPackIndex : 0;
+    } else {
+      LevelPackIndex = +req.params.identifier;
+    }
+
+    const data = await levelStats(LevelPackIndex);
+
     res.json(data);
   })
   .use('/admin', Admin)

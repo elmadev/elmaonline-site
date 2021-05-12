@@ -2,7 +2,17 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Team, Kuski, Ignored, Ranking, Setting } from '../data/models';
+import { getCol } from 'utils/sequelize';
+import { pick, omit } from 'lodash';
+import {
+  Team,
+  Kuski,
+  Ignored,
+  Ranking,
+  LevelStats,
+  Level,
+  Setting,
+} from '../data/models';
 
 const router = express.Router();
 
@@ -174,6 +184,96 @@ router
   .get('/crew', async (req, res) => {
     const crew = await GetCrew();
     res.json(crew);
+  })
+  .get('/record-count/:KuskiIndex', async (req, res) => {
+    const q = `
+    SELECT COUNT(s.LevelIndex) countRecords from levelstats s
+    INNER JOIN level l ON l.LevelIndex = s.LevelIndex
+    WHERE s.TopKuskiIndex0 = ?
+    AND l.Locked = 0 AND l.Hidden = 0 AND l.ForceHide = 0
+    `;
+
+    const countRecords = await getCol(
+      q,
+      {
+        replacements: [Number(req.params.KuskiIndex)],
+      },
+      'countRecords',
+    );
+
+    res.json(countRecords);
+  })
+  .get('/records/:KuskiIndex', async (req, res) => {
+    const offset = Number(req.query.offset || 0);
+    const limit = Number(req.query.limit || 50);
+
+    const orderBy = {
+      Driven: ['TopDriven0', 'DESC'],
+      Time: ['TopTime0', 'ASC'],
+      TimeAll: ['TimeAll', 'DESC'],
+      AttemptsAll: ['AttemptsAll', 'DESC'],
+      KuskiCountF: ['KuskiCountF', 'DESC'],
+      KuskiCountAll: ['KuskiCountAll', 'DESC'],
+      LeaderCount: ['LeaderCount', 'DESC'],
+    }[req.query.sort] || ['TopDriven0', 'ASC'];
+
+    if (req.query.reverse) {
+      orderBy[1] = orderBy[1] === 'ASC' ? 'DESC' : 'ASC';
+    }
+
+    let records = await LevelStats.findAll({
+      attributes: [
+        'LevelIndex',
+        ['TopTime0', 'Time'],
+        ['TopDriven0', 'Driven'],
+        ['TopTimeIndex0', 'TimeIndex'],
+        ['TopBattleIndex0', 'BattleIndex'],
+        'TimeAll',
+        'TimeF',
+        'AttemptsAll',
+        'AttemptsF',
+        'KuskiCountF',
+        'KuskiCountAll',
+        'LeaderCount',
+      ],
+      where: {
+        TopKuskiIndex0: Number(req.params.KuskiIndex),
+      },
+      include: [
+        {
+          model: Level,
+          as: 'LevelData',
+          attributes: ['LevelIndex', 'LevelName', 'LongName'],
+          where: {
+            Locked: 0,
+            Hidden: 0,
+          },
+        },
+      ],
+      order: [orderBy],
+      limit: [offset, limit],
+    });
+
+    // remove locked/hidden
+    records = records.filter(row => row.LevelData !== null);
+
+    // move stats into own object
+    records = records.map(row => {
+      const cols = ['Time', 'Driven', 'TimeIndex', 'BattleIndex', 'LevelData'];
+
+      // a hack but pick/omit doesn't like model instances
+      // eslint-disable-next-line no-param-reassign
+      row = JSON.parse(JSON.stringify(row));
+
+      return {
+        ...pick(row, cols),
+        LevelStatsData: {
+          ...omit(row, cols),
+        },
+      };
+    });
+
+    res.json(records);
   })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);

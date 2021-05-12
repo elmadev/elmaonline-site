@@ -21,6 +21,7 @@ import Donate from './donate';
 import Upload from './upload';
 import Tag from './tag';
 import Notification from './notification';
+import LevelStats from './levelstats';
 
 const router = express.Router();
 
@@ -49,6 +50,7 @@ router
   .use('/donate', Donate)
   .use('/upload', Upload)
   .use('/tag', Tag)
-  .use('/notification', Notification);
+  .use('/notification', Notification)
+  .use('/levelstats', LevelStats);
 
 export default router;
