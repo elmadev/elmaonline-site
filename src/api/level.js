@@ -1,7 +1,8 @@
 import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
-import { has } from 'lodash';
+import { has, difference } from 'lodash';
+import { defaultAttributes } from 'data/models/LevelStats';
 import { Level, Time, LevelStats } from '../data/models';
 import connection from '../data/sequelize';
 
@@ -26,6 +27,12 @@ const getLevel = async (LevelIndex, withStats = false) => {
 
   if (withStats) {
     include.push({
+      attributes: difference(defaultAttributes(), [
+        'MaxSpeedF',
+        'MaxSpeedD',
+        'MaxSpeedE',
+        'MaxSpeedAll',
+      ]),
       model: LevelStats,
       as: 'LevelStatsData',
     });

@@ -159,6 +159,10 @@ const cols = toPairs(ddl)
   .filter(arr => arr[1].type !== Sequelize.VIRTUAL)
   .map(arr => arr[0]);
 
+export const defaultAttributes = () => {
+  return cols.concat('TopXTimes');
+};
+
 class LevelStats extends Model {
   // map an array of ids to existing instances or null
   // returns an object, indexed by ID.

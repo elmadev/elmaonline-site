@@ -1,5 +1,13 @@
 import express from 'express';
-import { forEach, sumBy, flatMap, values, toPairs, uniq } from 'lodash';
+import {
+  forEach,
+  sumBy,
+  flatMap,
+  values,
+  toPairs,
+  uniq,
+  groupBy,
+} from 'lodash';
 import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
@@ -673,6 +681,30 @@ const allPacks = async () => {
   return data;
 };
 
+const levelStats = async LevelPackIndex => {
+  const q = `
+    SELECT packlev.LevelPackIndex,
+           packlev.LevelIndex,
+           TimeF,
+           TimeAll,
+           AttemptsF,
+           AttemptsAll,
+           KuskiCountF,
+           KuskiCountAll,
+           LeaderCount,
+           LastDrivenF,
+           LastDrivenAll,
+           BrakeTimeF,
+           ThrottleTimeF
+    FROM levelpack_level packlev
+        INNER JOIN levelstats stats ON stats.LevelIndex = packlev.LevelIndex
+     WHERE LevelPackIndex = ?`;
+
+  const [stats] = await sequelize.query(q, { replacements: [+LevelPackIndex] });
+
+  return groupBy(stats, 'LevelIndex');
+};
+
 const allPacksStats = async () => {
   // not checking level locked status, since:
   // the query often runs slow the first time it's run which
@@ -807,6 +839,20 @@ router
     const stats = await allPacksStats();
 
     res.json(stats);
+  })
+  .get('/level-stats/:byName/:identifier', async (req, res) => {
+    let LevelPackIndex;
+
+    if (req.params.byName === '1') {
+      const pack = await getPackByName(req.params.identifier);
+      LevelPackIndex = pack ? pack.LevelPackIndex : 0;
+    } else {
+      LevelPackIndex = +req.params.identifier;
+    }
+
+    const data = await levelStats(LevelPackIndex);
+
+    res.json(data);
   })
   .use('/admin', Admin)
   .use('/favourite', Favourite)
