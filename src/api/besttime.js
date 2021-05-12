@@ -253,8 +253,8 @@ const getBestRecordsDrivenRecently = async (
     return {
       ...r,
       LeaderHistory: undefined,
-      KuskiData: _kuskis[r.KuskiIndex] || null,
-      LevelData: _levels[r.LevelIndex] || null,
+      KuskiData: _kuskis[r.KuskiIndex] ? _kuskis[r.KuskiIndex][0] : null,
+      LevelData: _levels[r.LevelIndex] ? _levels[r.LevelIndex][0] : null,
     };
   });
 
@@ -276,13 +276,13 @@ router
     const end = +req.params.end || Math.floor(Date.now() / 1000);
     const start = +req.params.start || end - daysPast * 86400;
 
-    const records = await getBestRecordsDrivenRecently(
+    const result = await getBestRecordsDrivenRecently(
       start,
       end,
       +req.params.limit || undefined,
       req.params.repeatLevels === '1',
     );
-    res.json(records);
+    res.json(result.items);
   })
   .get('/multi/:LevelIndex/:limit', async (req, res) => {
     const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
