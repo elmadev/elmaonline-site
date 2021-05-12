@@ -6,6 +6,7 @@ import { Team, Kuski, SiteSetting } from 'data/models';
 import { confirmMail, resetMail } from 'utils/email';
 import { authContext } from 'utils/auth';
 import { sendMessage } from 'utils/discord';
+import Discord from './register_discord';
 import config from '../config';
 
 const router = express.Router();
@@ -201,6 +202,7 @@ router
       res.json({ success: true, data });
     }
   })
+  .use('/discord', Discord)
   .post('/confirm', async (req, res) => {
     const confirmed = await updateConfirm(req.body.confirmCode);
     if (confirmed) {
