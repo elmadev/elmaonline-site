@@ -43,7 +43,7 @@
     "express-validator": "^6.10.0",
     "jimp": "^0.16.1",
     "jws": "^3.2.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0",
