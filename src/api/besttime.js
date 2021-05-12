@@ -2,7 +2,6 @@ import express from 'express';
 import {
   Besttime,
   Kuski,
-  Team,
   Level,
   BestMultitime,
   LegacyBesttime,
@@ -35,14 +34,7 @@ export const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
     ],
   });
@@ -62,25 +54,11 @@ const getMultiTimes = async (LevelIndex, limit) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'Kuski1Data',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'Kuski2Data',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
     ],
   });

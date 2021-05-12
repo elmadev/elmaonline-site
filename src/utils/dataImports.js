@@ -187,7 +187,7 @@ const EmailsFromSettings = async () => {
 
 const insertEmailToKuski = async (Email, kuskiId) => {
   let kuski = false;
-  kuski = await Kuski.findOne({
+  kuski = await Kuski.scope(null).findOne({
     where: { KuskiIndex: kuskiId },
   });
   if (kuski) {
@@ -231,7 +231,9 @@ const updateLegacyPack = async (LevelPackIndex, done) => {
 };
 
 const createKuski = async (k, strategy, kuskiList, teams = []) => {
-  const kuskiData = await Kuski.findOne({ where: { Kuski: k } });
+  const kuskiData = await Kuski.scope(null).findOne({
+    where: { Kuski: k },
+  });
   if (kuskiData) {
     return kuskiData.KuskiIndex;
   }

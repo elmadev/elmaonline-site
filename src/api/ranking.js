@@ -6,7 +6,6 @@ import {
   RankingMonthly,
   RankingWeekly,
   RankingDaily,
-  Team,
   RankingHistory,
 } from '../data/models';
 
@@ -24,14 +23,7 @@ const getRanking = async (periodType, period) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-          },
-        ],
       },
     ],
   };
