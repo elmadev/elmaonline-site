@@ -11,6 +11,7 @@ import {
   Ranking,
   LevelStats,
   Level,
+  Setting,
 } from '../data/models';
 
 const router = express.Router();
@@ -73,7 +74,22 @@ const TeamsSearch = async (query, offset) => {
   return get;
 };
 
-const Player = async (IdentifierType, KuskiIdentifier) => {
+const NotifSettings = async KuskiIndex => {
+  const get = await Setting.findOne({
+    where: { KuskiIndex },
+  });
+  return get;
+};
+
+const ChangeSettings = async data => {
+  await Setting.upsert({
+    KuskiIndex: data.KuskiIndex,
+    [data.Setting]: data.Value,
+  });
+  return 1;
+};
+
+const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
   const query = {
     where: {},
     attributes: [
@@ -94,14 +110,13 @@ const Player = async (IdentifierType, KuskiIdentifier) => {
       'RAdmin',
       'BmpCRC',
     ],
-    include: [
-      {
-        model: Team,
-        as: 'TeamData',
-        attributes: ['Team', 'Locked'],
-      },
-    ],
   };
+  if (
+    currentUser === parseInt(KuskiIdentifier, 10) &&
+    IdentifierType === 'KuskiIndex'
+  ) {
+    query.attributes.push('Email');
+  }
   query.where[IdentifierType] = KuskiIdentifier;
   const data = await Kuski.findOne(query);
   return data;
@@ -269,6 +284,27 @@ router
       res.sendStatus(401);
     }
   })
+  .get('/settings', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await NotifSettings(auth.userid);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/settings', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const success = await ChangeSettings({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      res.json({ success });
+    } else {
+      res.sendStatus(401);
+    }
+  })
   .post('/ignore/:Kuski', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
@@ -303,7 +339,12 @@ router
     res.json(players);
   })
   .get('/:KuskiIndex', async (req, res) => {
-    const data = await Player('KuskiIndex', req.params.KuskiIndex);
+    let currentUser = 0;
+    const auth = authContext(req);
+    if (auth.auth) {
+      currentUser = auth.userid;
+    }
+    const data = await Player('KuskiIndex', req.params.KuskiIndex, currentUser);
     res.json(data);
   })
   .get('/:identifierType/:kuskiIdentifier', async (req, res) => {

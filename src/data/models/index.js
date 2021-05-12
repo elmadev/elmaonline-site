@@ -51,6 +51,7 @@ import LevelStats from './LevelStats';
 import KuskiStats from './KuskiStats';
 import * as PlayStats from './PlayStats';
 import LevelStatsUpdate from './LevelStatsUpdate';
+import Setting from './Setting';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -339,6 +340,11 @@ SiteSetting.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Setting.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 Ban.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -468,4 +474,5 @@ export {
   KuskiStats,
   LevelStatsUpdate,
   PlayStats,
+  Setting,
 }; // add the data model here as well so it exports
