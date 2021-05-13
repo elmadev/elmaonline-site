@@ -5,6 +5,7 @@ import {
   Besttime,
   Kuski,
   Level,
+  Team,
   BestMultitime,
   LegacyBesttime,
 } from '../data/models';
