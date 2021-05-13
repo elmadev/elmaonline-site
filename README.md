@@ -21,6 +21,12 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 - Run `yarn build` in terminal to make a production build.
 
+## Config
+
+`src/config.defaults.js` has default config, this should only be changed if you are adding new keys.
+`src/config.local.js` has your local config changes, it's empty by default, so just add keys from the above that you wish to change. To make git ignore changes to the file run `git update-index --skip-worktree src/config.local.js`.
+`src/config.js` merges the two files above with priority to local.js, this is the file that should be included when using config values in the code for example `import config from './config';` if you're in the src folder.
+
 ## Tech stack
 
 - [Express](http://expressjs.com/) as the backend framework
