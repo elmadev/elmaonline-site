@@ -1,16 +1,4 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 /* eslint-disable max-len */
-
-// IMPORTANT NOTE:
-// Adjust .github/workflows/*.yml after changes to make correct replacements in CI
 
 if (process.env.BROWSER) {
   throw new Error(
@@ -18,6 +6,7 @@ if (process.env.BROWSER) {
   );
 }
 
+// default config, this file should not be changed unless you are adding a new key
 module.exports = {
   // Node.js app
   port: process.env.PORT || 3003,
@@ -57,15 +46,7 @@ module.exports = {
     maps: 'AIzaSyDE8Prt4OybzNNxo1MzIn1XYNGxm9rI8Zk',
   },
 
-  // Authentication
-  grant: {
-    defaults: {
-      protocol: 'https',
-      host: process.env.API_CLIENT_URL || '',
-      transport: 'session',
-      state: true,
-    },
-  },
+  // auth
   // eslint-disable-next-line prettier/prettier
   jwtSecret: 'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
   jwtAlgo: 'HS256',
