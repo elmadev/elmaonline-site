@@ -1,5 +1,5 @@
-const defaults = require('./defaults');
-const local = require('./local');
+const defaults = require('./config.defaults');
+const local = require('./config.local');
 
 if (process.env.BROWSER) {
   throw new Error(
