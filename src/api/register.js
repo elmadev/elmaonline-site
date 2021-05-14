@@ -118,11 +118,8 @@ const UpdateEmail = async (Email, KuskiIndex) => {
   await Kuski.update({ Email }, { where: { KuskiIndex } });
 };
 
-const UpdatePassword = async (Password2, KuskiIndex, Salt) => {
-  await Kuski.update(
-    { Password2, Password: '', Salt },
-    { where: { KuskiIndex } },
-  );
+const UpdatePassword = async (Password2, Password, KuskiIndex, Salt) => {
+  await Kuski.update({ Password2, Password, Salt }, { where: { KuskiIndex } });
 };
 
 const UpdateLocked = async (TeamIndex, Locked) => {
@@ -195,6 +192,10 @@ router
       const Salt = uuid(32);
       const data = await addKuski({
         Kuski: req.body.Kuski,
+        Password: crypto
+          .createHash('md5')
+          .update(req.body.Password)
+          .digest('hex'),
         Password2: crypto
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Password}${Salt}`)
@@ -312,6 +313,10 @@ router
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Value[0]}${Salt}`)
           .digest('hex');
+        const passMd5 = crypto
+          .createHash('md5')
+          .update(`${req.body.Value[1]}${Salt}`)
+          .digest('hex');
         const pass = crypto
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Value[1]}${Salt}`)
@@ -331,7 +336,7 @@ router
           error = true;
         }
         if (!error) {
-          await UpdatePassword(pass, auth.userid, Salt);
+          await UpdatePassword(pass, passMd5, auth.userid, Salt);
           message = 'Password has been updated.';
         }
         // team lock
