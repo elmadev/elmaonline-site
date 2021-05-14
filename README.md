@@ -7,7 +7,7 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 ## Branches
 
-- **develop**
+- **dev**
   - The primary branch to use while developing. Make all changes to this branch, preferably as pull requests. Test server uses this branch.
 - **master**
   - This branch reflects the version currently deployed on [elma.online](http://elma.online), only people actually deploying will be pulling code to this.
