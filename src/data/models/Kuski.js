@@ -29,6 +29,16 @@ const Kuski = Model.define(
       allowNull: false,
       defaultValue: '',
     },
+    Password2: {
+      type: DataType.STRING(128),
+      allowNull: false,
+      defaultValue: '',
+    },
+    Salt: {
+      type: DataType.STRING(32),
+      allowNull: false,
+      defaultValue: '',
+    },
     Rights: {
       type: DataType.INTEGER,
       allowNull: false,
