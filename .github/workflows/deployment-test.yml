@@ -3,7 +3,7 @@ name: Deployment to apitest.elma.online
 on:
   push:
     branches:
-      - deploy
+      - dev
 
 jobs:
   build:
