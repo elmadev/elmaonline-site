@@ -10,6 +10,10 @@ apiKey.apiKey = config.sibApiKey;
 
 export const sendEmail = (email, kuski, template, params) => {
   return new Promise((resolve, reject) => {
+    if (!config.sibApiKey) {
+      // resolve so code doesn't stop in development
+      resolve();
+    }
     const apiInstance = new SibApiV3Sdk.SMTPApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.to = [{ email, name: kuski }];

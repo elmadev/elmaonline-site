@@ -72,18 +72,33 @@ const ResetPasswordConfirm = async (Email, ConfirmCode) => {
   return findReset;
 };
 
-const UpdatePasswordConfirm = async (ConfirmCode, Password) => {
-  let findReset = false;
-  findReset = await Kuski.scope(null).findOne({
+const UpdatePasswordConfirm = async ConfirmCode => {
+  const newPassword = uuid();
+  const findReset = await Kuski.scope(null).findOne({
     where: { ConfirmCode },
   });
   if (findReset) {
+    const newMd5 = crypto
+      .createHash('md5')
+      .update(newPassword)
+      .digest('hex');
+    let { Salt } = findReset.dataValues;
+    if (!Salt) {
+      Salt = uuid(32);
+    }
+    const newSha3 = crypto
+      .createHash('RSA-SHA3-512')
+      .update(`${newPassword}${Salt}`)
+      .digest('hex');
     await findReset.update({
       ConfirmCode: '',
-      Password,
+      Password: newMd5,
+      Password2: newSha3,
+      Salt,
     });
+    return newPassword;
   }
-  return findReset;
+  return null;
 };
 
 const validateEmail = e => {
@@ -230,14 +245,9 @@ router
     }
   })
   .post('/reset', async (req, res) => {
-    const newPassword = uuid();
-    const newMd5 = crypto
-      .createHash('md5')
-      .update(newPassword)
-      .digest('hex');
-    const reset = await UpdatePasswordConfirm(req.body.confirmCode, newMd5);
+    const reset = await UpdatePasswordConfirm(req.body.confirmCode);
     if (reset) {
-      res.json({ success: true, newPassword });
+      res.json({ success: true, newPassword: reset });
     } else {
       res.json({ success: false });
     }
