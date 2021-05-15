@@ -315,7 +315,7 @@ router
           .digest('hex');
         const passMd5 = crypto
           .createHash('md5')
-          .update(`${req.body.Value[1]}${Salt}`)
+          .update(req.body.Value[1])
           .digest('hex');
         const pass = crypto
           .createHash('RSA-SHA3-512')
