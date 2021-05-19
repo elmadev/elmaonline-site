@@ -537,9 +537,9 @@ export const legacyTimes = async importStrategy => {
       });
     });
   });
-  await insertBesttime(insertLegacyBesttimeEOL);
   let finished = [];
   let besttime = [];
+  let apiSuccess = false;
   if (importStrategy === 'skint') {
     const skintKuskis = await getJson('skintatious_kuskis');
     const skintNonPRsData = await getJson('skintatious_nonPRs');
@@ -548,6 +548,9 @@ export const legacyTimes = async importStrategy => {
     const skintBest = await skint(skintPRsData.data, skintKuskis.data);
     finished = [...skintFinished, ...skintBest];
     besttime = skintBest;
+    if (skintKuskis.ok && skintNonPRsData.ok && skintPRsData.ok) {
+      apiSuccess = true;
+    }
   }
   if (importStrategy === 'kopa') {
     const kopaTimes = await getJson('kopasite_time');
@@ -560,6 +563,9 @@ export const legacyTimes = async importStrategy => {
     );
     finished = kopasiteTimes;
     besttime = kopasiteTimes;
+    if (kopaTimes.ok && kopaKuskis.ok && kopaLevels.ok) {
+      apiSuccess = true;
+    }
   }
   if (importStrategy === 'mopo') {
     const mopoTimes = await getJson('moposite_records');
@@ -572,7 +578,14 @@ export const legacyTimes = async importStrategy => {
     );
     finished = mopositeTimes;
     besttime = mopositeTimes;
+    if (mopoTimes.ok && mopoKuskis.ok && mopoTeams.ok) {
+      apiSuccess = true;
+    }
   }
+  if (!apiSuccess) {
+    return;
+  }
+  await insertBesttime(insertLegacyBesttimeEOL);
   await insertFinished(finished);
   const insertToLegacyBesttime = [];
   eachSeries(
