@@ -48,7 +48,7 @@ Visual Studio Code:
 The config is set up to use a test database. Bear in mind the following:
 
 - Test database is a copy of live from end june 2020
-- time, battle and allfinished tables only have a subset of live (last year or two) to keep size down
+- time and battle tables only have a subset of live (from mid 2019ish) to keep size down
 - Passwords, emails and private comments have been stripped
 
 Explanation of database structure can be found in [this google sheet](https://docs.google.com/spreadsheets/d/15fNKf2ihV4HvmVZwxg2D18ITvcbCE1nva5NTFlYJOgg/edit?usp=sharing).

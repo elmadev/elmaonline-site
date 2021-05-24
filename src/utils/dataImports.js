@@ -544,7 +544,7 @@ export const legacyTimes = async importStrategy => {
     const skintKuskis = await getJson('skintatious_kuskis');
     const skintNonPRsData = await getJson('skintatious_nonPRs');
     const skintFinished = await skint(skintNonPRsData.data, skintKuskis.data);
-    const skintPRsData = await getJson('skintatious_nonPRs');
+    const skintPRsData = await getJson('skintatious_PRs');
     const skintBest = await skint(skintPRsData.data, skintKuskis.data);
     finished = [...skintFinished, ...skintBest];
     besttime = skintBest;
