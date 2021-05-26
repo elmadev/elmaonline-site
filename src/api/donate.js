@@ -1,5 +1,5 @@
 import express from 'express';
-import { Donate, Kuski, Team } from 'data/models';
+import { Donate, Kuski } from 'data/models';
 
 const router = express.Router();
 
@@ -16,15 +16,7 @@ const getDonations = async () => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-            attributes: ['Team', 'TeamIndex'],
-          },
-        ],
       },
     ],
   });

@@ -187,7 +187,7 @@ const EmailsFromSettings = async () => {
 
 const insertEmailToKuski = async (Email, kuskiId) => {
   let kuski = false;
-  kuski = await Kuski.findOne({
+  kuski = await Kuski.scope(null).findOne({
     where: { KuskiIndex: kuskiId },
   });
   if (kuski) {
@@ -231,7 +231,9 @@ const updateLegacyPack = async (LevelPackIndex, done) => {
 };
 
 const createKuski = async (k, strategy, kuskiList, teams = []) => {
-  const kuskiData = await Kuski.findOne({ where: { Kuski: k } });
+  const kuskiData = await Kuski.scope(null).findOne({
+    where: { Kuski: k },
+  });
   if (kuskiData) {
     return kuskiData.KuskiIndex;
   }
@@ -535,17 +537,20 @@ export const legacyTimes = async importStrategy => {
       });
     });
   });
-  await insertBesttime(insertLegacyBesttimeEOL);
   let finished = [];
   let besttime = [];
+  let apiSuccess = false;
   if (importStrategy === 'skint') {
     const skintKuskis = await getJson('skintatious_kuskis');
     const skintNonPRsData = await getJson('skintatious_nonPRs');
     const skintFinished = await skint(skintNonPRsData.data, skintKuskis.data);
-    const skintPRsData = await getJson('skintatious_nonPRs');
+    const skintPRsData = await getJson('skintatious_PRs');
     const skintBest = await skint(skintPRsData.data, skintKuskis.data);
     finished = [...skintFinished, ...skintBest];
     besttime = skintBest;
+    if (skintKuskis.ok && skintNonPRsData.ok && skintPRsData.ok) {
+      apiSuccess = true;
+    }
   }
   if (importStrategy === 'kopa') {
     const kopaTimes = await getJson('kopasite_time');
@@ -558,15 +563,29 @@ export const legacyTimes = async importStrategy => {
     );
     finished = kopasiteTimes;
     besttime = kopasiteTimes;
+    if (kopaTimes.ok && kopaKuskis.ok && kopaLevels.ok) {
+      apiSuccess = true;
+    }
   }
   if (importStrategy === 'mopo') {
     const mopoTimes = await getJson('moposite_records');
     const mopoKuskis = await getJson('moposite_users');
     const mopoTeams = await getJson('moposite_teams');
-    const mopositeTimes = await mopo(mopoTimes, mopoKuskis, mopoTeams);
+    const mopositeTimes = await mopo(
+      mopoTimes.data,
+      mopoKuskis.data,
+      mopoTeams.data,
+    );
     finished = mopositeTimes;
     besttime = mopositeTimes;
+    if (mopoTimes.ok && mopoKuskis.ok && mopoTeams.ok) {
+      apiSuccess = true;
+    }
   }
+  if (!apiSuccess) {
+    return;
+  }
+  await insertBesttime(insertLegacyBesttimeEOL);
   await insertFinished(finished);
   const insertToLegacyBesttime = [];
   eachSeries(
@@ -578,26 +597,43 @@ export const legacyTimes = async importStrategy => {
       );
       if (existsIndex > -1) {
         if (insertLegacyBesttimeEOL[existsIndex].Time > time.Time) {
-          await LegacyBesttime.update(
-            {
+          const insertIndex = insertToLegacyBesttime.findIndex(
+            b =>
+              b.LevelIndex === time.LevelIndex &&
+              b.KuskiIndex === time.KuskiIndex,
+          );
+          if (insertIndex > -1) {
+            insertToLegacyBesttime[insertIndex] = {
               TimeIndex: 0,
               Time: time.Time,
               Driven: time.Driven,
               Source: time.Source,
-            },
-            {
-              where: {
-                LevelIndex: time.LevelIndex,
-                KuskiIndex: time.KuskiIndex,
+              KuskiIndex: time.KuskiIndex,
+              LevelIndex: time.LevelIndex,
+            };
+          } else {
+            await LegacyBesttime.update(
+              {
+                TimeIndex: 0,
+                Time: time.Time,
+                Driven: time.Driven,
+                Source: time.Source,
               },
-            },
-          );
+              {
+                where: {
+                  LevelIndex: time.LevelIndex,
+                  KuskiIndex: time.KuskiIndex,
+                },
+              },
+            );
+          }
           insertLegacyBesttimeEOL[existsIndex] = {
-            ...insertLegacyBesttimeEOL[existsIndex],
             TimeIndex: 0,
             Time: time.Time,
             Driven: time.Driven,
             Source: time.Source,
+            KuskiIndex: time.KuskiIndex,
+            LevelIndex: time.LevelIndex,
           };
           done();
         } else {

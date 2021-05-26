@@ -2,7 +2,17 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Team, Kuski, Ignored, Ranking } from '../data/models';
+import { getCol } from 'utils/sequelize';
+import { pick, omit } from 'lodash';
+import {
+  Team,
+  Kuski,
+  Ignored,
+  Ranking,
+  LevelStats,
+  Level,
+  Setting,
+} from '../data/models';
 
 const router = express.Router();
 
@@ -64,7 +74,22 @@ const TeamsSearch = async (query, offset) => {
   return get;
 };
 
-const Player = async (IdentifierType, KuskiIdentifier) => {
+const NotifSettings = async KuskiIndex => {
+  const get = await Setting.findOne({
+    where: { KuskiIndex },
+  });
+  return get;
+};
+
+const ChangeSettings = async data => {
+  await Setting.upsert({
+    KuskiIndex: data.KuskiIndex,
+    [data.Setting]: data.Value,
+  });
+  return 1;
+};
+
+const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
   const query = {
     where: {},
     attributes: [
@@ -85,14 +110,13 @@ const Player = async (IdentifierType, KuskiIdentifier) => {
       'RAdmin',
       'BmpCRC',
     ],
-    include: [
-      {
-        model: Team,
-        as: 'TeamData',
-        attributes: ['Team', 'Locked'],
-      },
-    ],
   };
+  if (
+    currentUser === parseInt(KuskiIdentifier, 10) &&
+    IdentifierType === 'KuskiIndex'
+  ) {
+    query.attributes.push('Email');
+  }
   query.where[IdentifierType] = KuskiIdentifier;
   const data = await Kuski.findOne(query);
   return data;
@@ -161,11 +185,122 @@ router
     const crew = await GetCrew();
     res.json(crew);
   })
+  .get('/record-count/:KuskiIndex', async (req, res) => {
+    const q = `
+    SELECT COUNT(s.LevelIndex) countRecords from levelstats s
+    INNER JOIN level l ON l.LevelIndex = s.LevelIndex
+    WHERE s.TopKuskiIndex0 = ?
+    AND l.Locked = 0 AND l.Hidden = 0 AND l.ForceHide = 0
+    `;
+
+    const countRecords = await getCol(
+      q,
+      {
+        replacements: [Number(req.params.KuskiIndex)],
+      },
+      'countRecords',
+    );
+
+    res.json(countRecords);
+  })
+  .get('/records/:KuskiIndex', async (req, res) => {
+    const offset = Number(req.query.offset || 0);
+    const limit = Number(req.query.limit || 50);
+
+    const orderBy = {
+      Driven: ['TopDriven0', 'DESC'],
+      Time: ['TopTime0', 'ASC'],
+      TimeAll: ['TimeAll', 'DESC'],
+      AttemptsAll: ['AttemptsAll', 'DESC'],
+      KuskiCountF: ['KuskiCountF', 'DESC'],
+      KuskiCountAll: ['KuskiCountAll', 'DESC'],
+      LeaderCount: ['LeaderCount', 'DESC'],
+    }[req.query.sort] || ['TopDriven0', 'ASC'];
+
+    if (req.query.reverse) {
+      orderBy[1] = orderBy[1] === 'ASC' ? 'DESC' : 'ASC';
+    }
+
+    let records = await LevelStats.findAll({
+      attributes: [
+        'LevelIndex',
+        ['TopTime0', 'Time'],
+        ['TopDriven0', 'Driven'],
+        ['TopTimeIndex0', 'TimeIndex'],
+        ['TopBattleIndex0', 'BattleIndex'],
+        'TimeAll',
+        'TimeF',
+        'AttemptsAll',
+        'AttemptsF',
+        'KuskiCountF',
+        'KuskiCountAll',
+        'LeaderCount',
+      ],
+      where: {
+        TopKuskiIndex0: Number(req.params.KuskiIndex),
+      },
+      include: [
+        {
+          model: Level,
+          as: 'LevelData',
+          attributes: ['LevelIndex', 'LevelName', 'LongName'],
+          where: {
+            Locked: 0,
+            Hidden: 0,
+          },
+        },
+      ],
+      order: [orderBy],
+      limit: [offset, limit],
+    });
+
+    // remove locked/hidden
+    records = records.filter(row => row.LevelData !== null);
+
+    // move stats into own object
+    records = records.map(row => {
+      const cols = ['Time', 'Driven', 'TimeIndex', 'BattleIndex', 'LevelData'];
+
+      // a hack but pick/omit doesn't like model instances
+      // eslint-disable-next-line no-param-reassign
+      row = JSON.parse(JSON.stringify(row));
+
+      return {
+        ...pick(row, cols),
+        LevelStatsData: {
+          ...omit(row, cols),
+        },
+      };
+    });
+
+    res.json(records);
+  })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
       const data = await GetIgnored(auth.userid);
       res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/settings', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await NotifSettings(auth.userid);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/settings', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const success = await ChangeSettings({
+        ...req.body,
+        KuskiIndex: auth.userid,
+      });
+      res.json({ success });
     } else {
       res.sendStatus(401);
     }
@@ -204,7 +339,12 @@ router
     res.json(players);
   })
   .get('/:KuskiIndex', async (req, res) => {
-    const data = await Player('KuskiIndex', req.params.KuskiIndex);
+    let currentUser = 0;
+    const auth = authContext(req);
+    if (auth.auth) {
+      currentUser = auth.userid;
+    }
+    const data = await Player('KuskiIndex', req.params.KuskiIndex, currentUser);
     res.json(data);
   })
   .get('/:identifierType/:kuskiIdentifier', async (req, res) => {

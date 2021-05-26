@@ -81,7 +81,7 @@ const DeclineNick = async (data, modId) => {
 };
 
 const AcceptNick = async (data, modId) => {
-  const kuskiInfo = await Kuski.findOne({
+  const kuskiInfo = await Kuski.scope(null).findOne({
     where: { KuskiIndex: data.KuskiIndex },
   });
   await Kuski.update(
@@ -249,7 +249,7 @@ const getActionLog = async (k, LogTime) => {
     };
     findAll.order = [['ActionLogsIndex', 'ASC']];
   } else if (k !== '0') {
-    const findKuski = await Kuski.findOne({ where: { Kuski: k } });
+    const findKuski = await Kuski.scope(null).findOne({ where: { Kuski: k } });
     findAll.where = { KuskiIndex: findKuski.KuskiIndex };
   } else if (LogTime !== '0') {
     findAll.where = { Time: { [Op.gt]: `${LogTime} 00:00:00` } };
@@ -260,7 +260,9 @@ const getActionLog = async (k, LogTime) => {
 };
 
 const giveRights = async (Right, KuskiIndex, modId) => {
-  const findKuski = await Kuski.findOne({ where: { KuskiIndex } });
+  const findKuski = await Kuski.scope(null).findOne({
+    where: { KuskiIndex },
+  });
   await findKuski.update({ [Right]: 1 });
   await WriteActionLog(modId, KuskiIndex, Right, 1, 0, '');
 };

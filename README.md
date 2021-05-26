@@ -7,7 +7,7 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 ## Branches
 
-- **develop**
+- **dev**
   - The primary branch to use while developing. Make all changes to this branch, preferably as pull requests. Test server uses this branch.
 - **master**
   - This branch reflects the version currently deployed on [elma.online](http://elma.online), only people actually deploying will be pulling code to this.
@@ -20,6 +20,12 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 4. Run `yarn start` in terminal to start development server
 
 - Run `yarn build` in terminal to make a production build.
+
+## Config
+
+`src/config.defaults.js` has default config, this should only be changed if you are adding new keys.
+`src/config.local.js` has your local config changes, it's empty by default, so just add keys from the above that you wish to change. To make git ignore changes to the file run `git update-index --skip-worktree src/config.local.js`.
+`src/config.js` merges the two files above with priority to local.js, this is the file that should be included when using config values in the code for example `import config from './config';` if you're in the src folder.
 
 ## Tech stack
 
@@ -42,7 +48,7 @@ Visual Studio Code:
 The config is set up to use a test database. Bear in mind the following:
 
 - Test database is a copy of live from end june 2020
-- time, battle and allfinished tables only have a subset of live (last year or two) to keep size down
+- time and battle tables only have a subset of live (from mid 2019ish) to keep size down
 - Passwords, emails and private comments have been stripped
 
 Explanation of database structure can be found in [this google sheet](https://docs.google.com/spreadsheets/d/15fNKf2ihV4HvmVZwxg2D18ITvcbCE1nva5NTFlYJOgg/edit?usp=sharing).

@@ -1,4 +1,4 @@
-name: Deployment to test.elma.online
+name: Deployment to apitest.elma.online
 
 on:
   push:
@@ -16,24 +16,13 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd ${{ secrets.PATH_TEST }}
-          git checkout -- src/config.js
+          cd ${{ secrets.SSH_PATH }}
           git pull
-          sed -i "s|accessKeyId: ''|accessKeyId: '${{ secrets.ACCESSKEYID_TEST }}'|" src/config.js
-          sed -i "s|secretAccessKey: ''|secretAccessKey: '${{ secrets.SECRETACCESSKEY_TEST }}'|" src/config.js
-          sed -i "s|sibApiKey: ''|sibApiKey: '${{ secrets.SIBAPIKEY_TEST }}'|" src/config.js
-          sed -i "s|token: ''|token: '${{ secrets.DISCORD_TOKEN_TEST }}'|" src/config.js
-          sed -i "s|battle: ''|battle: '${{ secrets.DISCORD_CHANNELS_BATTLE_TEST }}'|" src/config.js
-          sed -i "s|times: ''|times: '${{ secrets.DISCORD_CHANNELS_TIMES_TEST }}'|" src/config.js
-          sed -i "s|events: ''|events: '${{ secrets.DISCORD_CHANNELS_EVENTS_TEST }}'|" src/config.js
-          sed -i "s|admin: ''|admin: '${{ secrets.DISCORD_CHANNELS_ADMIN_TEST }}'|" src/config.js
-          sed -i "s|apiAuth: ''|apiAuth: '${{ secrets.DISCORD_APIAUTH_TEST }}'|" src/config.js
-          sed -i "s|started: ''|started: '${{ secrets.DISCORD_ICONS_STARTED_TEST }}'|" src/config.js
-          sed -i "s|queue: ''|queue: '${{ secrets.DISCORD_ICONS_QUEUE_TEST }}'|" src/config.js
-          sed -i "s|results: ''|results: '${{ secrets.DISCORD_ICONS_RESULTS_TEST }}'|" src/config.js
-          sed -i "s|ended: ''|ended: '${{ secrets.DISCORD_ICONS_ENDED_TEST }}'|" src/config.js
+          yarn
           yarn build-release
-          /home/deploy/.nvm/versions/node/v12.18.3/bin/pm2 restart elmaonline-site-test
+          rm -r ${{ secrets.SSH_PATH }}/deploy/*
+          cp -R ${{ secrets.SSH_PATH }}/build/* ${{ secrets.SSH_PATH }}/deploy/

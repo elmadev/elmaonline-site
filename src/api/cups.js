@@ -73,15 +73,7 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
     include: [
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
         as: 'KuskiData',
-        include: [
-          {
-            model: Team,
-            as: 'TeamData',
-            attributes: ['Team'],
-          },
-        ],
       },
       {
         model: Level,

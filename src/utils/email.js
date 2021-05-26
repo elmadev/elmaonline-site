@@ -10,6 +10,10 @@ apiKey.apiKey = config.sibApiKey;
 
 export const sendEmail = (email, kuski, template, params) => {
   return new Promise((resolve, reject) => {
+    if (!config.sibApiKey) {
+      // resolve so code doesn't stop in development
+      resolve();
+    }
     const apiInstance = new SibApiV3Sdk.SMTPApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.to = [{ email, name: kuski }];
@@ -42,8 +46,38 @@ export const acceptNickMail = async (kuski, email, oldNick) => {
   return send;
 };
 
-export const newsMail = () => {
-  return new Promise(resolve => {
-    resolve(true);
-  });
+export const notificationMail = async (KuskiInfo, type, meta) => {
+  let headline = '';
+  let text = '';
+  let link = '';
+  if (type === 'comment') {
+    headline = 'Replay comment';
+    text = `${meta.kuski} added a comment to your replay: "${meta.Text}"`;
+    link = `/r/${meta.replayUUID}/${meta.replayName.replace('.rec', '')}`;
+  }
+  if (type === 'beaten') {
+    headline = 'Record beaten';
+    text = `${meta.kuski} crushed your record in level ${meta.level}`;
+    link = `/levels/${meta.levelIndex}`;
+  }
+  if (type === 'besttime') {
+    headline = 'New record';
+    text = `[`;
+    meta.levPacks.forEach((pack, index) => {
+      text = `${text}${pack.LevelPackName}`;
+      text = `${text}${meta.levPacks.length > index + 1 && ', '}`;
+    });
+    text = `${text}] ${meta.kuski} got record in level ${meta.level} with time ${meta.time}`;
+    link = `/levels/${meta.levelIndex}`;
+  }
+  if (text) {
+    const send = await sendEmail(KuskiInfo.Email, KuskiInfo.Kuski, 5, {
+      kuski: KuskiInfo.Kuski,
+      headline,
+      text,
+      link,
+    });
+    return send;
+  }
+  return null;
 };
