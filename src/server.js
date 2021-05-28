@@ -414,7 +414,7 @@ app.get('/run/legacytimes/:strategy', async (req, res) => {
 //
 // Uploading files
 //--------------------------------------------
-app.post('/upload/:type', async (req, res) => {
+app.post('/upload/:type', cors(), async (req, res) => {
   const getAuth = authContext(req);
   if (req.params.type === 'replay') {
     const {
