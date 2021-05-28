@@ -1,4 +1,4 @@
-name: Deployment to elma.online
+name: Deployment to api.elma.online
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     if: contains(github.event.head_commit.message, 'skip ci') == false
-    name: ssh into server, pull from repo, build live release and restart pm2
+    name: ssh into server, pull from repo, build release and and copy to pm2 watched path
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
@@ -16,34 +16,13 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd ${{ secrets.PATH_LIVE }}
-          git checkout -- src/config.js
+          cd ${{ secrets.SSH_PATH_LIVE }}
           git pull
-          sed -i "s|3000|${{ secrets.PORT_LIVE }}|g" src/config.js
-          sed -i "s|user: 'sandbox'|user: '${{ secrets.MYSQL_USER_LIVE }}'|" src/config.js
-          sed -i "s|pass: 'cksnmbmlfchozooqrdxahytwer'|pass: '${{ secrets.MYSQL_PASS_LIVE }}'|" src/config.js
-          sed -i "s|database: 'eolwebtest'|database: '${{ secrets.MYSQL_DATABASE_LIVE }}'|" src/config.js
-          sed -i "s|s3SubFolder: 'test/'|s3SubFolder: '${{ secrets.S3SUBFOLDER_LIVE }}'|" src/config.js
-          sed -i "s|accessKeyId: ''|accessKeyId: '${{ secrets.ACCESSKEYID_LIVE }}'|" src/config.js
-          sed -i "s|secretAccessKey: ''|secretAccessKey: '${{ secrets.SECRETACCESSKEY_LIVE }}'|" src/config.js
-          sed -i "s|jwtSecret:'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ'|jwtSecret: '${{ secrets.JWTSECRET_LIVE }}'|" src/config.js
-          sed -i "s|client: '6Le-n9QUAAAAAG-3bYyysXddxwD6I6iJeDBTHf2r'|client: '${{ secrets.RECAPTCHA_CLIENT_LIVE }}'|" src/config.js
-          sed -i "s|server: '6Le-n9QUAAAAAHjJaG9QXAUcAzgu462rrpCF_Jan'|server: '${{ secrets.RECAPTCHA_SERVER_LIVE }}'|" src/config.js
-          sed -i "s|sibApiKey: ''|sibApiKey: '${{ secrets.SIBAPIKEY_LIVE }}'|" src/config.js
-          sed -i "s|ranking: 'ueMDaaSlyhNsYGUCGnq0FChDg0DSaPsRb3-gdMXz'|ranking: '${{ secrets.RUN_RANKING_LIVE }}'|" src/config.js
-          sed -i "s|token: ''|token: '${{ secrets.DISCORD_TOKEN_LIVE }}'|" src/config.js
-          sed -i "s|battle: ''|battle: '${{ secrets.DISCORD_CHANNELS_BATTLE_LIVE }}'|" src/config.js
-          sed -i "s|times: ''|times: '${{ secrets.DISCORD_CHANNELS_TIMES_LIVE }}'|" src/config.js
-          sed -i "s|events: ''|events: '${{ secrets.DISCORD_CHANNELS_EVENTS_LIVE }}'|" src/config.js
-          sed -i "s|admin: ''|admin: '${{ secrets.DISCORD_CHANNELS_ADMIN_LIVE }}'|" src/config.js
-          sed -i "s|apiAuth: ''|apiAuth: '${{ secrets.DISCORD_APIAUTH_LIVE }}'|" src/config.js
-          sed -i "s|url: 'https://test.elma.online/'|url: '${{ secrets.DISCORD_URL_LIVE }}'|" src/config.js
-          sed -i "s|started: ''|started: '${{ secrets.DISCORD_ICONS_STARTED_LIVE }}'|" src/config.js
-          sed -i "s|queue: ''|queue: '${{ secrets.DISCORD_ICONS_QUEUE_LIVE }}'|" src/config.js
-          sed -i "s|results: ''|results: '${{ secrets.DISCORD_ICONS_RESULTS_LIVE }}'|" src/config.js
-          sed -i "s|ended: ''|ended: '${{ secrets.DISCORD_ICONS_ENDED_LIVE }}'|" src/config.js
+          yarn
           yarn build-release
-          /home/deploy/.nvm/versions/node/v12.18.3/bin/pm2 restart elmaonline-site
+          rm -r ${{ secrets.SSH_PATH_LIVE }}/deploy/*
+          cp -R ${{ secrets.SSH_PATH_LIVE }}/build/* ${{ secrets.SSH_PATH_LIVE }}/deploy/
