@@ -51,11 +51,6 @@ const Level = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    SiteLock: {
-      type: DataType.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     Hidden: {
       type: DataType.INTEGER,
       allowNull: false,

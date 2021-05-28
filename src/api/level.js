@@ -17,7 +17,6 @@ const attributes = [
   'Killers',
   'Flowers',
   'Locked',
-  'SiteLock',
   'Hidden',
   'Legacy',
 ];

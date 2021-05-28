@@ -6,6 +6,7 @@ import PrettyError from 'pretty-error';
 import stream from 'stream';
 import cors from 'cors';
 import request from 'request';
+import process from 'process';
 import fileUpload from 'express-fileupload';
 import {
   getReplayByBattleId,
@@ -516,6 +517,14 @@ app.use((err, req, res, next) => {
 if (!module.hot) {
   app.listen(config.port, () => {
     console.info(`The server is running at http://localhost:${config.port}/`);
+    if (process.setgid && process.setuid) {
+      try {
+        process.setgid('pm2');
+        process.setuid('deploy');
+      } catch (e) {
+        console.info('unable to set user/group');
+      }
+    }
   });
 }
 
