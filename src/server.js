@@ -414,60 +414,62 @@ app.get('/run/legacytimes/:strategy', async (req, res) => {
 //
 // Uploading files
 //--------------------------------------------
-app.post('/upload/:type', cors(), async (req, res) => {
-  const getAuth = authContext(req);
-  if (req.params.type === 'replay') {
-    const {
+app.post('/upload/replay', async (req, res) => {
+  const {
+    file,
+    uuid,
+    time,
+    finished,
+    LevelIndex,
+    error,
+    MD5,
+    replayInfo,
+  } = await uploadReplayS3(req.files.file, 'replays', req.body.filename);
+  if (!error) {
+    res.json({
       file,
       uuid,
       time,
       finished,
       LevelIndex,
-      error,
       MD5,
+    });
+  } else {
+    res.json({
+      error,
       replayInfo,
-    } = await uploadReplayS3(req.files.file, 'replays', req.body.filename);
-    if (!error) {
-      res.json({
-        file,
-        uuid,
-        time,
-        finished,
-        LevelIndex,
-        MD5,
-      });
-    } else {
-      res.json({
-        error,
-        replayInfo,
-        file,
-      });
-    }
-  }
-  if (req.params.type === 'cupreplay') {
-    if (getAuth.auth) {
-      const result = await uploadCupReplay(
-        req.files.file,
-        req.body.filename,
-        getAuth.userid,
-        req.body.share,
-        req.body.comment,
-      );
-      res.json(result);
-    } else {
-      res.sendStatus(401);
-    }
-  }
-  if (req.params.type === 'file') {
-    const result = await uploadFileS3(
-      req.files.file,
-      'files',
-      req.body.filename,
-      getAuth.userid,
-    );
-    res.json(result);
+      file,
+    });
   }
 });
+
+app.post('/upload/cupreplay', async (req, res) => {
+  const getAuth = authContext(req);
+  if (getAuth.auth) {
+    const result = await uploadCupReplay(
+      req.files.file,
+      req.body.filename,
+      getAuth.userid,
+      req.body.share,
+      req.body.comment,
+    );
+    res.json(result);
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+app.post('/upload/file', async (req, res) => {
+  const getAuth = authContext(req);
+  const result = await uploadFileS3(
+    req.files.file,
+    'files',
+    req.body.filename,
+    getAuth.userid,
+  );
+  res.json(result);
+});
+
 app.get('/u/:uuid/:filename', async (req, res) => {
   const allow = await downloadFileS3(req.params.uuid, req.params.filename);
   if (allow) {
