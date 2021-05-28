@@ -11,10 +11,16 @@ const NotifSetting = async (KuskiIndex, type) => {
   const Settings = await Setting.findOne({
     where: { KuskiIndex },
   });
+  if (!Settings) {
+    return { Settings: null, Send: 1 };
+  }
   return { Settings, Send: Settings[type] };
 };
 
 const sendThirdParty = async (KuskiIndex, type, Settings, meta) => {
+  if (!Settings) {
+    return;
+  }
   const KuskiInfo = await Kuski.findOne({
     where: { KuskiIndex },
     attributes: ['Kuski', 'Email'],
