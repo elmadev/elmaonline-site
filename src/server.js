@@ -519,8 +519,8 @@ if (!module.hot) {
     console.info(`The server is running at http://localhost:${config.port}/`);
     if (process.setgid && process.setuid) {
       try {
+        process.setgid('pm2');
         process.setuid('deploy');
-        process.setgid('deploy');
       } catch (e) {
         console.info('unable to set user/group');
       }

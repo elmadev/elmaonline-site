@@ -168,7 +168,13 @@ const move = (file, dest) => {
       if (mvErr) {
         reject(mvErr);
       } else {
-        resolve();
+        fs.chmod(dest, 0o664, chmodErr => {
+          if (chmodErr) {
+            reject(chmodErr);
+          } else {
+            resolve();
+          }
+        });
       }
     });
   });
