@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from 'path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -416,6 +417,8 @@ app.get('/run/legacytimes/:strategy', async (req, res) => {
 // Uploading files
 //--------------------------------------------
 app.post('/upload/replay', async (req, res) => {
+  console.log('/upload/replay 1');
+  console.log(req.body.filename);
   const {
     file,
     uuid,
@@ -426,6 +429,8 @@ app.post('/upload/replay', async (req, res) => {
     MD5,
     replayInfo,
   } = await uploadReplayS3(req.files.file, 'replays', req.body.filename);
+  console.log('/upload/replay 2');
+  console.log(error);
   if (!error) {
     res.json({
       file,

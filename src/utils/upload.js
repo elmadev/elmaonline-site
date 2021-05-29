@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Replay } from 'elmajs';
 import readChunk from 'read-chunk';
 import fs from 'fs';
@@ -28,18 +29,22 @@ const getLevelsFromName = async LevelName => {
 
 export const checksumFile = (hashName, path) =>
   new Promise((resolve, reject) => {
+    console.log(`checksumFile 1 ${hashName} ${path}`);
     const hash = crypto.createHash(hashName);
     const stream = fs.createReadStream(path);
+    console.log(`checksumFile 2 ${hash}`);
     stream.on('error', err => reject(err));
     stream.on('data', chunk => hash.update(chunk));
     stream.on('end', () => resolve(hash.digest('hex')));
   });
 
 const getReplaysByMd5 = async MD5 => {
+  console.log('getReplaysByMd5 1');
   const replays = await ReplayDB.findAll({
     attributes: ['MD5', 'ReplayIndex', 'Unlisted'],
     where: { MD5 },
   });
+  console.log('getReplaysByMd5 2');
   return replays;
 };
 
@@ -121,11 +126,14 @@ const CreateOrUpdateCuptime = async (
 };
 
 const findLevelIndexFromReplay = async file => {
+  console.log('findLevelIndexFromReplay 1');
   const replayCRC = readChunk.sync(file, 16, 4);
   let replayLevel = readChunk.sync(file, 20, 12);
   replayLevel = replayLevel.toString('utf-8').split('.')[0];
+  console.log(`findLevelIndexFromReplay 2 ${replayCRC} ${replayLevel}`);
   const levels = await getLevelsFromName(replayLevel);
   let Levelindex = 0;
+  console.log('findLevelIndexFromReplay 3');
   levels.forEach(level => {
     if (level.LevelData && replayCRC) {
       if (
@@ -136,6 +144,7 @@ const findLevelIndexFromReplay = async file => {
       }
     }
   });
+  console.log(`findLevelIndexFromReplay 4 ${Levelindex}`);
   return Levelindex;
 };
 
@@ -147,9 +156,13 @@ const spacesEndpoint = new AWS.Endpoint('ams3.digitaloceanspaces.com');
 const s3 = new AWS.S3({ endpoint: spacesEndpoint });
 
 const getReplayInfo = async dir => {
+  console.log('getReplayInfo 1');
   const fileBuffer = fs.readFileSync(dir);
+  console.log('getReplayInfo 2');
   const rec = Replay.from(fileBuffer);
+  console.log('getReplayInfo 3');
   const { finished, time, reason } = rec.getTime();
+  console.log(`getReplayInfo 4 ${finished} ${time} ${reason} ${rec.apples}`);
   return { finished, time, reason, apples: rec.apples };
 };
 
@@ -164,11 +177,15 @@ export function s3Params(Key, Body) {
 
 const move = (file, dest) => {
   return new Promise((resolve, reject) => {
+    console.log(`move 1 ${dest}`);
     file.mv(dest, mvErr => {
+      console.log(`move 2 ${mvErr}`);
       if (mvErr) {
         reject(mvErr);
       } else {
+        console.log('move 3');
         fs.chmod(dest, 0o664, chmodErr => {
+          console.log(`move 4 ${chmodErr}`);
           if (chmodErr) {
             reject(chmodErr);
           } else {
@@ -189,13 +206,16 @@ const s3PutObject = params => {
 };
 
 export const uploadReplayS3 = async (replayFile, folder, filename) => {
+  console.log('uploadReplayS3 1');
   try {
     let fileUuid = uuid();
+    console.log(`uploadReplayS3 2 ${fileUuid}`);
     const params = s3Params(
       `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`,
       replayFile.data,
     );
     let filepath = `.${config.publicFolder}/temp/${fileUuid}-${filename}`;
+    console.log(`uploadReplayS3 3 ${filepath}`);
     // for local testing without s3 access
     if (config.accessKeyId === 'local') {
       fileUuid = `local${fileUuid.substring(5, 10)}`;
@@ -203,9 +223,13 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
     }
     // save in temp folder to be able to read rec data
     await move(replayFile, filepath);
+    console.log('uploadReplayS3 4');
     // check duplicate
     const MD5 = await checksumFile('md5', filepath);
+    console.log(`uploadReplayS3 5 ${MD5}`);
     const replaysMD5 = await getReplaysByMd5(MD5);
+    console.log('uploadReplayS3 6');
+    console.log(replaysMD5);
     if (replaysMD5.length > 0) {
       return {
         error: 'Duplicate',
@@ -213,8 +237,10 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
         file: filename,
       };
     }
+    console.log('uploadReplayS3 7');
     // find LevelIndex
     const LevelIndex = await findLevelIndexFromReplay(filepath);
+    console.log(`uploadReplayS3 8 ${LevelIndex}`);
     if (LevelIndex === 0) {
       await fs.promises.unlink(filepath);
       return {
@@ -223,9 +249,11 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
         file: filename,
       };
     }
+    console.log('uploadReplayS3 9');
     // upload to s3
     if (config.accessKeyId !== 'local') {
       const s3Err = await s3PutObject(params);
+      console.log(`uploadReplayS3 9 ${s3Err}`);
       if (s3Err) {
         return {
           error: s3Err,
@@ -236,9 +264,12 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
     }
     // find replay time and finished state
     const replayData = await getReplayInfo(filepath);
+    console.log('uploadReplayS3 10');
+    console.log(replayData);
     if (config.accessKeyId !== 'local') {
       await fs.promises.unlink(filepath);
     }
+    console.log('uploadReplayS3 11');
     return {
       file: filename,
       uuid: fileUuid,
@@ -248,6 +279,7 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
       MD5,
     };
   } catch (error) {
+    console.log(`uploadReplayS3 error ${error}`);
     return {
       error,
       replayInfo: null,

@@ -10,10 +10,10 @@ const client = new OAuthClient(
 );
 
 router
-  .get('/', async (req, res) => {
+  .post('/', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      client.setRedirect('http://localhost:3000/settings/notifications');
+      client.setRedirect(`${req.body.url}/settings/notifications`);
       client.setScopes('identify');
       const url = client.auth;
       res.json({ url: url.link });
