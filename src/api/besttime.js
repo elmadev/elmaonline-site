@@ -1,11 +1,11 @@
 import express from 'express';
-import connection from 'data/sequelize';
-import { groupBy, orderBy, uniqBy } from 'lodash';
+// import connection from 'data/sequelize';
+// import { groupBy, orderBy, uniqBy } from 'lodash';
 import {
   Besttime,
   Kuski,
   Level,
-  Team,
+  // Team,
   BestMultitime,
   LegacyBesttime,
 } from '../data/models';
@@ -115,7 +115,7 @@ const getLatest = async (KuskiIndex, limit) => {
 // Using a large interval and limit can have performance drawbacks,
 // but large or small interval with small (<300 ish) limit is no issue at all.
 // For larger limits, repeatLevels false will be 2-3x faster.
-const getBestRecordsDrivenRecently = async (
+/* const getBestRecordsDrivenRecently = async (
   start,
   end,
   limit,
@@ -243,11 +243,11 @@ const getBestRecordsDrivenRecently = async (
     count: records.length,
     items: records,
   };
-};
+}; */
 
 router
   // Warning: pass in end = 0 unless you know what you are doing.
-  .get('/best-records/:start/:end/:limit/:repeatLevels', async (req, res) => {
+  /* .get('/best-records/:start/:end/:limit/:repeatLevels', async (req, res) => {
     // ie. top 20 records in the last 24 hours:
     // /best-records/0/0/20/1?daysPast=1
     const daysPast = +req.query.daysPast || 7;
@@ -262,7 +262,7 @@ router
       req.params.repeatLevels === '1',
     );
     res.json(result.items);
-  })
+  }) */
   .get('/multi/:LevelIndex/:limit', async (req, res) => {
     const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
