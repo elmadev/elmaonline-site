@@ -17,6 +17,7 @@ const attributes = [
   'Killers',
   'Flowers',
   'Locked',
+  'HardLocked',
   'Hidden',
   'Legacy',
 ];
@@ -101,7 +102,9 @@ const UpdateLevel = async (LevelIndex, update) => {
 };
 
 router.get('/:LevelIndex', async (req, res) => {
-  const data = await getLevel(req.params.LevelIndex, req.query.stats || false);
+  const data = await getLevel(
+    req.params.LevelIndex /* , req.query.stats || false */,
+  );
   res.json(data);
 });
 
@@ -112,6 +115,11 @@ router.post('/:LevelIndex', async (req, res) => {
     if (has(req.body, 'Locked')) {
       update = await UpdateLevel(req.params.LevelIndex, {
         Locked: parseInt(req.body.Locked, 10),
+      });
+    }
+    if (has(req.body, 'HardLocked')) {
+      update = await UpdateLevel(req.params.LevelIndex, {
+        HardLocked: parseInt(req.body.HardLocked, 10),
       });
     }
     if (has(req.body, 'Hidden')) {

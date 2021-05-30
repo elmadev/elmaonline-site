@@ -19,10 +19,13 @@ const SortPack = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
+  const levels = await LevelPackLevel.findAll({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
   if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     const updateBulk = [];
     let Sort = '';
-    forEach(data.levels, l => {
+    forEach(levels, l => {
       if (!Sort) {
         Sort = firstEntry();
       } else {
@@ -67,30 +70,25 @@ const SortLevel = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
+  const levels = await LevelPackLevel.findAll({
+    where: { LevelPackIndex: data.LevelPackIndex },
+  });
   if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    const { LevelIndex } = data.levels[data.source.index];
+    const { LevelIndex } = levels[data.source.index];
     const beforeIndex =
       data.destination.index === 0
         ? data.destination.index
         : data.destination.index - 1;
     const midIndex = data.destination.index;
     const afterIndex =
-      data.destination.index === data.levels.length - 1
+      data.destination.index === levels.length - 1
         ? data.destination.index
         : data.destination.index + 1;
     let Sort = '';
     if (data.source.index > data.destination.index) {
-      Sort = inBetween(
-        data.levels[beforeIndex].Sort,
-        data.levels[midIndex].Sort,
-        -1,
-      );
+      Sort = inBetween(levels[beforeIndex].Sort, levels[midIndex].Sort, -1);
     } else {
-      Sort = inBetween(
-        data.levels[midIndex].Sort,
-        data.levels[afterIndex].Sort,
-        1,
-      );
+      Sort = inBetween(levels[midIndex].Sort, levels[afterIndex].Sort, 1);
     }
     await LevelPackLevel.update(
       { Sort },

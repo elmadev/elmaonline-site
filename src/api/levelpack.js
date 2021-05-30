@@ -464,6 +464,7 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
       'Killers',
       'Flowers',
       'Locked',
+      'HardLocked',
       'Hidden',
       'Added',
       'AddedBy',
@@ -504,6 +505,7 @@ const getLevelsByQueryAll = async (query, ShowLocked) => {
       'Killers',
       'Flowers',
       'Locked',
+      'HardLocked',
       'Hidden',
     ],
     where: {
