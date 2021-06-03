@@ -69,6 +69,8 @@ module.exports = {
   // see: https://discordjs.guide/preparations/setting-up-a-bot-application.html
   discord: {
     token: '',
+    clientId: '',
+    clientSecret: '',
     channels: {
       battle: '',
       times: '',
