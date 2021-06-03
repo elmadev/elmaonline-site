@@ -2,11 +2,12 @@ import express from 'express';
 import { authContext } from 'utils/auth';
 import OAuthClient from 'disco-oauth';
 import { Setting } from '../data/models';
+import config from '../config';
 
 const router = express.Router();
 const client = new OAuthClient(
-  '575387851726782485',
-  'GN8nGo3x6y87akXTe6EpW6nN2JD2UXo0',
+  config.discord.clientId,
+  config.discord.clientSecret,
 );
 
 router
