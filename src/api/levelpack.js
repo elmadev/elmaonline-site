@@ -681,6 +681,22 @@ const allPacks = async () => {
   return data;
 };
 
+const byLevel = async LevelIndex => {
+  const q = `
+    SELECT LevelPackIndex, LevelPackName
+    FROM levelpack
+    WHERE LevelPackIndex IN
+    (SELECT LevelPackIndex from levelpack_level WHERE LevelIndex = ?)
+    ORDER BY LevelPackIndex ASC
+  `;
+
+  const [packs] = await sequelize.query(q, {
+    replacements: [LevelIndex],
+  });
+
+  return packs;
+};
+
 const levelStats = async LevelPackIndex => {
   const q = `
     SELECT packlev.LevelPackIndex,
@@ -853,6 +869,10 @@ router
     const data = await levelStats(LevelPackIndex);
 
     res.json(data);
+  })
+  .get('/byLevel/:LevelIndex', async (req, res) => {
+    const packs = await byLevel(Number(req.params.LevelIndex));
+    res.json(packs);
   })
   .use('/admin', Admin)
   .use('/favourite', Favourite)

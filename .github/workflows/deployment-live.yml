@@ -20,6 +20,7 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: ${{ secrets.SSH_PORT }}
         script: |
+          sudo chown ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} ${{ secrets.SSH_PATH }}/.git/index
           cd ${{ secrets.SSH_PATH_LIVE }}
           git pull
           yarn
