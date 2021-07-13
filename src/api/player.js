@@ -2,15 +2,15 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-// import { getCol } from 'utils/sequelize';
-// import { pick, omit } from 'lodash';
+import { getCol } from 'utils/sequelize';
+import { pick, omit } from 'lodash';
 import {
   Team,
   Kuski,
   Ignored,
   Ranking,
-  // LevelStats,
-  // Level,
+  LevelStats,
+  Level,
   Setting,
 } from '../data/models';
 
@@ -185,7 +185,7 @@ router
     const crew = await GetCrew();
     res.json(crew);
   })
-  /* .get('/record-count/:KuskiIndex', async (req, res) => {
+  .get('/record-count/:KuskiIndex', async (req, res) => {
     const q = `
     SELECT COUNT(s.LevelIndex) countRecords from levelstats s
     INNER JOIN level l ON l.LevelIndex = s.LevelIndex
@@ -274,7 +274,7 @@ router
     });
 
     res.json(records);
-  }) */
+  })
   .get('/ignored', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {

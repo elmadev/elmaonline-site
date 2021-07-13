@@ -47,10 +47,10 @@ import LevelPackCollectionPack from './LevelPackCollectionPack';
 import Tag from './Tag';
 import ReplayTags from './ReplayTags';
 import Notification from './Notification';
-// import LevelStats from './LevelStats';
-// import KuskiStats from './KuskiStats';
-// import * as PlayStats from './PlayStats';
-// import LevelStatsUpdate from './LevelStatsUpdate';
+import LevelStats from './LevelStats';
+import KuskiStats from './KuskiStats';
+import * as PlayStats from './PlayStats';
+import LevelStatsUpdate from './LevelStatsUpdate';
 import Setting from './Setting';
 
 Replay.belongsTo(Kuski, {
@@ -143,7 +143,7 @@ Level.hasMany(Battle, {
   as: 'Battles',
 });
 
-/* Level.hasOne(LevelStats, {
+Level.hasOne(LevelStats, {
   foreignKey: 'LevelIndex',
   as: 'LevelStatsData',
   constraints: false,
@@ -153,7 +153,7 @@ LevelStats.belongsTo(Level, {
   foreignKey: 'LevelIndex',
   as: 'LevelData',
   constraints: false,
-}); */
+});
 
 LevelPack.hasMany(LevelPackLevel, {
   foreignKey: 'LevelPackIndex',
@@ -470,9 +470,9 @@ export {
   LevelPackCollectionPack,
   Tag,
   Notification,
-  /* LevelStats,
+  LevelStats,
   KuskiStats,
   LevelStatsUpdate,
-  PlayStats, */
+  PlayStats,
   Setting,
 }; // add the data model here as well so it exports

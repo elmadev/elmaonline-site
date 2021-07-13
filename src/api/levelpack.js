@@ -2,13 +2,13 @@ import express from 'express';
 import {
   forEach,
   sumBy,
-  /* flatMap,
+  flatMap,
   values,
   toPairs,
   uniq,
-  groupBy, */
+  groupBy,
 } from 'lodash';
-// import { frequencies } from 'lodash-contrib';
+import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { Op } from 'sequelize';
@@ -681,7 +681,7 @@ const allPacks = async () => {
   return data;
 };
 
-/* const levelStats = async LevelPackIndex => {
+const levelStats = async LevelPackIndex => {
   const q = `
     SELECT packlev.LevelPackIndex,
            packlev.LevelIndex,
@@ -703,9 +703,9 @@ const allPacks = async () => {
   const [stats] = await sequelize.query(q, { replacements: [+LevelPackIndex] });
 
   return groupBy(stats, 'LevelIndex');
-}; */
+};
 
-/* const allPacksStats = async () => {
+const allPacksStats = async () => {
   // not checking level locked status, since:
   // the query often runs slow the first time it's run which
   // might be due to sql loading the level blobs into memory.
@@ -799,7 +799,7 @@ const allPacks = async () => {
   });
 
   return stats;
-}; */
+};
 
 // @see https://express-validator.github.io/docs/schema-validation.html
 // /update uses these except for LevelPackName.
@@ -835,12 +835,12 @@ router
     const data = await allPacks();
     res.json(data);
   })
-  /* .get('/stats', async (req, res) => {
+  .get('/stats', async (req, res) => {
     const stats = await allPacksStats();
 
     res.json(stats);
-  }) */
-  /* .get('/level-stats/:byName/:identifier', async (req, res) => {
+  })
+  .get('/level-stats/:byName/:identifier', async (req, res) => {
     let LevelPackIndex;
 
     if (req.params.byName === '1') {
@@ -853,7 +853,7 @@ router
     const data = await levelStats(LevelPackIndex);
 
     res.json(data);
-  }) */
+  })
   .use('/admin', Admin)
   .use('/favourite', Favourite)
   .use('/collections', Collection)
