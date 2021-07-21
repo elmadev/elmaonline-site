@@ -1,6 +1,7 @@
 import express from 'express';
 import sequelize from 'data/sequelize';
 import { mapValues, isEqual } from 'lodash';
+import { log } from 'utils/database';
 import { LevelStats, Level, Time } from '../data/models';
 
 const router = express.Router();
@@ -43,6 +44,8 @@ const mockUpdate = async LevelIndex => {
 
   const [timeAggregates] = await sequelize.query(q, {
     replacements: [LevelIndex],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
   });
 
   const exLevelStats = await LevelStats.findOne({ where: { LevelIndex } });

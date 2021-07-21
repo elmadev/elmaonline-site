@@ -10,7 +10,7 @@ import {
 } from 'lodash';
 import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
-import { like, searchLimit, searchOffset } from 'utils/database';
+import { like, searchLimit, searchOffset, log } from 'utils/database';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -117,6 +117,8 @@ const getIntBestTimes = async KuskiIndex => {
 
   const [besttimes] = await sequelize.query(q, {
     replacements: [+KuskiIndex, IntLevelPackIndex],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
   });
 
   return {
@@ -692,6 +694,8 @@ const byLevel = async LevelIndex => {
 
   const [packs] = await sequelize.query(q, {
     replacements: [LevelIndex],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
   });
 
   return packs;
@@ -716,7 +720,11 @@ const levelStats = async LevelPackIndex => {
         INNER JOIN levelstats stats ON stats.LevelIndex = packlev.LevelIndex
      WHERE LevelPackIndex = ?`;
 
-  const [stats] = await sequelize.query(q, { replacements: [+LevelPackIndex] });
+  const [stats] = await sequelize.query(q, {
+    replacements: [+LevelPackIndex],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  });
 
   return groupBy(stats, 'LevelIndex');
 };
@@ -744,7 +752,11 @@ const allPacksStats = async () => {
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
   GROUP BY LevelPackIndex`;
 
-  let [stats] = await sequelize.query(q, { replacements: [] });
+  let [stats] = await sequelize.query(q, {
+    replacements: [],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  });
 
   stats = stats.map(s => {
     // from comma sep list to array

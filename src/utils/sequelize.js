@@ -1,8 +1,16 @@
+import { log } from 'utils/database';
 import sequelize from '../data/sequelize';
 
 // get the first row of a select query, or a default value.
 export const getOne = async (sql, opts, df = null) => {
-  const [results] = await sequelize.query(sql, opts || {});
+  const options = {
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  };
+  const [results] = await sequelize.query(
+    sql,
+    opts ? { ...opts, ...options } : options,
+  );
 
   return results.length > 0 ? results[0] : df;
 };

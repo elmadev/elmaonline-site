@@ -14,6 +14,7 @@ import {
   isEmpty,
 } from 'lodash';
 import moment from 'moment';
+import { log } from 'utils/database';
 import { getCol } from 'utils/sequelize';
 
 export const timeCol = () => {
@@ -466,6 +467,8 @@ export const getTimesInInterval = async (
     'SELECT * FROM time WHERE TimeIndex BETWEEN ? AND ? ORDER BY TimeIndex ASC',
     {
       replacements: [realMin, lastPossibleTimeIndex],
+      benchmark: true,
+      logging: (query, b) => log('query', query, b),
     },
   );
 
