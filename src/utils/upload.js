@@ -4,6 +4,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { uuid } from 'utils/calcs';
 import AWS from 'aws-sdk';
+import util from 'util';
 import { MIMETYPES } from 'constants/lists';
 import { format, addDays, isAfter } from 'date-fns';
 
@@ -15,8 +16,12 @@ import {
   Kuski,
   AllFinished,
   Upload,
+  TimeFile,
 } from 'data/models';
 import config from '../config';
+
+const writeFile = util.promisify(fs.writeFile);
+const deleteFile = util.promisify(fs.unlink);
 
 const getLevelsFromName = async LevelName => {
   const levels = await Level.findAll({
@@ -419,4 +424,41 @@ export const downloadFileS3 = async (Uuid, Filename) => {
     allow = false;
   }
   return allow;
+};
+
+export const uploadTimeFile = async (
+  fileData,
+  TimeIndex = 0,
+  BattleIndex = 0,
+) => {
+  const UUID = uuid();
+  let isSentToS3 = false;
+  const filePath = `./events/${config.timeFolder}/${TimeIndex}.rec`;
+  let MD5 = null;
+  try {
+    await writeFile(filePath, fileData, 'binary');
+    MD5 = await checksumFile('md5', filePath);
+    const params = s3Params(
+      `${config.s3SubFolder}time/${UUID}-${MD5}/${TimeIndex}.rec`,
+      fileData,
+    );
+    await putObject(params);
+    isSentToS3 = true;
+    await TimeFile.create({
+      TimeIndex,
+      BattleIndex,
+      UUID,
+      MD5,
+    });
+    await deleteFile(filePath);
+  } catch (e) {
+    if (!isSentToS3) {
+      await TimeFile.upsert({
+        TimeIndex,
+        BattleIndex,
+        Uuid: null,
+        MD5,
+      });
+    }
+  }
 };

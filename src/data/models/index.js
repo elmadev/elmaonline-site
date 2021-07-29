@@ -52,6 +52,7 @@ import KuskiStats from './KuskiStats';
 import * as PlayStats from './PlayStats';
 import LevelStatsUpdate from './LevelStatsUpdate';
 import Setting from './Setting';
+import TimeFile from './TimeFile';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -475,4 +476,5 @@ export {
   LevelStatsUpdate,
   PlayStats,
   Setting,
+  TimeFile,
 }; // add the data model here as well so it exports
