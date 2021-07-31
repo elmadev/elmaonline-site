@@ -99,6 +99,12 @@ AllFinished.belongsTo(Level, {
   as: 'LevelData',
 });
 
+AllFinished.hasOne(TimeFile, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'TimeFileData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
