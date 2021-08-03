@@ -4,7 +4,15 @@ import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
 import { format } from 'date-fns';
 import { shareTimeFile } from 'utils/upload';
-import { Replay, Level, Kuski, Tag, ReplayRating, Time } from '../data/models';
+import {
+  Replay,
+  Level,
+  Kuski,
+  Tag,
+  ReplayRating,
+  Time,
+  TimeFile,
+} from '../data/models';
 import sequelize from '../data/sequelize';
 
 const router = express.Router();
@@ -45,7 +53,7 @@ const getReplays = async (
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
-    where: { Unlisted: 0 },
+    where: { Unlisted: 0, Hide: 0 },
     order: getOrder(),
     group: ['ReplayIndex'],
     ...(tags.length && {
@@ -357,7 +365,7 @@ const shareReplay = async data => {
     const timeAsString = `${time.Time}`;
     const RecFileName = `${data.LevelData.LevelName}${data.Kuski.substring(
       0,
-      15 - (data.LevelData.LevelName.length + timeAsString.length),
+      Math.min(15 - (data.LevelData.LevelName.length + timeAsString.length), 4),
     )}${timeAsString}.rec`;
     const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
     if (isMoved) {
@@ -371,14 +379,19 @@ const shareReplay = async data => {
           Finished: time.Finished === 'F' ? 1 : 0,
           Uploaded: format(new Date(), 't'),
           Unlisted: data.Unlisted,
+          Hide: data.Hide,
           Bug: time.Finished === 'B' ? 1 : 0,
           Comment: data.Comment,
           UUID: data.TimeFileData.UUID,
           RecFileName,
           MD5: data.TimeFileData.MD5,
-          Tags: [],
+          Tags: data.Tags,
         },
         time.KuskiIndex,
+      );
+      await TimeFile.update(
+        { Shared: 1 },
+        { where: { TimeFileIndex: data.TimeFileData.TimeFileIndex } },
       );
       return true;
     }

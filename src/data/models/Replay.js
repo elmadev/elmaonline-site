@@ -55,6 +55,11 @@ const Replay = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Hide: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     TAS: {
       type: DataType.INTEGER,
       allowNull: false,

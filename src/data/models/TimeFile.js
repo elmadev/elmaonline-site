@@ -30,6 +30,11 @@ const TimeFile = Model.define(
       allowNull: true,
       defaultValue: null,
     },
+    Shared: {
+      type: DataType.INTEGER(1),
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

@@ -463,17 +463,19 @@ export const uploadTimeFile = async (
   }
 };
 
-export const shareTimeFile = async (data, RecFileName) => {
-  const params = {
-    Bucket: 'eol',
-    CopySource: `eol/${config.s3SubFolder}time/${data.UUID}-${data.MD5}/${data.TimeIndex}.rec`,
-    Key: `${config.s3SubFolder}replays/${data.UUID}/${RecFileName}`,
-    ACL: 'public-read',
-  };
-  s3.copyObject(params, err => {
-    if (err) {
-      return false;
-    }
-    return true;
+export const shareTimeFile = (data, RecFileName) => {
+  return new Promise(resolve => {
+    const params = {
+      Bucket: 'eol',
+      CopySource: `eol/${config.s3SubFolder}time/${data.UUID}-${data.MD5}/${data.TimeIndex}.rec`,
+      Key: `${config.s3SubFolder}replays/${data.UUID}/${RecFileName}`,
+      ACL: 'public-read',
+    };
+    s3.copyObject(params, err => {
+      if (err) {
+        resolve(false);
+      }
+      resolve(true);
+    });
   });
 };
