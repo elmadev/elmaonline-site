@@ -40,6 +40,11 @@ const AllFinished = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Finished: {
+      type: DataType.STRING(1),
+      allowNull: false,
+      defaultValue: '',
+    },
     BattleIndex: {
       type: DataType.INTEGER,
       allowNull: false,

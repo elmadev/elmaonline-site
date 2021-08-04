@@ -9,6 +9,7 @@ import {
   Level,
   Multitime,
   Team,
+  TimeFile,
 } from '../data/models';
 
 const router = express.Router();
@@ -139,6 +140,26 @@ const getLatest = async (KuskiIndex, limit) => {
     }
     return true;
   });
+};
+
+const getMyLatest = async (KuskiIndex, limit) => {
+  const times = await AllFinished.findAll({
+    where: { KuskiIndex },
+    order: [['TimeIndex', 'DESC']],
+    include: [
+      {
+        model: Level,
+        as: 'LevelData',
+        attributes: ['LevelName', 'Locked', 'Hidden'],
+      },
+      {
+        model: TimeFile,
+        as: 'TimeFileData',
+      },
+    ],
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+  });
+  return times;
 };
 
 const timesByLevel = async LevelIndex => {
@@ -349,6 +370,15 @@ router
       req.query.to,
     );
     res.json(data);
+  })
+  .get('/mylatest/:limit', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const data = await getMyLatest(auth.userid, req.params.limit);
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
   })
   .get('/:KuskiIndex/:limit', async (req, res) => {
     const data = await getLatest(req.params.KuskiIndex, req.params.limit);

@@ -52,6 +52,7 @@ import KuskiStats from './KuskiStats';
 import * as PlayStats from './PlayStats';
 import LevelStatsUpdate from './LevelStatsUpdate';
 import Setting from './Setting';
+import TimeFile from './TimeFile';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -96,6 +97,12 @@ AllFinished.belongsTo(Kuski, {
 AllFinished.belongsTo(Level, {
   foreignKey: 'LevelIndex',
   as: 'LevelData',
+});
+
+AllFinished.hasOne(TimeFile, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'TimeFileData',
 });
 
 WeeklyBest.belongsTo(Kuski, {
@@ -475,4 +482,5 @@ export {
   LevelStatsUpdate,
   PlayStats,
   Setting,
+  TimeFile,
 }; // add the data model here as well so it exports

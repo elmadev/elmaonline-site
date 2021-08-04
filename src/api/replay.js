@@ -2,7 +2,17 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { Replay, Level, Kuski, Tag, ReplayRating } from '../data/models';
+import { format } from 'date-fns';
+import { shareTimeFile } from 'utils/upload';
+import {
+  Replay,
+  Level,
+  Kuski,
+  Tag,
+  ReplayRating,
+  Time,
+  TimeFile,
+} from '../data/models';
 import sequelize from '../data/sequelize';
 
 const router = express.Router();
@@ -43,7 +53,7 @@ const getReplays = async (
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
-    where: { Unlisted: 0 },
+    where: { Unlisted: 0, Hide: 0 },
     order: getOrder(),
     group: ['ReplayIndex'],
     ...(tags.length && {
@@ -344,6 +354,51 @@ const getReplaysByLevelIndex = async LevelIndex => {
   return replays;
 };
 
+const shareReplay = async data => {
+  const time = await Time.findOne({
+    where: { TimeIndex: data.TimeIndex },
+  });
+  if (!time) {
+    return false;
+  }
+  if (time.KuskiIndex === data.KuskiIndex) {
+    const timeAsString = `${time.Time}`;
+    const RecFileName = `${data.LevelData.LevelName}${data.Kuski.substring(
+      0,
+      Math.min(15 - (data.LevelData.LevelName.length + timeAsString.length), 4),
+    )}${timeAsString}.rec`;
+    const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
+    if (isMoved) {
+      await InsertReplay(
+        {
+          DrivenBy: time.KuskiIndex,
+          UploadedBy: time.KuskiIndex,
+          LevelIndex: time.LevelIndex,
+          TimeIndex: time.TimeIndex,
+          ReplayTime: time.Time * 10,
+          Finished: time.Finished === 'F' ? 1 : 0,
+          Uploaded: format(new Date(), 't'),
+          Unlisted: data.Unlisted,
+          Hide: data.Hide,
+          Bug: time.Finished === 'B' ? 1 : 0,
+          Comment: data.Comment,
+          UUID: data.TimeFileData.UUID,
+          RecFileName,
+          MD5: data.TimeFileData.MD5,
+          Tags: data.Tags,
+        },
+        time.KuskiIndex,
+      );
+      await TimeFile.update(
+        { Shared: 1 },
+        { where: { TimeFileIndex: data.TimeFileData.TimeFileIndex } },
+      );
+      return true;
+    }
+  }
+  return false;
+};
+
 router
   .get('/', async (req, res) => {
     const offset = req.query.pageSize * req.query.page || 0;
@@ -371,6 +426,23 @@ router
     if (auth.auth) {
       const update = await UpdateReplay(req.body.ReplayIndex, auth.userid);
       res.json(update);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/share', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const success = await shareReplay({
+        ...req.body,
+        KuskiIndex: auth.userid,
+        Kuski: auth.user,
+      });
+      if (success) {
+        res.json({ success: 1 });
+      } else {
+        res.sendStatus(401);
+      }
     } else {
       res.sendStatus(401);
     }

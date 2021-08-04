@@ -7,16 +7,13 @@ import {
   discordBattleresults,
   discordBattleEnd,
 } from 'utils/discord';
-import util from 'util';
-import fs from 'fs';
 import {
   createTimeBeatenNotification,
   createBestTimeNotification,
 } from 'utils/notifications';
+import { uploadTimeFile } from 'utils/upload';
 import { updateRanking } from '../ranking';
 import config from '../config';
-
-const writeFile = util.promisify(fs.writeFile);
 
 const checkAuth = (req, res, callback) => {
   if (req.header('Authorization') === config.discord.apiAuth) {
@@ -79,12 +76,12 @@ export function battleresults(req, res) {
 }
 
 export function eventsFile(req, res) {
-  checkAuth(req, res, async () => {
+  checkAuth(req, res, () => {
     res.json({ success: 1 });
-    await writeFile(
-      `./events/files/${req.header('TimeIndex')}.rec`,
+    uploadTimeFile(
       req.body,
-      'binary',
+      req.header('TimeIndex'),
+      req.header('BattleIndex'),
     );
   });
 }
