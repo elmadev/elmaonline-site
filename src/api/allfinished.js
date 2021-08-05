@@ -265,8 +265,6 @@ const getLeaderHistoryForLevel = async (
   return leaderHistoryWithData;
 };
 
-// checks if the current user can view times for the given
-// level and kuski.
 const authLevel = async (req, LevelIndex, KuskiIndex) => {
   const level = await levelInfo(+LevelIndex);
   if (!level || level.Locked) return false;
@@ -277,7 +275,7 @@ const authLevel = async (req, LevelIndex, KuskiIndex) => {
     if (KuskiIndex) {
       // user can see their own times on levels that are hidden.
       // seems likely that user created the level in this case.
-      return auth.userid && Number(KuskiIndex) === auth.userid;
+      return auth.userid && Number(KuskiIndex) === Number(auth.userid);
     }
     return false;
   }
@@ -304,7 +302,9 @@ const getCrippled = async (type, LevelIndex, limit, KuskiIndex = null) => {
       where.Turn = 0;
       break;
     case 'oneTurn':
-      where.Turn = 1;
+      where.Turn = {
+        [Op.lte]: 1,
+      };
       break;
     case 'noBrake':
       where.BrakeTime = 0;
@@ -320,11 +320,13 @@ const getCrippled = async (type, LevelIndex, limit, KuskiIndex = null) => {
     case 'oneWheel':
       where.OneWheel = 1;
       break;
+    case 'drunk':
+      where.Drunk = 1;
+      break;
     default:
       return [];
   }
 
-  // Populate leader history with extra data
   const records = await AllFinished.findAll({
     attributes: ['TimeIndex', 'BattleIndex', 'Time', 'Driven'],
     where,
