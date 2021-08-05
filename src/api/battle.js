@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { add, parse } from 'date-fns';
 import { forEach, omit } from 'lodash';
-import { Battle, Level, Kuski, Battletime, AllFinished, Time, Multitime } from '../data/models';
+import { Battle, Level, Kuski, Battletime, AllFinished, Time, Multitime, TimeFile } from '../data/models';
 
 const router = express.Router();
 
@@ -497,9 +497,25 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
   return filterBattles(battles, parseInt(Limit, 10));
 };
 
+const BattleReplays = async BattleIndex => {
+  const battle = await Battle.findOne({ where: { BattleIndex } });
+  if (!battle) {
+    return [];
+  }
+  if (!battle.Finished) {
+    return [];
+  }
+  const replays = await TimeFile.findAll({ where: { BattleIndex } });
+  return replays;
+};
+
 router
   .get('/', async (req, res) => {
     res.json({});
+  })
+  .get('/replays/:BattleIndex', async (req, res) => {
+    const replays = await BattleReplays(parseInt(req.params.BattleIndex, 10));
+    res.json(replays);
   })
   .get('/date/:date', async (req, res) => {
     const battles = await BattlesByDate(req.params.date);
