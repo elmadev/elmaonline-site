@@ -265,85 +265,6 @@ const getLeaderHistoryForLevel = async (
   return leaderHistoryWithData;
 };
 
-const authLevel = async (req, LevelIndex, KuskiIndex) => {
-  const level = await levelInfo(+LevelIndex);
-  if (!level || level.Locked) return false;
-
-  const auth = authContext(req);
-
-  if (level.Hidden) {
-    if (KuskiIndex) {
-      // user can see their own times on levels that are hidden.
-      // seems likely that user created the level in this case.
-      return auth.userid && Number(KuskiIndex) === Number(auth.userid);
-    }
-    return false;
-  }
-
-  return true;
-};
-
-const getCrippled = async (type, LevelIndex, limit, KuskiIndex = null) => {
-  const where = {
-    LevelIndex,
-  };
-
-  if (KuskiIndex) {
-    where.KuskiIndex = KuskiIndex;
-  }
-
-  switch (type) {
-    case 'noVolt':
-      where.LeftVolt = 0;
-      where.RightVolt = 0;
-      where.SuperVolt = 0;
-      break;
-    case 'noTurn':
-      where.Turn = 0;
-      break;
-    case 'oneTurn':
-      where.Turn = {
-        [Op.lte]: 1,
-      };
-      break;
-    case 'noBrake':
-      where.BrakeTime = 0;
-      break;
-    case 'noThrottle':
-      where.ThrottleTime = 0;
-      break;
-    case 'alwaysThrottle':
-      where.ThrottleTime = {
-        [Op.col]: 'Time',
-      };
-      break;
-    case 'oneWheel':
-      where.OneWheel = 1;
-      break;
-    case 'drunk':
-      where.Drunk = 1;
-      break;
-    default:
-      return [];
-  }
-
-  const records = await AllFinished.findAll({
-    attributes: ['TimeIndex', 'BattleIndex', 'Time', 'Driven'],
-    where,
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['KuskiIndex', 'Kuski', 'Country'],
-      },
-    ],
-    limit,
-    order: [['Time', 'ASC']],
-  });
-
-  return records;
-};
-
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
@@ -388,27 +309,6 @@ router
   })
   .get('/:LevelIndex', async (req, res) => {
     const data = await timesByLevel(req.params.LevelIndex);
-    res.json(data);
-  })
-  .get('/crippled/:type/:LevelIndex/:limit', async (req, res) => {
-    const LevelIndex = Number(req.params.LevelIndex);
-    const KuskiIndex = Number(req.query.KuskiIndex);
-
-    const auth = await authLevel(req, LevelIndex, KuskiIndex);
-
-    if (!auth) {
-      res.status(401);
-      res.send('Unauthorized');
-      return;
-    }
-
-    const data = await getCrippled(
-      req.params.type,
-      LevelIndex,
-      Math.min(Number(req.params.limit) || 0, 10000),
-      KuskiIndex,
-    );
-
     res.json(data);
   });
 
