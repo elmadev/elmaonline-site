@@ -135,12 +135,13 @@ const getBestTimes = async (cripple, LevelIndex, limit) => {
 };
 
 router
-  // eslint-disable-next-line consistent-return
   .get('/best-times/:LevelIndex/:cripple/:limit', async (req, res) => {
     const lev = await levelInfo(+req.params.LevelIndex);
 
     if (!lev || lev.Locked || lev.Hidden) {
-      return [];
+      res.status(404);
+      res.send('Level not found.');
+      return;
     }
 
     const bestTimes = await getBestTimes(
@@ -151,19 +152,19 @@ router
 
     res.json(bestTimes);
   })
-  // eslint-disable-next-line consistent-return
   .get('/my-times/:LevelIndex/:cripple/:limit', async (req, res) => {
     const lev = await levelInfo(+req.params.LevelIndex);
 
     if (!lev || lev.Locked || lev.Hidden) {
-      return [];
+      res.status(404);
+      res.send('Level not found.');
+      return;
     }
 
     const auth = authContext(req);
 
     if (!auth.userid) {
       res.json([]);
-      // eslint-disable-next-line consistent-return
       return;
     }
 
