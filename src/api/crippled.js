@@ -1,8 +1,8 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
-import { Op } from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import { orderBy } from 'lodash';
-import { AllFinished, Kuski, Level } from '../data/models';
+import { AllFinished, Kuski, Level, Time } from '../data/models';
 
 const router = express.Router();
 
@@ -46,6 +46,7 @@ const getCrippledCond = cripple => {
       };
     case 'alwaysThrottle':
       return {
+        BrakeTime: 0,
         ThrottleTime: {
           [Op.col]: 'Time',
         },
@@ -97,7 +98,7 @@ const parseLeaderHistory = times => {
 
 // returns best times and leader history while hitting the database once,
 // since both items would require the same expensive query.
-const getBestTimes = async (LevelIndex, cripple, limit) => {
+const getTimes = async (LevelIndex, cripple) => {
   const cond = getCrippledCond(cripple);
 
   if (cond === undefined || !LevelIndex) {
@@ -129,14 +130,10 @@ const getBestTimes = async (LevelIndex, cripple, limit) => {
     ],
   });
 
-  const bestTimes = parseBestTimes(times);
-
-  const bestTimes0 = limit >= 0 ? bestTimes.slice(0, limit) : bestTimes;
-
-  return [bestTimes0, parseLeaderHistory(times)];
+  return [times, parseBestTimes(times), parseLeaderHistory(times)];
 };
 
-const getKuskiBestTimes = async (LevelIndex, cripple, KuskiIndex, limit) => {
+const getKuskiTimes = async (LevelIndex, KuskiIndex, cripple) => {
   const cond = getCrippledCond(cripple);
 
   if (cond === undefined || !LevelIndex || !KuskiIndex) {
@@ -166,37 +163,97 @@ const getKuskiBestTimes = async (LevelIndex, cripple, KuskiIndex, limit) => {
     ],
   });
 
-  const kuskiTimes0 = limit >= 0 ? kuskiTimes.slice(0, limit) : kuskiTimes;
+  return [kuskiTimes, parseLeaderHistory(kuskiTimes)];
+};
 
-  return [kuskiTimes0, parseLeaderHistory(kuskiTimes)];
+const getTimeStats = async (LevelIndex, KuskiIndex, cripple) => {
+  const cond = getCrippledCond(cripple);
+
+  if (cond === undefined) {
+    return [];
+  }
+
+  const stats = await Time.findAll({
+    group: ['Finished'],
+    attributes: [
+      'Finished',
+      [sequelize.fn('COUNT', 'Finished'), 'RunCount'],
+      [sequelize.fn('SUM', sequelize.col('Time')), 'TimeSum'],
+    ],
+    where: { LevelIndex, KuskiIndex, ...cond },
+  });
+
+  return stats;
+};
+
+const fixLimit = (val, max) => {
+  const limit = parseInt(val, 10) || 0;
+  return Math.max(0, Math.min(limit, max));
 };
 
 router
+  // all times, top times, and leader history in the same endpoint because
+  // they all require the same expensive query. If you need *only* all times,
+  // set all = true, and ignore the others as they are insignificant, performance wise.
   .get('/bestTimes/:LevelIndex/:cripple/:limit', async (req, res) => {
     const lev = await levelInfo(+req.params.LevelIndex);
+    const all = req.query.all === '1';
 
     if (!lev || lev.Locked || lev.Hidden) {
       res.status(404).send('Level not found.');
       return;
     }
 
-    if (Number.isNaN(+req.params.limit)) {
-      res.status(400).send('Limit not valid.');
-      return;
-    }
-
-    const [bestTimes, leaderHistory] = await getBestTimes(
+    const [allTimes, bestTimes, leaderHistory] = await getTimes(
       +req.params.LevelIndex,
       req.params.cripple,
-      Math.max(0, Math.min(parseInt(req.params.limit, 10), 10000)),
     );
 
     res.json({
-      bestTimes,
+      allTimes: all
+        ? allTimes.slice(0, fixLimit(req.query.limitAll, 10000))
+        : [],
+      bestTimes: bestTimes.slice(0, fixLimit(req.params.limit, 10000)),
       leaderHistory,
     });
   })
-  .get('/personal/:LevelIndex/:cripple/:limit', async (req, res) => {
+  .get(
+    '/personal/:LevelIndex/:KuskiIndex/:cripple/:limit',
+    async (req, res) => {
+      const lev = await levelInfo(+req.params.LevelIndex);
+
+      if (!lev || lev.Locked || lev.Hidden) {
+        res.status(400).send('Level not found.');
+        return;
+      }
+
+      let KuskiIndex;
+
+      if (+req.params.KuskiIndex > 0) {
+        KuskiIndex = +req.params.KuskiIndex;
+      } else {
+        const auth = authContext(req);
+        KuskiIndex = +auth.userid;
+      }
+
+      if (!KuskiIndex) {
+        res.status(400).send('KuskiIndex not valid, or not logged in.');
+        return;
+      }
+
+      const [kuskiTimes, kuskiLeaderHistory] = await getKuskiTimes(
+        +req.params.LevelIndex,
+        KuskiIndex,
+        req.params.cripple,
+      );
+
+      res.json({
+        kuskiTimes: kuskiTimes.slice(0, fixLimit(req.params.limit, 10000)),
+        kuskiLeaderHistory,
+      });
+    },
+  )
+  .get('/timeStats/:LevelIndex/:KuskiIndex/:cripple', async (req, res) => {
     const lev = await levelInfo(+req.params.LevelIndex);
 
     if (!lev || lev.Locked || lev.Hidden) {
@@ -204,16 +261,10 @@ router
       return;
     }
 
-    if (Number.isNaN(+req.params.limit)) {
-      res.status(400).send('Limit not valid.');
-      return;
-    }
-
-    // default KuskiIndex to logged in user
     let KuskiIndex;
 
-    if (req.query.KuskiIndex) {
-      KuskiIndex = +req.query.KuskiIndex;
+    if (+req.params.KuskiIndex > 0) {
+      KuskiIndex = +req.params.KuskiIndex;
     } else {
       const auth = authContext(req);
       KuskiIndex = +auth.userid;
@@ -221,20 +272,15 @@ router
 
     if (!KuskiIndex) {
       res.status(400).send('KuskiIndex not valid, or not logged in.');
-      return;
     }
 
-    const [kuskiTimes, kuskiLeaderHistory] = await getKuskiBestTimes(
+    const timeStats = await getTimeStats(
       +req.params.LevelIndex,
-      req.params.cripple,
       KuskiIndex,
-      Math.max(0, Math.min(+req.params.limit, 10000)),
+      req.params.cripple,
     );
 
-    res.json({
-      kuskiTimes,
-      kuskiLeaderHistory,
-    });
+    res.json(timeStats);
   });
 
 export default router;
