@@ -142,9 +142,39 @@ const getLatest = async (KuskiIndex, limit) => {
   });
 };
 
-const getMyLatest = async (KuskiIndex, limit) => {
+const getMyLatest = async (KuskiIndex, limit, LevelName, from, to) => {
+  const where = { KuskiIndex };
+  if (LevelName) {
+    const level = await Level.findAll({ where: { LevelName } });
+    where.LevelIndex = {
+      [Op.in]: level.map(r => r.LevelIndex),
+    };
+  }
+  let fromTs;
+  let toTs;
+  if (from) {
+    const froms = from.split('-');
+    fromTs = new Date(froms[0], froms[1] - 1, froms[2]).getTime() / 1000;
+  }
+  if (to) {
+    const tos = to.split('-');
+    toTs = new Date(tos[0], tos[1] - 1, tos[2], 23, 59, 59).getTime() / 1000;
+  }
+  if (from && to) {
+    where.Driven = {
+      [Op.between]: [fromTs, toTs],
+    };
+  } else if (from) {
+    where.Driven = {
+      [Op.gte]: fromTs,
+    };
+  } else if (to) {
+    where.Driven = {
+      [Op.lte]: toTs,
+    };
+  }
   const times = await AllFinished.findAll({
-    where: { KuskiIndex },
+    where,
     order: [['TimeIndex', 'DESC']],
     include: [
       {
@@ -297,7 +327,13 @@ router
   .get('/mylatest/:limit', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      const data = await getMyLatest(auth.userid, req.params.limit);
+      const data = await getMyLatest(
+        auth.userid,
+        req.params.limit,
+        req.query.level,
+        req.query.from,
+        req.query.to,
+      );
       res.json(data);
     } else {
       res.sendStatus(401);
