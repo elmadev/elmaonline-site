@@ -2,6 +2,7 @@ import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
+import { formatLevelSearch } from 'utils/database';
 import {
   AllFinished,
   Level,
@@ -142,8 +143,9 @@ const getLatest = async (KuskiIndex, limit) => {
   });
 };
 
-const getMyLatest = async (KuskiIndex, limit, LevelName, from, to) => {
+const getMyLatest = async (KuskiIndex, limit, lev, from, to) => {
   const where = { KuskiIndex };
+  const LevelName = formatLevelSearch(lev);
   if (LevelName) {
     const level = await Level.findAll({ where: { LevelName } });
     where.LevelIndex = {

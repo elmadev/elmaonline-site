@@ -69,3 +69,15 @@ export function searchOffset(offset) {
   }
   return offsetInt;
 }
+
+export const formatLevelSearch = level => {
+  if (level) {
+    if (
+      level.substring(0, 8).toLowerCase() === 'internal' ||
+      (level.substring(0, 3).toLowerCase() === 'int' && level.length <= 6)
+    ) {
+      return `QWQUU0${level.substring(level.length - 2, level.length)}`;
+    }
+  }
+  return level;
+};
