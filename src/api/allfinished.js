@@ -4,11 +4,11 @@ import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
 import {
   AllFinished,
-  Level,
   Kuski,
   LegacyFinished,
-  Team,
+  Level,
   Multitime,
+  Team,
   TimeFile,
 } from '../data/models';
 
