@@ -363,9 +363,13 @@ const shareReplay = async data => {
   }
   if (time.KuskiIndex === data.KuskiIndex) {
     const timeAsString = `${time.Time}`;
-    const RecFileName = `${data.LevelData.LevelName}${data.Kuski.substring(
+    const levName =
+      data.LevelData.LevelName.substring(0, 6) === 'QWQUU0'
+        ? data.LevelData.LevelName.substring(6, 8)
+        : data.LevelData.LevelName;
+    const RecFileName = `${levName}${data.Kuski.substring(
       0,
-      Math.min(15 - (data.LevelData.LevelName.length + timeAsString.length), 4),
+      Math.min(15 - (levName.length + timeAsString.length), 4),
     )}${timeAsString}.rec`;
     const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
     if (isMoved) {
@@ -397,6 +401,28 @@ const shareReplay = async data => {
     }
   }
   return false;
+};
+
+const EditReplay = async data => {
+  const rec = await Replay.findOne({
+    where: { UUID: data.ReplayUuid, RecFileName: `${data.RecFileName}.rec` },
+  });
+  if (!rec) {
+    return 404;
+  }
+  if (rec.dataValues.UploadedBy === data.KuskiIndex) {
+    const update = { Comment: data.edit.Comment, Unlisted: data.edit.Unlisted };
+    const k = await Kuski.findOne({ where: { Kuski: data.edit.DrivenBy } });
+    if (k) {
+      update.DrivenBy = k.KuskiIndex;
+    } else {
+      update.DrivenBy = 0;
+      update.DrivenByText = data.edit.DrivenBy;
+    }
+    rec.update(update);
+    return 200;
+  }
+  return 401;
 };
 
 router
@@ -443,6 +469,15 @@ router
       } else {
         res.sendStatus(401);
       }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/edit', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const edit = await EditReplay({ ...req.body, KuskiIndex: auth.userid });
+      res.sendStatus(edit);
     } else {
       res.sendStatus(401);
     }
