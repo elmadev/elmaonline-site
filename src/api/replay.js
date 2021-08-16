@@ -42,6 +42,7 @@ const getReplays = async (
   tags = [],
   sortBy = 'uploaded',
   order = 'desc',
+  KuskiIndex = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -50,10 +51,15 @@ const getReplays = async (
     return [['Uploaded', order]];
   };
 
+  let where = { Unlisted: 0, Hide: 0 };
+  if (KuskiIndex) {
+    where = { UploadedBy: KuskiIndex };
+  }
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
-    where: { Unlisted: 0, Hide: 0 },
+    where,
     order: getOrder(),
     group: ['ReplayIndex'],
     ...(tags.length && {
@@ -478,6 +484,24 @@ router
     if (auth.auth) {
       const edit = await EditReplay({ ...req.body, KuskiIndex: auth.userid });
       res.sendStatus(edit);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/my', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const offset = req.query.pageSize * req.query.page || 0;
+      const limit = req.query.pageSize;
+      const data = await getReplays(
+        offset,
+        limit,
+        req.query.tags,
+        req.query.sortBy,
+        req.query.order,
+        auth.userid,
+      );
+      res.json(data);
     } else {
       res.sendStatus(401);
     }
