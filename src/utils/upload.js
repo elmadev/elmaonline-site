@@ -351,7 +351,7 @@ const putObject = params => {
   });
 };
 
-const deleteObject = (fileUuid, filename) => {
+export const deleteObject = (fileUuid, filename) => {
   return new Promise((resolve, reject) => {
     s3.deleteObject(
       {

@@ -1,8 +1,9 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
 import { format, addDays } from 'date-fns';
-
+import { fromTo } from 'utils/database';
 import { Upload } from 'data/models';
+import { deleteObject } from 'utils/upload';
 
 const router = express.Router();
 
@@ -47,6 +48,63 @@ router.post('/', async (req, res) => {
     } else {
       res.sendStatus(401);
     }
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+const MyFiles = async (KuskiIndex, limit, FileName, from, to) => {
+  let where = { KuskiIndex };
+  if (FileName) {
+    where.FileName = FileName;
+  }
+  where = { ...where, ...fromTo(from, to, 'UploadedOn') };
+  const files = await Upload.findAll({
+    where,
+    order: [['UploadIndex', 'DESC']],
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+  });
+  return files;
+};
+
+router.get('/:limit', async (req, res) => {
+  const auth = authContext(req);
+  if (auth.auth) {
+    const files = await MyFiles(
+      auth.userid,
+      req.params.limit,
+      req.query.filename,
+      req.query.from,
+      req.query.to,
+    );
+    res.json(files);
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+const DeleteFile = async (UploadIndex, KuskiIndex, uuid, filename) => {
+  const file = await Upload.findOne({
+    where: { UploadIndex, KuskiIndex },
+  });
+  if (file) {
+    await deleteObject(uuid, filename);
+    await file.destroy();
+    return 200;
+  }
+  return 401;
+};
+
+router.delete('/:id/:uuid/:filename', async (req, res) => {
+  const auth = authContext(req);
+  if (auth.auth) {
+    const del = await DeleteFile(
+      req.params.id,
+      auth.userid,
+      req.params.uuid,
+      req.params.filename,
+    );
+    res.sendStatus(del);
   } else {
     res.sendStatus(401);
   }

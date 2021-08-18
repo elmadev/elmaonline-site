@@ -2,7 +2,7 @@ import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from 'utils/auth';
-import { formatLevelSearch } from 'utils/database';
+import { formatLevelSearch, fromTo } from 'utils/database';
 import {
   AllFinished,
   Level,
@@ -144,7 +144,7 @@ const getLatest = async (KuskiIndex, limit) => {
 };
 
 const getMyLatest = async (KuskiIndex, limit, lev, from, to) => {
-  const where = { KuskiIndex };
+  let where = { KuskiIndex };
   const LevelName = formatLevelSearch(lev);
   if (LevelName) {
     const level = await Level.findAll({ where: { LevelName } });
@@ -152,29 +152,7 @@ const getMyLatest = async (KuskiIndex, limit, lev, from, to) => {
       [Op.in]: level.map(r => r.LevelIndex),
     };
   }
-  let fromTs;
-  let toTs;
-  if (from) {
-    const froms = from.split('-');
-    fromTs = new Date(froms[0], froms[1] - 1, froms[2]).getTime() / 1000;
-  }
-  if (to) {
-    const tos = to.split('-');
-    toTs = new Date(tos[0], tos[1] - 1, tos[2], 23, 59, 59).getTime() / 1000;
-  }
-  if (from && to) {
-    where.Driven = {
-      [Op.between]: [fromTs, toTs],
-    };
-  } else if (from) {
-    where.Driven = {
-      [Op.gte]: fromTs,
-    };
-  } else if (to) {
-    where.Driven = {
-      [Op.lte]: toTs,
-    };
-  }
+  where = { ...where, ...fromTo(from, to, 'Driven') };
   const times = await AllFinished.findAll({
     where,
     order: [['TimeIndex', 'DESC']],

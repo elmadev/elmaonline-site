@@ -1,5 +1,6 @@
 import fs from 'fs';
 import moment from 'moment';
+import { Op } from 'sequelize';
 import config from '../config';
 
 export function log(func, query, benchmark) {
@@ -80,4 +81,32 @@ export const formatLevelSearch = level => {
     }
   }
   return level;
+};
+
+export const fromTo = (from, to, column) => {
+  const where = {};
+  let fromTs;
+  let toTs;
+  if (from) {
+    const froms = from.split('-');
+    fromTs = new Date(froms[0], froms[1] - 1, froms[2]).getTime() / 1000;
+  }
+  if (to) {
+    const tos = to.split('-');
+    toTs = new Date(tos[0], tos[1] - 1, tos[2], 23, 59, 59).getTime() / 1000;
+  }
+  if (from && to) {
+    where[column] = {
+      [Op.between]: [fromTs, toTs],
+    };
+  } else if (from) {
+    where[column] = {
+      [Op.gte]: fromTs,
+    };
+  } else if (to) {
+    where[column] = {
+      [Op.lte]: toTs,
+    };
+  }
+  return where;
 };
