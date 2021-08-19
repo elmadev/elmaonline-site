@@ -5,11 +5,11 @@ import { authContext } from 'utils/auth';
 import { formatLevelSearch, fromTo } from 'utils/database';
 import {
   AllFinished,
-  Level,
   Kuski,
   LegacyFinished,
-  Team,
+  Level,
   Multitime,
+  Team,
   TimeFile,
 } from '../data/models';
 

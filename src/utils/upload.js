@@ -435,7 +435,10 @@ export const uploadTimeFile = async (
 ) => {
   const UUID = uuid();
   let isSentToS3 = false;
-  const filePath = `./events/${config.timeFolder}/${TimeIndex}.rec`;
+  let filePath = `./events/${config.timeFolder}/${TimeIndex}.rec`;
+  if (process.env.NODE_ENV === 'production') {
+    filePath = `.${filePath}`;
+  }
   let MD5 = null;
   try {
     await writeFile(filePath, fileData, 'binary');

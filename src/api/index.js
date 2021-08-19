@@ -22,6 +22,7 @@ import Upload from './upload';
 import Tag from './tag';
 import Notification from './notification';
 import LevelStats from './levelstats';
+import Crippled from './crippled';
 
 const router = express.Router();
 
@@ -51,6 +52,7 @@ router
   .use('/upload', Upload)
   .use('/tag', Tag)
   .use('/notification', Notification)
-  .use('/levelstats', LevelStats);
+  .use('/levelstats', LevelStats)
+  .use('/crippled', Crippled);
 
 export default router;
