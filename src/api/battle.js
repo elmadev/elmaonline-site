@@ -226,7 +226,7 @@ const BattleResults = async BattleIndex => {
       },
       {
         model: Level,
-        attributes: ['LevelName'],
+        attributes: ['LevelName', 'Apples', 'Killers', 'Flowers'],
         as: 'LevelData',
       },
       {
