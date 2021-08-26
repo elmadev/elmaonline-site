@@ -42,7 +42,7 @@ export const checksumFile = (hashName, path) =>
 
 const getReplaysByMd5 = async MD5 => {
   const replays = await ReplayDB.findAll({
-    attributes: ['MD5', 'ReplayIndex', 'Unlisted'],
+    attributes: ['MD5', 'ReplayIndex', 'Unlisted', 'UUID', 'RecFileName'],
     where: { MD5 },
   });
   return replays;
@@ -212,6 +212,7 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
     const MD5 = await checksumFile('md5', filepath);
     const replaysMD5 = await getReplaysByMd5(MD5);
     if (replaysMD5.length > 0) {
+      await fs.promises.unlink(filepath);
       return {
         error: 'Duplicate',
         replayInfo: replaysMD5,
@@ -232,6 +233,7 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
     if (config.accessKeyId !== 'local') {
       const s3Err = await s3PutObject(params);
       if (s3Err) {
+        await fs.promises.unlink(filepath);
         return {
           error: s3Err,
           replayInfo: null,
@@ -349,7 +351,7 @@ const putObject = params => {
   });
 };
 
-const deleteObject = (fileUuid, filename) => {
+export const deleteObject = (fileUuid, filename) => {
   return new Promise((resolve, reject) => {
     s3.deleteObject(
       {

@@ -10,7 +10,13 @@ import {
 } from 'lodash';
 import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
-import { like, searchLimit, searchOffset, log } from 'utils/database';
+import {
+  like,
+  searchLimit,
+  searchOffset,
+  log,
+  formatLevelSearch,
+} from 'utils/database';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -455,6 +461,7 @@ const getPacksByQuery = async query => {
 };
 
 const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
+  const LevelName = formatLevelSearch(query);
   let show = false;
   const q = {
     attributes: [
@@ -474,7 +481,7 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
     offset: searchOffset(offset),
     where: {
       LevelName: {
-        [Op.like]: `${like(query)}%`,
+        [Op.like]: `${like(LevelName)}%`,
       },
     },
     limit: searchLimit(offset),

@@ -42,6 +42,9 @@ const getReplays = async (
   tags = [],
   sortBy = 'uploaded',
   order = 'desc',
+  UploadedBy = 0,
+  DrivenBy = 0,
+  UserId = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -50,10 +53,26 @@ const getReplays = async (
     return [['Uploaded', order]];
   };
 
+  let where = { Unlisted: 0, Hide: 0 };
+  if (UploadedBy) {
+    if (UserId === UploadedBy) {
+      where = { UploadedBy };
+    } else {
+      where = { UploadedBy, Unlisted: 0, Hide: 0 };
+    }
+  }
+  if (DrivenBy) {
+    if (UserId === DrivenBy) {
+      where = { DrivenBy };
+    } else {
+      where = { DrivenBy, Unlisted: 0, Hide: 0 };
+    }
+  }
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
-    where: { Unlisted: 0, Hide: 0 },
+    where,
     order: getOrder(),
     group: ['ReplayIndex'],
     ...(tags.length && {
@@ -115,54 +134,6 @@ const getReplayByReplayId = async ReplayIndex => {
   return data;
 };
 
-const getReplayByDrivenBy = async KuskiIndex => {
-  const data = await Replay.findAll({
-    where: { DrivenBy: KuskiIndex, Unlisted: 0 },
-    include: [
-      {
-        model: Level,
-        attributes: ['LevelName'],
-        as: 'LevelData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'UploadedByData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'DrivenByData',
-      },
-    ],
-  });
-  return data;
-};
-
-const getReplayByUploadedBy = async KuskiIndex => {
-  const data = await Replay.findAll({
-    where: { UploadedBy: KuskiIndex, Unlisted: 0 },
-    include: [
-      {
-        model: Level,
-        attributes: ['LevelName'],
-        as: 'LevelData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'UploadedByData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'DrivenByData',
-      },
-    ],
-  });
-  return data;
-};
-
 const getReplayByUUID = async replayUUID => {
   const query = {
     where: { UUID: replayUUID },
@@ -197,8 +168,8 @@ const getReplayByUUID = async replayUUID => {
         [Op.in]: replayUUID.split(';'),
       },
     };
-    const data = await Replay.findAll(query);
-    return data;
+    const listData = await Replay.findAll(query);
+    return listData;
   }
   const data = await Replay.findOne(query);
   return data;
@@ -363,9 +334,13 @@ const shareReplay = async data => {
   }
   if (time.KuskiIndex === data.KuskiIndex) {
     const timeAsString = `${time.Time}`;
-    const RecFileName = `${data.LevelData.LevelName}${data.Kuski.substring(
+    const levName =
+      data.LevelData.LevelName.substring(0, 6) === 'QWQUU0'
+        ? data.LevelData.LevelName.substring(6, 8)
+        : data.LevelData.LevelName;
+    const RecFileName = `${levName}${data.Kuski.substring(
       0,
-      Math.min(15 - (data.LevelData.LevelName.length + timeAsString.length), 4),
+      Math.min(15 - (levName.length + timeAsString.length), 4),
     )}${timeAsString}.rec`;
     const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
     if (isMoved) {
@@ -397,6 +372,28 @@ const shareReplay = async data => {
     }
   }
   return false;
+};
+
+const EditReplay = async data => {
+  const rec = await Replay.findOne({
+    where: { UUID: data.ReplayUuid, RecFileName: `${data.RecFileName}.rec` },
+  });
+  if (!rec) {
+    return 404;
+  }
+  if (rec.dataValues.UploadedBy === data.KuskiIndex) {
+    const update = { Comment: data.edit.Comment, Unlisted: data.edit.Unlisted };
+    const k = await Kuski.findOne({ where: { Kuski: data.edit.DrivenBy } });
+    if (k) {
+      update.DrivenBy = k.KuskiIndex;
+    } else {
+      update.DrivenBy = 0;
+      update.DrivenByText = data.edit.DrivenBy;
+    }
+    rec.update(update);
+    return 200;
+  }
+  return 401;
 };
 
 router
@@ -447,16 +444,63 @@ router
       res.sendStatus(401);
     }
   })
+  .post('/edit', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const edit = await EditReplay({ ...req.body, KuskiIndex: auth.userid });
+      res.sendStatus(edit);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .get('/my', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const offset = req.query.pageSize * req.query.page || 0;
+      const limit = req.query.pageSize;
+      const data = await getReplays(
+        offset,
+        limit,
+        req.query.tags,
+        req.query.sortBy,
+        req.query.order,
+        auth.userid,
+      );
+      res.json(data);
+    } else {
+      res.sendStatus(401);
+    }
+  })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayByReplayId(req.params.ReplayIndex);
     res.json(data);
   })
   .get('/driven_by/:KuskiIndex', async (req, res) => {
-    const data = await getReplayByDrivenBy(req.params.KuskiIndex);
+    const auth = authContext(req);
+    const data = await getReplays(
+      req.query.pageSize * req.query.page || 0,
+      req.query.pageSize,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+      0,
+      parseInt(req.params.KuskiIndex, 10),
+      auth.userid,
+    );
     res.json(data);
   })
   .get('/uploaded_by/:KuskiIndex', async (req, res) => {
-    const data = await getReplayByUploadedBy(req.params.KuskiIndex);
+    const auth = authContext(req);
+    const data = await getReplays(
+      req.query.pageSize * req.query.page || 0,
+      req.query.pageSize,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+      parseInt(req.params.KuskiIndex, 10),
+      0,
+      auth.userid,
+    );
     res.json(data);
   })
 
