@@ -42,7 +42,9 @@ const getReplays = async (
   tags = [],
   sortBy = 'uploaded',
   order = 'desc',
-  KuskiIndex = 0,
+  UploadedBy = 0,
+  DrivenBy = 0,
+  UserId = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -52,8 +54,19 @@ const getReplays = async (
   };
 
   let where = { Unlisted: 0, Hide: 0 };
-  if (KuskiIndex) {
-    where = { UploadedBy: KuskiIndex };
+  if (UploadedBy) {
+    if (UserId === UploadedBy) {
+      where = { UploadedBy };
+    } else {
+      where = { UploadedBy, Unlisted: 0, Hide: 0 };
+    }
+  }
+  if (DrivenBy) {
+    if (UserId === DrivenBy) {
+      where = { DrivenBy };
+    } else {
+      where = { DrivenBy, Unlisted: 0, Hide: 0 };
+    }
   }
 
   const data = await Replay.findAndCountAll({
@@ -121,54 +134,6 @@ const getReplayByReplayId = async ReplayIndex => {
   return data;
 };
 
-const getReplayByDrivenBy = async KuskiIndex => {
-  const data = await Replay.findAll({
-    where: { DrivenBy: KuskiIndex, Unlisted: 0 },
-    include: [
-      {
-        model: Level,
-        attributes: ['LevelName'],
-        as: 'LevelData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'UploadedByData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'DrivenByData',
-      },
-    ],
-  });
-  return data;
-};
-
-const getReplayByUploadedBy = async KuskiIndex => {
-  const data = await Replay.findAll({
-    where: { UploadedBy: KuskiIndex, Unlisted: 0 },
-    include: [
-      {
-        model: Level,
-        attributes: ['LevelName'],
-        as: 'LevelData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'UploadedByData',
-      },
-      {
-        model: Kuski,
-        attributes: ['Kuski', 'Country'],
-        as: 'DrivenByData',
-      },
-    ],
-  });
-  return data;
-};
-
 const getReplayByUUID = async replayUUID => {
   const query = {
     where: { UUID: replayUUID },
@@ -203,8 +168,8 @@ const getReplayByUUID = async replayUUID => {
         [Op.in]: replayUUID.split(';'),
       },
     };
-    const data = await Replay.findAll(query);
-    return data;
+    const listData = await Replay.findAll(query);
+    return listData;
   }
   const data = await Replay.findOne(query);
   return data;
@@ -511,11 +476,31 @@ router
     res.json(data);
   })
   .get('/driven_by/:KuskiIndex', async (req, res) => {
-    const data = await getReplayByDrivenBy(req.params.KuskiIndex);
+    const auth = authContext(req);
+    const data = await getReplays(
+      req.query.pageSize * req.query.page || 0,
+      req.query.pageSize,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+      0,
+      parseInt(req.params.KuskiIndex, 10),
+      auth.userid,
+    );
     res.json(data);
   })
   .get('/uploaded_by/:KuskiIndex', async (req, res) => {
-    const data = await getReplayByUploadedBy(req.params.KuskiIndex);
+    const auth = authContext(req);
+    const data = await getReplays(
+      req.query.pageSize * req.query.page || 0,
+      req.query.pageSize,
+      req.query.tags,
+      req.query.sortBy,
+      req.query.order,
+      parseInt(req.params.KuskiIndex, 10),
+      0,
+      auth.userid,
+    );
     res.json(data);
   })
 

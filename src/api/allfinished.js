@@ -117,20 +117,43 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
-const getLatest = async (KuskiIndex, limit) => {
-  const times = await AllFinished.findAll({
-    where: { KuskiIndex },
+const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
+  let where = { KuskiIndex };
+  const personal = UserId === parseInt(KuskiIndex, 10);
+  const LevelName = formatLevelSearch(lev);
+  if (LevelName) {
+    const level = await Level.findAll({ where: { LevelName } });
+    where.LevelIndex = {
+      [Op.in]: level.map(r => r.LevelIndex),
+    };
+  }
+  where = { ...where, ...fromTo(from, to, 'Driven') };
+  const include = [
+    {
+      model: Level,
+      as: 'LevelData',
+      attributes: ['LevelName', 'Locked', 'Hidden'],
+    },
+  ];
+  if (personal) {
+    include.push({
+      model: TimeFile,
+      as: 'TimeFileData',
+    });
+  }
+  const query = {
+    where,
     order: [['TimeIndex', 'DESC']],
-    attributes: ['TimeIndex', 'Time', 'Apples', 'Driven', 'LevelIndex'],
-    include: [
-      {
-        model: Level,
-        as: 'LevelData',
-        attributes: ['LevelName', 'Locked', 'Hidden'],
-      },
-    ],
+    include,
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
-  });
+  };
+  if (!personal) {
+    query.attributes = ['TimeIndex', 'Time', 'Apples', 'Driven', 'LevelIndex'];
+  }
+  const times = await AllFinished.findAll(query);
+  if (personal) {
+    return times;
+  }
   return times.filter(t => {
     if (t.LevelData) {
       if (t.LevelData.Locked || t.LevelData.Hidden) {
@@ -141,35 +164,6 @@ const getLatest = async (KuskiIndex, limit) => {
     }
     return true;
   });
-};
-
-const getMyLatest = async (KuskiIndex, limit, lev, from, to) => {
-  let where = { KuskiIndex };
-  const LevelName = formatLevelSearch(lev);
-  if (LevelName) {
-    const level = await Level.findAll({ where: { LevelName } });
-    where.LevelIndex = {
-      [Op.in]: level.map(r => r.LevelIndex),
-    };
-  }
-  where = { ...where, ...fromTo(from, to, 'Driven') };
-  const times = await AllFinished.findAll({
-    where,
-    order: [['TimeIndex', 'DESC']],
-    include: [
-      {
-        model: Level,
-        as: 'LevelData',
-        attributes: ['LevelName', 'Locked', 'Hidden'],
-      },
-      {
-        model: TimeFile,
-        as: 'TimeFileData',
-      },
-    ],
-    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
-  });
-  return times;
 };
 
 const timesByLevel = async LevelIndex => {
@@ -304,23 +298,16 @@ router
     );
     res.json(data);
   })
-  .get('/mylatest/:limit', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const data = await getMyLatest(
-        auth.userid,
-        req.params.limit,
-        req.query.level,
-        req.query.from,
-        req.query.to,
-      );
-      res.json(data);
-    } else {
-      res.sendStatus(401);
-    }
-  })
   .get('/:KuskiIndex/:limit', async (req, res) => {
-    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
+    const auth = authContext(req);
+    const data = await getLatest(
+      req.params.KuskiIndex,
+      req.params.limit,
+      req.query.level,
+      req.query.from,
+      req.query.to,
+      auth.userid,
+    );
     res.json(data);
   })
   .get('/:LevelIndex', async (req, res) => {
