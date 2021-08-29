@@ -59,6 +59,7 @@ const AddLevel = async data => {
     await LevelPackLevel.create({
       LevelPackIndex: data.LevelPackIndex,
       LevelIndex: data.LevelIndex,
+      LevelName: level.LevelName,
       Sort,
     });
     return '';

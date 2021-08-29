@@ -36,14 +36,14 @@ import {
 import { discord } from 'utils/discord';
 import { auth, authContext } from 'utils/auth';
 import { kuskimap, email, legacyTimes } from 'utils/dataImports';
-// mport { LevelStats, LevelStatsUpdate } from 'data/models';
+import { LevelStats, LevelStatsUpdate } from 'data/models';
 import { updateRanking, deleteRanking } from './ranking';
 import config from './config';
 import apiRoutes from './api';
-/* import {
+import {
   doAll as doAllLevelStats,
   doNext as doNextLevelStats,
-} from './utils/levelstats'; */
+} from './utils/levelstats';
 
 const app = express();
 
@@ -309,7 +309,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
 //--------------------------------------------
 
 // cron
-/* app.get('/run/levelstats/do-next/:limit', async (req, res) => {
+app.get('/run/levelstats/do-next/:limit', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
     const limit = +req.params.limit;
     const result = await doNextLevelStats(limit);
@@ -320,9 +320,9 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
     res.status(401);
     res.send('Unauthorized');
   }
-}); */
+});
 
-/* app.get('/run/levelstats/sync', async (req, res) => {
+app.get('/run/levelstats/sync', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
     await LevelStats.sync({ alter: false });
     await LevelStatsUpdate.sync({ alter: false });
@@ -331,10 +331,10 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
     res.status(401);
     res.send('Unauthorized');
   }
-}); */
+});
 
 // destructive, and very slow
-/* app.get('/run/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
+app.get('/run/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
     const updates = await doAllLevelStats(
       +req.params.batchSize,
@@ -345,7 +345,7 @@ app.get('/dl/eventrecs/:event/:filename', async (req, res, next) => {
     res.status(401);
     res.send('Unauthorized');
   }
-}); */
+});
 
 //
 // ranking

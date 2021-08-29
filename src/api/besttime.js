@@ -1,13 +1,17 @@
 import express from 'express';
-// import connection from 'data/sequelize';
-// import { groupBy, orderBy, uniqBy } from 'lodash';
+import connection from 'data/sequelize';
+import { Op } from 'sequelize';
+import { authContext } from 'utils/auth';
+import { formatLevelSearch, fromTo } from 'utils/database';
+import { groupBy, orderBy, uniqBy } from 'lodash';
 import {
   Besttime,
   Kuski,
   Level,
-  // Team,
+  Team,
   BestMultitime,
   LegacyBesttime,
+  TimeFile,
 } from '../data/models';
 
 const router = express.Router();
@@ -68,20 +72,41 @@ const getMultiTimes = async (LevelIndex, limit) => {
   return times;
 };
 
-const getLatest = async (KuskiIndex, limit) => {
-  const times = await Besttime.findAll({
-    where: { KuskiIndex },
+const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
+  let where = { KuskiIndex };
+  const personal = UserId === parseInt(KuskiIndex, 10);
+  const LevelName = formatLevelSearch(lev);
+  if (LevelName) {
+    const level = await Level.findAll({ where: { LevelName } });
+    where.LevelIndex = {
+      [Op.in]: level.map(r => r.LevelIndex),
+    };
+  }
+  where = { ...where, ...fromTo(from, to, 'Driven') };
+  const include = [
+    {
+      model: Level,
+      as: 'LevelData',
+      attributes: ['LevelName', 'Locked', 'Hidden'],
+    },
+  ];
+  if (personal) {
+    include.push({
+      model: TimeFile,
+      as: 'TimeFileData',
+    });
+  }
+  const query = {
+    where,
     order: [['TimeIndex', 'DESC']],
     attributes: ['TimeIndex', 'Time', 'Driven', 'LevelIndex'],
-    include: [
-      {
-        model: Level,
-        as: 'LevelData',
-        attributes: ['LevelName', 'Locked', 'Hidden'],
-      },
-    ],
+    include,
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
-  });
+  };
+  const times = await Besttime.findAll(query);
+  if (personal) {
+    return times;
+  }
   return times.filter(t => {
     if (t.LevelData) {
       if (t.LevelData.Locked || t.LevelData.Hidden) {
@@ -115,7 +140,7 @@ const getLatest = async (KuskiIndex, limit) => {
 // Using a large interval and limit can have performance drawbacks,
 // but large or small interval with small (<300 ish) limit is no issue at all.
 // For larger limits, repeatLevels false will be 2-3x faster.
-/* const getBestRecordsDrivenRecently = async (
+const getBestRecordsDrivenRecently = async (
   start,
   end,
   limit,
@@ -243,11 +268,11 @@ const getLatest = async (KuskiIndex, limit) => {
     count: records.length,
     items: records,
   };
-}; */
+};
 
 router
   // Warning: pass in end = 0 unless you know what you are doing.
-  /* .get('/best-records/:start/:end/:limit/:repeatLevels', async (req, res) => {
+  .get('/best-records/:start/:end/:limit/:repeatLevels', async (req, res) => {
     // ie. top 20 records in the last 24 hours:
     // /best-records/0/0/20/1?daysPast=1
     const daysPast = +req.query.daysPast || 7;
@@ -262,7 +287,7 @@ router
       req.params.repeatLevels === '1',
     );
     res.json(result.items);
-  }) */
+  })
   .get('/multi/:LevelIndex/:limit', async (req, res) => {
     const data = await getMultiTimes(req.params.LevelIndex, req.params.limit);
     res.json(data);
@@ -272,7 +297,15 @@ router
     res.json(data);
   })
   .get('/latest/:KuskiIndex/:limit', async (req, res) => {
-    const data = await getLatest(req.params.KuskiIndex, req.params.limit);
+    const auth = authContext(req);
+    const data = await getLatest(
+      req.params.KuskiIndex,
+      req.params.limit,
+      req.query.level,
+      req.query.from,
+      req.query.to,
+      auth.userid,
+    );
     res.json(data);
   })
   .get('/:LevelIndex/:limit/:eolOnly', async (req, res) => {

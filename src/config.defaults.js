@@ -36,6 +36,7 @@ module.exports = {
   // files
   publicFolder: '/public',
   s3SubFolder: 'test/',
+  timeFolder: '67c4e1d54e3844bb8b46f1b6961388a5',
 
   // s3
   accessKeyId: '',

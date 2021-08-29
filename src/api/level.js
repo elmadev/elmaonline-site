@@ -1,9 +1,9 @@
 import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
-import { has /* , difference */ } from 'lodash';
-// import { defaultAttributes } from 'data/models/LevelStats';
-import { Level, Time /* , LevelStats */ } from '../data/models';
+import { has, difference } from 'lodash';
+import { defaultAttributes } from 'data/models/LevelStats';
+import { Level, Time, LevelStats } from '../data/models';
 import connection from '../data/sequelize';
 
 const router = express.Router();
@@ -22,10 +22,10 @@ const attributes = [
   'Legacy',
 ];
 
-const getLevel = async (LevelIndex /* , withStats = false */) => {
+const getLevel = async (LevelIndex, withStats = false) => {
   const include = [];
 
-  /* if (withStats) {
+  if (withStats) {
     include.push({
       attributes: difference(defaultAttributes(), [
         'MaxSpeedF',
@@ -36,7 +36,7 @@ const getLevel = async (LevelIndex /* , withStats = false */) => {
       model: LevelStats,
       as: 'LevelStatsData',
     });
-  } */
+  }
 
   const level = await Level.findOne({
     attributes,
@@ -44,10 +44,10 @@ const getLevel = async (LevelIndex /* , withStats = false */) => {
     include,
   });
 
-  /* if (withStats && (level.Locked || level.Hidden)) {
+  if (withStats && (level.Locked || level.Hidden)) {
     // level.LevelStatsData = null; is NOT the same.
     level.set('LevelStatsData', null);
-  } */
+  }
 
   return level;
 };
