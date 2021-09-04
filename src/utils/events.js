@@ -82,6 +82,7 @@ export function eventsFile(req, res) {
       req.body,
       req.header('TimeIndex'),
       req.header('BattleIndex'),
+      req.header('Multi'),
     );
   });
 }

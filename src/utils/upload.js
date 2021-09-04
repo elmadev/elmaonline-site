@@ -17,6 +17,7 @@ import {
   AllFinished,
   Upload,
   TimeFile,
+  MultiTimeFile,
 } from 'data/models';
 import config from '../config';
 
@@ -432,10 +433,17 @@ export const uploadTimeFile = async (
   fileData,
   TimeIndex = 0,
   BattleIndex = 0,
+  Multi = 0,
 ) => {
   const UUID = uuid();
   let isSentToS3 = false;
-  let filePath = `./events/${config.timeFolder}/${TimeIndex}.rec`;
+  let { timeFolder } = config;
+  let s3TimeFolder = 'time';
+  if (parseInt(Multi, 10) === 1) {
+    timeFolder = `multi-${timeFolder}`;
+    s3TimeFolder = 'multitime';
+  }
+  let filePath = `./events/${timeFolder}/${TimeIndex}.rec`;
   if (process.env.NODE_ENV === 'production') {
     filePath = `.${filePath}`;
   }
@@ -444,26 +452,44 @@ export const uploadTimeFile = async (
     await writeFile(filePath, fileData, 'binary');
     MD5 = await checksumFile('md5', filePath);
     const params = s3Params(
-      `${config.s3SubFolder}time/${UUID}-${MD5}/${TimeIndex}.rec`,
+      `${config.s3SubFolder}${s3TimeFolder}/${UUID}-${MD5}/${TimeIndex}.rec`,
       fileData,
     );
     await putObject(params);
     isSentToS3 = true;
-    await TimeFile.create({
-      TimeIndex,
-      BattleIndex,
-      UUID,
-      MD5,
-    });
+    if (parseInt(Multi, 10) === 1) {
+      await MultiTimeFile.create({
+        MultiTimeIndex: TimeIndex,
+        BattleIndex,
+        UUID,
+        MD5,
+      });
+    } else {
+      await TimeFile.create({
+        TimeIndex,
+        BattleIndex,
+        UUID,
+        MD5,
+      });
+    }
     await deleteFile(filePath);
   } catch (e) {
     if (!isSentToS3) {
-      await TimeFile.upsert({
-        TimeIndex,
-        BattleIndex,
-        UUID: null,
-        MD5,
-      });
+      if (parseInt(Multi, 10) === 1) {
+        await MultiTimeFile.upsert({
+          MultiTimeIndex: TimeIndex,
+          BattleIndex,
+          UUID: null,
+          MD5,
+        });
+      } else {
+        await TimeFile.upsert({
+          TimeIndex,
+          BattleIndex,
+          UUID: null,
+          MD5,
+        });
+      }
     }
   }
 };
