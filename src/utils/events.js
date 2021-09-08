@@ -64,7 +64,6 @@ export function battleend(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
     discordBattleEnd(req.body);
-    updateRanking(10);
   });
 }
 
@@ -72,6 +71,7 @@ export function battleresults(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
     discordBattleresults(req.body);
+    updateRanking(10);
   });
 }
 
