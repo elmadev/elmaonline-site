@@ -666,7 +666,7 @@ const AddLevelPack = async data => {
   return NewPack;
 };
 
-const getPackByName = async LevelPackName => {
+export const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
@@ -674,7 +674,7 @@ const getPackByName = async LevelPackName => {
   return packInfo;
 };
 
-const getPackByIndex = async LevelPackIndex => {
+export const getPackByIndex = async LevelPackIndex => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackIndex },
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
