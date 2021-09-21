@@ -14,6 +14,13 @@ export const getCrippledTypeInt = str => {
   return types[str] === undefined ? null : types[str];
 };
 
+const getKuski = async k => {
+  const findKuski = await Kuski.findOne({
+    where: { Kuski: k },
+  });
+  return findKuski;
+};
+
 const levelInfo = async LevelIndex => {
   if (!LevelIndex) {
     return false;
@@ -186,10 +193,10 @@ const fixLimit = (val, max) => {
   return Math.max(0, Math.min(limit, max));
 };
 
-const getLevelPackBestTimes = async LevelPackIndex => {
+const getLevelPackBestTimes = async (LevelPackIndex, topX) => {
   const sql = `
     SELECT crip.LevelIndex, crip.CrippledType, crip.LevelIndex, crip.Time, crip.TimeIndex,
-           crip.Driven, k.Kuski, k.Country, t.Team FROM
+           crip.KuskiIndex, crip.Driven, k.Kuski, k.Country, t.Team FROM
         (SELECT *,
         ROW_NUMBER() OVER (PARTITION BY LevelIndex, CrippledType, KuskiIndex ORDER BY Time ASC, TimeIndex ASC) KuskiPos
         FROM crippled
@@ -206,7 +213,6 @@ const getLevelPackBestTimes = async LevelPackIndex => {
   });
 
   const types = invert(getCrippledTypes());
-  const topX = 10;
   const ret = {};
 
   // iteration here relies on order by clause above.
@@ -234,19 +240,50 @@ const getLevelPackBestTimes = async LevelPackIndex => {
   return ret;
 };
 
-router
-  .get('/levelPackTopTimes/:LevelPackName', async (req, res) => {
-    const levelpack = await getPackByName(req.params.LevelPackName);
+const getLevelPackPersonalRecords = async (LevelPackIndex, KuskiIndex) => {
+  const sql = `
+    SELECT c.TimeIndex, c.LevelIndex, c.KuskiIndex, c.CrippledType,
+           c.Driven, c.Time, k.Kuski, k.Country, t.Team
+    FROM crippled c
+    LEFT OUTER JOIN kuski k ON k.KuskiIndex = c.KuskiIndex
+    LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
+    WHERE LevelIndex IN (SELECT LevelIndex from levelpack_level WHERE LevelPackIndex = ?)
+    AND c.KuskiIndex = ?
+    ORDER BY Time ASC, TimeIndex ASC
+  `;
 
-    if (!levelpack) {
-      res.status(404).send('Pack not found.');
+  const results = await query(sql, {
+    replacements: [LevelPackIndex, KuskiIndex],
+  });
+
+  const types = invert(getCrippledTypes());
+  const ret = {};
+
+  // iteration here relies on order by clause above.
+  results.forEach(row => {
+    // ie. "noVolt", "noTurn"
+    const typeStr = types[row.CrippledType];
+
+    if (typeStr === undefined) {
       return;
     }
 
-    const times = await getLevelPackBestTimes(levelpack.LevelPackIndex);
+    if (ret[row.LevelIndex] === undefined) {
+      ret[row.LevelIndex] = {};
+    }
 
-    res.json(times);
-  })
+    // first of each level/cripple combination is best time, due to ordering
+    // in query
+    if (ret[row.LevelIndex][typeStr] === undefined) {
+      // always an array of 1 element (so that format is same as in best times)
+      ret[row.LevelIndex][typeStr] = [row];
+    }
+  });
+
+  return ret;
+};
+
+router
   // all times, top times, and leader history in the same endpoint
   // since they all require the same query.
   .get('/bestTimes/:LevelIndex/:cripple/:limit', async (req, res) => {
@@ -335,6 +372,53 @@ router
     );
 
     res.json(timeStats);
-  });
+  })
+  .get('/levelPackBestTimes/:LevelPackName', async (req, res) => {
+    const levelpack = await getPackByName(req.params.LevelPackName);
+
+    if (!levelpack) {
+      res.status(404).send('Pack not found.');
+      return;
+    }
+
+    const times = await getLevelPackBestTimes(
+      levelpack.LevelPackIndex,
+      Number(req.query.topX) || 10,
+    );
+
+    res.json(times);
+  })
+  .get(
+    '/levelPackPersonalRecords/:LevelPackName/:KuskiIndex',
+    async (req, res) => {
+      const levelpack = await getPackByName(req.params.LevelPackName);
+
+      if (!levelpack) {
+        res.status(404).send('Pack not found.');
+        return;
+      }
+
+      let KuskiIndex;
+
+      if (req.query.byName === '1') {
+        const KuskiObj = await getKuski(req.params.KuskiIndex);
+        KuskiIndex = KuskiObj && KuskiObj.KuskiIndex;
+      } else {
+        KuskiIndex = Number(req.params.KuskiIndex);
+      }
+
+      if (!KuskiIndex) {
+        res.status(400).send('Kuski not found');
+        return;
+      }
+
+      const times = await getLevelPackPersonalRecords(
+        levelpack.LevelPackIndex,
+        KuskiIndex,
+      );
+
+      res.json(times);
+    },
+  );
 
 export default router;
