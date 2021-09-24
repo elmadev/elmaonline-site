@@ -51,6 +51,9 @@ const getRanking = async (periodType, period) => {
 };
 
 const getRankingHistoryByBattle = async BattleIndex => {
+  if (Number.isNaN(parseInt(BattleIndex, 10))) {
+    return null;
+  }
   const RankingHistoryByBattle = await RankingHistory.findAll({
     where: { BattleIndex },
   });
