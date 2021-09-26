@@ -265,7 +265,13 @@ const maxGroup = (times, base, col) => {
 };
 
 // convert time.Driven to unix timestamp
-const parseTimeDriven = d => parseInt(moment(d).format('X'), 10);
+const parseTimeDriven = d => {
+  let parsed = parseInt(moment(d).format('X'), 10);
+  if (Number.isNaN(parsed)) {
+    parsed = 0;
+  }
+  return parsed;
+};
 
 // get adjusted overall/throttle/brake time for purposes of summing.
 // tries to detect AFK type of behaviour so that these runs do not inflate

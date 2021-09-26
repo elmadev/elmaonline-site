@@ -2,7 +2,7 @@ import express from 'express';
 import connection from 'data/sequelize';
 import { Op } from 'sequelize';
 import { authContext } from 'utils/auth';
-import { formatLevelSearch, fromTo } from 'utils/database';
+import { formatLevelSearch, fromTo, log } from 'utils/database';
 import { groupBy, orderBy, uniqBy } from 'lodash';
 import {
   Besttime,
@@ -175,6 +175,8 @@ const getBestRecordsDrivenRecently = async (
 
   const [stats] = await connection.query(q, {
     replacements: [start, end, limit],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
   });
 
   let records;
