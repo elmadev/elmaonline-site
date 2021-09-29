@@ -2,7 +2,6 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
-import { getCol } from 'utils/sequelize';
 import { pick, omit } from 'lodash';
 import {
   Team,
@@ -186,7 +185,8 @@ router
     res.json(crew);
   })
   .get('/record-count/:KuskiIndex', async (req, res) => {
-    const q = `
+    res.json({ error: 'endpoint disabled due to performance issue' });
+    /* const q = `
     SELECT COUNT(s.LevelIndex) countRecords from levelstats s
     INNER JOIN level l ON l.LevelIndex = s.LevelIndex
     WHERE s.TopKuskiIndex0 = ?
@@ -201,7 +201,7 @@ router
       'countRecords',
     );
 
-    res.json(countRecords);
+    res.json(countRecords); */
   })
   .get('/records/:KuskiIndex', async (req, res) => {
     const offset = Number(req.query.offset || 0);
