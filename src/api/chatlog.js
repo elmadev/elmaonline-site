@@ -24,7 +24,6 @@ const searchChat = async ({
   limit,
   offset = 0,
   order = 'DESC',
-  count = false,
   firstId,
   lastId,
   seek = 'forward',
@@ -86,10 +85,9 @@ const searchChat = async ({
 
   if (limit < CHAT_API_LIMIT) opts.limit = limit;
 
-  let lines = {};
+  const lines = {};
 
-  if (!count) lines.rows = await Chat.findAll(opts);
-  else lines = await Chat.findAndCountAll(opts);
+  lines.rows = await Chat.findAll(opts);
 
   return lines;
 };
