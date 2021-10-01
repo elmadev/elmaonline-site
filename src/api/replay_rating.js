@@ -14,7 +14,7 @@ const getReplayRatingsByReplayId = async ReplayIndex => {
 const addReplayRating = async Data => {
   let NewReplayRating = false;
   NewReplayRating = await ReplayRating.findOne({
-    where: { KuskiIndex: Data.KuskiIndex },
+    where: { KuskiIndex: Data.KuskiIndex, ReplayIndex: Data.ReplayIndex },
   });
   if (NewReplayRating) {
     await NewReplayRating.update(Data);
