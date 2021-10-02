@@ -48,7 +48,10 @@ const getReplays = async (
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
-      return [sequelize.literal(`ratingAvg ${order}`)];
+      return [
+        [sequelize.literal(`ratingAvg ${order}`)],
+        [sequelize.literal(`ratingCnt ${order}`)],
+      ];
     }
     return [['Uploaded', order]];
   };
@@ -92,6 +95,15 @@ const getReplays = async (
                   replay_rating.ReplayIndex = replay.ReplayIndex
               )`),
           'ratingAvg',
+        ],
+        [
+          sequelize.literal(`(
+                  SELECT count(*)
+                  FROM replay_rating
+                  WHERE
+                  replay_rating.ReplayIndex = replay.ReplayIndex
+              )`),
+          'ratingCnt',
         ],
       ],
     },
