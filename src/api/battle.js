@@ -521,9 +521,51 @@ const BattleReplays = async BattleIndex => {
   return replays;
 };
 
+const GetLatest = async limit => {
+  const get = await Battle.findAll({
+    attributes: [
+      'BattleIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Started',
+      'Duration',
+      'BattleType',
+      'Aborted',
+      'InQueue',
+      'Finished',
+      'RecFileName',
+    ],
+    order: [['BattleIndex', 'DESC']],
+    limit,
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
+      },
+    ],
+  });
+  return get;
+};
+
 router
-  .get('/', async (req, res) => {
-    res.json({});
+  .get('/:limit', async (req, res) => {
+    const battles = await GetLatest(Math.min(parseInt(req.params.limit, 10), 100));
+    res.json(battles);
   })
   .get('/replays/:BattleIndex', async (req, res) => {
     const replays = await BattleReplays(parseInt(req.params.BattleIndex, 10));
