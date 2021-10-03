@@ -1062,7 +1062,14 @@ router
 
     res.json({
       ...JSON.parse(JSON.stringify(pack)),
-      levels,
+      levels: Array.isArray(levels)
+        ? levels.map(lev => ({
+            LevelIndex: lev.LevelIndex,
+            LevelName: lev.Level.LevelName,
+            LongName: lev.Level.LongName,
+            LevelPackLevelIndex: lev.LevelPackLevelIndex,
+          }))
+        : [],
     });
   });
 
