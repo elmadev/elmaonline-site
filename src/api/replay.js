@@ -12,6 +12,7 @@ import {
   ReplayRating,
   Time,
   TimeFile,
+  LevelPackLevel,
 } from '../data/models';
 import sequelize from '../data/sequelize';
 
@@ -45,10 +46,14 @@ const getReplays = async (
   UploadedBy = 0,
   DrivenBy = 0,
   UserId = 0,
+  LevelPackIndex = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
-      return [sequelize.literal(`ratingAvg ${order}`)];
+      return [
+        [sequelize.literal(`ratingAvg ${order}`)],
+        [sequelize.literal(`ratingCnt ${order}`)],
+      ];
     }
     return [['Uploaded', order]];
   };
@@ -68,6 +73,18 @@ const getReplays = async (
       where = { DrivenBy, Unlisted: 0, Hide: 0 };
     }
   }
+
+  // Filter by level pack
+  let packLevels = [];
+  if (LevelPackIndex) {
+    packLevels = await LevelPackLevel.findAll({
+      attributes: ['LevelIndex'],
+      where: {
+        LevelPackIndex,
+      },
+    }).then(data => data.map(r => r.LevelIndex));
+  }
+  const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
 
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
@@ -93,6 +110,15 @@ const getReplays = async (
               )`),
           'ratingAvg',
         ],
+        [
+          sequelize.literal(`(
+                  SELECT count(*)
+                  FROM replay_rating
+                  WHERE
+                  replay_rating.ReplayIndex = replay.ReplayIndex
+              )`),
+          'ratingCnt',
+        ],
       ],
     },
     include: [
@@ -111,6 +137,7 @@ const getReplays = async (
         model: Level,
         attributes: ['LevelName'],
         as: 'LevelData',
+        where: levelWhere,
       },
       {
         model: Kuski,
@@ -400,12 +427,20 @@ router
   .get('/', async (req, res) => {
     const offset = req.query.pageSize * req.query.page || 0;
     const limit = req.query.pageSize;
+    const uploadedBy = 0;
+    const drivenBy = 0;
+    const userId = 0;
+
     const data = await getReplays(
       offset,
       limit,
       req.query.tags,
       req.query.sortBy,
       req.query.order,
+      uploadedBy,
+      drivenBy,
+      userId,
+      req.query.levelPack,
     );
     res.json(data);
   })
