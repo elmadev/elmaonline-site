@@ -563,7 +563,7 @@ const GetLatest = async limit => {
 };
 
 router
-  .get('/latest/:limit', async (req, res) => {
+  .get('/:limit', async (req, res) => {
     const battles = await GetLatest(Math.min(parseInt(req.params.limit, 10), 100));
     res.json(battles);
   })
