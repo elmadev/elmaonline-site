@@ -1,8 +1,7 @@
 import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
-import { has, difference } from 'lodash';
-import { defaultAttributes } from 'data/models/LevelStats';
+import { has } from 'lodash';
 import { Level, Time, LevelStats } from '../data/models';
 import connection from '../data/sequelize';
 
@@ -27,12 +26,24 @@ const getLevel = async (LevelIndex, withStats = false) => {
 
   if (withStats) {
     include.push({
-      attributes: difference(defaultAttributes(), [
+      attributes: [
+        'TimeF',
+        'TimeE',
+        'TimeD',
+        'TimeAll',
+        'AttemptsF',
+        'AttemptsE',
+        'AttemptsD',
+        'AttemptsAll',
         'MaxSpeedF',
-        'MaxSpeedD',
         'MaxSpeedE',
+        'MaxSpeedD',
         'MaxSpeedAll',
-      ]),
+        'LeaderCount',
+        'UniqueLeaderCount',
+        'KuskiCountF',
+        'KuskiCountAll',
+      ],
       model: LevelStats,
       as: 'LevelStatsData',
     });
@@ -102,9 +113,7 @@ const UpdateLevel = async (LevelIndex, update) => {
 };
 
 router.get('/:LevelIndex', async (req, res) => {
-  const data = await getLevel(
-    req.params.LevelIndex /* , req.query.stats || false */,
-  );
+  const data = await getLevel(req.params.LevelIndex, req.query.stats || false);
   res.json(data);
 });
 
