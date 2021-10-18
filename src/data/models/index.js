@@ -448,6 +448,12 @@ ReplayComment.belongsTo(Replay, {
   as: 'Replay',
 });
 
+TimeFile.belongsTo(AllFinished, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'TimeData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }

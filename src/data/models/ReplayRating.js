@@ -23,6 +23,16 @@ const ReplayRating = Model.define('replay_rating', {
     defaultValue: 0,
     allowNull: false,
   },
+  BattleIndex: {
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  UUID: {
+    type: DataType.STRING(54),
+    defaultValue: null,
+    allowNull: true,
+  },
 });
 
 export default ReplayRating;

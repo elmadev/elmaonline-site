@@ -3,6 +3,8 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from 'utils/database';
 import { authContext } from 'utils/auth';
 import { format } from 'date-fns';
+import { forEach } from 'lodash';
+import { sortResults } from 'utils/battle';
 import { shareTimeFile } from 'utils/upload';
 import {
   Replay,
@@ -13,10 +15,149 @@ import {
   Time,
   TimeFile,
   LevelPackLevel,
+  AllFinished,
+  Battle,
+  Battletime,
 } from '../data/models';
 import sequelize from '../data/sequelize';
 
 const router = express.Router();
+
+const createRecName = (LevelName, nick, recTime) => {
+  const timeAsString = `${recTime}`;
+  const levName =
+    LevelName.substring(0, 6) === 'QWQUU0'
+      ? LevelName.substring(6, 8)
+      : LevelName;
+  return `${levName}${nick.substring(
+    0,
+    Math.min(15 - (levName.length + timeAsString.length), 4),
+  )}${timeAsString}.rec`;
+};
+
+const emptyRec = {
+  ReplayIndex: 0,
+  BattleIndex: 0,
+  DrivenBy: 0,
+  DrivenByText: '',
+  UploadedBy: 0,
+  LevelIndex: 0,
+  TimeIndex: 0,
+  ReplayTime: 0,
+  Finished: 1,
+  Uploaded: 0,
+  UUID: '',
+  RecFileName: '',
+  Comment: '',
+  TAS: 0,
+  Bug: 0,
+  Nitro: 0,
+  DrivenByData: null,
+  UploadedByData: null,
+  Tags: [],
+};
+
+const findBattleRecs = async where => {
+  const findBattles = await Battle.findAll({
+    where,
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
+      },
+    ],
+  });
+  return findBattles;
+};
+
+const battle2Rec = c => {
+  const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
+  return {
+    ...emptyRec,
+    BattleIndex: c.dataValues.BattleIndex,
+    DrivenBy: sorted[0].dataValues.KuskiIndex,
+    UploadedBy: sorted[0].dataValues.KuskiIndex,
+    Uploaded: format(new Date(c.dataValues.Started), 't'),
+    LevelIndex: c.dataValues.LevelIndex,
+    TimeIndex: sorted[0].dataValues.TimeIndex,
+    ReplayTime: sorted[0].dataValues.Time * 10,
+    UUID: `b-${c.dataValues.BattleIndex}`,
+    RecFileName: c.dataValues.RecFileName,
+    DrivenByData: sorted[0].dataValues.KuskiData,
+    UploadedByData: sorted[0].dataValues.KuskiData,
+    LevelData: c.LevelData,
+  };
+};
+
+const findTimeFiles = async where => {
+  const battleReplays = await TimeFile.findAll({
+    where,
+    attributes: ['TimeIndex', 'UUID', 'MD5'],
+    include: [
+      {
+        model: AllFinished,
+        as: 'TimeData',
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'Apples',
+          'Driven',
+          'Finished',
+          'LevelIndex',
+        ],
+        required: true,
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'LevelData',
+          },
+        ],
+      },
+    ],
+  });
+  return battleReplays;
+};
+
+const timeFile2Rec = c => {
+  if (c.TimeData) {
+    return {
+      ...emptyRec,
+      BattleIndex: c.dataValues.BattleIndex,
+      DrivenBy: c.TimeData.dataValues.KuskiIndex,
+      UploadedBy: c.TimeData.dataValues.KuskiIndex,
+      LevelIndex: c.TimeData.dataValues.LevelIndex,
+      TimeIndex: c.dataValues.TimeIndex,
+      ReplayTime: c.TimeData.dataValues.Time * 10,
+      Uploaded: c.TimeData.dataValues.Driven,
+      UUID: `${c.dataValues.UUID}_${c.dataValues.MD5}_${c.dataValues.TimeIndex}`,
+      RecFileName: createRecName(
+        c.TimeData.dataValues.LevelData.dataValues.LevelName,
+        c.TimeData.dataValues.KuskiData.Kuski,
+        c.TimeData.dataValues.Time,
+      ),
+      DrivenByData: c.TimeData.dataValues.KuskiData,
+      UploadedByData: c.TimeData.dataValues.KuskiData,
+      LevelData: c.TimeData.dataValues.LevelData,
+    };
+  }
+  return c;
+};
 
 const attributes = [
   'ReplayIndex',
@@ -162,6 +303,37 @@ const getReplayByReplayId = async ReplayIndex => {
 };
 
 const getReplayByUUID = async replayUUID => {
+  const replays = replayUUID.split(';');
+  const winners = replays.filter(r => r.includes('b-'));
+  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_'));
+  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-'));
+  const combined = [];
+  if (winners.length > 0) {
+    const battles = await findBattleRecs({
+      BattleIndex: { [Op.in]: winners.map(w => w.split('-')[1]) },
+    });
+    if (replays.length > 1) {
+      forEach(battles, b => {
+        combined.push(battle2Rec(b));
+      });
+    } else {
+      return battle2Rec(battles[0]);
+    }
+  }
+  if (timefiles.length > 0) {
+    const battlerecs = await findTimeFiles({
+      UUID: { [Op.in]: timefiles.map(tf => tf.split('_')[0]) },
+      MD5: { [Op.in]: timefiles.map(tf => tf.split('_')[1]) },
+      TimeIndex: { [Op.in]: timefiles.map(tf => tf.split('_')[2]) },
+    });
+    if (replays.length > 1) {
+      forEach(battlerecs, b => {
+        combined.push(timeFile2Rec(b));
+      });
+    } else {
+      return timeFile2Rec(battlerecs[0]);
+    }
+  }
   const query = {
     where: { UUID: replayUUID },
     include: [
@@ -189,17 +361,22 @@ const getReplayByUUID = async replayUUID => {
       },
     ],
   };
-  if (replayUUID.includes(';')) {
+  if (replays.length === 1) {
+    const data = await Replay.findOne(query);
+    return data;
+  }
+  if (uploaded.length > 0) {
     query.where = {
       UUID: {
-        [Op.in]: replayUUID.split(';'),
+        [Op.in]: uploaded,
       },
     };
     const listData = await Replay.findAll(query);
-    return listData;
+    forEach(listData, l => {
+      combined.push(l);
+    });
   }
-  const data = await Replay.findOne(query);
-  return data;
+  return combined;
 };
 
 const getReplaysSearchDriven = async (query, offset) => {
@@ -349,7 +526,40 @@ const getReplaysByLevelIndex = async LevelIndex => {
       },
     ],
   });
-  return replays;
+
+  const battles = await findBattleRecs({ LevelIndex });
+
+  if (!battles) {
+    return replays;
+  }
+
+  const battleReplays = await findTimeFiles({
+    BattleIndex: { [Op.in]: battles.map(r => r.BattleIndex) },
+  });
+
+  const winners = battles
+    .filter(b => b.RecFileName !== null && b.Results.length > 0)
+    .map(c => {
+      return battle2Rec(c);
+    });
+
+  let combined = [];
+
+  if (battleReplays.length !== 0) {
+    combined = battleReplays.map(c => {
+      return timeFile2Rec(c);
+    });
+  }
+  combined = [...winners, ...combined].sort(
+    (a, b) => a.ReplayTime - b.ReplayTime,
+  );
+  combined = combined.filter(
+    (c, index) => combined.findIndex(x => x.DrivenBy === c.DrivenBy) === index,
+  );
+
+  return [...replays, ...combined]
+    .sort((a, b) => a.ReplayTime - b.ReplayTime)
+    .slice(0, 100);
 };
 
 const shareReplay = async data => {
@@ -360,15 +570,11 @@ const shareReplay = async data => {
     return false;
   }
   if (time.KuskiIndex === data.KuskiIndex) {
-    const timeAsString = `${time.Time}`;
-    const levName =
-      data.LevelData.LevelName.substring(0, 6) === 'QWQUU0'
-        ? data.LevelData.LevelName.substring(6, 8)
-        : data.LevelData.LevelName;
-    const RecFileName = `${levName}${data.Kuski.substring(
-      0,
-      Math.min(15 - (levName.length + timeAsString.length), 4),
-    )}${timeAsString}.rec`;
+    const RecFileName = createRecName(
+      data.LevelData.LevelName,
+      data.Kuski,
+      time.Time,
+    );
     const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
     if (isMoved) {
       await InsertReplay(
@@ -541,6 +747,11 @@ router
 
   .get('/byUUID/:UUID', async (req, res) => {
     const data = await getReplayByUUID(req.params.UUID);
+    res.json(data);
+  })
+
+  .get('/byLevelIndex/:LevelIndex', async (req, res) => {
+    const data = await getReplaysByLevelIndex(req.params.LevelIndex);
     res.json(data);
   })
 
