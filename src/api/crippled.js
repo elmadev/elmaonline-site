@@ -1,10 +1,18 @@
 import express from 'express';
 import { authContext } from 'utils/auth';
 import sequelize, { Op } from 'sequelize';
-import { orderBy } from 'lodash';
-import { AllFinished, Kuski, Level, Time } from '../data/models';
+import { orderBy, invert, groupBy, omit, mapValues } from 'lodash';
+import { Crippled, Kuski, Level, Time } from '../data/models';
+import { getCrippledTypes } from '../data/models/Crippled';
+import { query } from '../utils/sequelize';
+import { getPackByName } from './levelpack';
 
 const router = express.Router();
+
+export const getCrippledTypeInt = str => {
+  const types = getCrippledTypes();
+  return types[str] === undefined ? null : types[str];
+};
 
 const levelInfo = async LevelIndex => {
   if (!LevelIndex) {
@@ -96,27 +104,18 @@ const parseLeaderHistory = times => {
   return ret;
 };
 
-// returns best times and leader history while hitting the database once,
-// since both items would require the same expensive query.
-const getTimes = async (LevelIndex, cripple) => {
-  const cond = getCrippledCond(cripple);
-
-  if (cond === undefined || !LevelIndex) {
+const getTimesEtc = async (LevelIndex, CrippledType) => {
+  if (!LevelIndex || CrippledType === null) {
     return [[], []];
   }
 
-  if (!LevelIndex) {
-    return [[], []];
-  }
-
-  const where = {
-    LevelIndex,
-    ...cond,
-  };
-
-  const times = await AllFinished.findAll({
-    attributes: ['TimeIndex', 'BattleIndex', 'KuskiIndex', 'Time', 'Driven'],
-    where,
+  const times = await Crippled.findAll({
+    // TimeIndex necessary for calculating best times and leader history
+    attributes: ['TimeIndex', 'LevelIndex', 'KuskiIndex', 'Time', 'Driven'],
+    where: {
+      LevelIndex,
+      CrippledType,
+    },
     include: [
       {
         model: Kuski,
@@ -133,23 +132,19 @@ const getTimes = async (LevelIndex, cripple) => {
   return [times, parseBestTimes(times), parseLeaderHistory(times)];
 };
 
-const getKuskiTimes = async (LevelIndex, KuskiIndex, cripple) => {
-  const cond = getCrippledCond(cripple);
-
-  if (cond === undefined || !LevelIndex || !KuskiIndex) {
+const getKuskiTimes = async (LevelIndex, KuskiIndex, CrippledType) => {
+  if (!LevelIndex || !KuskiIndex || CrippledType === null) {
     return [[], []];
   }
 
-  const where = {
-    LevelIndex,
-    KuskiIndex,
-    ...cond,
-  };
-
   // very fast when KuskiIndex provided
-  const kuskiTimes = await AllFinished.findAll({
+  const kuskiTimes = await Crippled.findAll({
     attributes: ['TimeIndex', 'BattleIndex', 'Time', 'Driven'],
-    where,
+    where: {
+      LevelIndex,
+      KuskiIndex,
+      CrippledType,
+    },
     include: [
       {
         model: Kuski,
@@ -191,10 +186,87 @@ const fixLimit = (val, max) => {
   return Math.max(0, Math.min(limit, max));
 };
 
+const mapKuskiData = records => {
+  return records.map(r => ({
+    ...omit(r, ['Kuski', 'Country', 'Team']),
+    KuskiData: {
+      Kuski: r.Kuski,
+      Country: r.Country,
+      TeamData: {
+        Team: r.Team,
+      },
+    },
+  }));
+};
+
+// for performance reasons, does only one crippled type at a time.
+const getLevelPackRecords = async (LevelPackIndex, CrippledTypeInt) => {
+  const sql = `
+    SELECT crip.LevelIndex, crip.CrippledType, crip.LevelIndex, crip.Time, crip.TimeIndex, LevelPos,
+           crip.KuskiIndex, crip.Driven, k.Kuski, k.Country, t.Team FROM
+      (SELECT *,
+              ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY Time ASC, TimeIndex ASC) LevelPos
+       FROM crippled
+       WHERE CrippledType = ?
+         AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ?)) crip
+        LEFT OUTER JOIN kuski k ON k.KuskiIndex = crip.Kuskiindex
+        LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
+    WHERE LevelPos = 1
+    ORDER BY LevelIndex
+  `;
+
+  const results = await query(sql, {
+    replacements: [CrippledTypeInt, LevelPackIndex],
+  });
+
+  return mapValues(groupBy(mapKuskiData(results), 'LevelIndex'), arr => arr[0]);
+};
+
+// all cripple types in one go, since it's not a performance concern
+// when kuski is given.
+const getLevelPackPersonalRecords = async (LevelPackIndex, KuskiIndex) => {
+  if (Number.isNaN(+LevelPackIndex) || Number.isNaN(+KuskiIndex)) {
+    return [];
+  }
+
+  const sql = `
+    SELECT crip.LevelIndex, crip.CrippledType, crip.LevelIndex, crip.Time, crip.TimeIndex, KuskiPos,
+           crip.KuskiIndex, crip.Driven, k.Kuski, k.Country, t.Team FROM
+      (SELECT *,
+              ROW_NUMBER() OVER (PARTITION BY LevelIndex, CrippledType ORDER BY Time ASC, TimeIndex ASC) KuskiPos
+       FROM crippled
+       WHERE KuskiIndex = ?
+       AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ? )) crip
+        LEFT OUTER JOIN kuski k ON k.KuskiIndex = crip.Kuskiindex
+        LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
+    WHERE KuskiPos = 1
+    ORDER BY LevelIndex
+  `;
+
+  const results = await query(sql, {
+    replacements: [KuskiIndex, LevelPackIndex],
+  });
+
+  const mapped = mapKuskiData(results);
+
+  const ret = {};
+  const types = invert(getCrippledTypes());
+
+  mapped.forEach(r => {
+    if (ret[r.LevelIndex] === undefined) {
+      ret[r.LevelIndex] = {};
+    }
+
+    // ie. ret[32]['noVolt'] = {...}
+    ret[r.LevelIndex][types[r.CrippledType]] = r;
+  });
+
+  return ret;
+};
+
 router
-  // all times, top times, and leader history in the same endpoint because
-  // they all require the same expensive query. If you need *only* all times,
-  // set all = true, and ignore the others as they are insignificant, performance wise.
+  // all times, top times, and leader history in the same endpoint
+  // since they all require the same query.
   .get('/bestTimes/:LevelIndex/:cripple/:limit', async (req, res) => {
     const lev = await levelInfo(+req.params.LevelIndex);
     const all = req.query.all === '1';
@@ -204,9 +276,9 @@ router
       return;
     }
 
-    const [allTimes, bestTimes, leaderHistory] = await getTimes(
+    const [allTimes, bestTimes, leaderHistory] = await getTimesEtc(
       +req.params.LevelIndex,
-      req.params.cripple,
+      getCrippledTypeInt(req.params.cripple),
     );
 
     res.json({
@@ -244,7 +316,7 @@ router
       const [kuskiTimes, kuskiLeaderHistory] = await getKuskiTimes(
         +req.params.LevelIndex,
         KuskiIndex,
-        req.params.cripple,
+        getCrippledTypeInt(req.params.cripple),
       );
 
       res.json({
@@ -281,6 +353,52 @@ router
     );
 
     res.json(timeStats);
-  });
+  })
+  .get('/levelPackRecords/:LevelPackName/:cripple', async (req, res) => {
+    const levelpack = await getPackByName(req.params.LevelPackName);
+
+    if (!levelpack) {
+      res.status(404).send('Pack not found.');
+      return;
+    }
+
+    if (getCrippledTypeInt(req.params.cripple) === null) {
+      res.status(404).send('Invalid cripple type.');
+      return;
+    }
+
+    const times = await getLevelPackRecords(
+      levelpack.LevelPackIndex,
+      getCrippledTypeInt(req.params.cripple),
+    );
+
+    res.json(times);
+  })
+  .get(
+    '/levelPackPersonalRecords/:LevelPackName/:KuskiIndex',
+    async (req, res) => {
+      const levelpack = await getPackByName(req.params.LevelPackName);
+
+      if (!levelpack) {
+        res.status(404).send('Pack not found.');
+        return;
+      }
+
+      if (
+        Number.isNaN(+req.params.KuskiIndex) ||
+        +req.params.KuskiIndex === 0
+      ) {
+        res.status(404).send('Invalid Kuski Index.');
+        return;
+      }
+
+      const times = await getLevelPackPersonalRecords(
+        levelpack.LevelPackIndex,
+        +req.params.KuskiIndex,
+      );
+
+      res.json(times);
+    },
+  );
 
 export default router;

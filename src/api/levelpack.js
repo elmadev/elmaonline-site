@@ -666,7 +666,7 @@ const AddLevelPack = async data => {
   return NewPack;
 };
 
-const getPackByName = async LevelPackName => {
+export const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
@@ -674,7 +674,7 @@ const getPackByName = async LevelPackName => {
   return packInfo;
 };
 
-const getPackByIndex = async LevelPackIndex => {
+export const getPackByIndex = async LevelPackIndex => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackIndex },
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
@@ -690,6 +690,7 @@ const allPacks = async () => {
   return data;
 };
 
+// get level pack(s) that a level belongs to
 const byLevel = async LevelIndex => {
   const q = `
     SELECT LevelPackIndex, LevelPackName
@@ -865,6 +866,27 @@ const validators = {
   },
 };
 
+const getLevelpackLevels = async LevelPackIndex => {
+  const levelPackLevels = await LevelPackLevel.findAll({
+    where: {
+      LevelPackIndex,
+    },
+    include: [
+      {
+        model: Level,
+        as: 'Level',
+        attributes: ['LevelName', 'LongName', 'Hidden', 'Locked'],
+        where: {
+          Locked: 0,
+          Hidden: 0,
+        },
+      },
+    ],
+  });
+
+  return levelPackLevels.sort(sortPacks);
+};
+
 router
   .get('/', async (req, res) => {
     const data = await allPacks();
@@ -1030,8 +1052,25 @@ router
     },
   )
   .get('/:LevelPackName', async (req, res) => {
-    const data = await getPackByName(req.params.LevelPackName);
-    res.json(data);
+    const pack = await getPackByName(req.params.LevelPackName);
+
+    let levels = [];
+
+    if (req.query.levels === '1') {
+      levels = await getLevelpackLevels(pack.LevelPackIndex);
+    }
+
+    res.json({
+      ...JSON.parse(JSON.stringify(pack)),
+      levels: Array.isArray(levels)
+        ? levels.map(lev => ({
+            LevelIndex: lev.LevelIndex,
+            LevelName: lev.Level.LevelName,
+            LongName: lev.Level.LongName,
+            LevelPackLevelIndex: lev.LevelPackLevelIndex,
+          }))
+        : [],
+    });
   });
 
 export default router;
