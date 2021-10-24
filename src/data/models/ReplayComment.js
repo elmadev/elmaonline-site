@@ -28,6 +28,16 @@ const ReplayComment = Model.define('replay_comment', {
     defaultValue: '',
     allowNull: true,
   },
+  BattleIndex: {
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  UUID: {
+    type: DataType.STRING(54),
+    defaultValue: null,
+    allowNull: true,
+  },
 });
 
 export default ReplayComment;
