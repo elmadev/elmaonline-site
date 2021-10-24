@@ -4,6 +4,8 @@ import Replay from './Replay';
 import Level from './Level';
 import Kuski from './Kuski';
 import Battletime from './Battletime';
+import BattleLeague from './BattleLeague';
+import BattleLeagueBattle from './BattleLeagueBattle';
 import Chat from './Chat';
 import Team from './Team';
 import AllFinished from './AllFinished';
@@ -320,6 +322,21 @@ SiteCup.hasMany(SiteCupTime, {
   as: 'CupTimes',
 });
 
+BattleLeague.hasMany(BattleLeagueBattle, {
+  foreignKey: 'BattleLeagueIndex',
+  as: 'Battles',
+});
+
+BattleLeague.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+BattleLeagueBattle.belongsTo(Battle, {
+  foreignKey: 'BattleIndex',
+  as: 'BattleData',
+});
+
 SiteCupTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -442,6 +459,12 @@ Crippled.belongsTo(Level, {
   as: 'LevelData',
 });
 
+TimeFile.belongsTo(AllFinished, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'TimeData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -453,6 +476,8 @@ export {
   Level,
   Kuski,
   Battletime,
+  BattleLeague,
+  BattleLeagueBattle,
   Chat,
   Team,
   AllFinished,

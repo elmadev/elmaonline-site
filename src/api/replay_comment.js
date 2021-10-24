@@ -6,7 +6,7 @@ import { ReplayComment, Kuski, Replay } from 'data/models';
 const router = express.Router();
 
 const getReplayCommentsByReplayId = async ReplayIndex => {
-  const data = await ReplayComment.findAll({
+  const query = {
     where: { ReplayIndex },
     order: [['ReplayCommentIndex', 'DESC']],
     include: [
@@ -16,12 +16,28 @@ const getReplayCommentsByReplayId = async ReplayIndex => {
         as: 'KuskiData',
       },
     ],
-  });
+  };
+  if (ReplayIndex.includes('b-')) {
+    query.where = { BattleIndex: ReplayIndex.split('-')[1] };
+  } else if (ReplayIndex.includes('_')) {
+    query.where = { UUID: ReplayIndex };
+  }
+  const data = await ReplayComment.findAll(query);
   return data;
 };
 
 const addReplayComment = async Data => {
-  const NewReplayComment = await ReplayComment.create(Data);
+  const insert = { ...Data };
+  if (typeof Data.ReplayIndex === 'string') {
+    if (Data.ReplayIndex.includes('b-')) {
+      insert.ReplayIndex = 0;
+      insert.BattleIndex = Data.ReplayIndex.split('-')[1];
+    } else if (Data.ReplayIndex.includes('_')) {
+      insert.ReplayIndex = 0;
+      insert.UUID = Data.ReplayIndex;
+    }
+  }
+  const NewReplayComment = await ReplayComment.create(insert);
   await createNewCommentNotification(NewReplayComment);
   return NewReplayComment;
 };

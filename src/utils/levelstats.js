@@ -1,6 +1,5 @@
 import { forEach, groupBy, values } from 'lodash';
 import moment from 'moment';
-import { Op } from 'sequelize';
 import connection from 'data/sequelize';
 import * as PlayStats from '../data/models/PlayStats';
 import { LevelStats, LevelStatsUpdate } from '../data/models';
@@ -50,10 +49,11 @@ export const doNext = async limit => {
   try {
     // get transaction
     transaction = await connection.transaction();
-
     await LevelStats.bulkCreate(updates, {
       transaction,
       updateOnDuplicate: LevelStats.getUpdateOnDuplicateKeys(),
+      benchmark: false,
+      logging: false,
     });
 
     track('bulk_upsert');
@@ -105,25 +105,7 @@ export const doNext = async limit => {
 
 // delete and re-build everything
 export const doAll = async (batchSize, sleepMs) => {
-  const updates = [];
-
   const maxTimeIndex = await PlayStats.getMaxTimeIndex();
-
-  await LevelStatsUpdate.destroy({
-    where: {
-      LevelStatsUpdateIndex: {
-        [Op.gt]: 0,
-      },
-    },
-  });
-
-  await LevelStats.destroy({
-    where: {
-      LevelIndex: {
-        [Op.gt]: 0,
-      },
-    },
-  });
 
   let update;
   let cont = true;
@@ -132,8 +114,6 @@ export const doAll = async (batchSize, sleepMs) => {
   do {
     // eslint-disable-next-line no-await-in-loop
     [update, moreExist] = await doNext(batchSize);
-
-    updates.push(update);
 
     // eslint-disable-next-line no-await-in-loop
     await new Promise(resolve => {
@@ -145,6 +125,4 @@ export const doAll = async (batchSize, sleepMs) => {
     // at the start of doAll.
     cont = moreExist && update.TimeIndex1 < maxTimeIndex;
   } while (cont);
-
-  return updates;
 };

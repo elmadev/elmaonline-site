@@ -149,6 +149,9 @@ const BattlesSearchByDesigner = async (query, offset) => {
 };
 
 const AllBattleRuns = async BattleIndex => {
+  if (Number.isNaN(parseInt(BattleIndex, 10))) {
+    return null;
+  }
   const runs = await Time.findAndCountAll({
     order: [['TimeIndex', 'DESC']],
     attributes: [
@@ -211,11 +214,14 @@ const AllBattleRuns = async BattleIndex => {
       where: { BattleIndex },
     });
     return {...multiRuns, 'multi': 1};
-  };
+  }
   return {...runs, 'multi': 0};
 };
 
 const BattleResults = async BattleIndex => {
+  if (Number.isNaN(parseInt(BattleIndex, 10))) {
+    return null;
+  }
   const battleResults = await Battle.findOne({
     attributes,
     where: { BattleIndex },
@@ -287,6 +293,9 @@ const GetBattleData = async IndexList => {
 
 
 const GetAllBattleTimes = async BattleIndex => {
+  if (Number.isNaN(parseInt(BattleIndex, 10))) {
+    return null;
+  }
   const battleStatus = await Battle.findAll({
     attributes: ['Finished'],
     where: { BattleIndex },
@@ -498,6 +507,9 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
 };
 
 const BattleReplays = async BattleIndex => {
+  if (Number.isNaN(parseInt(BattleIndex, 10))) {
+    return null;
+  }
   const battle = await Battle.findOne({ where: { BattleIndex } });
   if (!battle) {
     return [];
@@ -509,9 +521,51 @@ const BattleReplays = async BattleIndex => {
   return replays;
 };
 
+const GetLatest = async limit => {
+  const get = await Battle.findAll({
+    attributes: [
+      'BattleIndex',
+      'KuskiIndex',
+      'LevelIndex',
+      'Started',
+      'Duration',
+      'BattleType',
+      'Aborted',
+      'InQueue',
+      'Finished',
+      'RecFileName',
+    ],
+    order: [['BattleIndex', 'DESC']],
+    limit,
+    include: [
+      {
+        model: Kuski,
+        as: 'KuskiData',
+      },
+      {
+        model: Level,
+        attributes: ['LevelName'],
+        as: 'LevelData',
+      },
+      {
+        model: Battletime,
+        as: 'Results',
+        include: [
+          {
+            model: Kuski,
+            as: 'KuskiData',
+          },
+        ],
+      },
+    ],
+  });
+  return get;
+};
+
 router
-  .get('/', async (req, res) => {
-    res.json({});
+  .get('/:limit', async (req, res) => {
+    const battles = await GetLatest(Math.min(parseInt(req.params.limit, 10), 100));
+    res.json(battles);
   })
   .get('/replays/:BattleIndex', async (req, res) => {
     const replays = await BattleReplays(parseInt(req.params.BattleIndex, 10));

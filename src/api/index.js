@@ -11,6 +11,7 @@ import AllFinished from './allfinished';
 import LevelPack from './levelpack';
 import Besttime from './besttime';
 import Battle from './battle';
+import BattleLeague from './battleleague';
 import Player from './player';
 import Teams from './teams';
 import Level from './level';
@@ -45,6 +46,7 @@ router
   .use('/mod', Mod)
   .use('/besttime', Besttime)
   .use('/battle', Battle)
+  .use('/BattleLeague', BattleLeague)
   .use('/player', Player)
   .use('/news', News)
   .use('/teams', Teams)

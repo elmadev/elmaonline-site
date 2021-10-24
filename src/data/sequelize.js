@@ -50,6 +50,12 @@ const sequelize = new Sequelize(uri, {
         };
         return n;
       },
+      beforeBulkCreate: o => {
+        const n = o;
+        n.benchmark = false;
+        n.logging = false;
+        return n;
+      },
     },
   },
 });

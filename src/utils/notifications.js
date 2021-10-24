@@ -81,6 +81,10 @@ export const createNewCommentNotification = async replayComment => {
   const replay = await replayComment.getReplay();
   const kuski = await replayComment.getKuskiData();
 
+  if (!replay || !kuski) {
+    return;
+  }
+
   if (replayComment.KuskiIndex === replay.UploadedBy) {
     return;
   }

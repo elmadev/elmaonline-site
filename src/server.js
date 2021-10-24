@@ -336,11 +336,8 @@ app.get('/run/levelstats/sync', async (req, res) => {
 // destructive, and very slow
 app.get('/run/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
   if (req.header('Authorization') === config.run.playStats) {
-    const updates = await doAllLevelStats(
-      +req.params.batchSize,
-      +req.params.sleepMs,
-    );
-    res.json(updates);
+    res.json({ status: 'started' });
+    await doAllLevelStats(+req.params.batchSize, +req.params.sleepMs);
   } else {
     res.status(401);
     res.send('Unauthorized');
