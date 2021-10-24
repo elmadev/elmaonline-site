@@ -56,6 +56,7 @@ import LevelStatsUpdate from './LevelStatsUpdate';
 import Setting from './Setting';
 import TimeFile from './TimeFile';
 import MultiTimeFile from './MultiTimeFile';
+import Crippled from './Crippled';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -448,6 +449,16 @@ ReplayComment.belongsTo(Replay, {
   as: 'Replay',
 });
 
+Crippled.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Crippled.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 TimeFile.belongsTo(AllFinished, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
@@ -516,4 +527,5 @@ export {
   Setting,
   TimeFile,
   MultiTimeFile,
+  Crippled,
 }; // add the data model here as well so it exports

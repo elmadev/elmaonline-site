@@ -1,17 +1,21 @@
 import { log } from 'utils/database';
+import { isEmpty } from 'lodash';
 import sequelize from '../data/sequelize';
+
+// query + logging
+export const query = async (sql, opts) => {
+  const [results] = await sequelize.query(sql, {
+    benchmark: true,
+    logging: (q, b) => log('query', q, b),
+    ...opts,
+  });
+
+  return results;
+};
 
 // get the first row of a select query, or a default value.
 export const getOne = async (sql, opts, df = null) => {
-  const options = {
-    benchmark: true,
-    logging: (query, b) => log('query', query, b),
-  };
-  const [results] = await sequelize.query(
-    sql,
-    opts ? { ...opts, ...options } : options,
-  );
-
+  const results = await query(sql, opts);
   return results.length > 0 ? results[0] : df;
 };
 
@@ -22,7 +26,7 @@ export const getOne = async (sql, opts, df = null) => {
 export const getCol = async (sql, opts, column) => {
   const first = await getOne(sql, opts, null);
 
-  return first ? first[column] : undefined;
+  return !isEmpty(first) ? first[column] : undefined;
 };
 
 /**
