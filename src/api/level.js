@@ -19,6 +19,7 @@ const attributes = [
   'HardLocked',
   'Hidden',
   'Legacy',
+  'AcceptBugs',
 ];
 
 const getLevel = async (LevelIndex, withStats = false) => {
