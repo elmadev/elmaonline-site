@@ -71,6 +71,11 @@ const Level = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    AcceptBugs: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     Added: {
       type: DataType.STRING(19),
       defaultValue: '0000-00-00 00:00:00',
