@@ -6,6 +6,7 @@ import {
   Kuski,
   Battle,
   Level,
+  Battletime,
 } from '../data/models';
 
 const router = express.Router();
@@ -30,7 +31,7 @@ const getLeague = async ShortName => {
           {
             model: Battle,
             as: 'BattleData',
-            attributes: ['BattleType'],
+            attributes: ['BattleType', 'Started', 'Duration'],
             include: [
               {
                 model: Kuski,
@@ -40,6 +41,23 @@ const getLeague = async ShortName => {
                 model: Level,
                 as: 'LevelData',
                 attributes: ['LevelName'],
+              },
+              {
+                model: Battletime,
+                as: 'Results',
+                attributes: [
+                  'KuskiIndex',
+                  'TimeIndex',
+                  'Time',
+                  'Apples',
+                  'BattleTimeIndex',
+                ],
+                include: [
+                  {
+                    model: Kuski,
+                    as: 'KuskiData',
+                  },
+                ],
               },
             ],
           },
