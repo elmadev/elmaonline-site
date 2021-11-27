@@ -73,6 +73,7 @@ const SortLevel = async data => {
   });
   const levels = await LevelPackLevel.findAll({
     where: { LevelPackIndex: data.LevelPackIndex },
+    order: ['Sort'],
   });
   if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     const { LevelIndex } = levels[data.source.index];
