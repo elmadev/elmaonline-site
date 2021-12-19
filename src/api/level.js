@@ -2,7 +2,7 @@ import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from 'utils/auth';
 import { has } from 'lodash';
-import { Level, Time, LevelStats } from '../data/models';
+import { Level, Time, LevelStats, Battle } from '../data/models';
 import connection from '../data/sequelize';
 
 const router = express.Router();
@@ -25,7 +25,12 @@ const attributes = [
 const getLevel = async (LevelIndex, withStats = false) => {
   const include = [];
 
-  if (withStats) {
+  const battles = await Battle.findAll({ where: { LevelIndex } });
+  const ongoingBattles = battles.filter(
+    b => b.Finished === 0 && b.Aborted === 0 && b.InQueue === 0,
+  );
+
+  if (withStats && ongoingBattles.length === 0) {
     include.push({
       attributes: [
         'TimeF',
