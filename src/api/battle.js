@@ -17,6 +17,7 @@ const attributes = [
   'SeeTimes',
   'AllowStarter',
   'AcceptBugs',
+  'AlwaysThrottle',
   'NoVolt',
   'NoTurn',
   'OneTurn',

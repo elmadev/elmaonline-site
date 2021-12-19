@@ -533,8 +533,11 @@ const getReplaysByLevelIndex = async LevelIndex => {
     return replays;
   }
 
+  const finishedBattles = battles.filter(
+    b => b.Finished === 1 || b.Aborted === 1,
+  );
   const battleReplays = await findTimeFiles({
-    BattleIndex: { [Op.in]: battles.map(r => r.BattleIndex) },
+    BattleIndex: { [Op.in]: finishedBattles.map(r => r.BattleIndex) },
   });
 
   const winners = battles
