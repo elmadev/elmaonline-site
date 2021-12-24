@@ -7,6 +7,8 @@ import {
   toPairs,
   uniq,
   groupBy,
+  mapValues,
+  omit,
 } from 'lodash';
 import { frequencies } from 'lodash-contrib';
 import { authContext } from 'utils/auth';
@@ -34,6 +36,8 @@ import Favourite from './levelpack_favourite';
 import Collection from './levelpack_collection';
 import { checkSchemaAndBail } from '../utils/middleware';
 import sequelize from '../data/sequelize';
+import { query as sqlQuery } from '../utils/sequelize';
+import { parseTimeDriven } from '../data/models/PlayStats';
 
 const router = express.Router();
 
@@ -366,6 +370,68 @@ const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   };
 };
 
+// for some raw sql queries (not using ORM)
+const mapKuskiData = times => {
+  return times.map(t => ({
+    ...omit(t, [
+      'Driven',
+      'KuskiIndex',
+      'Kuski',
+      'Country',
+      'TeamIndex',
+      'Team',
+      'Finished',
+      'posn',
+    ]),
+    // from date string to timestamp
+    Driven: parseTimeDriven(t.Driven),
+    KuskiData: {
+      KuskiIndex: t.KuskiIndex,
+      Kuski: t.Kuski,
+      Country: t.Country,
+      TeamData: {
+        TeamIndex: t.TeamIndex,
+        Team: t.Team,
+      },
+    },
+  }));
+};
+
+const getRecords = async (LevelPackName, eolOnly = 0) => {
+  const levelPack = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+
+  if (!levelPack) {
+    return {};
+  }
+
+  const isLegacy = !levelPack.Legacy ? false : !eolOnly;
+
+  const sql = `
+    SELECT bt.*, k.KuskiIndex, k.Kuski, k.Country, t.TeamIndex, t.Team
+    FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
+        FROM ${isLegacy ? 'legacybesttime' : 'besttime'}
+        WHERE LevelIndex IN (
+        SELECT LevelIndex
+        FROM levelpack_level
+        WHERE LevelPackIndex = ?)) bt
+    LEFT OUTER JOIN kuski k ON k.KuskiIndex = bt.KuskiIndex
+    LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
+    WHERE posn = 1;
+  `;
+
+  const results0 = await sqlQuery(sql, {
+    replacements: [levelPack.LevelPackIndex],
+  });
+
+  const results = mapKuskiData(results0);
+
+  // from array to object, indexed by LevelIndex
+  return mapValues(groupBy(results, 'LevelIndex'), arr => arr[0]);
+};
+
 const getTimes = async (LevelPackName, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
@@ -583,6 +649,9 @@ const sortTimes = (a, b) => {
   return a.Time - b.Time;
 };
 
+// although we have getRecords function for the records tab,
+// personal, multi times, king list, and total times still rely on
+// on this (which they actually use for levels, not so much the records)
 const findRecords = times => {
   const recs = [];
   forEach(times.sort(sortPacks), level => {
@@ -928,6 +997,13 @@ router
     const points = kinglist(data);
     const records = findRecords(data);
     res.json({ tts, points, records });
+  })
+  .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
+    const records = await getRecords(
+      req.params.LevelPackName,
+      parseInt(req.params.eolOnly, 10),
+    );
+    res.json(records);
   })
   .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
     const data = await getTimes(
