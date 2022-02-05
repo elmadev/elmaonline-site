@@ -9,6 +9,7 @@ import {
   SiteCupGroup,
 } from 'data/models';
 import { eachSeries } from 'neo-async';
+import stream from 'stream';
 import { forEach } from 'lodash';
 import { Op } from 'sequelize';
 import { uuid } from 'utils/calcs';
@@ -177,7 +178,13 @@ export const zipFiles = files => {
     });
     archive.pipe(output);
     forEach(files, file => {
-      archive.append(Buffer.from(file.file), { name: file.filename });
+      // workaround for this issue https://github.com/archiverjs/node-archiver/issues/542
+      // OG: archive.append(Buffer.from(file.file), { name: file.filename });
+      const ReadableStream = stream.Readable;
+      const zipInputStream = new ReadableStream();
+      zipInputStream.push(Buffer.from(file.file));
+      zipInputStream.push(null);
+      archive.append(zipInputStream, { name: file.filename });
     });
     archive.finalize();
   });
