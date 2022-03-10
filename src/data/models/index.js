@@ -357,6 +357,11 @@ SiteCupGroup.hasMany(SiteCupBlog, {
   as: 'CupBlog',
 });
 
+SiteCupGroup.hasMany(SiteCup, {
+  foreignKey: 'CupGroupIndex',
+  as: 'SiteCupData',
+});
+
 SiteCupGroup.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

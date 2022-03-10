@@ -27,6 +27,24 @@ const getCups = async (ongoing = false) => {
   };
   if (ongoing) {
     query.where.Finished = 0;
+    query.include = [
+      {
+        required: false,
+        model: SiteCup,
+        as: 'SiteCupData',
+        attributes: [
+          'CupIndex',
+          'LevelIndex',
+          'Designer',
+          'StartTime',
+          'EndTime',
+          'Designer',
+        ],
+        where: {
+          Started: 1,
+        },
+      },
+    ];
   }
   const data = await SiteCupGroup.findAll(query);
   return data;
