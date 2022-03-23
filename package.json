@@ -48,7 +48,7 @@
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0",
-    "nanoid": "^3.1.12",
+    "nanoid": "^3.1.31",
     "neo-async": "^2.6.2",
     "node-fetch": "^2.6.1",
     "pretty-error": "^2.1.1",
