@@ -139,7 +139,7 @@ const getKuskiTimes = async (LevelIndex, KuskiIndex, CrippledType) => {
 
   // very fast when KuskiIndex provided
   const kuskiTimes = await Crippled.findAll({
-    attributes: ['TimeIndex', 'BattleIndex', 'Time', 'Driven'],
+    attributes: ['TimeIndex', 'Time', 'Driven'],
     where: {
       LevelIndex,
       KuskiIndex,

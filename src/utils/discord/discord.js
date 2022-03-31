@@ -86,11 +86,15 @@ const alignTime = time => {
   return alignedTime;
 };
 
-const formatLevel = level => {
-  if (
+const levelIsInternal = level => {
+  return (
     level.substring(0, 6) === 'QWQUU0' &&
     parseInt(level.substring(6, 8), 10) <= 55
-  ) {
+  );
+};
+
+const formatLevel = level => {
+  if (levelIsInternal(level)) {
     return `Internal ${level.substring(6, 8)}`;
   }
   return `${level}.lev`;
@@ -166,11 +170,20 @@ function discordChatline(content) {
 
 function discordBesttime(content) {
   if (!content.battleIndex) {
-    let text = `${formatLevel(content.level)}:`;
+    let text = '';
+
+    if (levelIsInternal(content.level)) {
+      text += `**${formatLevel(content.level)}**:`;
+    } else {
+      text += `${formatLevel(content.level)}:`;
+    }
+
     text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
+
     if (content.position === 1) {
       text += ' :first_place:';
     }
+
     sendMessage(config.discord.channels.times, text);
   }
 }
