@@ -84,6 +84,8 @@ const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
       'Finished',
       [sequelize.fn('COUNT', 'Finished'), 'RunCount'],
       [sequelize.fn('SUM', sequelize.col('Time')), 'TimeSum'],
+      [sequelize.fn('min', sequelize.col('Driven')), 'FirstPlayed'],
+      [sequelize.fn('max', sequelize.col('Driven')), 'LastPlayed'],
     ],
     where: { LevelIndex, KuskiIndex },
   });
