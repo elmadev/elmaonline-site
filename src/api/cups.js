@@ -40,6 +40,13 @@ const getCups = async (ongoing = false) => {
           'EndTime',
           'Designer',
         ],
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'KuskiData',
+          },
+        ],
         where: {
           Started: 1,
         },

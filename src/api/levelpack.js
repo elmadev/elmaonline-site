@@ -11,6 +11,7 @@ import {
   omit,
 } from 'lodash';
 import { frequencies } from 'lodash-contrib';
+import { format } from 'date-fns';
 import { authContext } from 'utils/auth';
 import {
   like,
@@ -759,6 +760,15 @@ const allPacks = async () => {
   return data;
 };
 
+const latestPacks = async limit => {
+  const packs = await LevelPack.findAll({
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    order: [['LevelPackIndex', 'DESC']],
+    limit,
+  });
+  return packs;
+};
+
 // get level pack(s) that a level belongs to
 const byLevel = async LevelIndex => {
   const q = `
@@ -961,9 +971,12 @@ router
     const data = await allPacks();
     res.json(data);
   })
+  .get('/latest/:count', async (req, res) => {
+    const packs = await latestPacks(parseInt(req.params.count, 10));
+    res.json(packs);
+  })
   .get('/stats', async (req, res) => {
     const stats = await allPacksStats();
-
     res.json(stats);
   })
   .get('/level-stats/:byName/:identifier', async (req, res) => {
@@ -1092,6 +1105,7 @@ router
       const add = await AddLevelPack({
         ...req.body,
         KuskiIndex: auth.userid,
+        CreatedAt: format(new Date(), 't'),
       });
       res.json(add);
     } else {
