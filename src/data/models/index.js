@@ -337,6 +337,11 @@ BattleLeagueBattle.belongsTo(Battle, {
   as: 'BattleData',
 });
 
+BattleLeagueBattle.belongsTo(Kuski, {
+  foreignKey: 'Designer',
+  as: 'DesignerData',
+});
+
 SiteCupTime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
