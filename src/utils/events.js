@@ -13,6 +13,7 @@ import {
 } from 'utils/notifications';
 import { uploadTimeFile } from 'utils/upload';
 import { updateRanking } from '../ranking';
+import { updateLeague } from './league';
 import config from '../config';
 
 const checkAuth = (req, res, callback) => {
@@ -72,6 +73,7 @@ export function battleresults(req, res) {
     res.json({ success: 1 });
     discordBattleresults(req.body);
     updateRanking(10);
+    updateLeague(req.body);
   });
 }
 
