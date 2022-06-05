@@ -17,10 +17,10 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          sudo chown ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} ${{ secrets.SSH_PATH }}/.git/index
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
           cd ${{ secrets.SSH_PATH }}
           git pull
           yarn

@@ -1,4 +1,5 @@
 import DataType from 'sequelize';
+import moment from 'moment';
 import Model from '../sequelize';
 
 const BattleLeagueBattle = Model.define(
@@ -24,6 +25,32 @@ const BattleLeagueBattle = Model.define(
       type: DataType.STRING(15),
       allowNull: false,
       defaultValue: '',
+    },
+    LevelName: {
+      type: DataType.STRING(8),
+      allowNull: false,
+      defaultValue: '',
+    },
+    BattleType: {
+      type: DataType.STRING(2),
+      allowNull: false,
+      defaultValue: '',
+    },
+    Designer: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    Started: {
+      type: DataType.STRING(19),
+      allowNull: true,
+      defaultValue: null,
+      get() {
+        const ts = this.getDataValue('Started')
+          ? moment(this.getDataValue('Started')).format('X')
+          : 0;
+        return ts;
+      },
     },
   },
   {
