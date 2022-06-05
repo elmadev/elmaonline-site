@@ -19,6 +19,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
           cd ${{ secrets.SSH_PATH }}
           git pull
           yarn
