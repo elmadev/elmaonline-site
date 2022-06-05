@@ -14,16 +14,16 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}
+        host: ${{ secrets.SSH_HOST_LIVE }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          sudo chown ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} ${{ secrets.SSH_PATH }}/.git/index
-          cd ${{ secrets.SSH_PATH_LIVE }}
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          cd ${{ secrets.SSH_PATH }}
           git pull
           yarn
           yarn build-release
-          rm -r ${{ secrets.SSH_PATH_LIVE }}/deploy/*
-          cp -R ${{ secrets.SSH_PATH_LIVE }}/build/* ${{ secrets.SSH_PATH_LIVE }}/deploy/
+          rm -r ${{ secrets.SSH_PATH }}/deploy/*
+          cp -R ${{ secrets.SSH_PATH }}/build/* ${{ secrets.SSH_PATH }}/deploy/
