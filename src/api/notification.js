@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
+import { authContext } from '#utils/auth';
 import sequelize from 'sequelize';
 import { Notification } from '../data/models';
 

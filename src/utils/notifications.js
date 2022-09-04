@@ -1,7 +1,7 @@
 import DataType, { Op } from 'sequelize';
-import { groupBy } from 'lodash';
-import { notificationMail } from 'utils/email';
-import { discordNotification } from 'utils/discord';
+import { groupBy } from 'lodash-es';
+import { notificationMail } from '#utils/email';
+// import { discordNotification } from '#utils/discord';
 import { getTimes } from '../api/besttime';
 import { getTimes as getAllTimes } from '../api/allfinished';
 import { getFavouritedBy } from '../api/level';
@@ -39,7 +39,7 @@ const sendThirdParty = async (KuskiIndex, type, Settings, meta) => {
     await notificationMail(KuskiInfo, type, meta);
   }
   if (Discord) {
-    await discordNotification(Settings.DiscordId, type, meta);
+    // await discordNotification(Settings.DiscordId, type, meta);
   }
 };
 
@@ -63,7 +63,7 @@ export const createNewNewsNotification = async newsItem => {
   await Notification.bulkCreate(notifs);
 
   // bulk send to discord, skip email due to formatting issues and 300 a day limit at the provider
-  const Discords = await Setting.findAll({
+  /* const Discords = await Setting.findAll({
     where: { DiscordId: { [Op.not]: null }, SendDiscord: 1 },
   });
   Discords.forEach(d => {
@@ -73,7 +73,7 @@ export const createNewNewsNotification = async newsItem => {
       kuski: kuski.Kuski,
       text: newsItem.News,
     });
-  });
+  }); */
 };
 
 // Creates notification for uploader of the replay

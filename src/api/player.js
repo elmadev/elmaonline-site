@@ -1,8 +1,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from 'utils/database';
-import { authContext } from 'utils/auth';
-import { pick, omit } from 'lodash';
+import { like, searchLimit, searchOffset } from '#utils/database';
+import { authContext } from '#utils/auth';
+import { pick, omit } from 'lodash-es';
 import {
   Team,
   Kuski,

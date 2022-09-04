@@ -1,6 +1,6 @@
-import { forEach, groupBy, values } from 'lodash';
+import { forEach, groupBy, values } from 'lodash-es';
 import moment from 'moment';
-import connection from 'data/sequelize';
+import connection from '#data/sequelize';
 import * as PlayStats from '../data/models/PlayStats';
 import { LevelStats, LevelStatsUpdate } from '../data/models';
 import { aggregateTrackers, getPerfTracker } from './perf';

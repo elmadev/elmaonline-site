@@ -2,7 +2,7 @@
 // do not exist yet and may never exist). ie. LevelStats, KuskiStats,
 // LevelStatsDaily, KuskiLevelStats
 import Sequelize from 'sequelize';
-import sequelize from 'data/sequelize';
+import sequelize from '#data/sequelize';
 import {
   uniq,
   includes,
@@ -12,10 +12,10 @@ import {
   max,
   mapValues,
   isEmpty,
-} from 'lodash';
+} from 'lodash-es';
 import moment from 'moment';
-import { log } from 'utils/database';
-import { getCol } from 'utils/sequelize';
+import { log } from '#utils/database';
+import { getCol } from '#utils/sequelize';
 
 export const timeCol = () => {
   // INTEGER seems large enough, but being safe.

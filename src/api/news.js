@@ -1,7 +1,7 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
-import { createNewNewsNotification } from 'utils/notifications';
-import { News, Kuski, SiteSetting } from 'data/models';
+import { authContext } from '#utils/auth';
+import { createNewNewsNotification } from '#utils/notifications';
+import { News, Kuski, SiteSetting } from '#data/models';
 import { fn } from 'sequelize';
 
 const router = express.Router();

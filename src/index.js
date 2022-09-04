@@ -7,6 +7,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import config from './config.js';
 import './data/sequelize.js';
+import apiRoutes from './api';
 
 const app = express();
 
@@ -57,6 +58,10 @@ app.use(async (req, res, next) => {
 // ----------------------------------------------------------
 // endpoints
 // ----------------------------------------------------------
+
+// api
+app.use('/api', apiRoutes);
+
 app.get('*', (req, res) => {
   res.send(
     `I just don't have time to be responsible for every little thing that goes wrong in your life.`

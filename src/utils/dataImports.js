@@ -1,6 +1,7 @@
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
 import { format } from 'date-fns';
-import { eachSeries } from 'neo-async';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
 import { create } from 'apisauce';
 import {
   KuskiMap,

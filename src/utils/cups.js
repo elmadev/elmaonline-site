@@ -1,4 +1,4 @@
-import { forEach, has } from 'lodash';
+import { forEach, has } from 'lodash-es';
 import moment from 'moment';
 
 export const admins = cup => {

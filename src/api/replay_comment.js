@@ -1,7 +1,7 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
-import { createNewCommentNotification } from 'utils/notifications';
-import { ReplayComment, Kuski, Replay } from 'data/models';
+import { authContext } from '#utils/auth';
+import { createNewCommentNotification } from '#utils/notifications';
+import { ReplayComment, Kuski, Replay } from '#data/models';
 
 const router = express.Router();
 

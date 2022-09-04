@@ -9,13 +9,25 @@
     "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" ."
   },
   "dependencies": {
+    "aws-sdk": "^2.1209.0",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "date-fns": "^2.29.2",
+    "disco-oauth": "^5.1.1",
+    "elmajs": "^1.2.0",
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
+    "express-validator": "^6.14.2",
+    "jws": "^4.0.0",
+    "lodash-contrib": "^4.1200.1",
+    "lodash-es": "^4.17.21",
     "mysql2": "^2.3.3",
-    "sequelize": "^6.21.4"
+    "nanoid": "^4.0.0",
+    "neo-async": "^2.6.2",
+    "read-chunk": "^4.0.3",
+    "sequelize": "^6.21.4",
+    "sib-api-v3-sdk": "^8.4.2"
   },
   "devDependencies": {
     "eslint": "latest",
@@ -23,5 +35,12 @@
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.19",
     "prettier": "2.7.1"
+  },
+  "imports": {
+    "#api/*": "./src/api/*",
+    "#constants/*": "./src/constants/*",
+    "#data/*": "./src/data/*",
+    "#middlewares/*": "./src/middlewares/*",
+    "#utils/*": "./src/utils/*"
   }
 }

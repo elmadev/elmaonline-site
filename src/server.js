@@ -16,13 +16,13 @@ import {
   getEventReplays,
   getAllShirts,
   getShirtByKuskiId,
-} from 'utils/download';
+} from '#utils/download';
 import {
   uploadReplayS3,
   uploadCupReplay,
   uploadFileS3,
   downloadFileS3,
-} from 'utils/upload';
+} from '#utils/upload';
 import {
   chatline,
   besttime,
@@ -32,11 +32,11 @@ import {
   battleend,
   battleresults,
   eventsFile,
-} from 'utils/events';
-import { discord } from 'utils/discord';
-import { auth, authContext } from 'utils/auth';
-import { kuskimap, email, legacyTimes } from 'utils/dataImports';
-import { LevelStats, LevelStatsUpdate } from 'data/models';
+} from '#utils/events';
+import { discord } from '#utils/discord';
+import { auth, authContext } from '#utils/auth';
+import { kuskimap, email, legacyTimes } from '#utils/dataImports';
+import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { updateRanking, deleteRanking } from './ranking';
 import config from './config';
 import apiRoutes from './api';

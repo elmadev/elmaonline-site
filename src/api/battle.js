@@ -1,8 +1,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from 'utils/database';
+import { like, searchLimit, searchOffset } from '#utils/database';
 import { add, parse } from 'date-fns';
-import { forEach, omit } from 'lodash';
+import { forEach, omit } from 'lodash-es';
 import {
   AllFinished,
   Battle,

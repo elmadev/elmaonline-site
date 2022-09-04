@@ -1,11 +1,11 @@
 import express from 'express';
-import { uuid } from 'utils/calcs';
+import { uuid } from '#utils/calcs';
 import crypto from 'crypto';
 import { format } from 'date-fns';
-import { Team, Kuski, SiteSetting } from 'data/models';
-import { confirmMail, resetMail } from 'utils/email';
-import { authContext } from 'utils/auth';
-import { sendMessage } from 'utils/discord';
+import { Team, Kuski, SiteSetting } from '#data/models';
+import { confirmMail, resetMail } from '#utils/email';
+import { authContext } from '#utils/auth';
+// import { sendMessage } from '#utils/discord';
 import Discord from './register_discord';
 import config from '../config';
 
@@ -112,10 +112,10 @@ const nickRequest = async (nick, KuskiIndex, oldNick) => {
     Setting: nick,
     KuskiIndex,
   });
-  sendMessage(
+  /* sendMessage(
     config.discord.channels.admin,
     `:pencil2: New nick change request: ${oldNick} >> ${nick}`,
-  );
+  ); */
   return r;
 };
 

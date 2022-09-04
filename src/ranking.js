@@ -1,7 +1,8 @@
-import { forEach, cloneDeep, has } from 'lodash';
+import { forEach, cloneDeep, has } from 'lodash-es';
 import moment from 'moment';
 import { Op } from 'sequelize';
-import { eachSeries } from 'neo-async';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
 import { BATTLETYPES, INTERNALS } from './constants/ranking';
 import {
   Battle,

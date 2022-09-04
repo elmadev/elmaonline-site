@@ -6,12 +6,12 @@ import {
   discordBattlequeue,
   discordBattleresults,
   discordBattleEnd,
-} from 'utils/discord';
+} from '#utils/discord';
 import {
   createTimeBeatenNotification,
   createBestTimeNotification,
-} from 'utils/notifications';
-import { uploadTimeFile } from 'utils/upload';
+} from '#utils/notifications';
+import { uploadTimeFile } from '#utils/upload';
 import { updateRanking } from '../ranking';
 import { updateLeague } from './league';
 import config from '../config';

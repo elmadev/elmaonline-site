@@ -1,9 +1,9 @@
 import express from 'express';
-import connection from 'data/sequelize';
+import connection from '#data/sequelize';
 import { Op } from 'sequelize';
-import { authContext } from 'utils/auth';
-import { formatLevelSearch, fromTo, log } from 'utils/database';
-import { groupBy, orderBy, uniqBy } from 'lodash';
+import { authContext } from '#utils/auth';
+import { formatLevelSearch, fromTo, log } from '#utils/database';
+import { groupBy, orderBy, uniqBy } from 'lodash-es';
 import {
   Besttime,
   Kuski,

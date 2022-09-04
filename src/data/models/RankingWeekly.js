@@ -1,5 +1,5 @@
 import DataType from 'sequelize';
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
 import Model from '../sequelize';
 
 const BattleTypes = ['All'];

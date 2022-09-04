@@ -7,16 +7,17 @@ import {
   SiteCup,
   Kuski,
   SiteCupGroup,
-} from 'data/models';
-import { eachSeries } from 'neo-async';
+} from '#data/models';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
 import stream from 'stream';
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
 import { Op } from 'sequelize';
-import { uuid } from 'utils/calcs';
+import { uuid } from '#utils/calcs';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
-import { filterResults, admins } from 'utils/cups';
+import { filterResults, admins } from '#utils/cups';
 import jimp from 'jimp';
 import config from '../config';
 

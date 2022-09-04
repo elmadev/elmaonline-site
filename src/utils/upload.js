@@ -1,11 +1,12 @@
-import { Replay } from 'elmajs';
-import readChunk from 'read-chunk';
+import elmajs from 'elmajs';
+const { Replay } = elmajs;
+import { readChunk } from 'read-chunk';
 import fs from 'fs';
 import crypto from 'crypto';
-import { uuid } from 'utils/calcs';
+import { uuid } from '#utils/calcs';
 import AWS from 'aws-sdk';
 import util from 'util';
-import { MIMETYPES } from 'constants/lists';
+import { MIMETYPES } from '#constants/lists';
 import { format, addDays, isAfter } from 'date-fns';
 
 import {
@@ -18,7 +19,7 @@ import {
   Upload,
   TimeFile,
   MultiTimeFile,
-} from 'data/models';
+} from '#data/models';
 import config from '../config';
 
 const writeFile = util.promisify(fs.writeFile);

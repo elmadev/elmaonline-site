@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
+import { authContext } from '#utils/auth';
 import { LevelPackFavourite } from '../data/models';
 
 const router = express.Router();
