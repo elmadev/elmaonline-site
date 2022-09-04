@@ -4,10 +4,16 @@ import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import request from 'request';
 import fileUpload from 'express-fileupload';
-import config from './config.js';
+import config from './config';
 import './data/sequelize.js';
+import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api';
+import eventsRoutes from './events';
+import dlRoutes from './dl';
+import runRoutes from './run';
+import uploadRoutes from './upload';
 
 const app = express();
 
@@ -62,9 +68,36 @@ app.use(async (req, res, next) => {
 // api
 app.use('/api', apiRoutes);
 
+// events
+app.use('/events', eventsRoutes);
+
+// downloading files
+app.use('/dl', dlRoutes);
+
+// cron jobs and data imports
+app.use('/run', runRoutes);
+
+// upload files
+app.use('/upload', uploadRoutes);
+
+// download short url
+app.get('/u/:uuid/:filename', async (req, res) => {
+  const allow = await downloadFileS3(req.params.uuid, req.params.filename);
+  if (allow) {
+    request
+      .get(
+        `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}files/${req.params.uuid}/${req.params.filename}`,
+      )
+      .pipe(res);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+// wildcard and root
 app.get('*', (req, res) => {
   res.send(
-    `I just don't have time to be responsible for every little thing that goes wrong in your life.`
+    `I just don't have time to be responsible for every little thing that goes wrong in your life.`,
   );
 });
 

@@ -9,6 +9,8 @@
     "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" ."
   },
   "dependencies": {
+    "apisauce": "^2.1.6",
+    "archiver": "^5.3.1",
     "aws-sdk": "^2.1209.0",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
@@ -19,6 +21,7 @@
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
     "express-validator": "^6.14.2",
+    "jimp": "^0.16.1",
     "jws": "^4.0.0",
     "lodash-contrib": "^4.1200.1",
     "lodash-es": "^4.17.21",
@@ -26,6 +29,7 @@
     "nanoid": "^4.0.0",
     "neo-async": "^2.6.2",
     "read-chunk": "^4.0.3",
+    "request": "^2.88.2",
     "sequelize": "^6.21.4",
     "sib-api-v3-sdk": "^8.4.2"
   },

@@ -16,7 +16,7 @@ import {
   Country,
   Team,
 } from '../data/models';
-import * as kuskiMapData from '../data/json/kuskimap.json';
+import * as kuskiMapData from '../data/json/kuskimap.json' assert {type: "json"};
 
 const api = create({
   baseURL: 'https://eol.ams3.digitaloceanspaces.com/import/',

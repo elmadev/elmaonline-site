@@ -1,4 +1,4 @@
-import {
+/* import {
   discordChatline,
   discordBesttime,
   discordBestmultitime,
@@ -6,7 +6,7 @@ import {
   discordBattlequeue,
   discordBattleresults,
   discordBattleEnd,
-} from '#utils/discord';
+} from '#utils/discord'; */
 import {
   createTimeBeatenNotification,
   createBestTimeNotification,
@@ -27,7 +27,7 @@ const checkAuth = (req, res, callback) => {
 export function chatline(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordChatline(req.body);
+    // discordChatline(req.body);
   });
 }
 
@@ -36,42 +36,42 @@ export function besttime(req, res) {
     createBestTimeNotification(req.body);
     createTimeBeatenNotification(req.body);
     res.json({ success: 1 });
-    discordBesttime(req.body);
+    // discordBesttime(req.body);
   });
 }
 
 export function bestmultitime(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordBestmultitime(req.body);
+    // discordBestmultitime(req.body);
   });
 }
 
 export function battlestart(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordBattlestart(req.body);
+    // discordBattlestart(req.body);
   });
 }
 
 export function battlequeue(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordBattlequeue(req.body);
+    // discordBattlequeue(req.body);
   });
 }
 
 export function battleend(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordBattleEnd(req.body);
+    // discordBattleEnd(req.body);
   });
 }
 
 export function battleresults(req, res) {
   checkAuth(req, res, () => {
     res.json({ success: 1 });
-    discordBattleresults(req.body);
+    // discordBattleresults(req.body);
     updateRanking(10);
     updateLeague(req.body);
   });
