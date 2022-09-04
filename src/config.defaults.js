@@ -7,7 +7,7 @@ if (process.env.BROWSER) {
 }
 
 // default config, this file should not be changed unless you are adding a new key
-module.exports = {
+export default {
   // Node.js app
   port: process.env.PORT || 3003,
 

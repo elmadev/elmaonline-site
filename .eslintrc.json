@@ -1,6 +1,6 @@
 {
   "env": {
-    "browser": true,
+    "node": true,
     "es2021": true
   },
   "extends": "eslint:recommended",
@@ -15,7 +15,10 @@
     "prettier/prettier": [
       "warn",
       {
-        "endOfLine": "auto"
+        "endOfLine": "auto",
+        "singleQuote": true,
+        "arrowParens": "avoid",
+        "trailingComma": "all"
       }
     ]
   },
