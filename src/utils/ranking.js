@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Op } from 'sequelize';
 import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
-import { BATTLETYPES, INTERNALS } from './constants/ranking';
+import { BATTLETYPES, INTERNALS } from '#constants/ranking';
 import {
   Battle,
   Ranking,
@@ -13,9 +13,9 @@ import {
   RankingDaily,
   RankingHistory,
   Battletime,
-} from './data/models';
-import { getBattleType } from './utils/battle';
-import config from './config';
+} from '#data/models';
+import { getBattleType } from '#utils/battle';
+import config from '../config';
 
 const getCurrentRankings = async () => {
   const rankingData = await Ranking.findAll();

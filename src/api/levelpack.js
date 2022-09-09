@@ -35,7 +35,7 @@ import {
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
 import Collection from './levelpack_collection';
-import { checkSchemaAndBail } from '../utils/middleware';
+import { checkSchemaAndBail } from '../middlewares/validate';
 import sequelize from '../data/sequelize';
 import { query as sqlQuery } from '../utils/sequelize';
 import { parseTimeDriven } from '../data/models/PlayStats';

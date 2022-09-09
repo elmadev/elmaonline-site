@@ -5,7 +5,7 @@ import {
   doNext as doNextLevelStats,
 } from './utils/levelstats';
 import { LevelStats, LevelStatsUpdate } from '#data/models';
-import { updateRanking, deleteRanking } from './ranking';
+import { updateRanking, deleteRanking } from '#utils/ranking';
 import { kuskimap, email, legacyTimes } from '#utils/dataImports';
 
 const app = express.Router();

@@ -32,6 +32,30 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 - eslint and prettier for linting
 - nodemon for auto reloading server when you edit files
 
+## Folder structure
+
+```
+.
+├── /                      # Various configuration files
+├── /events                # Examples of event api calls
+├── /public                # Static files served
+├── /src                   # This is where your code will be
+    ├── /api               # Endpoints used by frontend
+    ├── /constants         # Constants used in code
+    ├── /data              # Database models and json files
+    ├── /middlewares       # Express middleware
+    ├── /utils             # Helper functions etc.
+    ├── /config.default.js # Default config
+    ├── /config.js         # Combined config, use this in code
+    ├── /config.local.js   # Local config changes
+    ├── /dl.js             # Endpoints for downloads
+    ├── /events.js         # Endpoints for events, called by game server
+    ├── /index.js          # Entry point and express set up
+    ├── /run.js            # Cron jobs and one time imports
+    ├── /start.mjs         # Entry point for pm2
+    ├── /upload.js         # Endpoints for uploads
+```
+
 ## Setup editor
 
 The project is configured to use eslint and prettier to ensure good coding practices. Make sure you install relevant plugins for your editor.

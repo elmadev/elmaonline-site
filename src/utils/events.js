@@ -12,7 +12,7 @@ import {
   createBestTimeNotification,
 } from '#utils/notifications';
 import { uploadTimeFile } from '#utils/upload';
-import { updateRanking } from '../ranking';
+import { updateRanking } from '#utils/ranking';
 import { updateLeague } from './league';
 import config from '../config';
 
