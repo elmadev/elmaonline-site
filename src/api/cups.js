@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import moment from 'moment';
 import { filterResults, generateEvent, admins } from '#utils/cups';
 import { zeroPad } from '#utils/calcs';
-// import { sendMessage } from '#utils/discord';
+import { sendMessage } from '#utils/discord';
 import config from '../config';
 import {
   SiteCupGroup,
@@ -701,7 +701,7 @@ router
             ...req.body,
             KuskiIndex: auth.userid,
           });
-          /* sendMessage(
+          sendMessage(
             config.discord.channels.events,
             `:newspaper: Interview added for ${
               req.body.ShortName
@@ -711,7 +711,7 @@ router
               .toLowerCase()}: <${config.discord.url}cup/${
               req.body.ShortName
             }/events/${getEventNumber(eventData[0])}/interviews>`,
-          ); */
+          );
           res.json({ success: 1 });
         } else {
           res.json({ success: 0, error: 'Not eligable to add interview' });

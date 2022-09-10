@@ -8,6 +8,7 @@ import request from 'request';
 import fileUpload from 'express-fileupload';
 import config from './config';
 import './data/sequelize.js';
+import { auth } from '#utils/auth';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api';
 import eventsRoutes from './events';
@@ -65,6 +66,12 @@ app.use(async (req, res, next) => {
 // endpoints
 // ----------------------------------------------------------
 
+// login
+app.post('/token', async (req, res) => {
+  const authResponse = await auth(req.body);
+  res.json({ Response: authResponse });
+});
+
 // api
 app.use('/api', apiRoutes);
 
@@ -104,11 +111,11 @@ app.get('*', (req, res) => {
 // ----------------------------------------------------------
 // error logging
 // ----------------------------------------------------------
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   // eslint-disable-next-line no-console
   console.error(err);
-  res.status(err.status || 500);
-  res.send(err.msg);
+  res.status(err.status || 500).send(err.msg);
 });
 
 // ----------------------------------------------------------

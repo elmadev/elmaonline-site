@@ -3,7 +3,7 @@ import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { acceptNickMail } from '#utils/email';
 import { authContext } from '#utils/auth';
-// import { sendMessage } from '#utils/discord';
+import { sendMessage } from '#utils/discord';
 import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {
@@ -75,10 +75,10 @@ const DeclineNick = async (data, modId) => {
     0,
     `${kuskiInfo.Kuski} >> ${data.Setting}`,
   );
-  /* sendMessage(
+  sendMessage(
     config.discord.channels.admin,
     `:x: Nick change request declined: ${kuskiInfo.Kuski} >> ${data.Setting}`,
-  ); */
+  );
 };
 
 const AcceptNick = async (data, modId) => {
@@ -101,10 +101,10 @@ const AcceptNick = async (data, modId) => {
     0,
     `${kuskiInfo.Kuski} >> ${data.Setting}`,
   );
-  /* sendMessage(
+  sendMessage(
     config.discord.channels.admin,
     `:white_check_mark: Nick change request accepted: ${kuskiInfo.Kuski} >> ${data.Setting}`,
-  ); */
+  );
 };
 
 const getBanlists = async KuskiIndex => {

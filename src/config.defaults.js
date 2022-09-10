@@ -65,32 +65,17 @@ export default {
     playStats: 'asdigbaksdyg12kuhasdfjyhgkjhasd',
   },
 
-  // Discord, with no token it will not attempt to connect
-  // to test locally create own server and bot
-  // see: https://discordjs.guide/preparations/setting-up-a-bot-application.html
+  // Discord
   discord: {
-    token: '',
-    clientId: '',
-    clientSecret: '',
+    botApi: 'http://localhost:3007/',
+    botApiAuth: '7dae1a74-6c29-4f0e-82f6-c941c178b0b6',
     channels: {
-      battle: '',
-      times: '',
-      events: '',
-      admin: '',
+      battle: 'battle',
+      times: 'times',
+      events: 'events',
+      admin: 'admin',
     },
     apiAuth: '',
     url: 'https://test.elma.online/',
-    icons: {
-      started: '',
-      queue: '',
-      results: '',
-      ended: '',
-    },
-    prefix: '!',
-    bn: {
-      storePath: '../bn/bn.store.json',
-      logsPath: '../bn/logs/',
-      fallbackChannelId: '219884674330132480',
-    },
   },
 };

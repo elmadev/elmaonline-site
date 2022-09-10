@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { Team, Kuski, SiteSetting } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
 import { authContext } from '#utils/auth';
-// import { sendMessage } from '#utils/discord';
+import { sendMessage } from '#utils/discord';
 import Discord from './register_discord';
 import config from '../config';
 
@@ -78,10 +78,7 @@ const UpdatePasswordConfirm = async ConfirmCode => {
     where: { ConfirmCode },
   });
   if (findReset) {
-    const newMd5 = crypto
-      .createHash('md5')
-      .update(newPassword)
-      .digest('hex');
+    const newMd5 = crypto.createHash('md5').update(newPassword).digest('hex');
     let { Salt } = findReset.dataValues;
     if (!Salt) {
       Salt = uuid(32);
@@ -112,10 +109,10 @@ const nickRequest = async (nick, KuskiIndex, oldNick) => {
     Setting: nick,
     KuskiIndex,
   });
-  /* sendMessage(
+  sendMessage(
     config.discord.channels.admin,
     `:pencil2: New nick change request: ${oldNick} >> ${nick}`,
-  ); */
+  );
   return r;
 };
 
