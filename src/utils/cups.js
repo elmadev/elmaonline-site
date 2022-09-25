@@ -13,56 +13,9 @@ export const admins = cup => {
 };
 
 export const points = [
-  100,
-  85,
-  75,
-  70,
-  65,
-  60,
-  56,
-  52,
-  49,
-  46,
-  44,
-  42,
-  40,
-  38,
-  36,
-  35,
-  34,
-  33,
-  32,
-  31,
-  30,
-  29,
-  28,
-  27,
-  26,
-  25,
-  24,
-  23,
-  22,
-  21,
-  20,
-  19,
-  18,
-  17,
-  16,
-  15,
-  14,
-  13,
-  12,
-  11,
-  10,
-  9,
-  8,
-  7,
-  6,
-  5,
-  4,
-  3,
-  2,
-  1,
+  100, 85, 75, 70, 65, 60, 56, 52, 49, 46, 44, 42, 40, 38, 36, 35, 34, 33, 32,
+  31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13,
+  12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
 ];
 
 export const filterResults = (events, ownerId = [], loggedId = 0) => {
@@ -140,23 +93,25 @@ export const generateEvent = (event, cup, times, cuptimes) => {
         const exists = cuptimes.filter(
           c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
         );
+        const data = {
+          TimeIndex: t.TimeIndex,
+          TimeExists: 1,
+        };
+        if (t.TimeFileData) {
+          data.UUID = t.TimeFileData.UUID;
+          data.MD5 = t.TimeFileData.MD5;
+        }
         // update cup times if replay is uploaded
         if (exists.length > 0) {
-          updateBulk.push({
-            TimeIndex: t.TimeIndex,
-            TimeExists: 1,
-            CupTimeIndex: exists[0].CupTimeIndex,
-          });
-          // add to cup times if not uploaded and replay not required
-        } else if (!cup.ReplayRequired) {
-          insertBulk.push({
-            CupIndex: event.CupIndex,
-            KuskiIndex: t.KuskiIndex,
-            TimeIndex: t.TimeIndex,
-            Time: t.Time,
-            TimeExists: 1,
-            RecData: null,
-          });
+          data.CupTimeIndex = exists[0].CupTimeIndex;
+          updateBulk.push(data);
+          // otherwise add to cup times if not uploaded
+        } else {
+          data.CupIndex = event.CupIndex;
+          data.KuskiIndex = t.KuskiIndex;
+          data.Time = t.Time;
+          data.RecData = null;
+          insertBulk.push(data);
         }
       }
       // find apple results
@@ -167,13 +122,25 @@ export const generateEvent = (event, cup, times, cuptimes) => {
             c.KuskiIndex === t.KuskiIndex &&
             c.Time === 9999000 + (1000 - t.Apples),
         );
-        // insert only if replay uploaded
+        const data = {
+          TimeIndex: t.TimeIndex,
+          TimeExists: 1,
+        };
+        if (t.TimeFileData) {
+          data.UUID = t.TimeFileData.UUID;
+          data.MD5 = t.TimeFileData.MD5;
+        }
+        // update cup times if replay is uploaded
         if (exists.length > 0) {
-          updateBulk.push({
-            TimeIndex: t.TimeIndex,
-            TimeExists: 1,
-            CupTimeIndex: exists[0].CupTimeIndex,
-          });
+          data.CupTimeIndex = exists[0].CupTimeIndex;
+          updateBulk.push(data);
+          // otherwise add to cup times if not uploaded
+        } else {
+          data.CupIndex = event.CupIndex;
+          data.KuskiIndex = t.KuskiIndex;
+          data.Time = t.Time;
+          data.RecData = null;
+          insertBulk.push(data);
         }
       }
     }

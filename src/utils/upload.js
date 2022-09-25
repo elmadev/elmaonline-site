@@ -1,6 +1,6 @@
 import elmajs from 'elmajs';
 const { Replay } = elmajs;
-import { readChunk } from 'read-chunk';
+import { readChunkSync } from 'read-chunk';
 import fs from 'fs';
 import crypto from 'crypto';
 import { uuid } from '#utils/calcs';
@@ -128,8 +128,8 @@ const CreateOrUpdateCuptime = async (
 };
 
 const findLevelIndexFromReplay = async file => {
-  const replayCRC = readChunk.sync(file, 16, 4);
-  let replayLevel = readChunk.sync(file, 20, 12);
+  const replayCRC = readChunkSync(file, { length: 4, startPosition: 16 });
+  let replayLevel = readChunkSync(file, { length: 12, startPosition: 20 });
   replayLevel = replayLevel.toString('utf-8').split('.')[0];
   const levels = await getLevelsFromName(replayLevel);
   let Levelindex = 0;
@@ -444,10 +444,7 @@ export const uploadTimeFile = async (
     timeFolder = `multi-${timeFolder}`;
     s3TimeFolder = 'multitime';
   }
-  let filePath = `./events/${timeFolder}/${TimeIndex}.rec`;
-  if (process.env.NODE_ENV === 'production') {
-    filePath = `.${filePath}`;
-  }
+  let filePath = `../events/${timeFolder}/${TimeIndex}.rec`;
   let MD5 = null;
   try {
     await writeFile(filePath, fileData, 'binary');

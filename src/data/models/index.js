@@ -115,6 +115,12 @@ Besttime.hasOne(TimeFile, {
   as: 'TimeFileData',
 });
 
+Time.hasOne(TimeFile, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'TimeFileData',
+});
+
 WeeklyBest.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',

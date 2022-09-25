@@ -1,6 +1,8 @@
 import express from 'express';
 import stream from 'stream';
 import { authContext } from '#utils/auth';
+import request from 'request';
+import config from './config';
 import {
   getReplayByBattleId,
   getLevel,
@@ -73,17 +75,33 @@ app.get('/shirt/:id', async (req, res, next) => {
 
 app.get('/cupreplay/:id/:filename', async (req, res, next) => {
   try {
-    const { file, filename } = await getReplayByCupTimeId(
+    const { file, filename, MD5, UUID, TimeIndex } = await getReplayByCupTimeId(
       req.params.id,
       req.params.filename,
     );
-    const readStream = new stream.PassThrough();
-    readStream.end(file);
-    res.set({
-      'Content-disposition': `attachment; filename=${filename}`,
-      'Content-Type': 'application/octet-stream',
-    });
-    readStream.pipe(res);
+    if (!file && MD5 && UUID && TimeIndex) {
+      res.set({
+        'Content-disposition': `attachment; filename=${filename}`,
+        'Content-Type': 'application/octet-stream',
+      });
+      request
+        .get(
+          `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}time/${UUID}-${MD5}/${TimeIndex}.rec`,
+        )
+        .pipe(res);
+      return;
+    }
+    if (file) {
+      const readStream = new stream.PassThrough();
+      readStream.end(file);
+      res.set({
+        'Content-disposition': `attachment; filename=${filename}`,
+        'Content-Type': 'application/octet-stream',
+      });
+      readStream.pipe(res);
+      return;
+    }
+    next({ status: 404, msg: 'file not found' });
   } catch (e) {
     next({
       status: 403,

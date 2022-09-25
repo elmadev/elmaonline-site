@@ -65,6 +65,16 @@ const SiteCupTime = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    UUID: {
+      type: DataType.STRING(10),
+      allowNull: true,
+      defaultValue: null,
+    },
+    MD5: {
+      type: DataType.STRING(32),
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['CupIndex, KuskiIndex, TimeIndex'] }],
