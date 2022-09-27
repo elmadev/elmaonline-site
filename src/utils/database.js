@@ -21,10 +21,7 @@ export function log(func, query, benchmark) {
     }
   }
 
-  let folder = './events/dblog/';
-  if (process.env.NODE_ENV === 'production') {
-    folder = '../events/dblog/';
-  }
+  const folder = '../events/dblog/';
   fs.mkdir(folder, { recursive: true }, err => {
     if (!err) {
       if (process.env.NODE_ENV === 'development') {

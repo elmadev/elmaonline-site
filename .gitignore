@@ -6,3 +6,5 @@
 !.yarn/versions
 
 node_modules
+events/*
+public/temp/*
