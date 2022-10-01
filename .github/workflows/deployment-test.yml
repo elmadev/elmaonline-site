@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     if: contains(github.event.head_commit.message, 'skip ci') == false
-    name: ssh into server, pull from repo, build test release and and copy to pm2 watched path
+    name: ssh into server, pull from repo, install deps, restart in pm2
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
