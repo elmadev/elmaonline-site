@@ -10,9 +10,28 @@ const api = create({
   },
 });
 
-const sendMessageApi = data => api.post('sendmessage', data);
-const sendNotification = data => api.post('sendnotification', data);
-const gameEvent = data => api.post('gameevent', data);
+const hasBotApi = config.discord.botApi && config.discord.botApiAuth;
+
+const sendMessageApi = data => {
+  if (hasBotApi) {
+    return api.post('sendmessage', data);
+  }
+  return { ok: false };
+};
+
+const sendNotification = data => {
+  if (hasBotApi) {
+    return api.post('sendnotification', data);
+  }
+  return { ok: false };
+};
+
+const gameEvent = data => {
+  if (hasBotApi) {
+    return api.post('gameevent', data);
+  }
+  return { ok: false };
+};
 
 export const sendMessage = async (channel, message) => {
   const post = await sendMessageApi({ channel, message });
