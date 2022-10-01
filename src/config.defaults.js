@@ -67,15 +67,15 @@ export default {
 
   // Discord
   discord: {
-    botApi: 'http://localhost:3007/',
-    botApiAuth: '7dae1a74-6c29-4f0e-82f6-c941c178b0b6',
+    botApi: '', // url that discord bot api runs on
+    botApiAuth: '', // Authorization header checked by discord bot api
     channels: {
       battle: 'battle',
       times: 'times',
       events: 'events',
       admin: 'admin',
     },
-    apiAuth: '',
-    url: 'https://test.elma.online/',
+    apiAuth: '', // Authorization header sent by game events
+    url: 'https://test.elma.online/', // url used in discord messages
   },
 };
