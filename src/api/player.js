@@ -1,8 +1,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from 'utils/database';
-import { authContext } from 'utils/auth';
-import { pick, omit } from 'lodash';
+import { like, searchLimit, searchOffset } from '#utils/database';
+import { authContext } from '#utils/auth';
+import { pick, omit } from 'lodash-es';
 import {
   Team,
   Kuski,
@@ -91,6 +91,11 @@ const ChangeSettings = async data => {
 const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
   const query = {
     where: {},
+    include: {
+      model: Team,
+      as: 'TeamData',
+      attributes: ['Team', 'TeamIndex', 'Locked'],
+    },
     attributes: [
       'KuskiIndex',
       'Kuski',

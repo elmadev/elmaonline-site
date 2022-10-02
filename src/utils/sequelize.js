@@ -1,5 +1,5 @@
-import { log } from 'utils/database';
-import { isEmpty } from 'lodash';
+import { log } from '#utils/database';
+import { isEmpty } from 'lodash-es';
 import sequelize from '../data/sequelize';
 
 // query + logging

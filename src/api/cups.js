@@ -1,12 +1,13 @@
 import express from 'express';
-import { eachSeries } from 'neo-async';
-import { forEach } from 'lodash';
-import { authContext } from 'utils/auth';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
+import { forEach } from 'lodash-es';
+import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
 import moment from 'moment';
-import { filterResults, generateEvent, admins } from 'utils/cups';
-import { zeroPad } from 'utils/calcs';
-import { sendMessage } from 'utils/discord';
+import { filterResults, generateEvent, admins } from '#utils/cups';
+import { zeroPad } from '#utils/calcs';
+import { sendMessage } from '#utils/discord';
 import config from '../config';
 import {
   SiteCupGroup,
@@ -17,6 +18,7 @@ import {
   SiteCupBlog,
   Team,
   Time,
+  TimeFile,
 } from '../data/models';
 
 const router = express.Router();
@@ -45,6 +47,11 @@ const getCups = async (ongoing = false) => {
             model: Kuski,
             attributes: ['Kuski', 'Country'],
             as: 'KuskiData',
+          },
+          {
+            model: Level,
+            attributes: ['LevelName'],
+            as: 'Level',
           },
         ],
         where: {
@@ -114,6 +121,7 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
           'TimeExists',
           'CupTimeIndex',
           'Replay',
+          'UUID',
         ],
         as: 'CupTimes',
         required: false,
@@ -163,6 +171,7 @@ const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
           'TimeExists',
           'CupTimeIndex',
           'Replay',
+          'UUID',
         ],
         as: 'CupTimes',
         required: false,
@@ -223,7 +232,7 @@ const EditEvent = async (CupIndex, data) => {
     where: { CupIndex },
   });
   if (data.ShowResults) {
-    const event = SiteCup.findOne({ where: { CupIndex } });
+    const event = await SiteCup.findOne({ where: { CupIndex } });
     if (event.EndTime < format(new Date(), 't') && event.Updated) {
       await Level.update(
         { Hidden: 0, ForceHide: 0 },
@@ -243,7 +252,12 @@ const DeleteEvent = async data => {
 
 const generateUpdate = async (data, done) => {
   await SiteCupTime.update(
-    { TimeIndex: data.TimeIndex, TimeExists: 1 },
+    {
+      TimeIndex: data.TimeIndex,
+      TimeExists: 1,
+      UUID: data.UUID,
+      MD5: data.MD5,
+    },
     { where: { CupTimeIndex: data.CupTimeIndex } },
   );
   done();
@@ -253,6 +267,7 @@ const generate = async (event, cup) => {
   const getTimes = await Time.findAll({
     where: { LevelIndex: event.LevelIndex },
     order: [['TimeIndex', 'ASC']],
+    include: [{ model: TimeFile, as: 'TimeFileData' }],
   });
   const getCupTimes = await SiteCupTime.findAll({
     where: { CupIndex: event.CupIndex },

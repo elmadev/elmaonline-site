@@ -1,6 +1,7 @@
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
 import { format } from 'date-fns';
-import { eachSeries } from 'neo-async';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
 import { create } from 'apisauce';
 import {
   KuskiMap,
@@ -15,7 +16,7 @@ import {
   Country,
   Team,
 } from '../data/models';
-import * as kuskiMapData from '../data/json/kuskimap.json';
+import * as kuskiMapData from '../data/json/kuskimap.json' assert {type: "json"};
 
 const api = create({
   baseURL: 'https://eol.ams3.digitaloceanspaces.com/import/',

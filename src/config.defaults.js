@@ -7,7 +7,7 @@ if (process.env.BROWSER) {
 }
 
 // default config, this file should not be changed unless you are adding a new key
-module.exports = {
+export default {
   // Node.js app
   port: process.env.PORT || 3003,
 
@@ -65,32 +65,17 @@ module.exports = {
     playStats: 'asdigbaksdyg12kuhasdfjyhgkjhasd',
   },
 
-  // Discord, with no token it will not attempt to connect
-  // to test locally create own server and bot
-  // see: https://discordjs.guide/preparations/setting-up-a-bot-application.html
+  // Discord
   discord: {
-    token: '',
-    clientId: '',
-    clientSecret: '',
+    botApi: '', // url that discord bot api runs on
+    botApiAuth: '', // Authorization header checked by discord bot api
     channels: {
-      battle: '',
-      times: '',
-      events: '',
-      admin: '',
+      battle: 'battle',
+      times: 'times',
+      events: 'events',
+      admin: 'admin',
     },
-    apiAuth: '',
-    url: 'https://test.elma.online/',
-    icons: {
-      started: '',
-      queue: '',
-      results: '',
-      ended: '',
-    },
-    prefix: '!',
-    bn: {
-      storePath: '../bn/bn.store.json',
-      logsPath: '../bn/logs/',
-      fallbackChannelId: '219884674330132480',
-    },
+    apiAuth: '', // Authorization header sent by game events
+    url: 'https://test.elma.online/', // url used in discord messages
   },
 };

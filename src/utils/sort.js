@@ -1,4 +1,4 @@
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
 
 const chars = [
   '0',

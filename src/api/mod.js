@@ -1,8 +1,9 @@
 import express from 'express';
-import { eachSeries } from 'neo-async';
-import { acceptNickMail } from 'utils/email';
-import { authContext } from 'utils/auth';
-import { sendMessage } from 'utils/discord';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
+import { acceptNickMail } from '#utils/email';
+import { authContext } from '#utils/auth';
+import { sendMessage } from '#utils/discord';
 import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {

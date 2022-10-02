@@ -1,8 +1,8 @@
 import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
-import { authContext } from 'utils/auth';
-import { formatLevelSearch, fromTo } from 'utils/database';
+import { authContext } from '#utils/auth';
+import { formatLevelSearch, fromTo } from '#utils/database';
 import {
   AllFinished,
   Kuski,

@@ -1,11 +1,11 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from 'utils/database';
-import { authContext } from 'utils/auth';
+import { like, searchLimit, searchOffset } from '#utils/database';
+import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
-import { forEach } from 'lodash';
-import { sortResults } from 'utils/battle';
-import { shareTimeFile } from 'utils/upload';
+import { forEach } from 'lodash-es';
+import { sortResults } from '#utils/battle';
+import { shareTimeFile } from '#utils/upload';
 import {
   Replay,
   Level,

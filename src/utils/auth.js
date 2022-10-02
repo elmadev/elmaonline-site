@@ -1,6 +1,6 @@
 import jws from 'jws';
 import crypto from 'crypto';
-import { Kuski } from 'data/models';
+import { Kuski } from '#data/models';
 import config from '../config';
 
 const getKuskiData = async k => {

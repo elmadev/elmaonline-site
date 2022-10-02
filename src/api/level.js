@@ -1,7 +1,7 @@
 import express from 'express';
 import sequelize from 'sequelize';
-import { authContext } from 'utils/auth';
-import { has } from 'lodash';
+import { authContext } from '#utils/auth';
+import { has } from 'lodash-es';
 import { Level, Time, LevelStats, Battle } from '../data/models';
 import connection from '../data/sequelize';
 

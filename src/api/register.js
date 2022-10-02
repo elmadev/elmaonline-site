@@ -1,11 +1,11 @@
 import express from 'express';
-import { uuid } from 'utils/calcs';
+import { uuid } from '#utils/calcs';
 import crypto from 'crypto';
 import { format } from 'date-fns';
-import { Team, Kuski, SiteSetting } from 'data/models';
-import { confirmMail, resetMail } from 'utils/email';
-import { authContext } from 'utils/auth';
-import { sendMessage } from 'utils/discord';
+import { Team, Kuski, SiteSetting } from '#data/models';
+import { confirmMail, resetMail } from '#utils/email';
+import { authContext } from '#utils/auth';
+import { sendMessage } from '#utils/discord';
 import Discord from './register_discord';
 import config from '../config';
 
@@ -78,10 +78,7 @@ const UpdatePasswordConfirm = async ConfirmCode => {
     where: { ConfirmCode },
   });
   if (findReset) {
-    const newMd5 = crypto
-      .createHash('md5')
-      .update(newPassword)
-      .digest('hex');
+    const newMd5 = crypto.createHash('md5').update(newPassword).digest('hex');
     let { Salt } = findReset.dataValues;
     if (!Salt) {
       Salt = uuid(32);

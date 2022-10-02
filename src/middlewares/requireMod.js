@@ -1,4 +1,4 @@
-import { authContext } from 'utils/auth';
+import { authContext } from '#utils/auth';
 
 export default function requireMod(req, res, next) {
   const auth = authContext(req);

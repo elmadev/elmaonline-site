@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
+import { authContext } from '#utils/auth';
 import OAuthClient from 'disco-oauth';
 import { Setting } from '../data/models';
 import config from '../config';

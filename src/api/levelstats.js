@@ -1,7 +1,7 @@
 import express from 'express';
-import sequelize from 'data/sequelize';
-import { mapValues, isEqual } from 'lodash';
-import { log } from 'utils/database';
+import sequelize from '#data/sequelize';
+import { mapValues, isEqual } from 'lodash-es';
+import { log } from '#utils/database';
 import { LevelStats, Level, Time } from '../data/models';
 
 const router = express.Router();

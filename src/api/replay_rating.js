@@ -1,6 +1,6 @@
 import express from 'express';
-import { authContext } from 'utils/auth';
-import { omit } from 'lodash';
+import { authContext } from '#utils/auth';
+import { omit } from 'lodash-es';
 import { ReplayRating } from '../data/models';
 
 const router = express.Router();

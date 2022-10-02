@@ -9,17 +9,17 @@ import {
   groupBy,
   mapValues,
   omit,
-} from 'lodash';
+} from 'lodash-es';
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
-import { authContext } from 'utils/auth';
+import { authContext } from '#utils/auth';
 import {
   like,
   searchLimit,
   searchOffset,
   log,
   formatLevelSearch,
-} from 'utils/database';
+} from '#utils/database';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -35,7 +35,7 @@ import {
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
 import Collection from './levelpack_collection';
-import { checkSchemaAndBail } from '../utils/middleware';
+import { checkSchemaAndBail } from '../middlewares/validate';
 import sequelize from '../data/sequelize';
 import { query as sqlQuery } from '../utils/sequelize';
 import { parseTimeDriven } from '../data/models/PlayStats';

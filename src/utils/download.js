@@ -7,16 +7,18 @@ import {
   SiteCup,
   Kuski,
   SiteCupGroup,
-} from 'data/models';
-import { eachSeries } from 'neo-async';
+} from '#data/models';
+import neoAsync from 'neo-async';
+const { eachSeries } = neoAsync;
 import stream from 'stream';
-import { forEach } from 'lodash';
+import { forEach } from 'lodash-es';
+import request from 'request';
 import { Op } from 'sequelize';
-import { uuid } from 'utils/calcs';
+import { uuid } from '#utils/calcs';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
-import { filterResults, admins } from 'utils/cups';
+import { filterResults, admins } from '#utils/cups';
 import jimp from 'jimp';
 import config from '../config';
 
@@ -57,7 +59,7 @@ export function getReplayByBattleId(battleId) {
 
 const getReplayDataByCupTimeId = async CupTimeIndex => {
   const replayData = await SiteCupTime.findOne({
-    attributes: ['RecData', 'Code'],
+    attributes: ['RecData', 'Code', 'UUID', 'MD5', 'TimeIndex'],
     where: { CupTimeIndex },
     include: [
       {
@@ -90,6 +92,13 @@ export function getReplayByCupTimeId(cupTimeId, filename, code = '') {
         } else if (data.dataValues.RecData) {
           resolve({
             file: data.dataValues.RecData,
+            filename: `${filename}.rec`,
+          });
+        } else if (data.dataValues.MD5 && data.dataValues.UUID) {
+          resolve({
+            UUID: data.dataValues.UUID,
+            MD5: data.dataValues.MD5,
+            TimeIndex: data.dataValues.TimeIndex,
             filename: `${filename}.rec`,
           });
         } else {
@@ -252,8 +261,24 @@ const zipEventRecs = (recs, filename) => {
           file: rec.RecData,
           filename: `${filename}${rec.KuskiData.Kuski}.rec`,
         });
+        done();
+      } else if (rec.UUID) {
+        request.get(
+          {
+            url: `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}time/${rec.UUID}-${rec.MD5}/${rec.TimeIndex}.rec`,
+            encoding: null,
+          },
+          (err, res, s3Data) => {
+            recData.push({
+              file: s3Data,
+              filename: `${filename}${rec.KuskiData.Kuski}.rec`,
+            });
+            done();
+          },
+        );
+      } else {
+        done();
       }
-      done();
     };
     eachSeries(recs, recDataIterator, async () => {
       const zip = await zipFiles(recData);
@@ -275,6 +300,9 @@ const getCupEvent = async (CupIndex, cupGroup, auth) => {
           'CupTimeIndex',
           'Replay',
           'RecData',
+          'UUID',
+          'MD5',
+          'TimeIndex',
         ],
         as: 'CupTimes',
         required: false,

@@ -1,6 +1,6 @@
 # elmaonline-site
 
-Node JS based backend for the [elmaonline site](https://elma.online). The frontend is found in the [elmaonline-web repo](https://github.com/elmadev/elmaonline-web). Note that this repo still contains old frontend code, but all new frontend development should be made in elmaonline-web.
+Node JS based backend for the [elmaonline site](https://elma.online). The frontend is found in the [elmaonline-web repo](https://github.com/elmadev/elmaonline-web).
 
 - [test.elma.online](http://test.elma.online) New features will be tested here first, this site uses a secondary copy of the database, so you can mess up as much as you want here, and nothing you do here will be saved on the real site.
 - [elma.online](http://elma.online) This site will be using the live database.
@@ -8,31 +8,53 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 ## Branches
 
 - **dev**
-  - The primary branch to use while developing. Make all changes to this branch, preferably as pull requests. Test server uses this branch.
+  - The primary branch to use while developing. Make all changes to this branch, preferably as pull requests. Test server uses this branch, and will automatically pull via github actions.
 - **master**
-  - This branch reflects the version currently deployed on [elma.online](http://elma.online), only people actually deploying will be pulling code to this.
+  - This branch reflects the version currently deployed on [elma.online](http://elma.online), which will automatically pull via github actions.
 
 ## Get started
 
-1. Install if needed nodejs and yarn
+1. Install if needed nodejs (16.10+) and yarn (3.x, run `corepack enable`)
 2. Clone this repo
 3. Run `yarn` in terminal to install depedencies
 4. Run `yarn start` in terminal to start development server
 
-- Run `yarn build` in terminal to make a production build.
-
 ## Config
 
 - `src/config.defaults.js` has default config, this should only be changed if you are adding new keys.
-- `src/config.local.js` has your local config changes, it's empty by default, so just add keys from the above that you wish to change. To make git ignore changes to the file run `git update-index --skip-worktree src/config.local.js`.
-- `src/config.js` merges the two files above with priority to local.js, this is the file that should be included when using config values in the code for example `import config from './config';` if you're in the src folder.
+- `src/config.local.js` has your local config changes, it's empty by default, so just add keys from the above that you wish to change.
+- `src/config.js` merges the two files above with priority to local.js, this is the file that should be including when using config values in the code for example `import config from './config';` if you're in the src folder.
 
 ## Tech stack
 
-- [Express](http://expressjs.com/) as the backend framework
-- [react-starter-kit](https://github.com/kriasoft/react-starter-kit) boilerplate starter kit that we plan on using, includes backend and frontend, frontend has been moved to CRA in the [elmaonline-web repo](https://github.com/elmadev/elmaonline-web).
+- [Express](http://expressjs.com/) as the api framework
 - [sequelize](http://docs.sequelizejs.com/manual/tutorial/querying.html) for database querying
-- [discord.js](https://discord.js.org/#/) for the discord bot
+- eslint and prettier for linting
+- nodemon for auto reloading server when you edit files
+
+## Folder structure
+
+```
+.
+├── /                      # Various configuration files
+├── /events                # Examples of event api calls
+├── /public                # Static files served
+├── /src                   # This is where your code will be
+    ├── /api               # Endpoints used by frontend
+    ├── /constants         # Constants used in code
+    ├── /data              # Database models and json files
+    ├── /middlewares       # Express middleware
+    ├── /utils             # Helper functions etc.
+    ├── /config.default.js # Default config
+    ├── /config.js         # Combined config, use this in code
+    ├── /config.local.js   # Local config changes
+    ├── /dl.js             # Endpoints for downloads
+    ├── /events.js         # Endpoints for events, called by game server
+    ├── /index.js          # Entry point and express set up
+    ├── /run.js            # Cron jobs and one time imports
+    ├── /start.mjs         # Entry point for pm2
+    ├── /upload.js         # Endpoints for uploads
+```
 
 ## Setup editor
 
