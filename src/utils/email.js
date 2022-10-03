@@ -14,7 +14,7 @@ export const sendEmail = (email, kuski, template, params) => {
       // resolve so code doesn't stop in development
       resolve();
     }
-    const apiInstance = new SibApiV3Sdk.SMTPApi();
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.to = [{ email, name: kuski }];
     sendSmtpEmail.sender = { email: fromMail, name: fromName };
