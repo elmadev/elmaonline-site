@@ -656,8 +656,8 @@ router
     forEach(data, event => {
       if (
         event.StartTime <= format(new Date(), 't') &&
-        (event.Level.Hidden === 0 ||
-          event.Level.Locked === 1 ||
+        (event.Level?.Hidden === 0 ||
+          event.Level?.Locked === 1 ||
           event.Started === 0)
       ) {
         toUnlock.push({
