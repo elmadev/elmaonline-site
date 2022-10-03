@@ -21,7 +21,7 @@ jobs:
         script: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
-          cd ${{ secrets.SSH_PATH }}
+          cd ${{ secrets.SSH_PATH_LIVE }}
           git pull
           yarn
           pm2 restart api
