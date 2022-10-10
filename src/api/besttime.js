@@ -329,24 +329,18 @@ router
     );
     res.json(data);
   })
-  .get('/:LevelIndex/:limit/:eolOnly/country/:country', async (req, res) => {
-    const data = await getTimes(
-      req.params.LevelIndex,
-      req.params.limit,
-      parseInt(req.params.eolOnly, 10),
-      req.params.country,
-    );
-    res.json(data);
-  })
-  .get('/:LevelIndex/:limit/:eolOnly/team/:team', async (req, res) => {
-    const data = await getTimes(
-      req.params.LevelIndex,
-      req.params.limit,
-      parseInt(req.params.eolOnly, 10),
-      null,
-      req.params.team,
-    );
-    res.json(data);
-  });
+  .get(
+    '/:LevelIndex/:limit/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const data = await getTimes(
+        req.params.LevelIndex,
+        req.params.limit,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+      );
+      res.json(data);
+    },
+  );
 
 export default router;

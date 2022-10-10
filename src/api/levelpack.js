@@ -1043,29 +1043,21 @@ router
     const records = findRecords(data);
     res.json({ ...totals, points, records });
   })
-  .get('/:LevelPackName/stats/:eolOnly/country/:country', async (req, res) => {
-    const data = await getTimes(
-      req.params.LevelPackName,
-      parseInt(req.params.eolOnly, 10),
-      req.params.country,
-    );
-    const tts = totalTimes(data);
-    const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ tts, points, records });
-  })
-  .get('/:LevelPackName/stats/:eolOnly/team/:team', async (req, res) => {
-    const data = await getTimes(
-      req.params.LevelPackName,
-      parseInt(req.params.eolOnly, 10),
-      null,
-      req.params.team,
-    );
-    const tts = totalTimes(data);
-    const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ tts, points, records });
-  })
+  .get(
+    '/:LevelPackName/stats/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const data = await getTimes(
+        req.params.LevelPackName,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+      );
+      const tts = totalTimes(data);
+      const points = kinglist(data);
+      const records = findRecords(data);
+      res.json({ tts, points, records });
+    },
+  )
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
     const getKuskiIndex = await getKuski(req.params.KuskiIndex);
     if (getKuskiIndex) {
