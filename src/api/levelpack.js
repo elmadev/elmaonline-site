@@ -433,7 +433,7 @@ const getRecords = async (LevelPackName, eolOnly = 0) => {
   return mapValues(groupBy(results, 'LevelIndex'), arr => arr[0]);
 };
 
-const getTimes = async (LevelPackName, eolOnly = 0) => {
+const getTimes = async (LevelPackName, eolOnly = 0, Country, TeamIndex) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
@@ -445,6 +445,17 @@ const getTimes = async (LevelPackName, eolOnly = 0) => {
     timeTableAlias = 'LevelLegacyBesttime';
     attributes.push('Source');
   }
+  const KuskiInclude = {
+    model: Kuski,
+    attributes: ['Kuski', 'Country'],
+    as: 'KuskiData',
+  };
+  if (Country) {
+    KuskiInclude.where = { Country };
+  }
+  if (TeamIndex) {
+    KuskiInclude.where = { TeamIndex };
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     attributes: ['LevelIndex', 'Sort'],
@@ -453,13 +464,7 @@ const getTimes = async (LevelPackName, eolOnly = 0) => {
         model: timeTable,
         as: timeTableAlias,
         attributes,
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'Country'],
-            as: 'KuskiData',
-          },
-        ],
+        include: [KuskiInclude],
       },
       {
         model: Level,
@@ -602,9 +607,11 @@ const getLevelsByQueryAll = async (query, ShowLocked) => {
   return levels;
 };
 
-const totalTimes = times => {
+const totalTimes = (times, filters) => {
   const tts = [];
   const kuskis = [];
+  const teams = [];
+  const countries = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
       forEach(level.LevelBesttime, time => {
@@ -629,10 +636,37 @@ const totalTimes = times => {
             TimeIndex: time.TimeIndex,
           });
           kuskis.push(time.KuskiIndex);
+          if (filters) {
+            if (time.KuskiData.TeamData?.Team) {
+              if (
+                teams.findIndex(
+                  x => x.name === time.KuskiData.TeamData.Team,
+                ) === -1
+              ) {
+                teams.push({
+                  name: time.KuskiData.TeamData.Team,
+                  id: time.KuskiData.TeamData.TeamIndex,
+                });
+              }
+            }
+            if (
+              countries.findIndex(x => x.name === time.KuskiData.Country) === -1
+            ) {
+              countries.push({
+                name: time.KuskiData.Country,
+                id: time.KuskiData.Country,
+              });
+            }
+          }
         }
       });
     }
   });
+  teams.sort((a, b) => a.name.localeCompare(b.name));
+  countries.sort((a, b) => a.name.localeCompare(b.name));
+  if (filters) {
+    return { tts: tts.filter(x => x.count === times.length), teams, countries };
+  }
   return tts.filter(x => x.count === times.length);
 };
 
@@ -669,26 +703,7 @@ const findRecords = times => {
 };
 
 const pointList = [
-  40,
-  30,
-  25,
-  22,
-  20,
-  18,
-  16,
-  14,
-  12,
-  11,
-  10,
-  9,
-  8,
-  7,
-  6,
-  5,
-  4,
-  3,
-  2,
-  1,
+  40, 30, 25, 22, 20, 18, 16, 14, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
 ];
 
 const kinglist = times => {
@@ -1006,10 +1021,10 @@ router
   })
   .get('/:LevelPackName/stats', async (req, res) => {
     const data = await getTimes(req.params.LevelPackName);
-    const tts = totalTimes(data);
+    const totals = totalTimes(data, true);
     const points = kinglist(data);
     const records = findRecords(data);
-    res.json({ tts, points, records });
+    res.json({ ...totals, points, records });
   })
   .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
     const records = await getRecords(
@@ -1022,6 +1037,29 @@ router
     const data = await getTimes(
       req.params.LevelPackName,
       parseInt(req.params.eolOnly, 10),
+    );
+    const totals = totalTimes(data, true);
+    const points = kinglist(data);
+    const records = findRecords(data);
+    res.json({ ...totals, points, records });
+  })
+  .get('/:LevelPackName/stats/:eolOnly/country/:country', async (req, res) => {
+    const data = await getTimes(
+      req.params.LevelPackName,
+      parseInt(req.params.eolOnly, 10),
+      req.params.country,
+    );
+    const tts = totalTimes(data);
+    const points = kinglist(data);
+    const records = findRecords(data);
+    res.json({ tts, points, records });
+  })
+  .get('/:LevelPackName/stats/:eolOnly/team/:team', async (req, res) => {
+    const data = await getTimes(
+      req.params.LevelPackName,
+      parseInt(req.params.eolOnly, 10),
+      null,
+      req.params.team,
     );
     const tts = totalTimes(data);
     const points = kinglist(data);
