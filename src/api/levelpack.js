@@ -433,7 +433,13 @@ const getRecords = async (LevelPackName, eolOnly = 0) => {
   return mapValues(groupBy(results, 'LevelIndex'), arr => arr[0]);
 };
 
-const getTimes = async (LevelPackName, eolOnly = 0, Country, TeamIndex) => {
+const getTimes = async (
+  LevelPackName,
+  eolOnly = 0,
+  Country,
+  TeamIndex,
+  kuskis,
+) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
@@ -455,6 +461,9 @@ const getTimes = async (LevelPackName, eolOnly = 0, Country, TeamIndex) => {
   }
   if (TeamIndex) {
     KuskiInclude.where = { TeamIndex };
+  }
+  if (kuskis) {
+    KuskiInclude.where = { KuskiIndex: { [Op.in]: kuskis.split(',') } };
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
@@ -612,6 +621,7 @@ const totalTimes = (times, filters) => {
   const kuskis = [];
   const teams = [];
   const countries = [];
+  const kuskiFilter = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
       forEach(level.LevelBesttime, time => {
@@ -637,6 +647,12 @@ const totalTimes = (times, filters) => {
           });
           kuskis.push(time.KuskiIndex);
           if (filters) {
+            kuskiFilter.push({
+              Kuski: time.KuskiData.Kuski,
+              KuskiIndex: time.KuskiIndex,
+              Country: time.KuskiData.Country,
+              TeamData: time.KuskiData.TeamData,
+            });
             if (time.KuskiData.TeamData?.Team) {
               if (
                 teams.findIndex(
@@ -665,7 +681,12 @@ const totalTimes = (times, filters) => {
   teams.sort((a, b) => a.name.localeCompare(b.name));
   countries.sort((a, b) => a.name.localeCompare(b.name));
   if (filters) {
-    return { tts: tts.filter(x => x.count === times.length), teams, countries };
+    return {
+      tts: tts.filter(x => x.count === times.length),
+      teams,
+      countries,
+      kuskis: kuskiFilter.sort((a, b) => a.Kuski.localeCompare(b.Kuski)),
+    };
   }
   return tts.filter(x => x.count === times.length);
 };
@@ -1051,6 +1072,7 @@ router
         parseInt(req.params.eolOnly, 10),
         req.params.filter === 'country' ? req.params.filterValue : null,
         req.params.filter === 'team' ? req.params.filterValue : null,
+        req.params.filter === 'kuski' ? req.params.filterValue : null,
       );
       const tts = totalTimes(data);
       const points = kinglist(data);
