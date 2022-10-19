@@ -2,6 +2,7 @@ import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from '#utils/auth';
 import { has } from 'lodash-es';
+import { getLevel as getLevelSecure } from '#utils/download';
 import { Level, Time, LevelStats, Battle } from '../data/models';
 import connection from '../data/sequelize';
 
@@ -70,11 +71,12 @@ const getLevel = async (LevelIndex, withStats = false) => {
 };
 
 const getLevelData = async LevelIndex => {
-  const level = await Level.findOne({
-    attributes: ['LevelData', 'LevelIndex'],
-    where: { LevelIndex },
-  });
-  return level;
+  try {
+    const { file } = await getLevelSecure(LevelIndex);
+    return { LevelIndex, LevelData: file };
+  } catch (e) {
+    return { LevelIndex, LevelData: null };
+  }
 };
 
 const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
