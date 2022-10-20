@@ -14,10 +14,15 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 ## Get started
 
-1. Install if needed nodejs (16.10+) and yarn (3.x, run `corepack enable`)
-2. Clone this repo
-3. Run `yarn` in terminal to install depedencies
-4. Run `yarn start` in terminal to start development server
+1. Install if needed nodejs (v16.15.0 or later) and yarn (3.x)
+
+   - If you install node using nvm you might need to install corepack manually
+     `npm install -g corepack`
+
+2. run `corepack enable`
+3. Clone this repo
+4. Run `yarn` in terminal to install depedencies
+5. Run `yarn start` in terminal to start development server
 
 ## Config
 
