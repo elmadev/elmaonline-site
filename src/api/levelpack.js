@@ -398,7 +398,13 @@ const mapKuskiData = times => {
   }));
 };
 
-const getRecords = async (LevelPackName, eolOnly = 0) => {
+const getRecords = async (
+  LevelPackName,
+  eolOnly = 0,
+  Country,
+  TeamIndex,
+  kuskis,
+) => {
   const levelPack = await LevelPack.findOne({
     where: { LevelPackName },
   });
@@ -409,15 +415,31 @@ const getRecords = async (LevelPackName, eolOnly = 0) => {
 
   const isLegacy = !levelPack.Legacy ? false : !eolOnly;
 
+  let filter = '';
+  let join = '';
+  if (Country || TeamIndex) {
+    join = `
+        LEFT OUTER JOIN kuski jk ON time.KuskiIndex = jk.KuskiIndex`;
+  }
+  if (Country) {
+    filter = ` AND jk.Country = '${Country}'`;
+  }
+  if (TeamIndex) {
+    filter = ` AND jk.TeamIndex = '${TeamIndex}'`;
+  }
+  if (kuskis) {
+    filter = ` AND time.KuskiIndex IN (${kuskis})`;
+  }
+
   const sql = `
     SELECT bt.*, k.KuskiIndex, k.Kuski, k.Country, t.TeamIndex, t.Team
     FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
-        FROM ${isLegacy ? 'legacybesttime' : 'besttime'}
+        SELECT time.*, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
+        FROM ${isLegacy ? 'legacybesttime' : 'besttime'} time${join}
         WHERE LevelIndex IN (
         SELECT LevelIndex
         FROM levelpack_level
-        WHERE LevelPackIndex = ?)) bt
+        WHERE LevelPackIndex = ?)${filter}) bt
     LEFT OUTER JOIN kuski k ON k.KuskiIndex = bt.KuskiIndex
     LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
     WHERE posn = 1;
@@ -696,31 +718,6 @@ const sortPacks = (a, b) => {
     return a.LevelPackLevelIndex - b.LevelPackLevelIndex;
   }
   return `${a.Sort}`.localeCompare(`${b.Sort}`);
-};
-
-const sortTimes = (a, b) => {
-  if (a.Time === b.Time) {
-    return a.TimeIndex - b.TimeIndex;
-  }
-  return a.Time - b.Time;
-};
-
-// although we have getRecords function for the records tab,
-// personal, multi times, king list, and total times still rely on
-// on this (which they actually use for levels, not so much the records)
-const findRecords = times => {
-  const recs = [];
-  forEach(times.sort(sortPacks), level => {
-    if (!level.Level.Hidden) {
-      recs.push({
-        LevelIndex: level.LevelIndex,
-        Sort: level.Sort,
-        Level: level.Level,
-        LevelBesttime: level.LevelBesttime.sort(sortTimes)[0],
-      });
-    }
-  });
-  return recs;
 };
 
 const pointList = [
@@ -1044,8 +1041,7 @@ router
     const data = await getTimes(req.params.LevelPackName);
     const totals = totalTimes(data, true);
     const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ ...totals, points, records });
+    res.json({ ...totals, points });
   })
   .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
     const records = await getRecords(
@@ -1054,6 +1050,19 @@ router
     );
     res.json(records);
   })
+  .get(
+    '/:LevelPackName/records/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const records = await getRecords(
+        req.params.LevelPackName,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+        req.params.filter === 'kuski' ? req.params.filterValue : null,
+      );
+      res.json(records);
+    },
+  )
   .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
     const data = await getTimes(
       req.params.LevelPackName,
@@ -1061,8 +1070,7 @@ router
     );
     const totals = totalTimes(data, true);
     const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ ...totals, points, records });
+    res.json({ ...totals, points });
   })
   .get(
     '/:LevelPackName/stats/:eolOnly/:filter/:filterValue',
@@ -1076,8 +1084,7 @@ router
       );
       const tts = totalTimes(data);
       const points = kinglist(data);
-      const records = findRecords(data);
-      res.json({ tts, points, records });
+      res.json({ tts, points });
     },
   )
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
@@ -1210,6 +1217,7 @@ router
             LevelName: lev.Level.LevelName,
             LongName: lev.Level.LongName,
             LevelPackLevelIndex: lev.LevelPackLevelIndex,
+            Sort: lev.Sort,
           }))
         : [],
     });
