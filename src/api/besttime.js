@@ -24,12 +24,28 @@ const levelInfo = async LevelIndex => {
   return lev;
 };
 
-export const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
+export const getTimes = async (
+  LevelIndex,
+  limit,
+  eolOnly = 0,
+  Country,
+  TeamIndex,
+) => {
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked || lev.Hidden) return [];
   let timeTable = Besttime;
   if (lev.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
+  }
+  const kuskiInclude = {
+    model: Kuski,
+    as: 'KuskiData',
+  };
+  if (Country) {
+    kuskiInclude.where = { Country };
+  }
+  if (TeamIndex) {
+    kuskiInclude.where = { TeamIndex };
   }
   const times = await timeTable.findAll({
     where: { LevelIndex },
@@ -38,12 +54,7 @@ export const getTimes = async (LevelIndex, limit, eolOnly = 0) => {
       ['TimeIndex', 'ASC'],
     ],
     limit: parseInt(limit, 10),
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-      },
-    ],
+    include: [kuskiInclude],
   });
   return times;
 };
@@ -317,6 +328,19 @@ router
       parseInt(req.params.eolOnly, 10),
     );
     res.json(data);
-  });
+  })
+  .get(
+    '/:LevelIndex/:limit/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const data = await getTimes(
+        req.params.LevelIndex,
+        req.params.limit,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+      );
+      res.json(data);
+    },
+  );
 
 export default router;
