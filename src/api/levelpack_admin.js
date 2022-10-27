@@ -50,6 +50,9 @@ const AddLevel = async data => {
   if (level.Locked) {
     return 'Level is locked.';
   }
+  if (level.Hidden) {
+    return 'Level is hidden.';
+  }
   if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     let Sort = '';
     if (data.levels > 0) {

@@ -398,7 +398,13 @@ const mapKuskiData = times => {
   }));
 };
 
-const getRecords = async (LevelPackName, eolOnly = 0) => {
+const getRecords = async (
+  LevelPackName,
+  eolOnly = 0,
+  Country,
+  TeamIndex,
+  kuskis,
+) => {
   const levelPack = await LevelPack.findOne({
     where: { LevelPackName },
   });
@@ -409,15 +415,31 @@ const getRecords = async (LevelPackName, eolOnly = 0) => {
 
   const isLegacy = !levelPack.Legacy ? false : !eolOnly;
 
+  let filter = '';
+  let join = '';
+  if (Country || TeamIndex) {
+    join = `
+        LEFT OUTER JOIN kuski jk ON time.KuskiIndex = jk.KuskiIndex`;
+  }
+  if (Country) {
+    filter = ` AND jk.Country = '${Country}'`;
+  }
+  if (TeamIndex) {
+    filter = ` AND jk.TeamIndex = '${TeamIndex}'`;
+  }
+  if (kuskis) {
+    filter = ` AND time.KuskiIndex IN (${kuskis})`;
+  }
+
   const sql = `
     SELECT bt.*, k.KuskiIndex, k.Kuski, k.Country, t.TeamIndex, t.Team
     FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
-        FROM ${isLegacy ? 'legacybesttime' : 'besttime'}
+        SELECT time.*, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
+        FROM ${isLegacy ? 'legacybesttime' : 'besttime'} time${join}
         WHERE LevelIndex IN (
         SELECT LevelIndex
         FROM levelpack_level
-        WHERE LevelPackIndex = ?)) bt
+        WHERE LevelPackIndex = ?)${filter}) bt
     LEFT OUTER JOIN kuski k ON k.KuskiIndex = bt.KuskiIndex
     LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
     WHERE posn = 1;
@@ -433,7 +455,13 @@ const getRecords = async (LevelPackName, eolOnly = 0) => {
   return mapValues(groupBy(results, 'LevelIndex'), arr => arr[0]);
 };
 
-const getTimes = async (LevelPackName, eolOnly = 0) => {
+const getTimes = async (
+  LevelPackName,
+  eolOnly = 0,
+  Country,
+  TeamIndex,
+  kuskis,
+) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
@@ -445,6 +473,20 @@ const getTimes = async (LevelPackName, eolOnly = 0) => {
     timeTableAlias = 'LevelLegacyBesttime';
     attributes.push('Source');
   }
+  const KuskiInclude = {
+    model: Kuski,
+    attributes: ['Kuski', 'Country'],
+    as: 'KuskiData',
+  };
+  if (Country) {
+    KuskiInclude.where = { Country };
+  }
+  if (TeamIndex) {
+    KuskiInclude.where = { TeamIndex };
+  }
+  if (kuskis) {
+    KuskiInclude.where = { KuskiIndex: { [Op.in]: kuskis.split(',') } };
+  }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     attributes: ['LevelIndex', 'Sort'],
@@ -453,13 +495,7 @@ const getTimes = async (LevelPackName, eolOnly = 0) => {
         model: timeTable,
         as: timeTableAlias,
         attributes,
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'Country'],
-            as: 'KuskiData',
-          },
-        ],
+        include: [KuskiInclude],
       },
       {
         model: Level,
@@ -602,9 +638,12 @@ const getLevelsByQueryAll = async (query, ShowLocked) => {
   return levels;
 };
 
-const totalTimes = times => {
+const totalTimes = (times, filters) => {
   const tts = [];
   const kuskis = [];
+  const teams = [];
+  const countries = [];
+  const kuskiFilter = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
       forEach(level.LevelBesttime, time => {
@@ -629,10 +668,48 @@ const totalTimes = times => {
             TimeIndex: time.TimeIndex,
           });
           kuskis.push(time.KuskiIndex);
+          if (filters) {
+            kuskiFilter.push({
+              Kuski: time.KuskiData.Kuski,
+              KuskiIndex: time.KuskiIndex,
+              Country: time.KuskiData.Country,
+              TeamData: time.KuskiData.TeamData,
+            });
+            if (time.KuskiData.TeamData?.Team) {
+              if (
+                teams.findIndex(
+                  x => x.name === time.KuskiData.TeamData.Team,
+                ) === -1
+              ) {
+                teams.push({
+                  name: time.KuskiData.TeamData.Team,
+                  id: time.KuskiData.TeamData.TeamIndex,
+                });
+              }
+            }
+            if (
+              countries.findIndex(x => x.name === time.KuskiData.Country) === -1
+            ) {
+              countries.push({
+                name: time.KuskiData.Country,
+                id: time.KuskiData.Country,
+              });
+            }
+          }
         }
       });
     }
   });
+  teams.sort((a, b) => a.name.localeCompare(b.name));
+  countries.sort((a, b) => a.name.localeCompare(b.name));
+  if (filters) {
+    return {
+      tts: tts.filter(x => x.count === times.length),
+      teams,
+      countries,
+      kuskis: kuskiFilter.sort((a, b) => a.Kuski.localeCompare(b.Kuski)),
+    };
+  }
   return tts.filter(x => x.count === times.length);
 };
 
@@ -643,52 +720,8 @@ const sortPacks = (a, b) => {
   return `${a.Sort}`.localeCompare(`${b.Sort}`);
 };
 
-const sortTimes = (a, b) => {
-  if (a.Time === b.Time) {
-    return a.TimeIndex - b.TimeIndex;
-  }
-  return a.Time - b.Time;
-};
-
-// although we have getRecords function for the records tab,
-// personal, multi times, king list, and total times still rely on
-// on this (which they actually use for levels, not so much the records)
-const findRecords = times => {
-  const recs = [];
-  forEach(times.sort(sortPacks), level => {
-    if (!level.Level.Hidden) {
-      recs.push({
-        LevelIndex: level.LevelIndex,
-        Sort: level.Sort,
-        Level: level.Level,
-        LevelBesttime: level.LevelBesttime.sort(sortTimes)[0],
-      });
-    }
-  });
-  return recs;
-};
-
 const pointList = [
-  40,
-  30,
-  25,
-  22,
-  20,
-  18,
-  16,
-  14,
-  12,
-  11,
-  10,
-  9,
-  8,
-  7,
-  6,
-  5,
-  4,
-  3,
-  2,
-  1,
+  40, 30, 25, 22, 20, 18, 16, 14, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
 ];
 
 const kinglist = times => {
@@ -1006,10 +1039,9 @@ router
   })
   .get('/:LevelPackName/stats', async (req, res) => {
     const data = await getTimes(req.params.LevelPackName);
-    const tts = totalTimes(data);
+    const totals = totalTimes(data, true);
     const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ tts, points, records });
+    res.json({ ...totals, points });
   })
   .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
     const records = await getRecords(
@@ -1018,16 +1050,43 @@ router
     );
     res.json(records);
   })
+  .get(
+    '/:LevelPackName/records/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const records = await getRecords(
+        req.params.LevelPackName,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+        req.params.filter === 'kuski' ? req.params.filterValue : null,
+      );
+      res.json(records);
+    },
+  )
   .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
     const data = await getTimes(
       req.params.LevelPackName,
       parseInt(req.params.eolOnly, 10),
     );
-    const tts = totalTimes(data);
+    const totals = totalTimes(data, true);
     const points = kinglist(data);
-    const records = findRecords(data);
-    res.json({ tts, points, records });
+    res.json({ ...totals, points });
   })
+  .get(
+    '/:LevelPackName/stats/:eolOnly/:filter/:filterValue',
+    async (req, res) => {
+      const data = await getTimes(
+        req.params.LevelPackName,
+        parseInt(req.params.eolOnly, 10),
+        req.params.filter === 'country' ? req.params.filterValue : null,
+        req.params.filter === 'team' ? req.params.filterValue : null,
+        req.params.filter === 'kuski' ? req.params.filterValue : null,
+      );
+      const tts = totalTimes(data);
+      const points = kinglist(data);
+      res.json({ tts, points });
+    },
+  )
   .get('/:LevelPackName/personal/:KuskiIndex', async (req, res) => {
     const getKuskiIndex = await getKuski(req.params.KuskiIndex);
     if (getKuskiIndex) {
@@ -1158,6 +1217,7 @@ router
             LevelName: lev.Level.LevelName,
             LongName: lev.Level.LongName,
             LevelPackLevelIndex: lev.LevelPackLevelIndex,
+            Sort: lev.Sort,
           }))
         : [],
     });

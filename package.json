@@ -67,5 +67,10 @@
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix"
+  },
+  "nodemonConfig": {
+    "env": {
+      "NODE_ENV": "development"
+    }
   }
 }
