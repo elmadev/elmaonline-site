@@ -730,31 +730,36 @@ const kinglist = times => {
   forEach(times, level => {
     if (!level.Level.Hidden) {
       const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
-      let no = 0;
+      let currentPosition = 0;
       forEach(sortedTimes, data => {
         const time = data.dataValues;
         const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
           points[findKuski] = {
             KuskiData: time.KuskiData,
-            points: points[findKuski].points + pointList[no],
+            points: points[findKuski].points + pointList[currentPosition],
             KuskiIndex: time.KuskiIndex,
             TimeIndex:
               time.TimeIndex > points[findKuski].TimeIndex
                 ? time.TimeIndex
                 : points[findKuski].TimeIndex,
+            records:
+              currentPosition === 0
+                ? points[findKuski].records + 1
+                : points[findKuski].records,
           };
         } else {
           points.push({
             KuskiData: time.KuskiData,
-            points: pointList[no],
+            points: pointList[currentPosition],
+            records: currentPosition === 0 ? 1 : 0,
             KuskiIndex: time.KuskiIndex,
             TimeIndex: time.TimeIndex,
           });
           kuskis.push(time.KuskiIndex);
         }
-        no += 1;
-        if (no >= pointList.length) {
+        currentPosition += 1;
+        if (currentPosition >= pointList.length) {
           return false;
         }
         return true;
