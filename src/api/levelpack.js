@@ -730,31 +730,36 @@ const kinglist = times => {
   forEach(times, level => {
     if (!level.Level.Hidden) {
       const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
-      let no = 0;
+      let currentPosition = 0;
       forEach(sortedTimes, data => {
         const time = data.dataValues;
         const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
           points[findKuski] = {
             KuskiData: time.KuskiData,
-            points: points[findKuski].points + pointList[no],
+            points: points[findKuski].points + pointList[currentPosition],
             KuskiIndex: time.KuskiIndex,
             TimeIndex:
               time.TimeIndex > points[findKuski].TimeIndex
                 ? time.TimeIndex
                 : points[findKuski].TimeIndex,
+            records:
+              currentPosition === 0
+                ? points[findKuski].records + 1
+                : points[findKuski].records,
           };
         } else {
           points.push({
             KuskiData: time.KuskiData,
-            points: pointList[no],
+            points: pointList[currentPosition],
+            records: currentPosition === 0 ? 1 : 0,
             KuskiIndex: time.KuskiIndex,
             TimeIndex: time.TimeIndex,
           });
           kuskis.push(time.KuskiIndex);
         }
-        no += 1;
-        if (no >= pointList.length) {
+        currentPosition += 1;
+        if (currentPosition >= pointList.length) {
           return false;
         }
         return true;
@@ -949,6 +954,25 @@ const allPacksStats = async () => {
   return stats;
 };
 
+// memory cache for allPacksStats (used on /levels).
+// note that on hot-reload this will get re-initialized,
+// even if you save files other than this one. That's not
+// ideal for development, but I think it's a worthy trade-off
+// for production.
+const statsCache = {
+  time: 0,
+  data: [],
+};
+
+const updateStatsCache = async () => {
+  const stats = await allPacksStats();
+  statsCache.time = new Date().getTime();
+  statsCache.data = stats;
+
+  // might end up ignoring the return value
+  return stats;
+};
+
 // @see https://express-validator.github.io/docs/schema-validation.html
 // /update uses these except for LevelPackName.
 // /add could use these but it already had client-side validation so for
@@ -1009,8 +1033,18 @@ router
     res.json(packs);
   })
   .get('/stats', async (req, res) => {
-    const stats = await allPacksStats();
-    res.json(stats);
+
+    // we'll cache the data in memory (filesize 4.1kb last I checked)
+    const refresh = 60 * 60 * 1000;
+    const now = new Date().getTime();
+
+    // just update the cache for next time, it's ok to serve data that
+    // is a bit stale.
+    if ( now - statsCache.time > refresh ) {
+      updateStatsCache();
+    }
+
+    res.json(statsCache.data);
   })
   .get('/level-stats/:byName/:identifier', async (req, res) => {
     let LevelPackIndex;
