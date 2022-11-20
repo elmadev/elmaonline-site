@@ -50,7 +50,7 @@ const getCups = async (ongoing = false) => {
           },
           {
             model: Level,
-            attributes: ['LevelName'],
+            attributes: ['LevelName', 'Hidden'],
             as: 'Level',
           },
         ],
