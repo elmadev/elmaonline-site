@@ -6,9 +6,13 @@ import {
   values,
   toPairs,
   uniq,
+  find,
   groupBy,
   mapValues,
   omit,
+  orderBy,
+  maxBy,
+  minBy
 } from 'lodash-es';
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
@@ -465,6 +469,9 @@ const getTimes = async (
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
+  if (!packInfo){
+    return [];
+  }
   let timeTable = Besttime;
   let timeTableAlias = 'LevelBesttime';
   const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
@@ -854,6 +861,92 @@ const levelStats = async LevelPackIndex => {
   return groupBy(stats, 'LevelIndex');
 };
 
+const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, offset = 0) => {
+
+  const levelPack = await LevelPack.findOne({
+    where: { LevelPackName },
+  });
+
+  if ( ! levelPack ) {
+    return {};
+  }
+
+  const q = `
+  SELECT LevelIndex, LeaderHistory
+  FROM levelstats s
+      WHERE LevelIndex IN (SELECT LevelIndex from levelpack_level WHERE LevelPackIndex = ?)`;
+
+  let [levelStats] = await sequelize.query(q, {
+    replacements: [ +levelPack.LevelPackIndex ],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  });
+
+  // all records from all levels with levelIndex added
+  let records = levelStats.map(entry => {
+
+    const leaderHistory = JSON.parse(entry.LeaderHistory);
+
+    return leaderHistory.map(obj => ({
+      LevelIndex: entry.LevelIndex,
+      ...obj
+    }));
+
+  }).flat();
+
+  // before slice
+  const countAll = records.length;
+  const minDriven = minBy(records, 'Driven')?.Driven;
+  const maxDriven = maxBy(records, 'Driven')?.Driven;
+
+  records = orderBy(records, ['Driven'], [sort === 'asc' ? 'asc' : 'desc']);
+
+  // apply pagination before querying kuskis/levels (optimization)
+  records = records.slice(offset * limit, limit);
+
+  const kuskis = await Kuski.findAll({
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
+    where: {
+      KuskiIndex: uniq(records.map(r => r.KuskiIndex))
+    },
+    include: [
+      {
+        model: Team,
+        as: 'TeamData',
+        attributes: ['Team'],
+      },
+    ],
+  });
+
+  const levels = await Level.findAll({
+    attributes: ['LevelIndex', 'LevelName', 'LongName', 'Locked', 'Hidden'],
+    where: {
+      LevelIndex: uniq(records.map(r => r.LevelIndex)),
+    },
+  });
+
+  records = records.map(r => {
+
+    const level = find(levels, { 'LevelIndex': r.LevelIndex });
+
+    // perhaps the level could be locked/hidden if it was added
+    // to a pack and set to locked/hidden later, so we should still
+    // check. Doing this here kind of breaks the expected behaviour
+    // pagination, but might be faster than checking it for all levels.
+    if ( level.Locked || level.Hidden ) {
+      return null;
+    }
+
+    return {
+      ...r,
+      KuskiData: find(kuskis, { 'KuskiIndex': r.KuskiIndex }),
+      LevelData: level,
+    };
+  }).filter(r => r !== null);
+
+  return { countAll, minDriven, maxDriven, records };
+}
+
 const allPacksStats = async () => {
   // not checking level locked status, since:
   // the query often runs slow the first time it's run which
@@ -1237,6 +1330,11 @@ router
   .get('/:LevelPackName', async (req, res) => {
     const pack = await getPackByName(req.params.LevelPackName);
 
+    if ( ! pack ) {
+      res.status(404).send('Pack not found.');
+      return;
+    }
+
     let levels = [];
 
     if (req.query.levels === '1') {
@@ -1255,6 +1353,12 @@ router
           }))
         : [],
     });
+  })
+  .get('/record-history/:LevelPackName', async (req, res) => {
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = parseInt(req.query.offset, 10) || 0;
+    const { countAll, minDriven, maxDriven, records } = await levelpackRecordHistory(req.params.LevelPackName, req.query.sort, limit, offset);
+    res.json({ countAll, minDriven, maxDriven, records })
   });
 
 export default router;
