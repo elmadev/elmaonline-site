@@ -882,15 +882,24 @@ const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, 
     logging: (query, b) => log('query', query, b),
   });
 
-  // all records from all levels with levelIndex added
+  // add level index and flatten
   let records = levelStats.map(entry => {
 
-    const leaderHistory = JSON.parse(entry.LeaderHistory);
+    let leaderHistory = JSON.parse(entry.LeaderHistory);
+    leaderHistory = orderBy(leaderHistory, [ 'Time', 'TimeIndex' ], [ 'asc', 'asc' ] );
 
-    return leaderHistory.map(obj => ({
-      LevelIndex: entry.LevelIndex,
-      ...obj
-    }));
+    return leaderHistory.map((time, index) => {
+
+      const prevLeader = leaderHistory[index + 1];
+      const currentLeader = leaderHistory[0];
+
+      return {
+        LevelIndex: entry.LevelIndex,
+        TimeImprovement: prevLeader === undefined ? null : Math.abs( time.Time - prevLeader.Time ),
+        TimeDiff:  Math.abs( time.Time - currentLeader.Time ),
+        ...time
+      }
+    });
 
   }).flat();
 
@@ -899,7 +908,7 @@ const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, 
   const minDriven = minBy(records, 'Driven')?.Driven;
   const maxDriven = maxBy(records, 'Driven')?.Driven;
 
-  records = orderBy(records, ['Driven'], [sort === 'asc' ? 'asc' : 'desc']);
+  records = orderBy(records, ['TimeIndex'], [ sort === 'asc' ? 'asc' : 'desc' ]);
 
   // apply pagination before querying kuskis/levels (optimization)
   records = records.slice(offset * limit, limit);
