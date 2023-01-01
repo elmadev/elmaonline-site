@@ -82,6 +82,11 @@ const SiteCup = Model.define(
       allowNull: true,
       defaultValue: null,
     },
+    ShownTimes: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['CupGroupIndex, LevelIndex, Designer'] }],
