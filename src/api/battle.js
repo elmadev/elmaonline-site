@@ -659,6 +659,7 @@ const GetLatest = async limit => {
       'InQueue',
       'Finished',
       'RecFileName',
+      'Countdown',
     ],
     order: [['BattleIndex', 'DESC']],
     limit,
