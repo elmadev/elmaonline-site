@@ -29,8 +29,12 @@ const overAllRecap = async Year => {
   const data = await Recap.findAll({
     where: { Year, KuskiIndex: 0 },
     include: [
-      { model: Battle, as: 'BattleData' },
-      { model: Replay, as: 'ReplayData' },
+      {
+        model: Battle,
+        as: 'BattleData',
+        attributes: ['RecFileName', 'BattleIndex'],
+      },
+      { model: Replay, as: 'ReplayData', attributes: ['RecFileName', 'UUID'] },
     ],
   });
   return data;
@@ -38,7 +42,7 @@ const overAllRecap = async Year => {
 
 const overallRanking = async Year => {
   const data = await RankingYearly.findAll({
-    where: { Year: 2020 },
+    where: { Year },
     include: [{ model: Kuski, as: 'KuskiData' }],
   });
   return data.map(d => ({
