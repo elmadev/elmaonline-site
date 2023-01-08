@@ -57,6 +57,7 @@ import Setting from './Setting';
 import TimeFile from './TimeFile';
 import MultiTimeFile from './MultiTimeFile';
 import Crippled from './Crippled';
+import Recap from './Recap';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -481,6 +482,23 @@ TimeFile.belongsTo(AllFinished, {
   as: 'TimeData',
 });
 
+Recap.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Recap.belongsTo(Battle, {
+  foreignKey: 'OtherIndex',
+  targetKey: 'BattleIndex',
+  as: 'BattleData',
+});
+
+Recap.belongsTo(Replay, {
+  foreignKey: 'OtherIndex',
+  targetKey: 'ReplayIndex',
+  as: 'ReplayData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -544,4 +562,5 @@ export {
   TimeFile,
   MultiTimeFile,
   Crippled,
+  Recap,
 }; // add the data model here as well so it exports

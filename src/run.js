@@ -7,6 +7,7 @@ import {
 import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { updateRanking, deleteRanking } from '#utils/ranking';
 import { kuskimap, email, legacyTimes } from '#utils/dataImports';
+import { recapGenerate } from '#utils/recap';
 
 const app = express.Router();
 
@@ -101,6 +102,17 @@ app.get('/legacytimes/:strategy', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     res.json({ started: true });
     await legacyTimes(req.params.strategy);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+// recaps
+app.get('/recap/:type', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    await recapGenerate(req.params.type, 2022);
+    res.sendStatus(200);
   } else {
     res.status(401);
     res.send('Unauthorized');
