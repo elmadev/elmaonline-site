@@ -93,7 +93,7 @@ router
   })
   .get('/:year/:kuski', async (req, res) => {
     const auth = authContext(req);
-    if (auth.auth /* && auth.userid === parseInt(req.params.kuski) */) {
+    if (auth.auth && auth.userid === parseInt(req.params.kuski)) {
       const data = await kuskiRecap(
         parseInt(req.params.year),
         parseInt(req.params.kuski),
