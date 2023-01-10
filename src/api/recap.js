@@ -19,6 +19,7 @@ const kuskiRanking = async (Year, KuskiIndex) => {
       Year: ranking.Year,
       Wins: ranking.WinsAll,
       Played: ranking.PlayedAll,
+      Played5: ranking.Played5All,
       KuskiIndex,
     };
   }
@@ -49,7 +50,7 @@ const overallRanking = async Year => {
     Year: d.Year,
     Wins: d.WinsAll,
     Played: d.PlayedAll,
-    Ratio: ((d.WinsAll * 100) / d.PlayedAll).toFixed(2),
+    Ratio: ((d.WinsAll * 100) / d.Played5All).toFixed(2),
     KuskiIndex: d.KuskiIndex,
     KuskiData: d.KuskiData,
     Designed: d.DesignedAll,
@@ -82,7 +83,7 @@ router
     const UniqueLevelNames = await getTop(year, 54);
     const FF = await getTop(year, 60);
     const OL = await getTop(year, 61);
-    const Ap = await getTop(year, 61);
+    const Ap = await getTop(year, 66);
     const Players = await getTop(year, 72);
     res.json({
       FinishedRuns,
