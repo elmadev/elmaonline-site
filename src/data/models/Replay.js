@@ -95,6 +95,11 @@ const Replay = Model.define(
       allowNull: true,
       defaultValue: DataType.NULL,
     },
+    Views: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['LevelIndex', 'TimeIndex'] }],
