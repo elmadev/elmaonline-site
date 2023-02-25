@@ -35,7 +35,7 @@
     "neo-async": "^2.6.2",
     "read-chunk": "^4.0.3",
     "request": "^2.88.2",
-    "sequelize": "^6.21.4",
+    "sequelize": "^6.29.0",
     "sib-api-v3-sdk": "^8.4.2"
   },
   "devDependencies": {
