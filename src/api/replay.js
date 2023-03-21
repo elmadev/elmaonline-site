@@ -18,6 +18,7 @@ import {
   AllFinished,
   Battle,
   Battletime,
+  SiteCupTime,
 } from '../data/models';
 import sequelize from '../data/sequelize';
 
@@ -38,6 +39,7 @@ const createRecName = (LevelName, nick, recTime) => {
 const emptyRec = {
   ReplayIndex: 0,
   BattleIndex: 0,
+  CupTimeIndex: 0,
   DrivenBy: 0,
   DrivenByText: '',
   UploadedBy: 0,
@@ -55,6 +57,39 @@ const emptyRec = {
   DrivenByData: null,
   UploadedByData: null,
   Tags: [],
+};
+
+const findCupRecs = async where => {
+  const findCupTimes = await SiteCupTime.findAll({
+    where,
+    attributes: ['CupTimeIndex', 'KuskiIndex', 'TimeIndex', 'Time'],
+    include: [
+      {
+        model: Time,
+        as: 'TimeData',
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'Apples',
+          'Driven',
+          'Finished',
+          'LevelIndex',
+        ],
+        include: [
+          {
+            model: Level,
+            as: 'LevelData',
+            attributes: ['LevelName']
+          }
+        ]
+      },
+      {
+        model: Kuski,
+        as: 'KuskiData',
+      }
+    ]
+  });
+  return findCupTimes;
 };
 
 const findBattleRecs = async where => {
@@ -79,6 +114,25 @@ const findBattleRecs = async where => {
     ],
   });
   return findBattles;
+};
+
+const cuptime2Rec = (c, uuid) => {
+  return {
+    ...emptyRec,
+    CupTimeIndex: c.dataValues.CupTimeIndex,
+    DrivenBy: c.dataValues.KuskiIndex,
+    UploadedBy: c.dataValues.KuskiIndex,
+    Uploaded: format(new Date(c.dataValues.TimeData.dataValues.Driven), 't'),
+    LevelIndex: c.dataValues.TimeData.dataValues.LevelIndex,
+    TimeIndex: c.dataValues.TimeIndex,
+    ReplayTime: c.dataValues.Time * 10,
+    Finished: c.dataValues.TimeData.Finished,
+    UUID: `c-${c.dataValues.CupTimeIndex}`,
+    RecFileName: `${uuid.split('-')[2]}.rec`,
+    DrivenByData: c.dataValues.KuskiData,
+    UploadedByData: c.dataValues.KuskiData,
+    LevelData: c.dataValues.TimeData.dataValues.LevelData,
+  }
 };
 
 const battle2Rec = c => {
@@ -302,12 +356,27 @@ const getReplayByReplayId = async ReplayIndex => {
   return data;
 };
 
+const updateView = async recs => {
+  console.log(recs);
+};
+
 const getReplayByUUID = async replayUUID => {
   const replays = replayUUID.split(';');
+  const cuprecs = replays.filter(r => r.includes('c-'));
   const winners = replays.filter(r => r.includes('b-'));
-  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_'));
-  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-'));
+  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_') && !r.includes('c-'));
+  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-') && !r.includes('c-'));
   const combined = [];
+  if (cuprecs.length > 0) {
+    const cuptimes = await findCupRecs({ CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) } });
+    if (replays.length > 1) {
+      forEach(cuptimes, (c, index) => {
+        combined.push(cuptime2Rec(c, cuprecs[index]));
+      });
+    } else {
+      return cuptime2Rec(cuptimes[0], cuprecs[0]);
+    }
+  }
   if (winners.length > 0) {
     const battles = await findBattleRecs({
       BattleIndex: { [Op.in]: winners.map(w => w.split('-')[1]) },
@@ -363,6 +432,7 @@ const getReplayByUUID = async replayUUID => {
   };
   if (replays.length === 1) {
     const data = await Replay.findOne(query);
+    updateView([replayUUID]);
     return data;
   }
   if (uploaded.length > 0) {
@@ -375,6 +445,7 @@ const getReplayByUUID = async replayUUID => {
     forEach(listData, l => {
       combined.push(l);
     });
+    updateView(uploaded);
   }
   return combined;
 };

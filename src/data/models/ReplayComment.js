@@ -33,6 +33,11 @@ const ReplayComment = Model.define('replay_comment', {
     defaultValue: 0,
     allowNull: false,
   },
+  CupTimeIndex: {
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
   UUID: {
     type: DataType.STRING(54),
     defaultValue: null,

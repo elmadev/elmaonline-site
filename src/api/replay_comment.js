@@ -19,6 +19,8 @@ const getReplayCommentsByReplayId = async ReplayIndex => {
   };
   if (ReplayIndex.includes('b-')) {
     query.where = { BattleIndex: ReplayIndex.split('-')[1] };
+  } else if (ReplayIndex.includes('c-')) {
+    query.where = { CupTimeIndex: ReplayIndex.split('-')[1] };
   } else if (ReplayIndex.includes('_')) {
     query.where = { UUID: ReplayIndex };
   }
@@ -32,6 +34,9 @@ const addReplayComment = async Data => {
     if (Data.ReplayIndex.includes('b-')) {
       insert.ReplayIndex = 0;
       insert.BattleIndex = Data.ReplayIndex.split('-')[1];
+    } else if (Data.ReplayIndex.includes('c-')) {
+      insert.ReplayIndex = 0;
+      insert.CupTimeIndex = Data.ReplayIndex.split('-')[1];
     } else if (Data.ReplayIndex.includes('_')) {
       insert.ReplayIndex = 0;
       insert.UUID = Data.ReplayIndex;

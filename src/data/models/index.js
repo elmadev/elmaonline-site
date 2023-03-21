@@ -132,6 +132,11 @@ Time.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+Time.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
+
 Battle.hasMany(Battletime, {
   foreignKey: 'BattleIndex',
   as: 'Results',
@@ -477,6 +482,12 @@ Crippled.belongsTo(Level, {
 });
 
 TimeFile.belongsTo(AllFinished, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'TimeData',
+});
+
+SiteCupTime.belongsTo(Time, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
   as: 'TimeData',
