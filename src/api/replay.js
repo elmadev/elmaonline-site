@@ -57,12 +57,13 @@ const emptyRec = {
   DrivenByData: null,
   UploadedByData: null,
   Tags: [],
+  Views: 0,
 };
 
 const findCupRecs = async where => {
   const findCupTimes = await SiteCupTime.findAll({
     where,
-    attributes: ['CupTimeIndex', 'KuskiIndex', 'TimeIndex', 'Time'],
+    attributes: ['CupTimeIndex', 'KuskiIndex', 'TimeIndex', 'Time', 'Views'],
     include: [
       {
         model: Time,
@@ -132,6 +133,7 @@ const cuptime2Rec = (c, uuid) => {
     DrivenByData: c.dataValues.KuskiData,
     UploadedByData: c.dataValues.KuskiData,
     LevelData: c.dataValues.TimeData.dataValues.LevelData,
+    Views: c.dataValues.Views,
   }
 };
 
@@ -151,13 +153,14 @@ const battle2Rec = c => {
     DrivenByData: sorted[0].dataValues.KuskiData,
     UploadedByData: sorted[0].dataValues.KuskiData,
     LevelData: c.LevelData,
+    Views: c.dataValues.Views,
   };
 };
 
 const findTimeFiles = async where => {
   const battleReplays = await TimeFile.findAll({
     where,
-    attributes: ['TimeIndex', 'UUID', 'MD5'],
+    attributes: ['TimeIndex', 'UUID', 'MD5', 'Views'],
     include: [
       {
         model: AllFinished,
@@ -208,6 +211,7 @@ const timeFile2Rec = c => {
       DrivenByData: c.TimeData.dataValues.KuskiData,
       UploadedByData: c.TimeData.dataValues.KuskiData,
       LevelData: c.TimeData.dataValues.LevelData,
+      Views: c.dataValues.Views,
     };
   }
   return c;
@@ -356,8 +360,33 @@ const getReplayByReplayId = async ReplayIndex => {
   return data;
 };
 
-const updateView = async recs => {
-  console.log(recs);
+const updateViews = async (cuprecs, winners, timefiles, uploaded) => {
+  if (cuprecs.length > 0) {
+    cuprecs.forEach(rec => {
+      SiteCupTime.increment({ Views: 1 }, { where: { CupTimeIndex: rec.split('-')[1] } });
+    });
+  }
+  if (winners.length > 0) {
+    winners.forEach(rec => {
+      Battle.increment({ Views: 1 }, { where: { BattleIndex: rec.split('-')[1] } });
+    });
+  }
+  if (timefiles.length > 0) {
+    timefiles.forEach(rec => {
+      TimeFile.increment({ Views: 1 }, { where:
+        {
+          UUID: rec.split('_')[0],
+          MD5: rec.split('_')[1],
+          TimeIndex: rec.split('_')[2],
+        }
+      });
+    });
+  }
+  if (uploaded.length > 0) {
+    uploaded.forEach(rec => {
+      Replay.increment({ Views: 1 }, { where: { UUID: rec } });
+    });
+  }
 };
 
 const getReplayByUUID = async replayUUID => {
@@ -367,6 +396,7 @@ const getReplayByUUID = async replayUUID => {
   const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_') && !r.includes('c-'));
   const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-') && !r.includes('c-'));
   const combined = [];
+  updateViews(cuprecs, winners, timefiles, uploaded);
   if (cuprecs.length > 0) {
     const cuptimes = await findCupRecs({ CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) } });
     if (replays.length > 1) {
@@ -425,14 +455,13 @@ const getReplayByUUID = async replayUUID => {
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
+        attributes: ['Kuski', 'Country', 'KuskiIndex', 'BmpCRC'],
         as: 'DrivenByData',
       },
     ],
   };
   if (replays.length === 1) {
     const data = await Replay.findOne(query);
-    updateView([replayUUID]);
     return data;
   }
   if (uploaded.length > 0) {
@@ -445,7 +474,6 @@ const getReplayByUUID = async replayUUID => {
     forEach(listData, l => {
       combined.push(l);
     });
-    updateView(uploaded);
   }
   return combined;
 };
