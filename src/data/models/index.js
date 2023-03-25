@@ -58,6 +58,7 @@ import TimeFile from './TimeFile';
 import MultiTimeFile from './MultiTimeFile';
 import Crippled from './Crippled';
 import Recap from './Recap';
+import ReplayLog from './ReplayLog';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -574,4 +575,5 @@ export {
   MultiTimeFile,
   Crippled,
   Recap,
+  ReplayLog,
 }; // add the data model here as well so it exports
