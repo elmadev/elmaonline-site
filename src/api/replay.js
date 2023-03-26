@@ -417,8 +417,8 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
   if (cuprecs.length > 0) {
     const cuptimes = await findCupRecs({ CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) } });
     if (replays.length > 1) {
-      forEach(cuptimes, (c, index) => {
-        combined.push(cuptime2Rec(c, cuprecs[index]));
+      forEach(cuptimes, c => {
+        combined.push(cuptime2Rec(c, cuprecs.find(r => r.includes(`c-${c.dataValues.CupTimeIndex}`))));
       });
     } else {
       updateViews(replays, Fingerprint, KuskiIndex);
