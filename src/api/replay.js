@@ -136,6 +136,31 @@ const cuptime2Rec = (c, uuid) => {
     LevelData: c.dataValues.TimeData.dataValues.LevelData,
     Views: c.dataValues.Views,
   }
+}
+
+export const battleToRec = c => {
+  const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
+  const winner = sorted[0];
+
+  if (c.dataValues.RecFileName) {
+    return {
+      ...emptyRec,
+      BattleIndex: c.dataValues.BattleIndex,
+      DrivenBy: winner.KuskiIndex,
+      UploadedBy: winner.KuskiIndex,
+      Uploaded: format(new Date(c.dataValues.Started), 't'),
+      LevelIndex: c.dataValues.LevelIndex,
+      TimeIndex: winner.TimeIndex,
+      ReplayTime: winner.Time * 10,
+      UUID: `b-${c.dataValues.BattleIndex}`,
+      RecFileName: c.dataValues.RecFileName,
+      DrivenByData: winner.KuskiData,
+      UploadedByData: winner.KuskiData,
+      LevelData: c.LevelData,
+    };
+  }
+
+  return null;
 };
 
 const battle2Rec = c => {
