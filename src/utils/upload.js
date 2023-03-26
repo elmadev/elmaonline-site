@@ -482,6 +482,8 @@ export const uploadTimeFile = async (
     }
     await deleteFile(filePath);
   } catch (e) {
+    console.log('error', TimeIndex);
+    console.log(e);
     if (!isSentToS3) {
       if (parseInt(Multi, 10) === 1) {
         await MultiTimeFile.upsert({
