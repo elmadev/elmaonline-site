@@ -75,6 +75,11 @@ const SiteCupTime = Model.define(
       allowNull: true,
       defaultValue: null,
     },
+    Views: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['CupIndex, KuskiIndex, TimeIndex'] }],

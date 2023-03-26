@@ -54,6 +54,12 @@ const addSha3 = async (salt, password, KuskiIndex) => {
 export const auth = async body => {
   const { kuski, password } = body;
   const kuskiData = await getKuskiData(kuski);
+  if (!kuskiData) {
+    return {
+      success: false,
+      message: 'Incorrect credentials',
+    };
+  }
   if (kuskiData.dataValues.Confirmed === 0) {
     return {
       success: false,

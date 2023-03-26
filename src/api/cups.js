@@ -196,6 +196,12 @@ const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
   return filterResults(data, admins(cupGroup), KuskiIndex);
 };
 
+const getEventByCupTimeIndex = async (CupTimeIndex, KuskiIndex) => {
+  const event = await SiteCupTime.findOne({ where: { CupTimeIndex }, include: [{ model: SiteCup, as: 'CupData', attributes: ['CupGroupIndex'] }] });
+  const eventData = await getCupEvent(event.dataValues.CupData.dataValues.CupGroupIndex, event.dataValues.CupIndex, KuskiIndex);
+  return eventData;
+};
+
 const editCup = async (CupGroupIndex, data) => {
   await SiteCupGroup.update(data, {
     where: { CupGroupIndex },
@@ -774,6 +780,15 @@ router
   .get('/time/:CupTimeIndex', async (req, res) => {
     const rec = await Replay(req.params.CupTimeIndex);
     res.json(rec);
+  })
+  .get('/eventByTimeIndex/:CupTimeIndex', async (req, res) => {
+    const auth = authContext(req);
+    let KuskiIndex = 0;
+    if (auth.auth) {
+      KuskiIndex = auth.userid;
+    }
+    const event = await getEventByCupTimeIndex(req.params.CupTimeIndex, KuskiIndex);
+    res.json(event);
   });
 
 export default router;

@@ -127,7 +127,7 @@ const Kuski = Model.define(
   {
     indexes: [{ fields: ['Kuski', 'TeamIndex', 'Country'] }],
     defaultScope: {
-      attributes: ['Kuski', 'KuskiIndex', 'Country'],
+      attributes: ['Kuski', 'KuskiIndex', 'Country', 'BmpCRC'],
       include: [
         {
           model: Team,

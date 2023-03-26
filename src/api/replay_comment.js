@@ -19,6 +19,8 @@ const getReplayCommentsByReplayId = async ReplayIndex => {
   };
   if (ReplayIndex.includes('b-')) {
     query.where = { BattleIndex: ReplayIndex.split('-')[1] };
+  } else if (ReplayIndex.includes('c-')) {
+    query.where = { CupTimeIndex: ReplayIndex.split('-')[1] };
   } else if (ReplayIndex.includes('_')) {
     query.where = { UUID: ReplayIndex };
   }
@@ -32,6 +34,9 @@ const addReplayComment = async Data => {
     if (Data.ReplayIndex.includes('b-')) {
       insert.ReplayIndex = 0;
       insert.BattleIndex = Data.ReplayIndex.split('-')[1];
+    } else if (Data.ReplayIndex.includes('c-')) {
+      insert.ReplayIndex = 0;
+      insert.CupTimeIndex = Data.ReplayIndex.split('-')[1];
     } else if (Data.ReplayIndex.includes('_')) {
       insert.ReplayIndex = 0;
       insert.UUID = Data.ReplayIndex;
@@ -42,50 +47,65 @@ const addReplayComment = async Data => {
   return NewReplayComment;
 };
 
+const getReplayComments = async opts => {
+  const { rows, count } = await ReplayComment.findAndCountAll({
+    attributes: ['ReplayIndex', 'KuskiIndex', 'Entered', 'Text'],
+    order: [['Entered', 'DESC']],
+    limit: opts.limit,
+    offset: opts.offset,
+    where: {},
+    include: [
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'KuskiData',
+      },
+      {
+        model: Replay,
+        attributes: [
+          'ReplayIndex',
+          'UUID',
+          'RecFileName',
+          'ReplayTime',
+          'Finished',
+          'Uploaded',
+          'Unlisted',
+        ],
+        as: 'Replay',
+        where: {
+          Unlisted: 0,
+        },
+        include: [
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'DrivenByData',
+          },
+          {
+            model: Kuski,
+            attributes: ['Kuski', 'Country'],
+            as: 'UploadedByData',
+          },
+        ],
+      },
+    ],
+  });
+
+  return {
+    rows: rows.filter(r => r.Replay !==  null),
+    count
+  }
+}
+
 router
   .get('/', async (req, res) => {
-    const comments = await ReplayComment.findAll({
-      attributes: ['ReplayIndex', 'KuskiIndex', 'Entered', 'Text'],
-      order: [['Entered', 'DESC']],
-      where: {},
-      include: [
-        {
-          model: Kuski,
-          attributes: ['Kuski', 'Country'],
-          as: 'KuskiData',
-        },
-        {
-          model: Replay,
-          attributes: [
-            'ReplayIndex',
-            'UUID',
-            'RecFileName',
-            'ReplayTime',
-            'Finished',
-            'Uploaded',
-            'Unlisted',
-          ],
-          as: 'Replay',
-          where: {
-            Unlisted: 0,
-          },
-          include: [
-            {
-              model: Kuski,
-              attributes: ['Kuski', 'Country'],
-              as: 'DrivenByData',
-            },
-            {
-              model: Kuski,
-              attributes: ['Kuski', 'Country'],
-              as: 'UploadedByData',
-            },
-          ],
-        },
-      ],
+
+    const {rows, count} = await getReplayComments({
+      limit: +(req.query.limit || 0) || 0,
+      offset: +(req.query.offset || 0) || 0,
     });
 
-    res.json(comments.filter(c => c.Replay !== null));
+    res.json({rows, count});
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayCommentsByReplayId(req.params.ReplayIndex);

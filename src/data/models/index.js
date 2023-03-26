@@ -58,6 +58,7 @@ import TimeFile from './TimeFile';
 import MultiTimeFile from './MultiTimeFile';
 import Crippled from './Crippled';
 import Recap from './Recap';
+import ReplayLog from './ReplayLog';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -130,6 +131,11 @@ WeeklyBest.belongsTo(Kuski, {
 Time.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
+});
+
+Time.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
 });
 
 Battle.hasMany(Battletime, {
@@ -482,6 +488,12 @@ TimeFile.belongsTo(AllFinished, {
   as: 'TimeData',
 });
 
+SiteCupTime.belongsTo(Time, {
+  foreignKey: 'TimeIndex',
+  targetKey: 'TimeIndex',
+  as: 'TimeData',
+});
+
 Recap.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex',
   as: 'KuskiData',
@@ -563,4 +575,5 @@ export {
   MultiTimeFile,
   Crippled,
   Recap,
+  ReplayLog,
 }; // add the data model here as well so it exports

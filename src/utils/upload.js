@@ -195,9 +195,14 @@ const s3PutObject = params => {
   });
 };
 
-export const uploadReplayS3 = async (replayFile, folder, filename) => {
+const bufferMove = async (replayFile, filepath) => {
+  await writeFile(filepath, replayFile.data);
+  return;
+};
+
+export const uploadReplayS3 = async (replayFile, folder, filename, forceUuid = '') => {
   try {
-    let fileUuid = uuid();
+    let fileUuid = forceUuid ? forceUuid : uuid();
     const params = s3Params(
       `${config.s3SubFolder}${folder}/${fileUuid}/${filename}`,
       replayFile.data,
@@ -209,7 +214,12 @@ export const uploadReplayS3 = async (replayFile, folder, filename) => {
       filepath = `.${config.publicFolder}/temp/${fileUuid}-${filename}`;
     }
     // save in temp folder to be able to read rec data
-    await move(replayFile, filepath);
+    if (replayFile.mv) {
+      await move(replayFile, filepath);
+    } else {
+      // used when calling uploadReplayS3 from within node with buffer file format
+      await bufferMove(replayFile, filepath);
+    }
     // check duplicate
     const MD5 = await checksumFile('md5', filepath);
     const replaysMD5 = await getReplaysByMd5(MD5);
@@ -472,6 +482,8 @@ export const uploadTimeFile = async (
     }
     await deleteFile(filePath);
   } catch (e) {
+    console.log('error', TimeIndex);
+    console.log(e);
     if (!isSentToS3) {
       if (parseInt(Multi, 10) === 1) {
         await MultiTimeFile.upsert({
