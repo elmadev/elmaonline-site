@@ -35,6 +35,11 @@ const TimeFile = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Views: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

@@ -145,6 +145,11 @@ const Battle = Model.define(
       allowNull: true,
       defaultValue: '',
     },
+    Views: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['Started', 'LevelIndex', 'KuskiIndex'] }],

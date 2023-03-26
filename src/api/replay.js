@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from '#utils/database';
 import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
-import { forEach } from 'lodash-es';
+import { forEach, groupBy } from 'lodash-es';
 import { sortResults } from '#utils/battle';
 import { shareTimeFile } from '#utils/upload';
 import {
@@ -18,6 +18,8 @@ import {
   AllFinished,
   Battle,
   Battletime,
+  SiteCupTime,
+  ReplayLog,
 } from '../data/models';
 import sequelize from '../data/sequelize';
 
@@ -38,6 +40,7 @@ const createRecName = (LevelName, nick, recTime) => {
 const emptyRec = {
   ReplayIndex: 0,
   BattleIndex: 0,
+  CupTimeIndex: 0,
   DrivenBy: 0,
   DrivenByText: '',
   UploadedBy: 0,
@@ -55,6 +58,40 @@ const emptyRec = {
   DrivenByData: null,
   UploadedByData: null,
   Tags: [],
+  Views: 0,
+};
+
+const findCupRecs = async where => {
+  const findCupTimes = await SiteCupTime.findAll({
+    where,
+    attributes: ['CupTimeIndex', 'KuskiIndex', 'TimeIndex', 'Time', 'Views'],
+    include: [
+      {
+        model: Time,
+        as: 'TimeData',
+        attributes: [
+          'KuskiIndex',
+          'Time',
+          'Apples',
+          'Driven',
+          'Finished',
+          'LevelIndex',
+        ],
+        include: [
+          {
+            model: Level,
+            as: 'LevelData',
+            attributes: ['LevelName']
+          }
+        ]
+      },
+      {
+        model: Kuski,
+        as: 'KuskiData',
+      }
+    ]
+  });
+  return findCupTimes;
 };
 
 const findBattleRecs = async where => {
@@ -81,6 +118,26 @@ const findBattleRecs = async where => {
   return findBattles;
 };
 
+const cuptime2Rec = (c, uuid) => {
+  return {
+    ...emptyRec,
+    CupTimeIndex: c.dataValues.CupTimeIndex,
+    DrivenBy: c.dataValues.KuskiIndex,
+    UploadedBy: c.dataValues.KuskiIndex,
+    Uploaded: format(new Date(c.dataValues.TimeData.dataValues.Driven), 't'),
+    LevelIndex: c.dataValues.TimeData.dataValues.LevelIndex,
+    TimeIndex: c.dataValues.TimeIndex,
+    ReplayTime: c.dataValues.Time * 10,
+    Finished: c.dataValues.TimeData.Finished,
+    UUID: `c-${c.dataValues.CupTimeIndex}`,
+    RecFileName: `${uuid.split('-')[2]}.rec`,
+    DrivenByData: c.dataValues.KuskiData,
+    UploadedByData: c.dataValues.KuskiData,
+    LevelData: c.dataValues.TimeData.dataValues.LevelData,
+    Views: c.dataValues.Views,
+  }
+};
+
 const battle2Rec = c => {
   const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
   return {
@@ -97,13 +154,14 @@ const battle2Rec = c => {
     DrivenByData: sorted[0].dataValues.KuskiData,
     UploadedByData: sorted[0].dataValues.KuskiData,
     LevelData: c.LevelData,
+    Views: c.dataValues.Views,
   };
 };
 
 const findTimeFiles = async where => {
   const battleReplays = await TimeFile.findAll({
     where,
-    attributes: ['TimeIndex', 'UUID', 'MD5'],
+    attributes: ['TimeIndex', 'UUID', 'MD5', 'Views'],
     include: [
       {
         model: AllFinished,
@@ -154,6 +212,7 @@ const timeFile2Rec = c => {
       DrivenByData: c.TimeData.dataValues.KuskiData,
       UploadedByData: c.TimeData.dataValues.KuskiData,
       LevelData: c.TimeData.dataValues.LevelData,
+      Views: c.dataValues.Views,
     };
   }
   return c;
@@ -302,12 +361,70 @@ const getReplayByReplayId = async ReplayIndex => {
   return data;
 };
 
-const getReplayByUUID = async replayUUID => {
-  const replays = replayUUID.split(';');
+const splitReplayTypes = replays => {
+  const cuprecs = replays.filter(r => r.includes('c-'));
   const winners = replays.filter(r => r.includes('b-'));
-  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_'));
-  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-'));
+  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_') && !r.includes('c-'));
+  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-') && !r.includes('c-'));
+  return { cuprecs, winners, timefiles, uploaded };
+};
+
+const updateViews = async (replays, Fingerprint, KuskiIndex, data) => {
+  const Day = format(new Date(), 'yyyyMMdd');
+  const Timestamp = format(new Date(), 't');
+  const where = { Day };
+  if (KuskiIndex) {
+    where.KuskiIndex = KuskiIndex;
+  } else {
+    where.Fingerprint = Fingerprint;
+  }
+  where.UUID = { [Op.in]: replays.map(r => r.substring(0, 2) === 'c-' ? `${r.split('-')[0]}-${r.split('-')[1]}` : r) };
+  const logs = await ReplayLog.findAll({ where });
+  const grouped = groupBy(logs, 'UUID');
+  const { cuprecs, winners, timefiles, uploaded } = splitReplayTypes(replays);
+  uploaded.forEach(rec => {
+    if (!grouped[rec]) {
+      const recData = data.find(r => r.UUID === rec);
+      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, ReplayIndex: recData.dataValues.ReplayIndex });
+      Replay.increment({ Views: 1 }, { where: { ReplayIndex: recData.dataValues.ReplayIndex } });
+    }
+  });
+  cuprecs.forEach(rec => {
+    const r = `${rec.split('-')[0]}-${rec.split('-')[1]}`;
+    if (!grouped[r]) {
+      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: r, Day, Timestamp, CupTimeIndex: r.split('-')[1] });
+      SiteCupTime.increment({ Views: 1 }, { where: { CupTimeIndex: r.split('-')[1] } });
+    }
+  });
+  winners.forEach(rec => {
+    if (!grouped[rec]) {
+      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, BattleIndex: rec.split('-')[1] });
+      Battle.increment({ Views: 1 }, { where: { BattleIndex: rec.split('-')[1] } });
+    }
+  });
+  timefiles.forEach(rec => {
+    if (!grouped[rec]) {
+      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, TimeIndex: rec.split('_')[2] });
+      TimeFile.increment({ Views: 1 }, { where: { TimeIndex: rec.split('_')[2] } });
+    }
+  });
+};
+
+const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
+  const replays = replayUUID.split(';');
+  const { cuprecs, winners, timefiles, uploaded } = splitReplayTypes(replays);
   const combined = [];
+  if (cuprecs.length > 0) {
+    const cuptimes = await findCupRecs({ CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) } });
+    if (replays.length > 1) {
+      forEach(cuptimes, (c, index) => {
+        combined.push(cuptime2Rec(c, cuprecs[index]));
+      });
+    } else {
+      updateViews(replays, Fingerprint, KuskiIndex);
+      return cuptime2Rec(cuptimes[0], cuprecs[0]);
+    }
+  }
   if (winners.length > 0) {
     const battles = await findBattleRecs({
       BattleIndex: { [Op.in]: winners.map(w => w.split('-')[1]) },
@@ -317,6 +434,7 @@ const getReplayByUUID = async replayUUID => {
         combined.push(battle2Rec(b));
       });
     } else {
+      updateViews(replays, Fingerprint, KuskiIndex);
       return battle2Rec(battles[0]);
     }
   }
@@ -331,6 +449,7 @@ const getReplayByUUID = async replayUUID => {
         combined.push(timeFile2Rec(b));
       });
     } else {
+      updateViews(replays, Fingerprint, KuskiIndex);
       return timeFile2Rec(battlerecs[0]);
     }
   }
@@ -356,26 +475,29 @@ const getReplayByUUID = async replayUUID => {
       },
       {
         model: Kuski,
-        attributes: ['Kuski', 'Country'],
+        attributes: ['Kuski', 'Country', 'KuskiIndex', 'BmpCRC'],
         as: 'DrivenByData',
       },
     ],
   };
   if (replays.length === 1) {
     const data = await Replay.findOne(query);
+    updateViews(replays, Fingerprint, KuskiIndex, [data]);
     return data;
   }
+  let listData;
   if (uploaded.length > 0) {
     query.where = {
       UUID: {
         [Op.in]: uploaded,
       },
     };
-    const listData = await Replay.findAll(query);
+    listData = await Replay.findAll(query);
     forEach(listData, l => {
       combined.push(l);
     });
   }
+  updateViews(replays, Fingerprint, KuskiIndex, listData);
   return combined;
 };
 
@@ -749,7 +871,12 @@ router
   })
 
   .get('/byUUID/:UUID', async (req, res) => {
-    const data = await getReplayByUUID(req.params.UUID);
+    let KuskiIndex = 0;
+    const auth = authContext(req);
+    if (auth.auth) {
+      KuskiIndex = auth.userid;
+    }
+    const data = await getReplayByUUID(req.params.UUID, req.query.f, KuskiIndex);
     res.json(data);
   })
 

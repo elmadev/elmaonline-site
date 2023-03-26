@@ -11,6 +11,8 @@ const getReplayRatingsByReplayId = async ReplayIndex => {
   };
   if (ReplayIndex.includes('b-')) {
     query.where = { BattleIndex: ReplayIndex.split('-')[1] };
+  } else if (ReplayIndex.includes('c-')) {
+    query.where = { CupTimeIndex: ReplayIndex.split('-')[1] };
   } else if (ReplayIndex.includes('_')) {
     query.where = { UUID: ReplayIndex };
   }
@@ -25,6 +27,9 @@ const addReplayRating = async Data => {
     if (Data.ReplayIndex.includes('b-')) {
       find.ReplayIndex = 0;
       find.BattleIndex = Data.ReplayIndex.split('-')[1];
+    } else if (Data.ReplayIndex.includes('c-')) {
+      find.ReplayIndex = 0;
+      find.CupTimeIndex = Data.ReplayIndex.split('-')[1];
     } else if (Data.ReplayIndex.includes('_')) {
       find.ReplayIndex = 0;
       find.UUID = Data.ReplayIndex;
