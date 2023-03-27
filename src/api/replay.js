@@ -138,49 +138,28 @@ const cuptime2Rec = (c, uuid) => {
   }
 }
 
-export const battleToRec = c => {
-  const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
-  const winner = sorted[0];
-
+export const battle2Rec = c => {
+  const sorted = [...c.Results].sort(sortResults(c.BattleType));
   if (c.dataValues.RecFileName) {
     return {
       ...emptyRec,
-      BattleIndex: c.dataValues.BattleIndex,
-      DrivenBy: winner.KuskiIndex,
-      UploadedBy: winner.KuskiIndex,
-      Uploaded: format(new Date(c.dataValues.Started), 't'),
-      LevelIndex: c.dataValues.LevelIndex,
-      TimeIndex: winner.TimeIndex,
-      ReplayTime: winner.Time * 10,
-      UUID: `b-${c.dataValues.BattleIndex}`,
-      RecFileName: c.dataValues.RecFileName,
-      DrivenByData: winner.KuskiData,
-      UploadedByData: winner.KuskiData,
+      BattleIndex: c.BattleIndex,
+      DrivenBy: sorted[0].KuskiIndex,
+      UploadedBy: sorted[0].KuskiIndex,
+      Uploaded: format(new Date(c.Started * 1000), 't'),
+      LevelIndex: c.LevelIndex,
+      TimeIndex: sorted[0].TimeIndex,
+      ReplayTime: sorted[0].Time * 10,
+      UUID: `b-${c.BattleIndex}`,
+      RecFileName: c.RecFileName,
+      DrivenByData: sorted[0].KuskiData,
+      UploadedByData: sorted[0].KuskiData,
       LevelData: c.LevelData,
-    };
+      Views: c.Views,
+    }
   }
-
+  
   return null;
-};
-
-const battle2Rec = c => {
-  const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
-  return {
-    ...emptyRec,
-    BattleIndex: c.dataValues.BattleIndex,
-    DrivenBy: sorted[0].dataValues.KuskiIndex,
-    UploadedBy: sorted[0].dataValues.KuskiIndex,
-    Uploaded: format(new Date(c.dataValues.Started), 't'),
-    LevelIndex: c.dataValues.LevelIndex,
-    TimeIndex: sorted[0].dataValues.TimeIndex,
-    ReplayTime: sorted[0].dataValues.Time * 10,
-    UUID: `b-${c.dataValues.BattleIndex}`,
-    RecFileName: c.dataValues.RecFileName,
-    DrivenByData: sorted[0].dataValues.KuskiData,
-    UploadedByData: sorted[0].dataValues.KuskiData,
-    LevelData: c.LevelData,
-    Views: c.dataValues.Views,
-  };
 };
 
 const findTimeFiles = async where => {

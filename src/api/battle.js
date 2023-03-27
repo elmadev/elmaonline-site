@@ -13,7 +13,7 @@ import {
   Time,
   TimeFile,
 } from '../data/models';
-import { battleToRec } from './replay';
+import { battle2Rec } from './replay';
 
 const router = express.Router();
 
@@ -691,7 +691,7 @@ const GetLatest = async limit => {
 
 const GetLatestAsReplays = async limit => {
   const latestBattles = await GetLatest(limit)
-  return latestBattles.map(battle => battleToRec(battle)).filter(Boolean)
+  return latestBattles.map(battle => battle2Rec(battle)).filter(Boolean)
 }
 
 router
