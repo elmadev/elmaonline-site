@@ -251,6 +251,7 @@ const getReplays = async (
   DrivenBy = 0,
   UserId = 0,
   LevelPackIndex = 0,
+  excludedTags = []
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -290,18 +291,32 @@ const getReplays = async (
   }
   const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
 
+  let having = ""
+  if (tags.length) {
+    having = `(
+      SELECT count('TagIndex')
+      FROM replay_tags
+      WHERE replay_tags.ReplayIndex = replay.ReplayIndex
+      AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`
+  }
+  if (excludedTags.length) {
+    having += having ? " AND " : ""
+
+    having += `(
+      SELECT count('TagIndex')
+      FROM replay_tags
+      WHERE replay_tags.ReplayIndex = replay.ReplayIndex
+      AND replay_tags.TagIndex IN (${excludedTags.join()})) = 0`
+  }
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
     order: getOrder(),
     group: ['ReplayIndex'],
-    ...(tags.length && {
-      having: sequelize.literal(`(
-        SELECT count('TagIndex')
-        FROM replay_tags
-        WHERE replay_tags.ReplayIndex = replay.ReplayIndex
-        AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`),
+    ...(having && {
+      having: sequelize.literal(having),
     }),
     attributes: {
       include: [
@@ -776,6 +791,7 @@ router
       drivenBy,
       userId,
       req.query.levelPack,
+      req.query.excludedTags
     );
     res.json(data);
   })
