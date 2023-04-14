@@ -239,6 +239,7 @@ const attributes = [
   'TAS',
   'Bug',
   'Nitro',
+  'Views',
 ];
 
 const getReplays = async (
@@ -260,6 +261,13 @@ const getReplays = async (
         [sequelize.literal(`ratingCnt ${order}`)],
       ];
     }
+
+    if (sortBy === 'views') {
+      return [
+        [sequelize.literal(`Views ${order}`)],
+      ];
+    }
+
     return [['Uploaded', order]];
   };
 
