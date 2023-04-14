@@ -136,26 +136,30 @@ const cuptime2Rec = (c, uuid) => {
     LevelData: c.dataValues.TimeData.dataValues.LevelData,
     Views: c.dataValues.Views,
   }
-};
+}
 
-const battle2Rec = c => {
-  const sorted = [...c.Results].sort(sortResults(c.dataValues.BattleType));
-  return {
-    ...emptyRec,
-    BattleIndex: c.dataValues.BattleIndex,
-    DrivenBy: sorted[0].dataValues.KuskiIndex,
-    UploadedBy: sorted[0].dataValues.KuskiIndex,
-    Uploaded: format(new Date(c.dataValues.Started), 't'),
-    LevelIndex: c.dataValues.LevelIndex,
-    TimeIndex: sorted[0].dataValues.TimeIndex,
-    ReplayTime: sorted[0].dataValues.Time * 10,
-    UUID: `b-${c.dataValues.BattleIndex}`,
-    RecFileName: c.dataValues.RecFileName,
-    DrivenByData: sorted[0].dataValues.KuskiData,
-    UploadedByData: sorted[0].dataValues.KuskiData,
-    LevelData: c.LevelData,
-    Views: c.dataValues.Views,
-  };
+export const battle2Rec = c => {
+  const sorted = [...c.Results].sort(sortResults(c.BattleType));
+  if (c.dataValues.RecFileName) {
+    return {
+      ...emptyRec,
+      BattleIndex: c.BattleIndex,
+      DrivenBy: sorted[0].KuskiIndex,
+      UploadedBy: sorted[0].KuskiIndex,
+      Uploaded: format(new Date(c.Started * 1000), 't'),
+      LevelIndex: c.LevelIndex,
+      TimeIndex: sorted[0].TimeIndex,
+      ReplayTime: sorted[0].Time * 10,
+      UUID: `b-${c.BattleIndex}`,
+      RecFileName: c.RecFileName,
+      DrivenByData: sorted[0].KuskiData,
+      UploadedByData: sorted[0].KuskiData,
+      LevelData: c.LevelData,
+      Views: c.Views,
+    }
+  }
+  
+  return null;
 };
 
 const findTimeFiles = async where => {
@@ -247,6 +251,7 @@ const getReplays = async (
   DrivenBy = 0,
   UserId = 0,
   LevelPackIndex = 0,
+  excludedTags = []
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -286,18 +291,32 @@ const getReplays = async (
   }
   const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
 
+  let having = ""
+  if (tags.length) {
+    having = `(
+      SELECT count('TagIndex')
+      FROM replay_tags
+      WHERE replay_tags.ReplayIndex = replay.ReplayIndex
+      AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`
+  }
+  if (excludedTags.length) {
+    having += having ? " AND " : ""
+
+    having += `(
+      SELECT count('TagIndex')
+      FROM replay_tags
+      WHERE replay_tags.ReplayIndex = replay.ReplayIndex
+      AND replay_tags.TagIndex IN (${excludedTags.join()})) = 0`
+  }
+
   const data = await Replay.findAndCountAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
     order: getOrder(),
     group: ['ReplayIndex'],
-    ...(tags.length && {
-      having: sequelize.literal(`(
-        SELECT count('TagIndex')
-        FROM replay_tags
-        WHERE replay_tags.ReplayIndex = replay.ReplayIndex
-        AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`),
+    ...(having && {
+      having: sequelize.literal(having),
     }),
     attributes: {
       include: [
@@ -772,6 +791,7 @@ router
       drivenBy,
       userId,
       req.query.levelPack,
+      req.query.excludedTags
     );
     res.json(data);
   })
