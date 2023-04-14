@@ -28,7 +28,12 @@ const LevelPackLevel = Model.define(
     Sort: {
       type: DataType.STRING(255),
       defaultValue: '',
-      allowNull: false,
+      allowNull: true,
+    },
+    Targets: {
+      type: DataType.STRING(255),
+      defaultValue: '',
+      allowNull: true,
     },
   },
   {
