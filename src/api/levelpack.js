@@ -152,49 +152,44 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
+
   let timeTable = Besttime;
-  let timeTableAlias = 'LevelBesttime';
-  const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
+  const attributes = ['TimeIndex', 'Time', 'KuskiIndex', 'LevelIndex'];
   if (packInfo.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
-    timeTableAlias = 'LevelLegacyBesttime';
     attributes.push('Source');
   }
-  const times = await LevelPackLevel.findAll({
-    where: { LevelPackIndex: packInfo.LevelPackIndex },
-    order: [['LevelPackLevelIndex', 'ASC']],
+
+  const packLevels = await LevelPackLevel.findAll({
+    where: {
+      LevelPackIndex: packInfo.dataValues.LevelPackIndex,
+    },
+    order: [
+      ['Sort', 'ASC'],
+      ['LevelPackLevelIndex', 'ASC'],
+    ],
+  }).then(data => data.map(r => r.LevelIndex))
+
+  const singleTimesByLevel = await timeTable.findAll({
+    attributes,
+    where: {
+      [Op.and]: {
+        KuskiIndex,
+        LevelIndex: {
+          [Op.in]: packLevels,
+        },
+      },
+    },
     include: [
       {
-        model: timeTable,
-        as: timeTableAlias,
-        attributes,
-        where: { KuskiIndex },
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'Country'],
-            as: 'KuskiData',
-          },
-        ],
-      },
-      {
         model: Level,
-        as: 'Level',
+        as: 'LevelData',
         attributes: ['LevelName', 'LongName', 'Hidden'],
       },
     ],
   });
-  if (packInfo.Legacy && !eolOnly) {
-    return times
-      .filter(t => !t.Level.Hidden)
-      .map(t => {
-        return {
-          ...t.dataValues,
-          LevelBesttime: t.dataValues.LevelLegacyBesttime,
-        };
-      });
-  }
-  return times.filter(t => !t.Level.Hidden);
+
+  return singleTimesByLevel;
 };
 
 const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
@@ -359,7 +354,7 @@ const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
 
     const LevelCombinedBesttime = {
       Kuski: KuskiIndex,
-      OtherKuski,
+      OtherKuski: multiTime.Time <= singleTime.Time ? OtherKuski : 'single',
       Time:
         multiTime.Time <= singleTime.Time ? multiTime.Time : singleTime.Time,
     };
@@ -1236,11 +1231,15 @@ router
     }
   })
   .get('/:LevelPackName/personal/:KuskiIndex/:eolOnly', async (req, res) => {
-    const getKuskiIndex = await getKuski(req.params.KuskiIndex);
-    if (getKuskiIndex) {
+    let KuskiIndex = req.params.KuskiIndex;
+    if (isNaN(KuskiIndex)) {
+      const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+      KuskiIndex = getKuskiIndex.dataValues.KuskiIndex;
+    }
+    if (KuskiIndex) {
       const data = await getPersonalTimes(
         req.params.LevelPackName,
-        getKuskiIndex.dataValues.KuskiIndex,
+        KuskiIndex,
         parseInt(req.params.eolOnly, 10),
       );
       res.json(data);
@@ -1359,6 +1358,7 @@ router
             LongName: lev.Level.LongName,
             LevelPackLevelIndex: lev.LevelPackLevelIndex,
             Sort: lev.Sort,
+            Targets: lev.Targets,
           }))
         : [],
     });
