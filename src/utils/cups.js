@@ -100,6 +100,7 @@ export const generateEvent = (event, cup, times, cuptimes) => {
         if (t.TimeFileData) {
           data.UUID = t.TimeFileData.UUID;
           data.MD5 = t.TimeFileData.MD5;
+          data.TeamIndex = t.KuskiData.TeamIndex;
         }
         // update cup times if replay is uploaded
         if (exists.length > 0) {
