@@ -273,7 +273,10 @@ const generate = async (event, cup) => {
   const getTimes = await Time.findAll({
     where: { LevelIndex: event.LevelIndex },
     order: [['TimeIndex', 'ASC']],
-    include: [{ model: TimeFile, as: 'TimeFileData' }],
+    include: [
+      { model: TimeFile, as: 'TimeFileData' },
+      { model: Kuski, as: 'KuskiData', attributes: ['KuskiIndex', 'TeamIndex'] }
+    ],
   });
   const getCupTimes = await SiteCupTime.findAll({
     where: { CupIndex: event.CupIndex },
