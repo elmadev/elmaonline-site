@@ -60,6 +60,11 @@ const Setting = Model.define(
       allowNull: false,
       defaultValue: 1,
     },
+    BnEnabled: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

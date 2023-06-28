@@ -59,6 +59,7 @@ import MultiTimeFile from './MultiTimeFile';
 import Crippled from './Crippled';
 import Recap from './Recap';
 import ReplayLog from './ReplayLog';
+import BnKuskiRule from './BnKuskiRule';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -511,6 +512,18 @@ Recap.belongsTo(Replay, {
   as: 'ReplayData',
 });
 
+Setting.hasMany(BnKuskiRule, {
+  foreignKey: 'KuskiIndex',
+  sourceKey: 'KuskiIndex',
+  as: 'BnKuskiRules',
+});
+
+BnKuskiRule.belongsTo(Setting, {
+  foreignKey: 'KuskiIndex',
+  targetKey: 'KuskiIndex',
+  as: 'SettingData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -576,4 +589,6 @@ export {
   Crippled,
   Recap,
   ReplayLog,
+  ReplayTags,
+  BnKuskiRule,
 }; // add the data model here as well so it exports
