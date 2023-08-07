@@ -11,6 +11,7 @@ const getDonations = async () => {
       'DonateIndex',
       'payment_date',
       'mc_gross',
+      'mc_fee',
       'Processed',
     ],
     include: [

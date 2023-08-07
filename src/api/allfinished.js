@@ -11,6 +11,7 @@ import {
   Multitime,
   Team,
   TimeFile,
+  Time,
 } from '../data/models';
 
 const router = express.Router();
@@ -115,6 +116,41 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
       .slice(0, parseInt(limit, 10));
   }
   return times;
+};
+
+const getLatestRuns = async (KuskiIndex, limit, UserId = 0) => {
+  if (UserId !== parseInt(KuskiIndex, 10)) {
+    return null;
+  }
+  const where = { KuskiIndex };
+  const include = [
+    {
+      model: Level,
+      as: 'LevelData',
+      attributes: ['LevelName', 'Locked', 'Hidden'],
+    },
+    {
+      model: TimeFile,
+      as: 'TimeFileData',
+    },
+  ];
+  const query = {
+    where,
+    order: [['TimeIndex', 'DESC']],
+    include,
+    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+  };
+  const times = await Time.findAll(query);
+  return times.filter(t => {
+    if (t.LevelData) {
+      if (t.LevelData.Locked || t.LevelData.Hidden) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  });
 };
 
 const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
@@ -272,6 +308,11 @@ const getLeaderHistoryForLevel = async (
 router
   .get('/highlight', async (req, res) => {
     const data = await getHighlights();
+    res.json(data);
+  })
+  .get('/runs/:KuskiIndex/:limit', async (req, res) => {
+    const auth = authContext(req);
+    const data = await getLatestRuns(req.params.KuskiIndex, req.params.limit, auth.userid);
     res.json(data);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
