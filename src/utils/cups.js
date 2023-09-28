@@ -118,10 +118,11 @@ export const generateEvent = (event, cup, times, cuptimes) => {
       // find apple results
     } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E')) {
       if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
+        const appleTime = 9999000 + (1000 - t.Apples);
         const exists = cuptimes.filter(
           c =>
             c.KuskiIndex === t.KuskiIndex &&
-            c.Time === 9999000 + (1000 - t.Apples),
+            c.Time === appleTime,
         );
         const data = {
           TimeIndex: t.TimeIndex,
@@ -139,9 +140,15 @@ export const generateEvent = (event, cup, times, cuptimes) => {
         } else {
           data.CupIndex = event.CupIndex;
           data.KuskiIndex = t.KuskiIndex;
-          data.Time = t.Time;
+          data.Time = appleTime;
           data.RecData = null;
-          insertBulk.push(data);
+          // keep only best result for each player
+          const exists = insertBulk.findIndex(i => i.KuskiIndex === t.KuskiIndex);
+          if (exists > -1 && insertBulk[exists].Time > appleTime) {
+            insertBulk[exists] = data;
+          } else if (exists === -1) {
+            insertBulk.push(data);
+          }
         }
       }
     }
