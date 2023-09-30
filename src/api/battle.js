@@ -600,6 +600,7 @@ const BattlesBetween = async (Start, End, Limit = 250) => {
       'InQueue',
       'Finished',
       'RecFileName',
+      'Countdown',
     ],
     limit: parseInt(Limit, 10) + 10,
     include: [
