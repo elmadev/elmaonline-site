@@ -2,6 +2,7 @@ import express from 'express';
 import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { forEach } from 'lodash-es';
+import { dbquery } from '../data/sequelize';
 import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
 import moment from 'moment';
@@ -17,8 +18,6 @@ import {
   SiteCupTime,
   SiteCupBlog,
   Team,
-  Time,
-  TimeFile,
 } from '../data/models';
 
 const router = express.Router();
@@ -276,18 +275,45 @@ const generateUpdate = async (data, done) => {
 };
 
 const generate = async (event, cup) => {
-  const getTimes = await Time.findAll({
-    where: { LevelIndex: event.LevelIndex },
-    order: [['TimeIndex', 'ASC']],
-    include: [
-      { model: TimeFile, as: 'TimeFileData' },
-      { model: Kuski, as: 'KuskiData', attributes: ['KuskiIndex', 'TeamIndex'] }
-    ],
-  });
+  const from = format(new Date(event.StartTime * 1000), 'yyyy-MM-dd HH:mm:ss');
+  const to = format(new Date(event.EndTime * 1000), 'yyyy-MM-dd HH:mm:ss');
+  const finishedQuery = event.AppleBugs ? `(time.Finished = 'F' OR time.Finished = 'B')` : `time.Finished = 'F'`;
+  const query = `
+    SELECT cte.Time, cte.TimeIndex, cte.Finished,
+      kuski.KuskiIndex, kuski.TeamIndex, timefile.UUID, timefile.MD5
+    FROM (
+      SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY time.KuskiIndex ORDER BY time.Time ASC) AS rn
+      FROM time
+      WHERE time.LevelIndex = ?
+        AND ${finishedQuery}
+        AND time.Driven BETWEEN ? AND ?
+    ) cte
+    LEFT OUTER JOIN kuski ON cte.KuskiIndex = kuski.KuskiIndex
+    LEFT OUTER JOIN timefile ON cte.TimeIndex = timefile.TimeIndex
+    WHERE rn = 1
+    `;
+  const finishedResults = await dbquery(query, [event.LevelIndex, from, to]);
+  const queryApple = `
+    SELECT cte.Time, cte.Apples, cte.TimeIndex, cte.Finished,
+      kuski.KuskiIndex, kuski.TeamIndex, timefile.UUID, timefile.MD5
+    FROM (
+      SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY time.KuskiIndex ORDER BY time.Apples DESC) AS rn
+      FROM time
+      WHERE time.LevelIndex = ?
+        AND time.Driven BETWEEN ? AND ?
+    ) cte
+    LEFT OUTER JOIN kuski ON cte.KuskiIndex = kuski.KuskiIndex
+    LEFT OUTER JOIN timefile ON cte.TimeIndex = timefile.TimeIndex
+    WHERE rn = 1
+    `;
+  const appleResults = await dbquery(queryApple, [event.LevelIndex, from, to]);
+  const appleResultsOnly = appleResults.filter(a => !finishedResults.find(f => f.KuskiIndex === a.KuskiIndex));
   const getCupTimes = await SiteCupTime.findAll({
     where: { CupIndex: event.CupIndex },
   });
-  const generatedTimes = await generateEvent(event, cup, getTimes, getCupTimes);
+  const generatedTimes = await generateEvent(event, cup, [...finishedResults, ...appleResultsOnly], getCupTimes);
   await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
   await eachSeries(generatedTimes.updateBulk, generateUpdate);
   await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });
