@@ -400,9 +400,12 @@ const updateViews = async (replays, Fingerprint, KuskiIndex, data) => {
   const Day = format(new Date(), 'yyyyMMdd');
   const Timestamp = format(new Date(), 't');
   const where = { Day };
+  if (!KuskiIndex && !Fingerprint) {
+    return;
+  }
   if (KuskiIndex) {
     where.KuskiIndex = KuskiIndex;
-  } else {
+  } else if (Fingerprint) {
     where.Fingerprint = Fingerprint;
   }
   where.UUID = { [Op.in]: replays.map(r => r.substring(0, 2) === 'c-' ? `${r.split('-')[0]}-${r.split('-')[1]}` : r) };

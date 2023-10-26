@@ -89,68 +89,58 @@ export const generateEvent = (event, cup, times, cuptimes) => {
   // loop times and find finished runs
   forEach(times, t => {
     if (t.Finished === 'F' || (event.AppleBugs && t.Finished === 'B')) {
-      if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
-        const exists = cuptimes.filter(
-          c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
-        );
-        const data = {
-          TimeIndex: t.TimeIndex,
-          TimeExists: 1,
-        };
-        if (t.TimeFileData) {
-          data.UUID = t.TimeFileData.UUID;
-          data.MD5 = t.TimeFileData.MD5;
-          data.TeamIndex = t.KuskiData.TeamIndex;
-        }
-        // update cup times if replay is uploaded
-        if (exists.length > 0) {
-          data.CupTimeIndex = exists[0].CupTimeIndex;
-          updateBulk.push(data);
-          // otherwise add to cup times if not uploaded
-        } else {
-          data.CupIndex = event.CupIndex;
-          data.KuskiIndex = t.KuskiIndex;
-          data.Time = t.Time;
-          data.RecData = null;
-          insertBulk.push(data);
-        }
+      const exists = cuptimes.filter(
+        c => c.KuskiIndex === t.KuskiIndex && c.Time === t.Time,
+      );
+      const data = {
+        TimeIndex: t.TimeIndex,
+        TimeExists: 1,
+      };
+      if (t.UUID && t.MD5) {
+        data.UUID = t.UUID;
+        data.MD5 = t.MD5;
+      }
+      data.TeamIndex = t.TeamIndex;
+      // update cup times if replay is uploaded
+      if (exists.length > 0) {
+        data.CupTimeIndex = exists[0].CupTimeIndex;
+        updateBulk.push(data);
+        // otherwise add to cup times if not uploaded
+      } else {
+        data.CupIndex = event.CupIndex;
+        data.KuskiIndex = t.KuskiIndex;
+        data.Time = t.Time;
+        data.RecData = null;
+        insertBulk.push(data);
       }
       // find apple results
-    } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E')) {
-      if (t.Driven > event.StartTime && t.Driven < event.EndTime) {
-        const appleTime = 9999000 + (1000 - t.Apples);
-        const exists = cuptimes.filter(
-          c =>
-            c.KuskiIndex === t.KuskiIndex &&
-            c.Time === appleTime,
-        );
-        const data = {
-          TimeIndex: t.TimeIndex,
-          TimeExists: 1,
-        };
-        if (t.TimeFileData) {
-          data.UUID = t.TimeFileData.UUID;
-          data.MD5 = t.TimeFileData.MD5;
-          data.TeamIndex = t.KuskiData.TeamIndex;
-        }
-        // update cup times if replay is uploaded
-        if (exists.length > 0) {
-          data.CupTimeIndex = exists[0].CupTimeIndex;
-          updateBulk.push(data);
-          // otherwise add to cup times if not uploaded
-        } else {
-          data.CupIndex = event.CupIndex;
-          data.KuskiIndex = t.KuskiIndex;
-          data.Time = appleTime;
-          data.RecData = null;
-          // keep only best result for each player
-          const exists = insertBulk.findIndex(i => i.KuskiIndex === t.KuskiIndex);
-          if (exists > -1 && insertBulk[exists].Time > appleTime) {
-            insertBulk[exists] = data;
-          } else if (exists === -1) {
-            insertBulk.push(data);
-          }
-        }
+    } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E' || t.Finished === 'B')) {
+      const appleTime = 9999000 + (1000 - t.Apples);
+      const exists = cuptimes.filter(
+        c =>
+          c.KuskiIndex === t.KuskiIndex &&
+          c.Time === appleTime,
+      );
+      const data = {
+        TimeIndex: t.TimeIndex,
+        TimeExists: 1,
+      };
+      if (t.UUID && t.MD5) {
+        data.UUID = t.UUID;
+        data.MD5 = t.MD5;
+      }
+      data.TeamIndex = t.TeamIndex;
+      // update cup times if replay is uploaded
+      if (exists.length > 0) {
+        data.CupTimeIndex = exists[0].CupTimeIndex;
+        updateBulk.push(data);
+        // otherwise add to cup times if not uploaded
+      } else {
+        data.CupIndex = event.CupIndex;
+        data.KuskiIndex = t.KuskiIndex;
+        data.Time = appleTime;
+        data.RecData = null;
+        insertBulk.push(data);
       }
     }
   });

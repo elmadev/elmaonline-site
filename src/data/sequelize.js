@@ -69,4 +69,13 @@ sequelize
     console.error(`Unable to connect to MySQL database at ${uri}:`, err);
   });
 
+export const dbquery = async (q, replacements = []) => {
+  const [result] = await sequelize.query(q, {
+    replacements,
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  });
+  return result;
+}
+
 export default sequelize;
