@@ -87,6 +87,11 @@ const SiteCup = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    AppleResults: {
+      type: DataType.INTEGER,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['CupGroupIndex, LevelIndex, Designer'] }],
