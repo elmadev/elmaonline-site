@@ -621,6 +621,7 @@ router
           EndTime: `${req.body.EndTime} ${zeroPad(req.body.EndHour, 2)}:00:00`,
           Designer: kuski ? kuski.KuskiIndex : 0,
           ShownTimes: req.body.ShownTimes,
+          AppleResults: req.body.AppleResults,
         });
         res.json(insert);
       } else {

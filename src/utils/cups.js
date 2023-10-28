@@ -86,6 +86,7 @@ export const filterResults = (events, ownerId = [], loggedId = 0) => {
 export const generateEvent = (event, cup, times, cuptimes) => {
   const insertBulk = [];
   const updateBulk = [];
+  const isAppleResults = event.AppleResults === null ? cup.AppleResults : event.AppleResults;
   // loop times and find finished runs
   forEach(times, t => {
     if (t.Finished === 'F' || (event.AppleBugs && t.Finished === 'B')) {
@@ -114,7 +115,7 @@ export const generateEvent = (event, cup, times, cuptimes) => {
         insertBulk.push(data);
       }
       // find apple results
-    } else if (cup.AppleResults && (t.Finished === 'D' || t.Finished === 'E' || t.Finished === 'B')) {
+    } else if (isAppleResults && (t.Finished === 'D' || t.Finished === 'E' || t.Finished === 'B')) {
       const appleTime = 9999000 + (1000 - t.Apples);
       const exists = cuptimes.filter(
         c =>
