@@ -30,7 +30,7 @@ const createRecName = (LevelName, nick, recTime) => {
   const levName =
     LevelName.substring(0, 6) === 'QWQUU0'
       ? LevelName.substring(6, 8)
-      : LevelName;
+      : LevelName.replace('#', '');
   return `${levName}${nick.substring(
     0,
     Math.min(15 - (levName.length + timeAsString.length), 4),
@@ -130,7 +130,7 @@ const cuptime2Rec = (c, uuid) => {
     ReplayTime: c.dataValues.Time * 10,
     Finished: c.dataValues.TimeData.Finished,
     UUID: `c-${c.dataValues.CupTimeIndex}`,
-    RecFileName: `${uuid.split('-')[2]}.rec`,
+    RecFileName: `${uuid.replace(`c-${c.dataValues.CupTimeIndex}-`, '')}.rec`,
     DrivenByData: c.dataValues.KuskiData,
     UploadedByData: c.dataValues.KuskiData,
     LevelData: c.dataValues.TimeData.dataValues.LevelData,
