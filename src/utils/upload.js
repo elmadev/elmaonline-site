@@ -297,7 +297,6 @@ export function uploadCupReplay(
       if (mvErr) {
         resolve({ error: mvErr });
       } else {
-        getReplayInfo(fileDir);
         findLevelIndexFromReplay(fileDir).then(LevelIndex => {
           if (LevelIndex === 0) {
             resolve({ error: 'Level not found' });
@@ -308,9 +307,6 @@ export function uploadCupReplay(
               getCupEventByLevelIndex(LevelIndex).then(CupIndex => {
                 if (CupIndex === 0) {
                   resolve({ error: 'Replay is not from a cup level' });
-                  fs.unlink(fileDir, () => {});
-                } else if (!replayData.finished && !replayData.apples) {
-                  resolve({ error: 'Level not finished or apple not picked' });
                   fs.unlink(fileDir, () => {});
                 } else {
                   fs.readFile(fileDir, (error, data) => {
