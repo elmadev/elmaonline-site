@@ -5,6 +5,7 @@ import { has } from 'lodash-es';
 import { getLevel as getLevelSecure } from '#utils/download';
 import { Level, Time, LevelStats, Battle } from '../data/models';
 import connection from '../data/sequelize';
+import { fromToTime } from '#utils/database';
 
 const router = express.Router();
 
@@ -79,7 +80,7 @@ const getLevelData = async LevelIndex => {
   }
 };
 
-const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
+const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex, from, to) => {
   const stats = await Time.findAll({
     group: ['Finished'],
     attributes: [
@@ -89,7 +90,7 @@ const getLevelStatsForPlayer = async (LevelIndex, KuskiIndex) => {
       [sequelize.fn('min', sequelize.col('Driven')), 'FirstPlayed'],
       [sequelize.fn('max', sequelize.col('Driven')), 'LastPlayed'],
     ],
-    where: { LevelIndex, KuskiIndex },
+    where: { LevelIndex, KuskiIndex, ...fromToTime(from, to, 'Driven') },
   });
 
   return stats;
@@ -164,7 +165,12 @@ router.get('/timestats/:LevelIndex', async (req, res) => {
     KuskiIndex = auth.userid;
   }
 
-  const data = await getLevelStatsForPlayer(req.params.LevelIndex, KuskiIndex);
+  const data = await getLevelStatsForPlayer(
+    req.params.LevelIndex,
+    KuskiIndex,
+    req.query.from,
+    req.query.to,
+  );
   res.json(data);
 });
 
