@@ -76,6 +76,6 @@ export const dbquery = async (q, replacements = []) => {
     logging: (query, b) => log('query', query, b),
   });
   return result;
-}
+};
 
 export default sequelize;

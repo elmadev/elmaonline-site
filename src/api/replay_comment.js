@@ -92,20 +92,19 @@ const getReplayComments = async opts => {
   });
 
   return {
-    rows: rows.filter(r => r.Replay !==  null),
-    count
-  }
-}
+    rows: rows.filter(r => r.Replay !== null),
+    count,
+  };
+};
 
 router
   .get('/', async (req, res) => {
-
-    const {rows, count} = await getReplayComments({
+    const { rows, count } = await getReplayComments({
       limit: +(req.query.limit || 0) || 0,
       offset: +(req.query.offset || 0) || 0,
     });
 
-    res.json({rows, count});
+    res.json({ rows, count });
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayCommentsByReplayId(req.params.ReplayIndex);

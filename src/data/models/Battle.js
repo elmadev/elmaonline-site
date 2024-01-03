@@ -105,9 +105,7 @@ const Battle = Model.define(
       defaultValue: '0000-00-00 00:00:00',
       get() {
         const ts = this.getDataValue('Started')
-          ? moment(this.getDataValue('Started'))
-              .add(8, 'hours')
-              .format('X')
+          ? moment(this.getDataValue('Started')).add(8, 'hours').format('X')
           : 0;
         return ts;
       },

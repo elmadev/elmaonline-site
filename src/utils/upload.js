@@ -200,7 +200,12 @@ const bufferMove = async (replayFile, filepath) => {
   return;
 };
 
-export const uploadReplayS3 = async (replayFile, folder, filename, forceUuid = '') => {
+export const uploadReplayS3 = async (
+  replayFile,
+  folder,
+  filename,
+  forceUuid = '',
+) => {
   try {
     let fileUuid = forceUuid ? forceUuid : uuid();
     const params = s3Params(
