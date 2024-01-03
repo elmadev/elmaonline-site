@@ -779,6 +779,18 @@ const EditReplay = async data => {
       update.DrivenByText = data.edit.DrivenBy;
     }
     rec.update(update);
+
+    // Set tags
+    const tags = data.edit.Tags.filter(tag => !tag.Hidden).map(
+      tag => tag.TagIndex,
+    );
+    // Add DNF tag when needed
+    if (!rec.Finished) {
+      const dnfTag = await Tag.findOne({ where: { Name: 'DNF' } });
+      tags.push(dnfTag.TagIndex);
+    }
+    await rec.setTags(tags);
+
     return 200;
   }
   return 401;
