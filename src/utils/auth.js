@@ -80,10 +80,7 @@ export const auth = async body => {
     };
   }
   if (kuskiData.dataValues.Password) {
-    const md5 = crypto
-      .createHash('md5')
-      .update(password)
-      .digest('hex');
+    const md5 = crypto.createHash('md5').update(password).digest('hex');
     if (md5 === kuskiData.dataValues.Password) {
       if (kuskiData.dataValues.Salt) {
         await addSha3(
@@ -123,4 +120,11 @@ export function authContext(req) {
     }
   }
   return { auth: false, userid: 0 };
+}
+
+export function authDiscord(req, res, next) {
+  if (req.header('Authorization') === config.discord.bnAuth) {
+    return next();
+  }
+  return res.sendStatus(401);
 }

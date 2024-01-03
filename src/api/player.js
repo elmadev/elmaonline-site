@@ -1,7 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from '#utils/database';
-import { authContext } from '#utils/auth';
+import { authContext, authDiscord } from '#utils/auth';
 import { pick, omit } from 'lodash-es';
 import {
   Team,
@@ -11,6 +11,7 @@ import {
   LevelStats,
   Level,
   Setting,
+  BnKuskiRule,
 } from '../data/models';
 
 const router = express.Router();
@@ -85,6 +86,82 @@ const ChangeSettings = async data => {
     KuskiIndex: data.KuskiIndex,
     [data.Setting]: data.Value,
   });
+  return 1;
+};
+
+const BnKuskiRuleAttributes = [
+  'BattleTypes',
+  'Designers',
+  'LevelPatterns',
+  'BattleAttributes',
+  'MinDuration',
+  'MaxDuration',
+  'IgnoreList',
+];
+
+const BnSettings = async DiscordId => {
+  const get = await Setting.findOne({
+    where: { DiscordId },
+    attributes: ['KuskiIndex', 'DiscordId', 'BnEnabled'],
+    include: [
+      {
+        model: BnKuskiRule,
+        as: 'BnKuskiRules',
+        attributes: BnKuskiRuleAttributes,
+      },
+    ],
+  });
+  return get;
+};
+
+const AllActiveBnSettings = async () => {
+  const get = await Setting.findAll({
+    attributes: ['KuskiIndex', 'DiscordId', 'BnEnabled'],
+    include: [
+      {
+        model: BnKuskiRule,
+        as: 'BnKuskiRules',
+        attributes: BnKuskiRuleAttributes,
+        required: true,
+      },
+    ],
+  });
+  return get;
+};
+
+const ChangeBnEnabledSetting = async data => {
+  const setting = await Setting.findOne({
+    where: { DiscordId: data.DiscordId },
+    attributes: ['KuskiIndex'],
+  });
+  if (setting?.KuskiIndex) {
+    await Setting.update(
+      { BnEnabled: data.BnEnabled },
+      { where: { KuskiIndex: setting.KuskiIndex } },
+    );
+  }
+  return 1;
+};
+
+const ChangeBnSettings = async data => {
+  const setting = await Setting.findOne({
+    where: { DiscordId: data.DiscordId },
+    attributes: ['KuskiIndex'],
+  });
+  const KuskiIndex = setting?.KuskiIndex;
+  if (KuskiIndex && data.BnKuskiRules.length > 0) {
+    // first time setup, turn notification on by default
+    const currentRules = await BnKuskiRule.findAll({ where: { KuskiIndex } });
+    const isFirstTimeSetup = currentRules.length === 0;
+    if (isFirstTimeSetup) {
+      await Setting.update({ BnEnabled: 1 }, { where: { KuskiIndex } });
+    }
+
+    // override existing rules with new ones
+    await BnKuskiRule.destroy({ where: { KuskiIndex } });
+    const newRules = data.BnKuskiRules.map(rule => ({ ...rule, KuskiIndex }));
+    await BnKuskiRule.bulkCreate(newRules);
+  }
   return 1;
 };
 
@@ -309,6 +386,34 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .get('/bn/:DiscordId/linked', authDiscord, async (req, res) => {
+    const data = await Setting.findOne({
+      where: { DiscordId: req.params.DiscordId },
+    });
+    res.json(Boolean(data));
+  })
+  .get('/bn/:DiscordId', authDiscord, async (req, res) => {
+    const data = await BnSettings(req.params.DiscordId);
+    res.json(data);
+  })
+  .get('/bn', authDiscord, async (req, res) => {
+    const data = await AllActiveBnSettings();
+    res.json(data);
+  })
+  .post('/bn/:DiscordId/toggle/:BnEnabled', authDiscord, async (req, res) => {
+    const data = await ChangeBnEnabledSetting({
+      DiscordId: req.params.DiscordId,
+      BnEnabled: Number(req.params.BnEnabled),
+    });
+    res.json(data);
+  })
+  .post('/bn/:DiscordId', authDiscord, async (req, res) => {
+    const data = await ChangeBnSettings({
+      ...req.body,
+      DiscordId: req.params.DiscordId,
+    });
+    res.json(data);
   })
   .post('/ignore/:Kuski', async (req, res) => {
     const auth = authContext(req);
