@@ -108,7 +108,7 @@ const timeKuski = async () => {
     SUM(OneWheel = 1) AS OneWheelRuns, SUM(Drunk = 1) AS DrunkRuns
     FROM time WHERE TimeIndex > ? AND TimeIndex < ? GROUP BY KuskiIndex;
   `;
-  const result = await executeQuery(q, [192795796, 201387810]);
+  const result = await executeQuery(q, [201387809, 210565302]);
   return result;
 };
 
@@ -121,9 +121,9 @@ const time = async () => {
     COUNT(DISTINCT LevelIndex) as LevelsPlayed,
     SUM(BattleIndex = 0) AS NonBattleRuns, SUM(BattleIndex != 0) AS BattleRuns,
     SUM(OneWheel = 1) AS OneWheelRuns, SUM(Drunk = 1) AS DrunkRuns
-    FROM time WHERE TimeIndex > 192795796 AND TimeIndex < 201387810;
+    FROM time WHERE TimeIndex > ? AND TimeIndex < ?;
   `;
-  const result = await executeQuery(q, [192795796, 201387810]);
+  const result = await executeQuery(q, [201387809, 210565302]);
   return result;
 };
 
@@ -139,7 +139,7 @@ const battle = async () => {
     AVG(Duration) AS AverageDuration, SUM(Countdown) AS TotalCountdown
     FROM battle WHERE BattleIndex > ? AND BattleIndex < ?
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
@@ -155,7 +155,7 @@ const battleKuski = async () => {
     AVG(Duration) AS AverageDuration, SUM(Countdown) AS TotalCountdown
     FROM battle WHERE BattleIndex > ? AND BattleIndex < ? GROUP BY KuskiIndex
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
@@ -165,7 +165,7 @@ const chat = async () => {
     SUM(Text = '!lev 10') AS ChatLev10s, SUM(Text = '!rec 10') AS ChatRec10s, SUM(Text = 'lol') AS ChatLols
     FROM chat WHERE ChatIndex > ? AND ChatIndex < ?
   `;
-  const result = await executeQuery(q, [8173144, 8415756]);
+  const result = await executeQuery(q, [8415755, 8673085]);
   return result;
 };
 
@@ -175,7 +175,7 @@ const chatKuski = async () => {
     SUM(Text = '!lev 10') AS ChatLev10s, SUM(Text = '!rec 10') AS ChatRec10s, SUM(Text = 'lol') AS ChatLols
     FROM chat WHERE ChatIndex > ? AND ChatIndex < ? GROUP BY KuskiIndex
   `;
-  const result = await executeQuery(q, [8173144, 8415756]);
+  const result = await executeQuery(q, [8415755, 8673085]);
   return result;
 };
 
@@ -183,9 +183,9 @@ const level = async () => {
   const q = `
     SELECT COUNT(LevelIndex) AS LevelsAdded, COUNT(DISTINCT LevelName) as UniqueLevelNames, SUM(Apples) AS TotalApples,
     SUM(Killers) AS TotalKillers, SUM(Flowers) AS TotalFlowers, COUNT(DISTINCT AddedBy) AS UniqueDesigners
-    FROM level WHERE LevelIndex < ? AND LevelIndex > ?
+    FROM level WHERE LevelIndex > ? AND LevelIndex < ?
   `;
-  const result = await executeQuery(q, [548483, 521137]);
+  const result = await executeQuery(q, [521136, 566340]);
   return result;
 };
 
@@ -193,9 +193,9 @@ const levelKuski = async () => {
   const q = `
     SELECT AddedBy as KuskiIndex, COUNT(LevelIndex) AS LevelsAdded, COUNT(DISTINCT LevelName) as UniqueLevelNames, SUM(Apples) AS TotalApples,
     SUM(Killers) AS TotalKillers, SUM(Flowers) AS TotalFlowers
-    FROM level WHERE LevelIndex < ? AND LevelIndex > ? GROUP BY AddedBy
+    FROM level WHERE LevelIndex > ? AND LevelIndex < ? GROUP BY AddedBy
   `;
-  const result = await executeQuery(q, [548483, 521137]);
+  const result = await executeQuery(q, [521136, 566340]);
   return result;
 };
 
@@ -208,7 +208,7 @@ const rankingKuski = async () => {
     SUM(IF(BattleType = 'All', 1, 0)) AS BattlesPlayed, SUM(IF(BattleType = 'All', Increase, 0)) AS RankingEarned
     FROM rankinghistory WHERE BattleIndex > ? AND BattleIndex < ? GROUP BY KuskiIndex
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
@@ -218,7 +218,7 @@ const battletime = async () => {
     FROM battletime WHERE BattleIndex > ? AND BattleIndex < ? GROUP BY BattleIndex
     ORDER BY MostPlayers DESC LIMIT 100
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
@@ -226,9 +226,9 @@ const replayrating = async () => {
   const q = `
     SELECT ReplayIndex, AVG(Vote) AS AverageVote, COUNT(ReplayRatingIndex) AS AmountVotes,
     SUM(Vote = 1) AS OneVotes, SUM(Vote = 10) AS TenVotes
-    FROM replay_rating WHERE ReplayIndex > ? AND ReplayIndex < ? GROUP BY ReplayIndex
+    FROM replay_rating WHERE (ReplayIndex > ? AND ReplayIndex < ?) OR (ReplayIndex > ? AND ReplayIndex < ?) GROUP BY ReplayIndex
   `;
-  const result = await executeQuery(q, [3138, 4347]);
+  const result = await executeQuery(q, [4346, 4455, 13676, 16653]);
   return result;
 };
 
@@ -239,7 +239,7 @@ const battletimeDesigner = async () => {
     FROM battletime, battle WHERE battle.BattleIndex = battletime.BattleIndex
     AND battletime.BattleIndex > ? AND battletime.BattleIndex < ? GROUP BY battle.KuskiIndex
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
@@ -249,7 +249,7 @@ const battletimeKuski = async () => {
     FROM battletime, battle WHERE battle.BattleIndex = battletime.BattleIndex AND battletime.BattleIndex > ?
     AND battletime.BattleIndex < ? GROUP BY battletime.KuskiIndex
   `;
-  const result = await executeQuery(q, [171398, 180356]);
+  const result = await executeQuery(q, [180355, 188874]);
   return result;
 };
 
