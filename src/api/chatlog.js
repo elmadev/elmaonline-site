@@ -58,12 +58,8 @@ const searchChat = async ({
     where.ChatIndex = { [Op.gt]: lastId };
 
   const dateTimeRange = [
-    moment(start, 'X')
-      .utc()
-      .format('YYYY-MM-DD HH:mm:ss'),
-    moment(end, 'X')
-      .utc()
-      .format('YYYY-MM-DD HH:mm:ss'),
+    moment(start, 'X').utc().format('YYYY-MM-DD HH:mm:ss'),
+    moment(end, 'X').utc().format('YYYY-MM-DD HH:mm:ss'),
   ];
 
   where.Entered = { [Op.between]: dateTimeRange };

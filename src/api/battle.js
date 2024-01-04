@@ -691,15 +691,15 @@ const GetLatest = async limit => {
 };
 
 const GetLatestAsReplays = async limit => {
-  const latestBattles = await GetLatest(limit)
-  return latestBattles.map(battle => battle2Rec(battle)).filter(Boolean)
-}
+  const latestBattles = await GetLatest(limit);
+  return latestBattles.map(battle => battle2Rec(battle)).filter(Boolean);
+};
 
 router
   .get('/replays', async (req, res) => {
     const limit = req.query.limit ?? 100;
     const battles = await GetLatestAsReplays(
-      Math.min(parseInt(limit, 10), 100)
+      Math.min(parseInt(limit, 10), 100),
     );
     res.json(battles);
   })

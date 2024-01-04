@@ -312,7 +312,11 @@ router
   })
   .get('/runs/:KuskiIndex/:limit', async (req, res) => {
     const auth = authContext(req);
-    const data = await getLatestRuns(req.params.KuskiIndex, req.params.limit, auth.userid);
+    const data = await getLatestRuns(
+      req.params.KuskiIndex,
+      req.params.limit,
+      auth.userid,
+    );
     res.json(data);
   })
   .get('/:LevelIndex/:KuskiIndex/:limit', async (req, res) => {
