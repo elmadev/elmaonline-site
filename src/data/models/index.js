@@ -2,6 +2,7 @@ import sequelize from '../sequelize';
 import Battle from './Battle'; // add the data model here to import
 import Replay from './Replay';
 import Level from './Level';
+import LevelTags from './LevelTags';
 import Kuski from './Kuski';
 import Battletime from './Battletime';
 import BattleLeague from './BattleLeague';
@@ -177,6 +178,18 @@ Level.hasOne(LevelStats, {
   foreignKey: 'LevelIndex',
   as: 'LevelStatsData',
   constraints: false,
+});
+
+Level.belongsToMany(Tag, {
+  through: LevelTags,
+  foreignKey: 'LevelIndex',
+  as: 'Tags',
+});
+
+Tag.belongsToMany(Level, {
+  through: LevelTags,
+  foreignKey: 'TagIndex',
+  as: 'Levels',
 });
 
 LevelStats.belongsTo(Level, {

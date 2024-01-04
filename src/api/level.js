@@ -3,7 +3,7 @@ import sequelize from 'sequelize';
 import { authContext } from '#utils/auth';
 import { has } from 'lodash-es';
 import { getLevel as getLevelSecure } from '#utils/download';
-import { Level, Time, LevelStats, Battle } from '../data/models';
+import { Level, Time, LevelStats, Battle, Tag } from '../data/models';
 import connection from '../data/sequelize';
 import { fromToTime } from '#utils/database';
 
@@ -33,28 +33,37 @@ const getLevel = async (LevelIndex, withStats = false) => {
   );
 
   if (withStats && ongoingBattles.length === 0) {
-    include.push({
-      attributes: [
-        'TimeF',
-        'TimeE',
-        'TimeD',
-        'TimeAll',
-        'AttemptsF',
-        'AttemptsE',
-        'AttemptsD',
-        'AttemptsAll',
-        'MaxSpeedF',
-        'MaxSpeedE',
-        'MaxSpeedD',
-        'MaxSpeedAll',
-        'LeaderCount',
-        'UniqueLeaderCount',
-        'KuskiCountF',
-        'KuskiCountAll',
-      ],
-      model: LevelStats,
-      as: 'LevelStatsData',
-    });
+    include.push(
+      {
+        attributes: [
+          'TimeF',
+          'TimeE',
+          'TimeD',
+          'TimeAll',
+          'AttemptsF',
+          'AttemptsE',
+          'AttemptsD',
+          'AttemptsAll',
+          'MaxSpeedF',
+          'MaxSpeedE',
+          'MaxSpeedD',
+          'MaxSpeedAll',
+          'LeaderCount',
+          'UniqueLeaderCount',
+          'KuskiCountF',
+          'KuskiCountAll',
+        ],
+        model: LevelStats,
+        as: 'LevelStatsData',
+      },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    );
   }
 
   const level = await Level.findOne({
