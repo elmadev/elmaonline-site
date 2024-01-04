@@ -17,6 +17,11 @@ const Tag = Model.define('tag', {
     allowNull: false,
     defaultValue: 0,
   },
+  Type: {
+    type: DataType.ENUM,
+    values: ['replay', 'level', 'levelpack'],
+    allowNull: false,
+  },
 });
 
 export default Tag;
