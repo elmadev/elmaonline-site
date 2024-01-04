@@ -797,7 +797,16 @@ export const getPackByName = async LevelPackName => {
 export const getPackByIndex = async LevelPackIndex => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackIndex },
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return packInfo;
 };
@@ -1349,6 +1358,9 @@ router
       pack.LevelPackDesc = req.body.LevelPackDesc;
 
       await pack.save();
+      await pack.setTags(req.body.Tags);
+      await pack.reload();
+
       res.json({
         success: true,
         LevelPack: pack,
