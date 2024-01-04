@@ -3,6 +3,7 @@ import Battle from './Battle'; // add the data model here to import
 import Replay from './Replay';
 import Level from './Level';
 import LevelTags from './LevelTags';
+import LevelPackTags from './LevelPackTags';
 import Kuski from './Kuski';
 import Battletime from './Battletime';
 import BattleLeague from './BattleLeague';
@@ -201,6 +202,18 @@ LevelStats.belongsTo(Level, {
 LevelPack.hasMany(LevelPackLevel, {
   foreignKey: 'LevelPackIndex',
   as: 'Levels',
+});
+
+LevelPack.belongsToMany(Tag, {
+  through: LevelPackTags,
+  foreignKey: 'LevelPackIndex',
+  as: 'Tags',
+});
+
+Tag.belongsToMany(LevelPack, {
+  through: LevelPackTags,
+  foreignKey: 'TagIndex',
+  as: 'LevelPacks',
 });
 
 LevelPackLevel.belongsTo(Level, {

@@ -35,6 +35,7 @@ import {
   BestMultitime,
   LegacyBesttime,
   Battle,
+  Tag,
 } from '../data/models';
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
@@ -779,7 +780,16 @@ const AddLevelPack = async data => {
 export const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return packInfo;
 };
