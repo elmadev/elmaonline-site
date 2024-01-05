@@ -162,6 +162,20 @@ router.post('/:LevelIndex', async (req, res) => {
   }
 });
 
+router.post('/:LevelIndex/tags', async (req, res) => {
+  const auth = authContext(req);
+
+  const level = await Level.findByPk(req.params.LevelIndex);
+
+  if (auth.mod || auth.userid === level.AddedBy) {
+    await level.setTags(req.body.Tags);
+    const response = await getLevel(req.params.LevelIndex, 1);
+    res.json(response);
+  } else {
+    res.sendStatus(401);
+  }
+});
+
 router.get('/leveldata/:LevelIndex', async (req, res) => {
   const data = await getLevelData(req.params.LevelIndex);
   res.json(data);
