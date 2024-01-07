@@ -252,6 +252,13 @@ const getLevels = async (
       'Killers',
       'Flowers',
       'Added',
+      [
+        sequelize.literal(
+          '(SELECT COUNT(*) FROM battle WHERE battle.LevelIndex = level.LevelIndex)',
+        ),
+        'BattleCount',
+      ],
+
       //   include: [
       //     [
       //       sequelize.literal(`(
