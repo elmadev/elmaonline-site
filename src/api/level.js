@@ -3,9 +3,18 @@ import sequelize from 'sequelize';
 import { authContext } from '#utils/auth';
 import { has } from 'lodash-es';
 import { getLevel as getLevelSecure } from '#utils/download';
-import { Level, Time, LevelStats, Battle, Tag } from '../data/models';
+import {
+  Level,
+  Time,
+  LevelStats,
+  Battle,
+  Tag,
+  LevelPackLevel,
+  Kuski,
+  Besttime,
+} from '../data/models';
 import connection from '../data/sequelize';
-import { fromToTime } from '#utils/database';
+import { fromToTime, searchLimit, searchOffset } from '#utils/database';
 
 const router = express.Router();
 
@@ -131,6 +140,194 @@ const UpdateLevel = async (LevelIndex, update) => {
   const updateLevel = await Level.update(update, { where: { LevelIndex } });
   return updateLevel;
 };
+
+const getLevelIndexesByTags = async (tags, onlyOneMatchIsEnough = false) => {
+  const compareCount = onlyOneMatchIsEnough ? 1 : tags.length;
+
+  let query = null;
+  if (tags.length) {
+    query = `
+      SELECT DISTINCT level_tags.LevelIndex
+      FROM level_tags, level
+      WHERE level_tags.TagIndex IN (${tags.join()})
+	    AND level_tags.LevelIndex = level.LevelIndex
+      GROUP BY level_tags.LevelIndex
+      HAVING COUNT(level_tags.TagIndex) >= ${compareCount};`;
+  }
+
+  if (query) {
+    const [levelIndexes] = await connection.query(query);
+    return levelIndexes.map(l => l.LevelIndex);
+  }
+  return [];
+};
+
+const getLevels = async (
+  offset = 0,
+  limit = 50,
+  tags = [],
+  sortBy = 'added',
+  order = 'desc',
+  AddedBy = 0,
+  UserId = 0,
+  LevelPackIndex = 0,
+  excludedTags = [],
+  finished = 'all',
+) => {
+  const getOrder = () => {
+    if (sortBy === 'rating') {
+      return [
+        [sequelize.literal(`ratingAvg ${order}`)],
+        [sequelize.literal(`ratingCnt ${order}`)],
+      ];
+    }
+
+    if (sortBy === 'views') {
+      return [[sequelize.literal(`Views ${order}`)]];
+    }
+
+    return [['LevelIndex', order]];
+  };
+
+  let where = { Locked: 0 };
+  if (AddedBy) {
+    if (UserId === AddedBy) {
+      where = { AddedBy };
+    } else {
+      where = { AddedBy, Locked: 0 };
+    }
+  }
+
+  // // Filter by level pack
+  // let packLevels = [];
+  // if (LevelPackIndex) {
+  //   packLevels = await LevelPackLevel.findAll({
+  //     attributes: ['LevelIndex'],
+  //     where: {
+  //       LevelPackIndex,
+  //     },
+  //   }).then(data => data.map(r => r.LevelIndex));
+  // }
+  // const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
+
+  const levelIndexesByTags = await getLevelIndexesByTags(tags);
+  const levelIndexesByExcludedTags = await getLevelIndexesByTags(
+    excludedTags,
+    true,
+  );
+  if (tags.length || excludedTags.length) {
+    where = {
+      ...where,
+      LevelIndex: {
+        ...(tags.length && { [sequelize.Op.in]: levelIndexesByTags }),
+        ...(excludedTags.length && {
+          [sequelize.Op.notIn]: levelIndexesByExcludedTags,
+        }),
+      },
+    };
+  }
+
+  const isFinishedCondition =
+    finished !== 'all'
+      ? finished === 'true'
+        ? { '$Besttime.Time$': { [sequelize.Op.not]: null } } // true: levels where besttime.time exists
+        : { '$Besttime.Time$': null } // false: levels where besttime is null
+      : {}; // all: no condition
+
+  where = {
+    ...where,
+    ...isFinishedCondition,
+  };
+
+  const data = await Level.findAll({
+    limit: searchLimit(limit),
+    offset: searchOffset(offset),
+    where,
+    order: getOrder(),
+    attributes: [
+      'LevelIndex',
+      'LevelName',
+      'LongName',
+      'Apples',
+      'Killers',
+      'Flowers',
+      'Added',
+      //   include: [
+      //     [
+      //       sequelize.literal(`(
+      //               SELECT round(avg(Vote), 1)
+      //               FROM level_rating
+      //               WHERE
+      //               level_rating.LevelIndex = level.LevelIndex
+      //           )`),
+      //       'ratingAvg',
+      //     ],
+      //     [
+      //       sequelize.literal(`(
+      //               SELECT count(*)
+      //               FROM level_rating
+      //               WHERE
+      //               level_rating.LevelIndex = level.LevelIndex
+      //           )`),
+      //       'ratingCnt',
+      //     ],
+      //   ],
+    ],
+    include: [
+      // {
+      //   model: LevelRating,
+      //   as: 'Rating',
+      // },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country', 'KuskiIndex'],
+        as: 'KuskiData',
+      },
+      {
+        model: Besttime,
+        attributes: ['Time'],
+        required: false,
+        as: 'Besttime',
+        where: {
+          '$level.Hidden$': { [sequelize.Op.not]: 1 },
+        },
+      },
+    ],
+    subQuery: false,
+  });
+  return {
+    rows: data,
+    count: 300000,
+  };
+};
+
+router.get('/', async (req, res) => {
+  const offset = req.query.pageSize * req.query.page || 0;
+  const limit = req.query.pageSize;
+  // const addedBy = 0;
+  const userId = 0;
+
+  const data = await getLevels(
+    offset,
+    limit,
+    req.query.tags,
+    req.query.sortBy,
+    req.query.order,
+    req.query.addedBy,
+    userId,
+    req.query.levelPack,
+    req.query.excludedTags,
+    req.query.finished,
+  );
+  res.json(data);
+});
 
 router.get('/:LevelIndex', async (req, res) => {
   const data = await getLevel(req.params.LevelIndex, req.query.stats || false);

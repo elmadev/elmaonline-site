@@ -181,6 +181,8 @@ Level.hasOne(LevelStats, {
   constraints: false,
 });
 
+Level.hasOne(Besttime, { foreignKey: 'LevelIndex', as: 'Besttime' });
+
 Level.belongsToMany(Tag, {
   through: LevelTags,
   foreignKey: 'LevelIndex',
