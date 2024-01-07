@@ -173,6 +173,7 @@ const getLevels = async (
   LevelPackIndex = 0,
   excludedTags = [],
   finished = 'all',
+  battled = 'all',
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -239,10 +240,21 @@ const getLevels = async (
     ...isFinishedCondition,
   };
 
+  // Battled filter
+  const having =
+    battled !== 'all'
+      ? {
+          BattleCount: {
+            [battled === 'true' ? sequelize.Op.gt : sequelize.Op.eq]: 0,
+          },
+        }
+      : {};
+
   const data = await Level.findAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
+    having,
     order: getOrder(),
     attributes: [
       'LevelIndex',
@@ -347,6 +359,7 @@ router.get('/', async (req, res) => {
     req.query.levelPack,
     req.query.excludedTags,
     req.query.finished,
+    req.query.battled,
   );
   res.json(data);
 });
