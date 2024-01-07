@@ -174,6 +174,7 @@ const getLevels = async (
   excludedTags = [],
   finished = 'all',
   battled = 'all',
+  finishedBy = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -228,20 +229,8 @@ const getLevels = async (
     };
   }
 
-  const isFinishedCondition =
-    finished !== 'all'
-      ? finished === 'true'
-        ? { '$Besttime.Time$': { [sequelize.Op.not]: null } } // true: levels where besttime.time exists
-        : { '$Besttime.Time$': null } // false: levels where besttime is null
-      : {}; // all: no condition
-
-  where = {
-    ...where,
-    ...isFinishedCondition,
-  };
-
   // Battled filter
-  const having =
+  let having =
     battled !== 'all'
       ? {
           BattleCount: {
@@ -250,7 +239,38 @@ const getLevels = async (
         }
       : {};
 
+  const getIsFinishedHavingCondition = () => {
+    if (finished === 'all' || finishedBy) {
+      return {};
+    }
+
+    return {
+      Besttime: {
+        [finished === 'true' ? sequelize.Op.not : sequelize.Op.eq]: null,
+      },
+    };
+  };
+
+  const getFinishedByHavingCondition = () => {
+    if (!finishedBy || finished == 'all') {
+      return {};
+    }
+
+    return {
+      FinishCount: {
+        [finished === 'true' ? sequelize.Op.gt : sequelize.Op.eq]: 0,
+      },
+    };
+  };
+
+  having = {
+    ...having,
+    ...getIsFinishedHavingCondition(),
+    ...getFinishedByHavingCondition(),
+  };
+
   const data = await Level.findAll({
+    subQuery: false,
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
@@ -262,13 +282,24 @@ const getLevels = async (
       'LongName',
       'Apples',
       'Killers',
-      'Flowers',
       'Added',
       [
         sequelize.literal(
           '(SELECT COUNT(*) FROM battle WHERE battle.LevelIndex = level.LevelIndex)',
         ),
         'BattleCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(*) FROM allfinished WHERE allfinished.LevelIndex = level.LevelIndex AND allfinished.KuskiIndex = ${finishedBy})`,
+        ),
+        'FinishCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 LIMIT 1)`,
+        ),
+        'Besttime',
       ],
 
       //   include: [
@@ -309,17 +340,7 @@ const getLevels = async (
         attributes: ['Kuski', 'Country', 'KuskiIndex'],
         as: 'KuskiData',
       },
-      {
-        model: Besttime,
-        attributes: ['Time'],
-        required: false,
-        as: 'Besttime',
-        where: {
-          '$level.Hidden$': { [sequelize.Op.not]: 1 },
-        },
-      },
     ],
-    subQuery: false,
   });
   return {
     rows: data,
@@ -360,6 +381,7 @@ router.get('/', async (req, res) => {
     req.query.excludedTags,
     req.query.finished,
     req.query.battled,
+    req.query.finishedBy,
   );
   res.json(data);
 });
