@@ -308,6 +308,21 @@ const getLevels = async (
   };
 };
 
+const getKuskisWhoAddedLevels = async () => {
+  const query = `
+    SELECT DISTINCT kuski.KuskiIndex, kuski.Kuski
+    FROM kuski
+    JOIN level ON kuski.KuskiIndex = level.AddedBy`;
+
+  const [kuskis] = await connection.query(query);
+  return kuskis;
+};
+
+router.get('/kuskis', async (req, res) => {
+  const data = await getKuskisWhoAddedLevels();
+  res.json(data);
+});
+
 router.get('/', async (req, res) => {
   const offset = req.query.pageSize * req.query.page || 0;
   const limit = req.query.pageSize;
