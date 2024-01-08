@@ -18,7 +18,29 @@ export const points = [
   12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
 ];
 
-export const filterResults = (events, ownerId = [], loggedId = 0) => {
+export const pointsSystem2 = [
+  100, 85, 75, 70, 65, 60, 56, 52, 49, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37,
+  36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18,
+  17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+];
+
+const getPoints = (pos, pointSystem) => {
+  let pts = points;
+  if (pointSystem === 1) {
+    pts = pointsSystem2;
+  }
+  if (pts[pos]) {
+    return pts[pos] * 10;
+  }
+  if (pointSystem === 1) {
+    if (pos > 49 && pos < 100) {
+      return 109 - pos;
+    }
+  }
+  return 10;
+};
+
+export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
   const filtered = [];
   // loop events
   forEach(events, (eventValues, eventIndex) => {
@@ -60,13 +82,13 @@ export const filterResults = (events, ownerId = [], loggedId = 0) => {
         let combinedPoints = 0;
         for (let p = 0; p < draws.length; p += 1) {
           const drawPos = drawResults[result.Time] + p;
-          combinedPoints += points[drawPos] ? points[drawPos] : 1;
+          combinedPoints += getPoints(drawPos, cupGroup?.PointSystem);
         }
         const drawPoints = combinedPoints / draws.length;
         filteredResults[pos].Points = drawPoints;
       } else {
         // otherwise assign points normally
-        filteredResults[pos].Points = points[pos] ? points[pos] : 1;
+        filteredResults[pos].Points = getPoints(pos, cupGroup?.PointSystem);
       }
     });
     filtered[eventIndex].CupTimes = [];

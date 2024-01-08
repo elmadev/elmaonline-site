@@ -148,7 +148,7 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, admins(cupGroup), KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex, cupGroup);
 };
 
 const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
@@ -198,7 +198,7 @@ const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, admins(cupGroup), KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex, cupGroup);
 };
 
 const getEventByCupTimeIndex = async (CupTimeIndex, KuskiIndex) => {
