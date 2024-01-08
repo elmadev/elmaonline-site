@@ -14,7 +14,7 @@ import {
   Besttime,
 } from '../data/models';
 import connection from '../data/sequelize';
-import { fromToTime, searchLimit, searchOffset } from '#utils/database';
+import { fromToTime, searchLimit, searchOffset, like } from '#utils/database';
 
 const router = express.Router();
 
@@ -181,6 +181,7 @@ const getLevels = async (
   finished = 'all',
   battled = 'all',
   finishedBy = 0,
+  query = '',
 ) => {
   // Don't show hidden levels in search.
   // Showing them makes hiding finishedBy filtering slow.
@@ -192,6 +193,14 @@ const getLevels = async (
       where = { AddedBy, Locked: 0, Hidden: 0 };
     }
   }
+
+  // Search term
+  where = {
+    ...where,
+    LevelName: {
+      [sequelize.Op.like]: `${like(query)}%`,
+    },
+  };
 
   // // Filter by level pack
   // let packLevels = [];
@@ -387,6 +396,7 @@ router.get('/', async (req, res) => {
     req.query.finished,
     req.query.battled,
     req.query.finishedBy,
+    req.query.q,
   );
   res.json(data);
 });
