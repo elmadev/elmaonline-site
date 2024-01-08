@@ -1,7 +1,7 @@
 import express from 'express';
 import sequelize from 'sequelize';
 import { authContext } from '#utils/auth';
-import { has } from 'lodash-es';
+import { has, intersection } from 'lodash-es';
 import { getLevel as getLevelSecure } from '#utils/download';
 import {
   Level,
@@ -162,11 +162,17 @@ const getLevelIndexesByTags = async (tags, onlyOneMatchIsEnough = false) => {
   return [];
 };
 
+const getLevelIndexesByFinishedBy = async finishedBy => {
+  const query = `SELECT LevelIndex from besttime WHERE KuskiIndex = ${finishedBy}`;
+
+  const [levelIndexes] = await connection.query(query);
+  return levelIndexes.map(l => l.LevelIndex);
+};
+
 const getLevels = async (
   offset = 0,
   limit = 50,
   tags = [],
-  sortBy = 'added',
   order = 'desc',
   AddedBy = 0,
   UserId = 0,
@@ -176,27 +182,14 @@ const getLevels = async (
   battled = 'all',
   finishedBy = 0,
 ) => {
-  const getOrder = () => {
-    if (sortBy === 'rating') {
-      return [
-        [sequelize.literal(`ratingAvg ${order}`)],
-        [sequelize.literal(`ratingCnt ${order}`)],
-      ];
-    }
-
-    if (sortBy === 'views') {
-      return [[sequelize.literal(`Views ${order}`)]];
-    }
-
-    return [['LevelIndex', order]];
-  };
-
-  let where = { Locked: 0 };
+  // Don't show hidden levels in search.
+  // Showing them makes hiding finishedBy filtering slow.
+  let where = { Locked: 0, Hidden: 0 };
   if (AddedBy) {
     if (UserId === AddedBy) {
-      where = { AddedBy };
+      where = { AddedBy, Hidden: 0 };
     } else {
-      where = { AddedBy, Locked: 0 };
+      where = { AddedBy, Locked: 0, Hidden: 0 };
     }
   }
 
@@ -212,32 +205,89 @@ const getLevels = async (
   // }
   // const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
 
+  // Compicated stuff. Review and recheck.
+  const getFinishedByFinishedLevels = async finishedBy => {
+    if (!finishedBy || finished == 'all') {
+      return [];
+    }
+
+    const levelIndexesByFinishedBy = await getLevelIndexesByFinishedBy(
+      finishedBy,
+    );
+
+    return levelIndexesByFinishedBy;
+  };
+
   const levelIndexesByTags = await getLevelIndexesByTags(tags);
   const levelIndexesByExcludedTags = await getLevelIndexesByTags(
     excludedTags,
     true,
   );
-  if (tags.length || excludedTags.length) {
+
+  const levelIndexesByFinishedBy = await getFinishedByFinishedLevels(
+    finishedBy,
+  );
+
+  const includeFinishedByLevelIndexes = finishedBy && finished === 'true';
+  const excludeFinishedByLevelIndexes = finishedBy && finished === 'false';
+
+  const getInIndexes = () => {
+    if (tags.length && includeFinishedByLevelIndexes) {
+      return intersection(levelIndexesByTags, levelIndexesByFinishedBy);
+    }
+
+    if (tags.length) {
+      return levelIndexesByTags;
+    }
+
+    if (includeFinishedByLevelIndexes) {
+      return levelIndexesByFinishedBy;
+    }
+
+    return null;
+  };
+
+  const getNotInIndexes = () => {
+    if (excludedTags.length && excludeFinishedByLevelIndexes) {
+      return [...levelIndexesByExcludedTags, ...levelIndexesByFinishedBy];
+    }
+
+    if (excludedTags.length) {
+      return levelIndexesByExcludedTags;
+    }
+
+    if (excludeFinishedByLevelIndexes) {
+      return levelIndexesByFinishedBy;
+    }
+
+    return null;
+  };
+
+  if (tags.length || excludedTags.length || finishedBy) {
     where = {
       ...where,
       LevelIndex: {
-        ...(tags.length && { [sequelize.Op.in]: levelIndexesByTags }),
-        ...(excludedTags.length && {
-          [sequelize.Op.notIn]: levelIndexesByExcludedTags,
+        ...((tags.length || includeFinishedByLevelIndexes) && {
+          [sequelize.Op.in]: getInIndexes(),
+        }),
+        ...((excludedTags.length || excludeFinishedByLevelIndexes) && {
+          [sequelize.Op.notIn]: getNotInIndexes(),
         }),
       },
     };
   }
 
-  // Battled filter
-  let having =
-    battled !== 'all'
-      ? {
-          BattleCount: {
-            [battled === 'true' ? sequelize.Op.gt : sequelize.Op.eq]: 0,
-          },
-        }
-      : {};
+  const getIsBattledHavingCondition = () => {
+    if (battled === 'all') {
+      return {};
+    }
+
+    return {
+      BattleCount: {
+        [battled === 'true' ? sequelize.Op.gt : sequelize.Op.eq]: 0,
+      },
+    };
+  };
 
   const getIsFinishedHavingCondition = () => {
     if (finished === 'all' || finishedBy) {
@@ -251,22 +301,9 @@ const getLevels = async (
     };
   };
 
-  const getFinishedByHavingCondition = () => {
-    if (!finishedBy || finished == 'all') {
-      return {};
-    }
-
-    return {
-      FinishCount: {
-        [finished === 'true' ? sequelize.Op.gt : sequelize.Op.eq]: 0,
-      },
-    };
-  };
-
-  having = {
-    ...having,
+  const having = {
+    ...getIsBattledHavingCondition(),
     ...getIsFinishedHavingCondition(),
-    ...getFinishedByHavingCondition(),
   };
 
   const data = await Level.findAll({
@@ -275,7 +312,7 @@ const getLevels = async (
     offset: searchOffset(offset),
     where,
     having,
-    order: getOrder(),
+    order: [['LevelIndex', order]],
     attributes: [
       'LevelIndex',
       'LevelName',
@@ -291,43 +328,12 @@ const getLevels = async (
       ],
       [
         sequelize.literal(
-          `(SELECT COUNT(*) FROM allfinished WHERE allfinished.LevelIndex = level.LevelIndex AND allfinished.KuskiIndex = ${finishedBy})`,
-        ),
-        'FinishCount',
-      ],
-      [
-        sequelize.literal(
           `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 LIMIT 1)`,
         ),
         'Besttime',
       ],
-
-      //   include: [
-      //     [
-      //       sequelize.literal(`(
-      //               SELECT round(avg(Vote), 1)
-      //               FROM level_rating
-      //               WHERE
-      //               level_rating.LevelIndex = level.LevelIndex
-      //           )`),
-      //       'ratingAvg',
-      //     ],
-      //     [
-      //       sequelize.literal(`(
-      //               SELECT count(*)
-      //               FROM level_rating
-      //               WHERE
-      //               level_rating.LevelIndex = level.LevelIndex
-      //           )`),
-      //       'ratingCnt',
-      //     ],
-      //   ],
     ],
     include: [
-      // {
-      //   model: LevelRating,
-      //   as: 'Rating',
-      // },
       {
         model: Tag,
         as: 'Tags',
@@ -373,7 +379,6 @@ router.get('/', async (req, res) => {
     offset,
     limit,
     req.query.tags,
-    req.query.sortBy,
     req.query.order,
     req.query.addedBy,
     userId,
