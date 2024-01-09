@@ -316,7 +316,6 @@ const getLevels = async (
   };
 
   const data = await Level.findAll({
-    subQuery: false,
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
@@ -365,7 +364,7 @@ const getLevels = async (
 
 const getKuskisWhoAddedLevels = async () => {
   const query = `
-    SELECT DISTINCT kuski.KuskiIndex, kuski.Kuski
+    SELECT DISTINCT kuski.KuskiIndex, kuski.Kuski, kuski.Country
     FROM kuski
     JOIN level ON kuski.KuskiIndex = level.AddedBy`;
 
