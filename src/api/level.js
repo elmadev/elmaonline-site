@@ -11,7 +11,6 @@ import {
   Tag,
   LevelPackLevel,
   Kuski,
-  Besttime,
 } from '../data/models';
 import connection from '../data/sequelize';
 import { fromToTime, searchLimit, searchOffset, like } from '#utils/database';
@@ -243,54 +242,49 @@ const getLevels = async (
   const excludeFinishedByLevelIndexes = finishedBy && finished === 'false';
 
   const getInIndexes = () => {
-    // Filter by levelpacks
-    if (packLevels.length) {
-      return packLevels;
-    }
+    // Arrays to be used in the intersection
+    const arraysToUse = [
+      LevelPackIndex ? packLevels : [],
+      tags.length ? levelIndexesByTags : [],
+      includeFinishedByLevelIndexes ? levelIndexesByFinishedBy : [],
+    ];
 
-    if (tags.length && includeFinishedByLevelIndexes) {
-      return intersection(levelIndexesByTags, levelIndexesByFinishedBy);
-    }
+    // Filter out arrays with false boolean values
+    const arraysToIntersect = arraysToUse.filter(array => array.length > 0);
 
-    if (tags.length) {
-      return levelIndexesByTags;
-    }
+    // Find the intersection of arrays to use
+    const intersectionResult =
+      arraysToIntersect.length > 0 ? intersection(...arraysToIntersect) : null;
 
-    if (includeFinishedByLevelIndexes) {
-      return levelIndexesByFinishedBy;
-    }
-
-    return null;
+    return intersectionResult;
   };
 
   const getNotInIndexes = () => {
-    if (excludedTags.length && excludeFinishedByLevelIndexes) {
-      return [...levelIndexesByExcludedTags, ...levelIndexesByFinishedBy];
-    }
+    const arraysToUse = [
+      excludedTags.length ? levelIndexesByExcludedTags : [],
+      excludeFinishedByLevelIndexes ? levelIndexesByFinishedBy : [],
+    ];
 
-    if (excludedTags.length) {
-      return levelIndexesByExcludedTags;
-    }
+    const arraysToConcat = arraysToUse.filter(array => array.length > 0);
 
-    if (excludeFinishedByLevelIndexes) {
-      return levelIndexesByFinishedBy;
-    }
-
-    return null;
+    return arraysToConcat.length > 0 ? [].concat(...arraysToConcat) : null;
   };
 
-  if (tags.length || excludedTags.length || finishedBy || LevelPackIndex) {
+  const shouldIncludeInIndexes =
+    tags.length || includeFinishedByLevelIndexes || LevelPackIndex;
+  const shouldExcludeFromIndexes =
+    excludedTags.length || excludeFinishedByLevelIndexes;
+
+  if (shouldIncludeInIndexes || shouldExcludeFromIndexes) {
     where = {
       ...where,
       LevelIndex: {
-        ...((tags.length ||
-          includeFinishedByLevelIndexes ||
-          LevelPackIndex) && {
-          [sequelize.Op.in]: getInIndexes(),
-        }),
-        ...((excludedTags.length || excludeFinishedByLevelIndexes) && {
-          [sequelize.Op.notIn]: getNotInIndexes(),
-        }),
+        ...(shouldIncludeInIndexes
+          ? { [sequelize.Op.in]: getInIndexes() }
+          : {}),
+        ...(shouldExcludeFromIndexes
+          ? { [sequelize.Op.notIn]: getNotInIndexes() }
+          : {}),
       },
     };
   }
