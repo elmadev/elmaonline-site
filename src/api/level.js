@@ -202,17 +202,19 @@ const getLevels = async (
     },
   };
 
-  // // Filter by level pack
-  // let packLevels = [];
-  // if (LevelPackIndex) {
-  //   packLevels = await LevelPackLevel.findAll({
-  //     attributes: ['LevelIndex'],
-  //     where: {
-  //       LevelPackIndex,
-  //     },
-  //   }).then(data => data.map(r => r.LevelIndex));
-  // }
-  // const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
+  // Filter by level pack
+  let packLevels = [];
+
+  if (LevelPackIndex) {
+    const data = await LevelPackLevel.findAll({
+      attributes: ['LevelIndex'],
+      where: {
+        LevelPackIndex,
+      },
+    });
+
+    packLevels = data.map(r => r.LevelIndex);
+  }
 
   // Compicated stuff. Review and recheck.
   const getFinishedByFinishedLevels = async finishedBy => {
@@ -241,6 +243,11 @@ const getLevels = async (
   const excludeFinishedByLevelIndexes = finishedBy && finished === 'false';
 
   const getInIndexes = () => {
+    // Filter by levelpacks
+    if (packLevels.length) {
+      return packLevels;
+    }
+
     if (tags.length && includeFinishedByLevelIndexes) {
       return intersection(levelIndexesByTags, levelIndexesByFinishedBy);
     }
@@ -272,11 +279,13 @@ const getLevels = async (
     return null;
   };
 
-  if (tags.length || excludedTags.length || finishedBy) {
+  if (tags.length || excludedTags.length || finishedBy || LevelPackIndex) {
     where = {
       ...where,
       LevelIndex: {
-        ...((tags.length || includeFinishedByLevelIndexes) && {
+        ...((tags.length ||
+          includeFinishedByLevelIndexes ||
+          LevelPackIndex) && {
           [sequelize.Op.in]: getInIndexes(),
         }),
         ...((excludedTags.length || excludeFinishedByLevelIndexes) && {
