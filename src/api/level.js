@@ -148,23 +148,27 @@ const getLevelIndexesByTags = async (tags, onlyOneMatchIsEnough = false) => {
     query = `
       SELECT DISTINCT level_tags.LevelIndex
       FROM level_tags, level
-      WHERE level_tags.TagIndex IN (${tags.join()})
+      WHERE level_tags.TagIndex IN (:tags)
 	    AND level_tags.LevelIndex = level.LevelIndex
       GROUP BY level_tags.LevelIndex
-      HAVING COUNT(level_tags.TagIndex) >= ${compareCount};`;
+      HAVING COUNT(level_tags.TagIndex) >= :compareCount;`;
   }
 
   if (query) {
-    const [levelIndexes] = await connection.query(query);
+    const [levelIndexes] = await connection.query(query, {
+      replacements: { tags, compareCount },
+    });
     return levelIndexes.map(l => l.LevelIndex);
   }
   return [];
 };
 
 const getLevelIndexesByFinishedBy = async finishedBy => {
-  const query = `SELECT LevelIndex from besttime WHERE KuskiIndex = ${finishedBy}`;
+  const query = `SELECT LevelIndex from besttime WHERE KuskiIndex = :finishedBy`;
 
-  const [levelIndexes] = await connection.query(query);
+  const [levelIndexes] = await connection.query(query, {
+    replacements: { finishedBy },
+  });
   return levelIndexes.map(l => l.LevelIndex);
 };
 
