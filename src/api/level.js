@@ -387,8 +387,12 @@ router.get('/kuskis', async (req, res) => {
 router.get('/', async (req, res) => {
   const offset = req.query.pageSize * req.query.page || 0;
   const limit = req.query.pageSize;
-  // const addedBy = 0;
-  const userId = 0;
+
+  const auth = authContext(req);
+  let userId = 0;
+  if (auth.auth) {
+    userId = auth.userid;
+  }
 
   const data = await getLevels(
     offset,
