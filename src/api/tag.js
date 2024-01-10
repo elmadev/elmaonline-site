@@ -5,9 +5,9 @@ import requireMod from '../middlewares/requireMod';
 
 const router = express.Router();
 
-const getTags = async () => {
+const getTags = async Type => {
   const data = await Tag.findAll();
-  return data;
+  return data.filter(tag => (Type ? Type === tag.Type : true));
 };
 
 const createTag = async data => {
@@ -27,7 +27,7 @@ const deleteTag = async id => {
 
 router
   .get('/', async (req, res) => {
-    const data = await getTags();
+    const data = await getTags(req.query.type);
     res.json(data);
   })
   .post('/', requireMod, async (req, res) => {
