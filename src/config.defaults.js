@@ -48,7 +48,7 @@ export default {
   },
 
   // auth
-  // eslint-disable-next-line prettier/prettier
+  // prettier-ignore
   jwtSecret: 'eAwI4zcTDd4Pvc8QtN9z57Fqsr4ENNcTpK1x4A1dCLj0Y44OravXZDzNbA-4VEwAIh1Hw3vn1nhB9ygWLqAGE4GiX6hjjLsJi8IJ',
   jwtAlgo: 'HS256',
   recaptcha: {

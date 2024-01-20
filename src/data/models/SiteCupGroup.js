@@ -70,6 +70,16 @@ const SiteCupGroup = Model.define(
       allowNull: false,
       defaultValue: false,
     },
+    TeamPoints: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    PointSystem: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['KuskiIndex'] }],

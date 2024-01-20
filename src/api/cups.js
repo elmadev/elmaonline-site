@@ -148,7 +148,7 @@ const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, admins(cupGroup), KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex, cupGroup);
 };
 
 const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
@@ -198,12 +198,19 @@ const getCupEvent = async (CupGroupIndex, CupIndex, KuskiIndex) => {
       },
     ],
   });
-  return filterResults(data, admins(cupGroup), KuskiIndex);
+  return filterResults(data, admins(cupGroup), KuskiIndex, cupGroup);
 };
 
 const getEventByCupTimeIndex = async (CupTimeIndex, KuskiIndex) => {
-  const event = await SiteCupTime.findOne({ where: { CupTimeIndex }, include: [{ model: SiteCup, as: 'CupData', attributes: ['CupGroupIndex'] }] });
-  const eventData = await getCupEvent(event.dataValues.CupData.dataValues.CupGroupIndex, event.dataValues.CupIndex, KuskiIndex);
+  const event = await SiteCupTime.findOne({
+    where: { CupTimeIndex },
+    include: [{ model: SiteCup, as: 'CupData', attributes: ['CupGroupIndex'] }],
+  });
+  const eventData = await getCupEvent(
+    event.dataValues.CupData.dataValues.CupGroupIndex,
+    event.dataValues.CupIndex,
+    KuskiIndex,
+  );
   return eventData;
 };
 
@@ -277,7 +284,9 @@ const generateUpdate = async (data, done) => {
 const generate = async (event, cup) => {
   const from = format(new Date(event.StartTime * 1000), 'yyyy-MM-dd HH:mm:ss');
   const to = format(new Date(event.EndTime * 1000), 'yyyy-MM-dd HH:mm:ss');
-  const finishedQuery = event.AppleBugs ? `(time.Finished = 'F' OR time.Finished = 'B')` : `time.Finished = 'F'`;
+  const finishedQuery = event.AppleBugs
+    ? `(time.Finished = 'F' OR time.Finished = 'B')`
+    : `time.Finished = 'F'`;
   const query = `
     SELECT cte.Time, cte.TimeIndex, cte.Finished,
       kuski.KuskiIndex, kuski.TeamIndex, timefile.UUID, timefile.MD5
@@ -309,11 +318,18 @@ const generate = async (event, cup) => {
     WHERE rn = 1
     `;
   const appleResults = await dbquery(queryApple, [event.LevelIndex, from, to]);
-  const appleResultsOnly = appleResults.filter(a => !finishedResults.find(f => f.KuskiIndex === a.KuskiIndex));
+  const appleResultsOnly = appleResults.filter(
+    a => !finishedResults.find(f => f.KuskiIndex === a.KuskiIndex),
+  );
   const getCupTimes = await SiteCupTime.findAll({
     where: { CupIndex: event.CupIndex },
   });
-  const generatedTimes = await generateEvent(event, cup, [...finishedResults, ...appleResultsOnly], getCupTimes);
+  const generatedTimes = await generateEvent(
+    event,
+    cup,
+    [...finishedResults, ...appleResultsOnly],
+    getCupTimes,
+  );
   await SiteCupTime.bulkCreate(generatedTimes.insertBulk);
   await eachSeries(generatedTimes.updateBulk, generateUpdate);
   await SiteCup.update({ Updated: 1 }, { where: { CupIndex: event.CupIndex } });
@@ -823,7 +839,10 @@ router
     if (auth.auth) {
       KuskiIndex = auth.userid;
     }
-    const event = await getEventByCupTimeIndex(req.params.CupTimeIndex, KuskiIndex);
+    const event = await getEventByCupTimeIndex(
+      req.params.CupTimeIndex,
+      KuskiIndex,
+    );
     res.json(event);
   });
 

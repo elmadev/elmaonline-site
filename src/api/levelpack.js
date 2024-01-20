@@ -12,7 +12,7 @@ import {
   omit,
   orderBy,
   maxBy,
-  minBy
+  minBy,
 } from 'lodash-es';
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
@@ -35,6 +35,7 @@ import {
   BestMultitime,
   LegacyBesttime,
   Battle,
+  Tag,
 } from '../data/models';
 import Admin from './levelpack_admin';
 import Favourite from './levelpack_favourite';
@@ -168,7 +169,7 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
       ['Sort', 'ASC'],
       ['LevelPackLevelIndex', 'ASC'],
     ],
-  }).then(data => data.map(r => r.LevelIndex))
+  }).then(data => data.map(r => r.LevelIndex));
 
   const singleTimesByLevel = await timeTable.findAll({
     attributes,
@@ -464,7 +465,7 @@ const getTimes = async (
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
   });
-  if (!packInfo){
+  if (!packInfo) {
     return [];
   }
   let timeTable = Besttime;
@@ -779,7 +780,16 @@ const AddLevelPack = async data => {
 export const getPackByName = async LevelPackName => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackName },
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return packInfo;
 };
@@ -787,7 +797,16 @@ export const getPackByName = async LevelPackName => {
 export const getPackByIndex = async LevelPackIndex => {
   const packInfo = await LevelPack.findOne({
     where: { LevelPackIndex },
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return packInfo;
 };
@@ -856,13 +875,17 @@ const levelStats = async LevelPackIndex => {
   return groupBy(stats, 'LevelIndex');
 };
 
-const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, offset = 0) => {
-
+const levelpackRecordHistory = async (
+  LevelPackName,
+  sort = 'desc',
+  limit = 50,
+  offset = 0,
+) => {
   const levelPack = await LevelPack.findOne({
     where: { LevelPackName },
   });
 
-  if ( ! levelPack ) {
+  if (!levelPack) {
     return {};
   }
 
@@ -872,38 +895,44 @@ const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, 
       WHERE LevelIndex IN (SELECT LevelIndex from levelpack_level WHERE LevelPackIndex = ?)`;
 
   let [levelStats] = await sequelize.query(q, {
-    replacements: [ +levelPack.LevelPackIndex ],
+    replacements: [+levelPack.LevelPackIndex],
     benchmark: true,
     logging: (query, b) => log('query', query, b),
   });
 
   // add level index and flatten
-  let records = levelStats.map(entry => {
+  let records = levelStats
+    .map(entry => {
+      let leaderHistory = JSON.parse(entry.LeaderHistory);
+      leaderHistory = orderBy(
+        leaderHistory,
+        ['Time', 'TimeIndex'],
+        ['asc', 'asc'],
+      );
 
-    let leaderHistory = JSON.parse(entry.LeaderHistory);
-    leaderHistory = orderBy(leaderHistory, [ 'Time', 'TimeIndex' ], [ 'asc', 'asc' ] );
+      return leaderHistory.map((time, index) => {
+        const prevLeader = leaderHistory[index + 1];
+        const currentLeader = leaderHistory[0];
 
-    return leaderHistory.map((time, index) => {
-
-      const prevLeader = leaderHistory[index + 1];
-      const currentLeader = leaderHistory[0];
-
-      return {
-        LevelIndex: entry.LevelIndex,
-        TimeImprovement: prevLeader === undefined ? null : Math.abs( time.Time - prevLeader.Time ),
-        TimeDiff:  Math.abs( time.Time - currentLeader.Time ),
-        ...time
-      }
-    });
-
-  }).flat();
+        return {
+          LevelIndex: entry.LevelIndex,
+          TimeImprovement:
+            prevLeader === undefined
+              ? null
+              : Math.abs(time.Time - prevLeader.Time),
+          TimeDiff: Math.abs(time.Time - currentLeader.Time),
+          ...time,
+        };
+      });
+    })
+    .flat();
 
   // before slice
   const countAll = records.length;
   const minDriven = minBy(records, 'Driven')?.Driven;
   const maxDriven = maxBy(records, 'Driven')?.Driven;
 
-  records = orderBy(records, ['TimeIndex'], [ sort === 'asc' ? 'asc' : 'desc' ]);
+  records = orderBy(records, ['TimeIndex'], [sort === 'asc' ? 'asc' : 'desc']);
 
   // apply pagination before querying kuskis/levels (optimization)
   records = records.slice(offset * limit, limit);
@@ -911,7 +940,7 @@ const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, 
   const kuskis = await Kuski.findAll({
     attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
     where: {
-      KuskiIndex: uniq(records.map(r => r.KuskiIndex))
+      KuskiIndex: uniq(records.map(r => r.KuskiIndex)),
     },
     include: [
       {
@@ -929,27 +958,28 @@ const levelpackRecordHistory = async (LevelPackName, sort = 'desc', limit = 50, 
     },
   });
 
-  records = records.map(r => {
+  records = records
+    .map(r => {
+      const level = find(levels, { LevelIndex: r.LevelIndex });
 
-    const level = find(levels, { 'LevelIndex': r.LevelIndex });
+      // perhaps the level could be locked/hidden if it was added
+      // to a pack and set to locked/hidden later, so we should still
+      // check. Doing this here kind of breaks the expected behaviour
+      // pagination, but might be faster than checking it for all levels.
+      if (level.Locked || level.Hidden) {
+        return null;
+      }
 
-    // perhaps the level could be locked/hidden if it was added
-    // to a pack and set to locked/hidden later, so we should still
-    // check. Doing this here kind of breaks the expected behaviour
-    // pagination, but might be faster than checking it for all levels.
-    if ( level.Locked || level.Hidden ) {
-      return null;
-    }
-
-    return {
-      ...r,
-      KuskiData: find(kuskis, { 'KuskiIndex': r.KuskiIndex }),
-      LevelData: level,
-    };
-  }).filter(r => r !== null);
+      return {
+        ...r,
+        KuskiData: find(kuskis, { KuskiIndex: r.KuskiIndex }),
+        LevelData: level,
+      };
+    })
+    .filter(r => r !== null);
 
   return { countAll, minDriven, maxDriven, records };
-}
+};
 
 const allPacksStats = async () => {
   // not checking level locked status, since:
@@ -1130,14 +1160,13 @@ router
     res.json(packs);
   })
   .get('/stats', async (req, res) => {
-
     // we'll cache the data in memory (filesize 4.1kb last I checked)
     const refresh = 60 * 60 * 1000;
     const now = new Date().getTime();
 
     // just update the cache for next time, it's ok to serve data that
     // is a bit stale.
-    if ( now - statsCache.time > refresh ) {
+    if (now - statsCache.time > refresh) {
       updateStatsCache();
     }
 
@@ -1329,6 +1358,9 @@ router
       pack.LevelPackDesc = req.body.LevelPackDesc;
 
       await pack.save();
+      await pack.setTags(req.body.Tags);
+      await pack.reload();
+
       res.json({
         success: true,
         LevelPack: pack,
@@ -1338,7 +1370,7 @@ router
   .get('/:LevelPackName', async (req, res) => {
     const pack = await getPackByName(req.params.LevelPackName);
 
-    if ( ! pack ) {
+    if (!pack) {
       res.status(404).send('Pack not found.');
       return;
     }
@@ -1366,8 +1398,14 @@ router
   .get('/record-history/:LevelPackName', async (req, res) => {
     const limit = parseInt(req.query.limit, 10) || 50;
     const offset = parseInt(req.query.offset, 10) || 0;
-    const { countAll, minDriven, maxDriven, records } = await levelpackRecordHistory(req.params.LevelPackName, req.query.sort, limit, offset);
-    res.json({ countAll, minDriven, maxDriven, records })
+    const { countAll, minDriven, maxDriven, records } =
+      await levelpackRecordHistory(
+        req.params.LevelPackName,
+        req.query.sort,
+        limit,
+        offset,
+      );
+    res.json({ countAll, minDriven, maxDriven, records });
   });
 
 export default router;

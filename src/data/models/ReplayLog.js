@@ -1,5 +1,4 @@
 import DataType from 'sequelize';
-import moment from 'moment';
 import Model from '../sequelize';
 
 const ReplayLog = Model.define(

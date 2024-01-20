@@ -107,3 +107,21 @@ export const fromTo = (from, to, column) => {
   }
   return where;
 };
+
+export const fromToTime = (from, to, column) => {
+  const where = {};
+  if (from && to) {
+    where[column] = {
+      [Op.between]: [from, to],
+    };
+  } else if (from) {
+    where[column] = {
+      [Op.gte]: from,
+    };
+  } else if (to) {
+    where[column] = {
+      [Op.lte]: to,
+    };
+  }
+  return where;
+};

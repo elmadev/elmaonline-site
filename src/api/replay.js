@@ -81,15 +81,15 @@ const findCupRecs = async where => {
           {
             model: Level,
             as: 'LevelData',
-            attributes: ['LevelName']
-          }
-        ]
+            attributes: ['LevelName'],
+          },
+        ],
       },
       {
         model: Kuski,
         as: 'KuskiData',
-      }
-    ]
+      },
+    ],
   });
   return findCupTimes;
 };
@@ -135,8 +135,8 @@ const cuptime2Rec = (c, uuid) => {
     UploadedByData: c.dataValues.KuskiData,
     LevelData: c.dataValues.TimeData.dataValues.LevelData,
     Views: c.dataValues.Views,
-  }
-}
+  };
+};
 
 export const battle2Rec = c => {
   const sorted = [...c.Results].sort(sortResults(c.BattleType));
@@ -156,9 +156,9 @@ export const battle2Rec = c => {
       UploadedByData: sorted[0].KuskiData,
       LevelData: c.LevelData,
       Views: c.Views,
-    }
+    };
   }
-  
+
   return null;
 };
 
@@ -252,7 +252,7 @@ const getReplays = async (
   DrivenBy = 0,
   UserId = 0,
   LevelPackIndex = 0,
-  excludedTags = []
+  excludedTags = [],
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -263,9 +263,7 @@ const getReplays = async (
     }
 
     if (sortBy === 'views') {
-      return [
-        [sequelize.literal(`Views ${order}`)],
-      ];
+      return [[sequelize.literal(`Views ${order}`)]];
     }
 
     return [['Uploaded', order]];
@@ -299,22 +297,22 @@ const getReplays = async (
   }
   const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
 
-  let having = ""
+  let having = '';
   if (tags.length) {
     having = `(
       SELECT count('TagIndex')
       FROM replay_tags
       WHERE replay_tags.ReplayIndex = replay.ReplayIndex
-      AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`
+      AND replay_tags.TagIndex IN (${tags.join()})) >= ${tags.length}`;
   }
   if (excludedTags.length) {
-    having += having ? " AND " : ""
+    having += having ? ' AND ' : '';
 
     having += `(
       SELECT count('TagIndex')
       FROM replay_tags
       WHERE replay_tags.ReplayIndex = replay.ReplayIndex
-      AND replay_tags.TagIndex IN (${excludedTags.join()})) = 0`
+      AND replay_tags.TagIndex IN (${excludedTags.join()})) = 0`;
   }
 
   const data = await Replay.findAndCountAll({
@@ -391,8 +389,12 @@ const getReplayByReplayId = async ReplayIndex => {
 const splitReplayTypes = replays => {
   const cuprecs = replays.filter(r => r.includes('c-'));
   const winners = replays.filter(r => r.includes('b-'));
-  const timefiles = replays.filter(r => !r.includes('b-') && r.includes('_') && !r.includes('c-'));
-  const uploaded = replays.filter(r => !r.includes('_') && !r.includes('b-') && !r.includes('c-'));
+  const timefiles = replays.filter(
+    r => !r.includes('b-') && r.includes('_') && !r.includes('c-'),
+  );
+  const uploaded = replays.filter(
+    r => !r.includes('_') && !r.includes('b-') && !r.includes('c-'),
+  );
   return { cuprecs, winners, timefiles, uploaded };
 };
 
@@ -408,34 +410,78 @@ const updateViews = async (replays, Fingerprint, KuskiIndex, data) => {
   } else if (Fingerprint) {
     where.Fingerprint = Fingerprint;
   }
-  where.UUID = { [Op.in]: replays.map(r => r.substring(0, 2) === 'c-' ? `${r.split('-')[0]}-${r.split('-')[1]}` : r) };
+  where.UUID = {
+    [Op.in]: replays.map(r =>
+      r.substring(0, 2) === 'c-' ? `${r.split('-')[0]}-${r.split('-')[1]}` : r,
+    ),
+  };
   const logs = await ReplayLog.findAll({ where });
   const grouped = groupBy(logs, 'UUID');
   const { cuprecs, winners, timefiles, uploaded } = splitReplayTypes(replays);
   uploaded.forEach(rec => {
     if (!grouped[rec]) {
       const recData = data.find(r => r.UUID === rec);
-      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, ReplayIndex: recData.dataValues.ReplayIndex });
-      Replay.increment({ Views: 1 }, { where: { ReplayIndex: recData.dataValues.ReplayIndex } });
+      ReplayLog.create({
+        KuskiIndex,
+        Fingerprint,
+        UUID: rec,
+        Day,
+        Timestamp,
+        ReplayIndex: recData.dataValues.ReplayIndex,
+      });
+      Replay.increment(
+        { Views: 1 },
+        { where: { ReplayIndex: recData.dataValues.ReplayIndex } },
+      );
     }
   });
   cuprecs.forEach(rec => {
     const r = `${rec.split('-')[0]}-${rec.split('-')[1]}`;
     if (!grouped[r]) {
-      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: r, Day, Timestamp, CupTimeIndex: r.split('-')[1] });
-      SiteCupTime.increment({ Views: 1 }, { where: { CupTimeIndex: r.split('-')[1] } });
+      ReplayLog.create({
+        KuskiIndex,
+        Fingerprint,
+        UUID: r,
+        Day,
+        Timestamp,
+        CupTimeIndex: r.split('-')[1],
+      });
+      SiteCupTime.increment(
+        { Views: 1 },
+        { where: { CupTimeIndex: r.split('-')[1] } },
+      );
     }
   });
   winners.forEach(rec => {
     if (!grouped[rec]) {
-      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, BattleIndex: rec.split('-')[1] });
-      Battle.increment({ Views: 1 }, { where: { BattleIndex: rec.split('-')[1] } });
+      ReplayLog.create({
+        KuskiIndex,
+        Fingerprint,
+        UUID: rec,
+        Day,
+        Timestamp,
+        BattleIndex: rec.split('-')[1],
+      });
+      Battle.increment(
+        { Views: 1 },
+        { where: { BattleIndex: rec.split('-')[1] } },
+      );
     }
   });
   timefiles.forEach(rec => {
     if (!grouped[rec]) {
-      ReplayLog.create({ KuskiIndex, Fingerprint, UUID: rec, Day, Timestamp, TimeIndex: rec.split('_')[2] });
-      TimeFile.increment({ Views: 1 }, { where: { TimeIndex: rec.split('_')[2] } });
+      ReplayLog.create({
+        KuskiIndex,
+        Fingerprint,
+        UUID: rec,
+        Day,
+        Timestamp,
+        TimeIndex: rec.split('_')[2],
+      });
+      TimeFile.increment(
+        { Views: 1 },
+        { where: { TimeIndex: rec.split('_')[2] } },
+      );
     }
   });
 };
@@ -445,10 +491,17 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
   const { cuprecs, winners, timefiles, uploaded } = splitReplayTypes(replays);
   const combined = [];
   if (cuprecs.length > 0) {
-    const cuptimes = await findCupRecs({ CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) } });
+    const cuptimes = await findCupRecs({
+      CupTimeIndex: { [Op.in]: cuprecs.map(c => c.split('-')[1]) },
+    });
     if (replays.length > 1) {
       forEach(cuptimes, c => {
-        combined.push(cuptime2Rec(c, cuprecs.find(r => r.includes(`c-${c.dataValues.CupTimeIndex}`))));
+        combined.push(
+          cuptime2Rec(
+            c,
+            cuprecs.find(r => r.includes(`c-${c.dataValues.CupTimeIndex}`)),
+          ),
+        );
       });
     } else {
       updateViews(replays, Fingerprint, KuskiIndex);
@@ -779,6 +832,18 @@ const EditReplay = async data => {
       update.DrivenByText = data.edit.DrivenBy;
     }
     rec.update(update);
+
+    // Set tags
+    const tags = data.edit.Tags.filter(tag => !tag.Hidden).map(
+      tag => tag.TagIndex,
+    );
+    // Add DNF tag when needed
+    if (!rec.Finished) {
+      const dnfTag = await Tag.findOne({ where: { Name: 'DNF' } });
+      tags.push(dnfTag.TagIndex);
+    }
+    await rec.setTags(tags);
+
     return 200;
   }
   return 401;
@@ -802,7 +867,7 @@ router
       drivenBy,
       userId,
       req.query.levelPack,
-      req.query.excludedTags
+      req.query.excludedTags,
     );
     res.json(data);
   })
@@ -907,7 +972,11 @@ router
     if (auth.auth) {
       KuskiIndex = auth.userid;
     }
-    const data = await getReplayByUUID(req.params.UUID, req.query.f, KuskiIndex);
+    const data = await getReplayByUUID(
+      req.params.UUID,
+      req.query.f,
+      KuskiIndex,
+    );
     res.json(data);
   })
 
