@@ -30,6 +30,7 @@ const attributes = [
   'Hidden',
   'Legacy',
   'AcceptBugs',
+  'AddedBy',
 ];
 
 const getLevel = async (LevelIndex, withStats = false) => {
@@ -258,7 +259,7 @@ const getLevels = async (
 
     // Find the intersection of arrays to use
     const intersectionResult =
-      arraysToIntersect.length > 0 ? intersection(...arraysToIntersect) : null;
+      arraysToIntersect.length > 0 ? intersection(...arraysToIntersect) : [];
 
     return intersectionResult;
   };
@@ -271,7 +272,7 @@ const getLevels = async (
 
     const arraysToConcat = arraysToUse.filter(array => array.length > 0);
 
-    return arraysToConcat.length > 0 ? [].concat(...arraysToConcat) : null;
+    return arraysToConcat.length > 0 ? [].concat(...arraysToConcat) : [];
   };
 
   const shouldIncludeInIndexes =

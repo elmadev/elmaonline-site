@@ -7,7 +7,9 @@ const router = express.Router();
 
 const getTags = async Type => {
   const data = await Tag.findAll();
-  return data.filter(tag => (Type ? Type === tag.Type : true));
+  return data
+    .filter(tag => (Type ? Type === tag.Type : true))
+    .sort((a, b) => a.Name.toLowerCase().localeCompare(b.Name.toLowerCase()));
 };
 
 const createTag = async data => {
