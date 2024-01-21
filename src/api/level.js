@@ -30,6 +30,7 @@ const attributes = [
   'Hidden',
   'Legacy',
   'AcceptBugs',
+  'AddedBy',
 ];
 
 const getLevel = async (LevelIndex, withStats = false) => {
