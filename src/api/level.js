@@ -147,12 +147,11 @@ const getLevelIndexesByTags = async (tags, onlyOneMatchIsEnough = false) => {
   let query = null;
   if (tags.length) {
     query = `
-      SELECT DISTINCT level_tags.LevelIndex
-      FROM level_tags, level
-      WHERE level_tags.TagIndex IN (:tags)
-	    AND level_tags.LevelIndex = level.LevelIndex
-      GROUP BY level_tags.LevelIndex
-      HAVING COUNT(level_tags.TagIndex) >= :compareCount;`;
+      SELECT lt.LevelIndex
+      FROM level_tags lt
+      WHERE lt.TagIndex IN (:tags)
+      GROUP BY lt.LevelIndex
+      HAVING COUNT(DISTINCT lt.TagIndex) >= :compareCount;`;
   }
 
   if (query) {
