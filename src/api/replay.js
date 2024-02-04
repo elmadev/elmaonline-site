@@ -822,8 +822,12 @@ const EditReplay = async data => {
   if (!rec) {
     return 404;
   }
-  if (rec.dataValues.UploadedBy === data.KuskiIndex) {
-    const update = { Comment: data.edit.Comment, Unlisted: data.edit.Unlisted };
+  if (rec.dataValues.UploadedBy === data.KuskiIndex || data.mod) {
+    const update = {};
+    if (rec.dataValues.UploadedBy === data.KuskiIndex) {
+      update.Comment = data.edit.Comment;
+      update.Unlisted = data.edit.Unlisted;
+    }
     const k = await Kuski.findOne({ where: { Kuski: data.edit.DrivenBy } });
     if (k) {
       update.DrivenBy = k.KuskiIndex;
@@ -909,7 +913,11 @@ router
   .post('/edit', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      const edit = await EditReplay({ ...req.body, KuskiIndex: auth.userid });
+      const edit = await EditReplay({
+        ...req.body,
+        KuskiIndex: auth.userid,
+        mod: auth.mod,
+      });
       res.sendStatus(edit);
     } else {
       res.sendStatus(401);
