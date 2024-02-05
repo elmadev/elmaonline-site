@@ -80,15 +80,21 @@ export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
           drawResults[result.Time] = pos;
         }
         let combinedPoints = 0;
+        let firstDrawPos = 0;
         for (let p = 0; p < draws.length; p += 1) {
           const drawPos = drawResults[result.Time] + p;
+          if (!firstDrawPos) {
+            firstDrawPos = drawPos + 1;
+          }
           combinedPoints += getPoints(drawPos, cupGroup?.PointSystem);
         }
         const drawPoints = combinedPoints / draws.length;
         filteredResults[pos].Points = drawPoints;
+        filteredResults[pos].Position = firstDrawPos;
       } else {
         // otherwise assign points normally
         filteredResults[pos].Points = getPoints(pos, cupGroup?.PointSystem);
+        filteredResults[pos].Position = pos + 1;
       }
     });
     filtered[eventIndex].CupTimes = [];
