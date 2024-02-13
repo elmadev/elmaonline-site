@@ -127,7 +127,7 @@ const getLatestRuns = async (KuskiIndex, limit, UserId = 0) => {
     {
       model: Level,
       as: 'LevelData',
-      attributes: ['LevelName', 'Locked', 'Hidden'],
+      attributes: ['LevelName', 'LongName'],
     },
     {
       model: TimeFile,
@@ -141,16 +141,7 @@ const getLatestRuns = async (KuskiIndex, limit, UserId = 0) => {
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   };
   const times = await Time.findAll(query);
-  return times.filter(t => {
-    if (t.LevelData) {
-      if (t.LevelData.Locked || t.LevelData.Hidden) {
-        return false;
-      }
-    } else {
-      return false;
-    }
-    return true;
-  });
+  return times;
 };
 
 const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
@@ -168,7 +159,7 @@ const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     {
       model: Level,
       as: 'LevelData',
-      attributes: ['LevelName', 'Locked', 'Hidden'],
+      attributes: ['LevelName', 'Locked', 'Hidden', 'LongName'],
     },
   ];
   if (personal) {

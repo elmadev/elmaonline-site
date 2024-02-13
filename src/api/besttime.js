@@ -98,7 +98,7 @@ const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     {
       model: Level,
       as: 'LevelData',
-      attributes: ['LevelName', 'Locked', 'Hidden'],
+      attributes: ['LevelName', 'Locked', 'Hidden', 'LongName'],
     },
   ];
   if (personal) {
