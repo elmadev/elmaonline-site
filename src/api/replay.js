@@ -831,6 +831,7 @@ const EditReplay = async data => {
     const k = await Kuski.findOne({ where: { Kuski: data.edit.DrivenBy } });
     if (k) {
       update.DrivenBy = k.KuskiIndex;
+      update.DrivenByText = '';
     } else {
       update.DrivenBy = 0;
       update.DrivenByText = data.edit.DrivenBy;
