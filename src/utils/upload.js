@@ -135,9 +135,14 @@ const findLevelIndexFromReplay = async file => {
   let Levelindex = 0;
   levels.forEach(level => {
     if (level.LevelData && replayCRC) {
+      const version = level.LevelData.slice(0, 5).toString('utf-8');
       if (
-        level.LevelData.toString('hex').substring(14, 22) ===
-        replayCRC.toString('hex')
+        (version === 'POT14' &&
+          level.LevelData.slice(7, 11).toString('hex') ===
+            replayCRC.toString('hex')) ||
+        (version === 'POT06' &&
+          level.LevelData.slice(5, 9).toString('hex') ===
+            replayCRC.toString('hex'))
       ) {
         Levelindex = level.LevelIndex;
       }
