@@ -343,7 +343,7 @@ const getLevels = async (
       ],
       [
         sequelize.literal(
-          `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 LIMIT 1)`,
+          `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 ORDER BY Time ASC LIMIT 1)`,
         ),
         'Besttime',
       ],
