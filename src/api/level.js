@@ -322,32 +322,43 @@ const getLevels = async (
     ...getIsFinishedHavingCondition(),
   };
 
+  const attributes = [
+    'LevelIndex',
+    'LevelName',
+    'LongName',
+    'Apples',
+    'Killers',
+    'Added',
+    [
+      sequelize.literal(
+        '(SELECT COUNT(*) FROM battle WHERE battle.LevelIndex = level.LevelIndex)',
+      ),
+      'BattleCount',
+    ],
+    [
+      sequelize.literal(
+        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 ORDER BY Time ASC LIMIT 1)`,
+      ),
+      'Besttime',
+    ],
+  ];
+
+  if (UserId > 0) {
+    attributes.push([
+      sequelize.literal(
+        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND besttime.KuskiIndex = ${UserId} AND level.Hidden != 1)`,
+      ),
+      'Mytime',
+    ]);
+  }
+
   const data = await Level.findAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
     having,
     order: [['LevelIndex', order]],
-    attributes: [
-      'LevelIndex',
-      'LevelName',
-      'LongName',
-      'Apples',
-      'Killers',
-      'Added',
-      [
-        sequelize.literal(
-          '(SELECT COUNT(*) FROM battle WHERE battle.LevelIndex = level.LevelIndex)',
-        ),
-        'BattleCount',
-      ],
-      [
-        sequelize.literal(
-          `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 LIMIT 1)`,
-        ),
-        'Besttime',
-      ],
-    ],
+    attributes,
     include: [
       {
         model: Tag,
