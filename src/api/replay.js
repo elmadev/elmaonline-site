@@ -581,7 +581,7 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
     });
   }
   updateViews(replays, Fingerprint, KuskiIndex, listData);
-  return combined;
+  return replays.map(u => combined.find(rec => rec.UUID === u));
 };
 
 const getReplaysSearchDriven = async (query, offset) => {
