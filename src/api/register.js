@@ -78,19 +78,17 @@ const UpdatePasswordConfirm = async ConfirmCode => {
     where: { ConfirmCode },
   });
   if (findReset) {
-    const newMd5 = crypto.createHash('md5').update(newPassword).digest('hex');
     let { Salt } = findReset.dataValues;
     if (!Salt) {
       Salt = uuid(32);
     }
-    const newSha3 = crypto
+    const newpass = crypto
       .createHash('RSA-SHA3-512')
       .update(`${newPassword}${Salt}`)
       .digest('hex');
     await findReset.update({
       ConfirmCode: '',
-      Password: newMd5,
-      Password2: newSha3,
+      Password2: newpass,
       Salt,
     });
     return newPassword;
@@ -130,8 +128,8 @@ const UpdateEmail = async (Email, KuskiIndex) => {
   await Kuski.update({ Email }, { where: { KuskiIndex } });
 };
 
-const UpdatePassword = async (Password2, Password, KuskiIndex, Salt) => {
-  await Kuski.update({ Password2, Password, Salt }, { where: { KuskiIndex } });
+const UpdatePassword = async (Password2, KuskiIndex, Salt) => {
+  await Kuski.update({ Password2, Salt }, { where: { KuskiIndex } });
 };
 
 const UpdateLocked = async (TeamIndex, Locked) => {
@@ -147,7 +145,6 @@ const Player = async KuskiIndex => {
       'TeamIndex',
       'Country',
       'Email',
-      'Password',
       'Password2',
       'Salt',
     ],
@@ -204,10 +201,6 @@ router
       const Salt = uuid(32);
       const data = await addKuski({
         Kuski: req.body.Kuski,
-        Password: crypto
-          .createHash('md5')
-          .update(req.body.Password)
-          .digest('hex'),
         Password2: crypto
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Password}${Salt}`)
@@ -312,17 +305,9 @@ router
         if (!Salt) {
           Salt = uuid(32);
         }
-        const oldMd5 = crypto
-          .createHash('md5')
-          .update(req.body.Value[0])
-          .digest('hex');
-        const oldSha3 = crypto
+        const oldpass = crypto
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Value[0]}${Salt}`)
-          .digest('hex');
-        const passMd5 = crypto
-          .createHash('md5')
-          .update(req.body.Value[1])
           .digest('hex');
         const pass = crypto
           .createHash('RSA-SHA3-512')
@@ -332,10 +317,7 @@ router
           .createHash('RSA-SHA3-512')
           .update(`${req.body.Value[2]}${Salt}`)
           .digest('hex');
-        if (
-          (playerInfo.Password2 && oldSha3 !== playerInfo.Password2) ||
-          (!playerInfo.Password2 && oldMd5 !== playerInfo.Password)
-        ) {
+        if (oldpass !== playerInfo.Password2) {
           message = 'Old password does not match.';
           error = true;
         } else if (pass !== passAgain) {
@@ -343,7 +325,7 @@ router
           error = true;
         }
         if (!error) {
-          await UpdatePassword(pass, passMd5, auth.userid, Salt);
+          await UpdatePassword(pass, auth.userid, Salt);
           message = 'Password has been updated.';
         }
         // team lock

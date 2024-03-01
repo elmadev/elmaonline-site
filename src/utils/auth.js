@@ -51,6 +51,10 @@ const addSha3 = async (salt, password, KuskiIndex) => {
   await Kuski.update({ Password2: sha3 }, { where: { KuskiIndex } });
 };
 
+const deleteMD5 = async KuskiIndex => {
+  await Kuski.update({ Password: '' }, { where: { KuskiIndex } });
+};
+
 export const auth = async body => {
   const { kuski, password } = body;
   const kuskiData = await getKuskiData(kuski);
@@ -88,6 +92,7 @@ export const auth = async body => {
           password,
           kuskiData.dataValues.KuskiIndex,
         );
+        await deleteMD5(kuskiData.dataValues.KuskiIndex);
       }
       return generateToken(kuskiData.dataValues);
     }
