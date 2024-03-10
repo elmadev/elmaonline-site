@@ -81,6 +81,16 @@ const getLevel = async (LevelIndex, withStats = false) => {
     include,
   });
 
+  if (level.Locked) {
+    return {
+      LevelIndex: level.LevelIndex,
+      LevelName: level.LevelName,
+      Locked: level.Locked,
+      Hidden: level.Hidden,
+      HardLocked: level.HardLocked,
+    };
+  }
+
   if (withStats && (level.Locked || level.Hidden)) {
     // level.LevelStatsData = null; is NOT the same.
     level.set('LevelStatsData', null);
