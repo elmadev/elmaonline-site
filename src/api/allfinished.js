@@ -118,11 +118,19 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
-const getLatestRuns = async (KuskiIndex, limit, UserId = 0) => {
+const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
   if (UserId !== parseInt(KuskiIndex, 10)) {
     return null;
   }
-  const where = { KuskiIndex };
+  let where = { KuskiIndex };
+  const LevelName = formatLevelSearch(lev);
+  if (LevelName) {
+    const level = await Level.findAll({ where: { LevelName } });
+    where.LevelIndex = {
+      [Op.in]: level.map(r => r.LevelIndex),
+    };
+  }
+  where = { ...where, ...fromTo(from, to, 'Driven', 'datetime') };
   const include = [
     {
       model: Level,
@@ -306,6 +314,9 @@ router
     const data = await getLatestRuns(
       req.params.KuskiIndex,
       req.params.limit,
+      req.query.level,
+      req.query.from,
+      req.query.to,
       auth.userid,
     );
     res.json(data);
