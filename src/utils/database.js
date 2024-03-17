@@ -80,17 +80,27 @@ export const formatLevelSearch = level => {
   return level;
 };
 
-export const fromTo = (from, to, column) => {
+export const fromTo = (from, to, column, format = 'ts') => {
   const where = {};
   let fromTs;
   let toTs;
   if (from) {
-    const froms = from.split('-');
-    fromTs = new Date(froms[0], froms[1] - 1, froms[2]).getTime() / 1000;
+    if (format === 'datetime') {
+      fromTs = `${from} 00:00:00`;
+    }
+    if (format === 'ts') {
+      const froms = from.split('-');
+      fromTs = new Date(froms[0], froms[1] - 1, froms[2]).getTime() / 1000;
+    }
   }
   if (to) {
-    const tos = to.split('-');
-    toTs = new Date(tos[0], tos[1] - 1, tos[2], 23, 59, 59).getTime() / 1000;
+    if (format === 'datetime') {
+      toTs = `${to} 23:59:59`;
+    }
+    if (format === 'ts') {
+      const tos = to.split('-');
+      toTs = new Date(tos[0], tos[1] - 1, tos[2], 23, 59, 59).getTime() / 1000;
+    }
   }
   if (from && to) {
     where[column] = {
