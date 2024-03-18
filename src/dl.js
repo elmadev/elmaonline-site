@@ -79,7 +79,7 @@ app.get('/cupreplay/:id/:filename', async (req, res, next) => {
       req.params.id,
       req.params.filename,
     );
-    if (!file && MD5 && UUID && TimeIndex) {
+    if (MD5 && UUID && TimeIndex) {
       res.set({
         'Content-disposition': `attachment; filename=${filename}`,
         'Content-Type': 'application/octet-stream',
