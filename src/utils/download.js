@@ -89,16 +89,20 @@ export function getReplayByCupTimeId(cupTimeId, filename, code = '') {
           }
         } else if (!data.dataValues.CupData.ShowResults) {
           reject(new Error('Event not public'));
-        } else if (data.dataValues.RecData) {
-          resolve({
-            file: data.dataValues.RecData,
-            filename: `${filename}.rec`,
-          });
-        } else if (data.dataValues.MD5 && data.dataValues.UUID) {
+        } else if (
+          data.dataValues.MD5 &&
+          data.dataValues.UUID &&
+          data.dataValues.TimeIndex
+        ) {
           resolve({
             UUID: data.dataValues.UUID,
             MD5: data.dataValues.MD5,
             TimeIndex: data.dataValues.TimeIndex,
+            filename: `${filename}.rec`,
+          });
+        } else if (data.dataValues.RecData) {
+          resolve({
+            file: data.dataValues.RecData,
             filename: `${filename}.rec`,
           });
         } else {
