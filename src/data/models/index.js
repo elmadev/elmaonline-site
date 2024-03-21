@@ -15,8 +15,6 @@ import Besttime from './Besttime';
 import LevelPack from './LevelPack';
 import LevelPackLevel from './LevelPackLevel';
 import Time from './Time';
-import WeeklyWRs from './WeeklyWRs';
-import WeeklyBest from './WeeklyBest';
 import Ranking from './Ranking';
 import RankingYearly from './RankingYearly';
 import RankingMonthly from './RankingMonthly';
@@ -123,11 +121,6 @@ Time.hasOne(TimeFile, {
   foreignKey: 'TimeIndex',
   sourceKey: 'TimeIndex',
   as: 'TimeFileData',
-});
-
-WeeklyBest.belongsTo(Kuski, {
-  foreignKey: 'KuskiIndex',
-  as: 'KuskiData',
 });
 
 Time.belongsTo(Kuski, {
@@ -276,12 +269,6 @@ Besttime.belongsTo(Level, {
   as: 'LevelData',
 });
 
-Besttime.belongsTo(WeeklyWRs, {
-  foreignKey: 'TimeIndex',
-  targetKey: 'TimeIndex',
-  as: 'WeeklyWR',
-});
-
 BestMultitime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex1',
   as: 'Kuski1Data',
@@ -290,12 +277,6 @@ BestMultitime.belongsTo(Kuski, {
 BestMultitime.belongsTo(Kuski, {
   foreignKey: 'KuskiIndex2',
   as: 'Kuski2Data',
-});
-
-WeeklyBest.belongsTo(WeeklyWRs, {
-  foreignKey: 'TimeIndex',
-  targetKey: 'TimeIndex',
-  as: 'WeeklyWR',
 });
 
 Ranking.belongsTo(Kuski, {
@@ -564,8 +545,6 @@ export {
   LevelPack,
   LevelPackLevel,
   Time,
-  WeeklyWRs,
-  WeeklyBest,
   Ranking,
   RankingYearly,
   RankingMonthly,
