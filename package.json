@@ -30,7 +30,7 @@
     "lint-staged": "^13.0.3",
     "lodash-contrib": "^4.1200.1",
     "lodash-es": "^4.17.21",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.9.4",
     "nanoid": "^4.0.0",
     "neo-async": "^2.6.2",
     "read-chunk": "^4.0.3",
