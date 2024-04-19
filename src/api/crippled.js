@@ -2,10 +2,10 @@ import express from 'express';
 import { authContext } from '#utils/auth';
 import sequelize, { Op } from 'sequelize';
 import { orderBy, invert, groupBy, omit, mapValues } from 'lodash-es';
-import { Crippled, Kuski, Level, Time } from '../data/models';
-import { getCrippledTypes } from '../data/models/Crippled';
-import { query } from '../utils/sequelize';
-import { getPackByName } from './levelpack';
+import { Crippled, Kuski, Level, Time } from '#data/models';
+import { getCrippledTypes } from '#data/models/Crippled';
+import { query } from '#utils/sequelize';
+import { getPackByName } from './levelpack.js';
 
 const router = express.Router();
 

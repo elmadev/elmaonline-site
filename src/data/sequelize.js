@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
-import config from '../config';
-import { log } from '../utils/database';
+import config from '../config.js';
+import { log } from '../utils/database.js';
 
 const { host, port, user, pass, database } = config.mysql;
 const uri = `mysql://${user}:${pass}@${host}:${port}/${database}`;

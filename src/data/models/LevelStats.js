@@ -1,9 +1,9 @@
 import Sequelize, { Model } from 'sequelize';
 import { includes, range, toPairs, uniqBy, isEmpty } from 'lodash-es';
-import * as PlayStats from './PlayStats';
-import sequelize from '../sequelize';
-import { getPerfTracker } from '../../utils/perf';
-import { jsonAccessors } from '../../utils/sequelize';
+import * as PlayStats from './PlayStats.js';
+import sequelize from '../sequelize.js';
+import { getPerfTracker } from '#utils/perf';
+import { jsonAccessors } from '#utils/sequelize';
 
 // store this many top times.
 const countTopXTimes = 10;

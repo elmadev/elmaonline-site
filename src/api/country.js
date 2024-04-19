@@ -1,5 +1,5 @@
 import express from 'express';
-import { Country } from '../data/models';
+import { Country } from '#data/models';
 
 const router = express.Router();
 

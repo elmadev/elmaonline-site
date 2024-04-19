@@ -20,8 +20,8 @@ import {
   Battletime,
   SiteCupTime,
   ReplayLog,
-} from '../data/models';
-import sequelize from '../data/sequelize';
+} from '#data/models';
+import sequelize from '../data/sequelize.js';
 
 const router = express.Router();
 

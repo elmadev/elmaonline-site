@@ -7,7 +7,7 @@ import {
   RankingWeekly,
   RankingDaily,
   RankingHistory,
-} from '../data/models';
+} from '#data/models';
 
 const router = express.Router();
 

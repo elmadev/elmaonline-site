@@ -11,7 +11,7 @@ import {
   LevelStats,
   Level,
   Setting,
-} from '../data/models';
+} from '#data/models';
 
 const router = express.Router();
 

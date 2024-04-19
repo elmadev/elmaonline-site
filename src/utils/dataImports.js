@@ -15,7 +15,7 @@ import {
   Besttime,
   Country,
   Team,
-} from '../data/models';
+} from '#data/models';
 import * as kuskiMapData from '../data/json/kuskimap.json' assert { type: 'json' };
 
 const api = create({

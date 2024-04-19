@@ -6,15 +6,15 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import request from 'request';
 import fileUpload from 'express-fileupload';
-import config from './config';
+import config from './config.js';
 import './data/sequelize.js';
 import { auth } from '#utils/auth';
 import { downloadFileS3 } from '#utils/upload';
-import apiRoutes from './api';
-import eventsRoutes from './events';
-import dlRoutes from './dl';
-import runRoutes from './run';
-import uploadRoutes from './upload';
+import apiRoutes from './api/index.js';
+import eventsRoutes from './events.js';
+import dlRoutes from './dl.js';
+import runRoutes from './run.js';
+import uploadRoutes from './upload.js';
 
 const app = express();
 

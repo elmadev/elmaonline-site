@@ -20,7 +20,7 @@ import archiver from 'archiver';
 import { isAfter } from 'date-fns';
 import { filterResults, admins } from '#utils/cups';
 import jimp from 'jimp';
-import config from '../config';
+import config from '../config.js';
 
 const getReplayDataByBattleId = async battleId => {
   const replayData = await Battle.findOne({

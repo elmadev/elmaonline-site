@@ -4,7 +4,7 @@ import { forEach } from 'lodash-es';
 import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { firstEntry, lastEntry, inBetween } from '#utils/sort';
-import { LevelPackLevel, LevelPack, Level } from '../data/models';
+import { LevelPackLevel, LevelPack, Level } from '#data/models';
 
 const router = express.Router();
 

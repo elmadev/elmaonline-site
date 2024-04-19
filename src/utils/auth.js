@@ -1,7 +1,7 @@
 import jws from 'jws';
 import crypto from 'crypto';
 import { Kuski } from '#data/models';
-import config from '../config';
+import config from '../config.js';
 
 const getKuskiData = async k => {
   const kuskiData = await Kuski.findOne({

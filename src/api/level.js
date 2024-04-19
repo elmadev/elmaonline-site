@@ -11,8 +11,8 @@ import {
   Tag,
   LevelPackLevel,
   Kuski,
-} from '../data/models';
-import connection from '../data/sequelize';
+} from '#data/models';
+import connection from '#data/sequelize';
 import { fromToTime, searchLimit, searchOffset, like } from '#utils/database';
 
 const router = express.Router();

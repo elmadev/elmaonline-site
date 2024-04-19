@@ -1,5 +1,5 @@
 import DataType from 'sequelize';
-import Model from '../sequelize';
+import Model from '../sequelize.js';
 
 const LevelPackFavourite = Model.define(
   'levelpack_favourite',
