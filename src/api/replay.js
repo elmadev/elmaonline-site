@@ -582,7 +582,11 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
   }
   updateViews(replays, Fingerprint, KuskiIndex, listData);
   return replays
-    .map(uuid => uuid.includes('c-') ? `${uuid.split('-')[0]}-${uuid.split('-')[1]}` : uuid)
+    .map(uuid =>
+      uuid.includes('c-')
+        ? `${uuid.split('-')[0]}-${uuid.split('-')[1]}`
+        : uuid,
+    )
     .map(uuid => combined.find(rec => rec.UUID === uuid));
 };
 

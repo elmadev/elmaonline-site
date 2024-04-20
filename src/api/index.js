@@ -17,6 +17,7 @@ import Teams from './teams';
 import Level from './level';
 import Ranking from './ranking';
 import Mod from './mod';
+import TasWr from './taswr';
 import News from './news';
 import Donate from './donate';
 import Upload from './upload';
@@ -57,6 +58,7 @@ router
   .use('/notification', Notification)
   .use('/levelstats', LevelStats)
   .use('/crippled', Crippled)
-  .use('/recap', Recap);
+  .use('/recap', Recap)
+  .use('/taswr', TasWr);
 
 export default router;

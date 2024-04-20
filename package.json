@@ -53,7 +53,8 @@
     "#constants/*": "./src/constants/*",
     "#data/*": "./src/data/*",
     "#middlewares/*": "./src/middlewares/*",
-    "#utils/*": "./src/utils/*"
+    "#utils/*": "./src/utils/*",
+    "#okevalidator/*": "./src/okevalidator/*"
   },
   "config": {
     "commitizen": {
