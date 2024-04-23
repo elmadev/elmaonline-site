@@ -59,6 +59,17 @@ import MultiTimeFile from './MultiTimeFile';
 import Crippled from './Crippled';
 import Recap from './Recap';
 import ReplayLog from './ReplayLog';
+import TasWr from './TasWr';
+
+TasWr.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+TasWr.belongsTo(Level, {
+  foreignKey: 'LevelIndex',
+  as: 'LevelData',
+});
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -588,4 +599,5 @@ export {
   Crippled,
   Recap,
   ReplayLog,
+  TasWr,
 }; // add the data model here as well so it exports
