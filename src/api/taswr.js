@@ -84,7 +84,7 @@ const getInternalLevelFromName = async LevelName => {
     'QWQUU054.LEV': 17,
   };
 
-  const LevelIndex = internalLevelMap[LevelName];
+  const LevelIndex = internalLevelMap[LevelName.toUpperCase()];
 
   if (!LevelIndex) {
     return null;
@@ -139,7 +139,7 @@ export const getDatInfo = async (datFile, filename, LevelIndex) => {
     const LevelName = findLevelNameFromDat(datFilePath);
     let lev;
 
-    if (/^QWQUU\d{3}\.LEV$/.test(LevelName)) {
+    if (/^QWQUU\d{3}\.LEV$/i.test(LevelName)) {
       lev = await getInternalLevelFromName(LevelName);
     } else if (LevelIndex) {
       lev = await Level.findOne({
