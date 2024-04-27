@@ -715,7 +715,7 @@ const getReplaysByLevelIndex = async LevelIndex => {
   const replays = await Replay.findAll({
     attributes,
     where: { LevelIndex, Unlisted: 0 },
-    limit: 100,
+    limit: 1000,
     order: [['ReplayIndex', 'DESC']],
     include: [
       {
