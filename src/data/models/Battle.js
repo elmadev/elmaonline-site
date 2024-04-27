@@ -1,6 +1,6 @@
 import moment from 'moment';
 import DataType from 'sequelize';
-import Model from '../sequelize';
+import Model from '../sequelize.js';
 
 const Battle = Model.define(
   // give the model same name as the db table

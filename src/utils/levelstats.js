@@ -1,9 +1,9 @@
 import { forEach, groupBy, values } from 'lodash-es';
 import moment from 'moment';
 import connection from '#data/sequelize';
-import * as PlayStats from '../data/models/PlayStats';
-import { LevelStats, LevelStatsUpdate } from '../data/models';
-import { aggregateTrackers, getPerfTracker } from './perf';
+import * as PlayStats from '#data/models/PlayStats';
+import { LevelStats, LevelStatsUpdate } from '#data/models';
+import { aggregateTrackers, getPerfTracker } from './perf.js';
 
 // checks the current state of the database and processes the next X
 // times, resulting in updates to levelStats and levelStatsUpdates.

@@ -7,7 +7,7 @@ import {
   LevelPackCollection,
   LevelPackCollectionPack,
   LevelPack,
-} from '../data/models';
+} from '#data/models';
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 import express from 'express';
 import { authContext } from '#utils/auth';
 import OAuthClient from 'disco-oauth';
-import { Setting } from '../data/models';
-import config from '../config';
+import { Setting } from '#data/models';
+import config from '../config.js';
 
 const router = express.Router();
 const client = new OAuthClient(

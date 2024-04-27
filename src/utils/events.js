@@ -13,8 +13,8 @@ import {
 } from '#utils/notifications';
 import { uploadTimeFile } from '#utils/upload';
 import { updateRanking } from '#utils/ranking';
-import { updateLeague } from './league';
-import config from '../config';
+import { updateLeague } from './league.js';
+import config from '../config.js';
 
 const checkAuth = (req, res, callback) => {
   if (req.header('Authorization') === config.discord.apiAuth) {

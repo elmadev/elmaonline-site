@@ -2,7 +2,7 @@ import express from 'express';
 import stream from 'stream';
 import { authContext } from '#utils/auth';
 import request from 'request';
-import config from './config';
+import config from './config.js';
 import {
   getReplayByBattleId,
   getLevel,

@@ -1,6 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
-import * as PlayStats from './PlayStats';
-import sequelizeInstance from '../sequelize';
+import * as PlayStats from './PlayStats.js';
+import sequelizeInstance from '../sequelize.js';
 
 // ** KUSKI STATS NOT CURRENTLY IMPLEMENTED YET **
 

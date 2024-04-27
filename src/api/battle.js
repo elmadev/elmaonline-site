@@ -12,8 +12,8 @@ import {
   Multitime,
   Time,
   TimeFile,
-} from '../data/models';
-import { battle2Rec } from './replay';
+} from '#data/models';
+import { battle2Rec } from './replay.js';
 
 const router = express.Router();
 

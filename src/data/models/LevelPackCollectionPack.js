@@ -1,5 +1,5 @@
 import DataType from 'sequelize';
-import Model from '../sequelize';
+import Model from '../sequelize.js';
 
 const LevelPackCollectionPack = Model.define(
   'levelpack_collection_pack',

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import moment from 'moment';
 import { Op } from 'sequelize';
-import config from '../config';
+import config from '../config.js';
 
 export function log(func, query, benchmark) {
   if (config.consoleQueries) {

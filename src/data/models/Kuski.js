@@ -1,6 +1,6 @@
 import DataType from 'sequelize';
-import Model from '../sequelize';
-import Team from './Team';
+import Model from '../sequelize.js';
+import Team from './Team.js';
 
 const Kuski = Model.define(
   'kuski',

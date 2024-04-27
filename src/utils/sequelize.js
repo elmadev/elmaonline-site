@@ -1,6 +1,6 @@
 import { log } from '#utils/database';
 import { isEmpty } from 'lodash-es';
-import sequelize from '../data/sequelize';
+import sequelize from '../data/sequelize.js';
 
 // query + logging
 export const query = async (sql, opts) => {

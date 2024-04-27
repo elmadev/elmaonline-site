@@ -1,4 +1,4 @@
-import { BattleLeagueBattle } from '../data/models';
+import { BattleLeagueBattle } from '#data/models';
 
 export const updateLeague = async battle => {
   if (battle.level && battle.battleIndex) {

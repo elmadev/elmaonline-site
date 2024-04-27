@@ -1,5 +1,5 @@
 import SibApiV3Sdk from 'sib-api-v3-sdk';
-import config from '../config';
+import config from '../config.js';
 
 const fromMail = 'mail@elma.online';
 const fromName = 'Elma Online';

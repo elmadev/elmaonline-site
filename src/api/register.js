@@ -6,8 +6,8 @@ import { Team, Kuski, SiteSetting } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
 import { authContext } from '#utils/auth';
 import { sendMessage } from '#utils/discord';
-import Discord from './register_discord';
-import config from '../config';
+import Discord from './register_discord.js';
+import config from '../config.js';
 
 const router = express.Router();
 
