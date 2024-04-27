@@ -14,7 +14,7 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 ## Get started
 
-1. Install if needed nodejs (v16.15.0 or later) and yarn (3.x)
+1. Install if needed nodejs (v16.15 or later, tested with up to v20.12) and yarn (3.x)
 
    - If you install node using nvm you might need to install corepack manually
      `npm install -g corepack`
@@ -60,6 +60,14 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
     ├── /start.mjs         # Entry point for pm2
     ├── /upload.js         # Endpoints for uploads
 ```
+
+## Imports
+
+Be aware of newer nodejs versions requiring imports done with file extensions.
+- Importing a relative path should always have the extensions: `import { func } from '../utils/funcs.js'`
+- index files have to be written explicitly: `import { func } from '../utils/index.js`
+- Imports done using aliases doesn't require this as the file extension is added in the alias: `import { func } from '#utils/funcs'`
+- See and add aliases in `package.json`
 
 ## Setup editor
 
