@@ -5,7 +5,7 @@
   "packageManager": "yarn@3.2.3",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon --es-module-specifier-resolution=node --no-warnings",
+    "start": "nodemon --no-warnings",
     "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
     "commit": "git-cz"
   },
@@ -49,12 +49,13 @@
     "prettier": "2.7.1"
   },
   "imports": {
-    "#api/*": "./src/api/*",
-    "#constants/*": "./src/constants/*",
-    "#data/*": "./src/data/*",
-    "#middlewares/*": "./src/middlewares/*",
-    "#utils/*": "./src/utils/*",
-    "#okevalidator/*": "./src/okevalidator/*"
+    "#api/*": "./src/api/*.js",
+    "#constants/*": "./src/constants/*.js",
+    "#data/*": "./src/data/*.js",
+    "#data/models": "./src/data/models/index.js",
+    "#middlewares/*": "./src/middlewares/*.js",
+    "#utils/*": "./src/utils/*.js",
+    "#okevalidator/*": "./src/okevalidator/*.js"
   },
   "config": {
     "commitizen": {

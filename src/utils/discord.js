@@ -1,5 +1,5 @@
 import { create } from 'apisauce';
-import config from '../config';
+import config from '../config.js';
 
 const api = create({
   baseURL: config.discord.botApi,

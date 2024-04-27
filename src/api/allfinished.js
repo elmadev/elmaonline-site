@@ -12,7 +12,7 @@ import {
   Team,
   TimeFile,
   Time,
-} from '../data/models';
+} from '#data/models';
 
 const router = express.Router();
 

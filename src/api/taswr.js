@@ -4,10 +4,10 @@ import fs from 'fs';
 import util from 'util';
 import { readChunkSync } from 'read-chunk';
 
-import config from '../config';
+import config from '../config.js';
 import { authContext } from '#utils/auth';
 import { uuid } from '#utils/calcs';
-import { Level } from '../data/models';
+import { Level } from '#data/models';
 
 import { PIG_LEV_FNAME_LEN, getPigData } from '#okevalidator/okevalidator';
 

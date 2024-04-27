@@ -14,8 +14,8 @@ import {
   ActionLogs,
   Error,
   Logs,
-} from '../data/models';
-import config from '../config';
+} from '#data/models';
+import config from '../config.js';
 
 const router = express.Router();
 

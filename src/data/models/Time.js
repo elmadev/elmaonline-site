@@ -1,6 +1,6 @@
 import DataType from 'sequelize';
 import moment from 'moment';
-import Model from '../sequelize';
+import Model from '../sequelize.js';
 
 const Time = Model.define(
   'time',

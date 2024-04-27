@@ -15,7 +15,7 @@ import {
   Battletime,
 } from '#data/models';
 import { getBattleType } from '#utils/battle';
-import config from '../config';
+import config from '../config.js';
 
 const getCurrentRankings = async () => {
   const rankingData = await Ranking.findAll();

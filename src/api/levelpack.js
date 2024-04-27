@@ -36,14 +36,14 @@ import {
   LegacyBesttime,
   Battle,
   Tag,
-} from '../data/models';
-import Admin from './levelpack_admin';
-import Favourite from './levelpack_favourite';
-import Collection from './levelpack_collection';
-import { checkSchemaAndBail } from '../middlewares/validate';
-import sequelize from '../data/sequelize';
-import { query as sqlQuery } from '../utils/sequelize';
-import { parseTimeDriven } from '../data/models/PlayStats';
+} from '#data/models';
+import Admin from './levelpack_admin.js';
+import Favourite from './levelpack_favourite.js';
+import Collection from './levelpack_collection.js';
+import { checkSchemaAndBail } from '#middlewares/validate';
+import sequelize from '#data/sequelize';
+import { query as sqlQuery } from '#utils/sequelize';
+import { parseTimeDriven } from '#data/models/PlayStats';
 
 const router = express.Router();
 

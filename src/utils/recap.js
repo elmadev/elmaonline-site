@@ -1,7 +1,7 @@
-import sequelize from '../data/sequelize';
+import sequelize from '#data/sequelize';
 import { log } from '#utils/database';
 import { forEach } from 'lodash-es';
-import { Recap } from '../data/models';
+import { Recap } from '#data/models';
 
 export const types = [
   '',

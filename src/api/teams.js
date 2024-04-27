@@ -1,5 +1,5 @@
 import express from 'express';
-import { Team, Kuski } from '../data/models';
+import { Team, Kuski } from '#data/models';
 
 const router = express.Router();
 

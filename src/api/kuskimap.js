@@ -1,6 +1,6 @@
 import express from 'express';
 import { authContext } from '#utils/auth';
-import { KuskiMap, Kuski } from '../data/models';
+import { KuskiMap, Kuski } from '#data/models';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
 import sequelize from '#data/sequelize';
-import { JsonUpdate, getCol } from '../../utils/sequelize';
+import { JsonUpdate, getCol } from '#utils/sequelize';
 
 export const ddl = {
   LevelStatsUpdateIndex: {

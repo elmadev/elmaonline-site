@@ -20,7 +20,7 @@ import {
   TimeFile,
   MultiTimeFile,
 } from '#data/models';
-import config from '../config';
+import config from '../config.js';
 
 const writeFile = util.promisify(fs.writeFile);
 const deleteFile = util.promisify(fs.unlink);
