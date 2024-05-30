@@ -568,6 +568,18 @@ const getPacksByQuery = async query => {
 
 const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
   const LevelName = formatLevelSearch(query);
+  let where = {
+    LevelName: {
+      [Op.like]: `${like(query)}%`,
+    },
+  };
+  if (LevelName !== query) {
+    where = {
+      LevelName: {
+        [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
+      },
+    };
+  }
   let show = false;
   const q = {
     attributes: [
@@ -585,13 +597,10 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
       'AddedBy',
     ],
     offset: searchOffset(offset),
-    where: {
-      LevelName: {
-        [Op.like]: `${like(LevelName)}%`,
-      },
-    },
+    where,
     limit: searchLimit(offset),
     order: [
+      [sequelize.literal(`LevelName = ${sequelize.escape(LevelName)} DESC`)],
       ['LevelName', 'ASC'],
       ['LevelIndex', 'ASC'],
     ],
