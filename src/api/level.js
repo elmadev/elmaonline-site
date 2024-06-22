@@ -347,7 +347,7 @@ const getLevels = async (
     ],
     [
       sequelize.literal(
-        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden != 1 ORDER BY Time ASC LIMIT 1)`,
+        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND level.Hidden = 0 ORDER BY Time ASC LIMIT 1)`,
       ),
       'Besttime',
     ],
@@ -356,7 +356,7 @@ const getLevels = async (
   if (UserId > 0) {
     attributes.push([
       sequelize.literal(
-        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND besttime.KuskiIndex = ${UserId} AND level.Hidden != 1)`,
+        `(SELECT Time FROM besttime WHERE besttime.LevelIndex = level.LevelIndex AND besttime.KuskiIndex = ${UserId} AND level.Hidden = 0)`,
       ),
       'Mytime',
     ]);
