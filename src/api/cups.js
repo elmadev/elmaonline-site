@@ -358,7 +358,11 @@ const getUnstarted = async () => {
 
 const unlockLevel = async (indices, done) => {
   await Level.update(
-    { Hidden: indices.ShownTimes ? 0 : 1, Locked: 0, ForceHide: 1 },
+    {
+      Hidden: indices.ShownTimes === 1 ? 0 : indices.ShownTimes === 2 ? 2 : 1,
+      Locked: 0,
+      ForceHide: 1,
+    },
     { where: { LevelIndex: indices.LevelIndex } },
   );
   await SiteCup.update(
@@ -636,7 +640,7 @@ router
           )}:00:00`,
           EndTime: `${req.body.EndTime} ${zeroPad(req.body.EndHour, 2)}:00:00`,
           Designer: kuski ? kuski.KuskiIndex : 0,
-          ShownTimes: req.body.ShownTimes,
+          ShownTimes: req.body.ShownTimes ? 1 : req.body.ShownPositions ? 2 : 0,
           AppleResults: req.body.AppleResults,
         });
         res.json(insert);

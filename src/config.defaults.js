@@ -26,10 +26,10 @@ export default {
 
   // Database
   mysql: {
-    host: 'sql-master.elma.online',
-    port: 3306,
+    host: 'eol-sql-amd-do-user-3380165-0.c.db.ondigitalocean.com',
+    port: 25060,
     user: 'sandbox',
-    pass: 'cksnmbmlfchozooqrdxahytwer',
+    pass: 'AVNS_BMv__q3E57g5owVincz',
     database: 'eolwebtest',
   },
 
