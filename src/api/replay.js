@@ -287,7 +287,7 @@ const getReplays = async (
 
   // Filter by level pack
   let packLevels = [];
-  if (LevelPackIndex) {
+  if (LevelPackIndex && LevelPackIndex !== '0') {
     packLevels = await LevelPackLevel.findAll({
       attributes: ['LevelIndex'],
       where: {
@@ -315,7 +315,7 @@ const getReplays = async (
       AND replay_tags.TagIndex IN (${excludedTags.join()})) = 0`;
   }
 
-  const data = await Replay.findAndCountAll({
+  const data = await Replay.findAll({
     limit: searchLimit(limit),
     offset: searchOffset(offset),
     where,
@@ -362,7 +362,9 @@ const getReplays = async (
         model: Level,
         attributes: ['LevelName'],
         as: 'LevelData',
-        where: levelWhere,
+        ...(Object.keys(levelWhere).length && {
+          where: levelWhere,
+        }),
       },
       {
         model: Kuski,
