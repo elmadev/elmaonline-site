@@ -775,7 +775,7 @@ const getReplaysByLevelIndex = async LevelIndex => {
 
   return [...replays, ...combined]
     .sort((a, b) => a.ReplayTime - b.ReplayTime)
-    .slice(0, 100);
+    .slice(0, 1000);
 };
 
 const shareReplay = async data => {
