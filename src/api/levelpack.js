@@ -17,6 +17,7 @@ import {
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
 import { authContext } from '#utils/auth';
+import { sortTimes } from '#utils/sort';
 import {
   like,
   searchLimit,
@@ -741,7 +742,7 @@ const kinglist = times => {
   const kuskis = [];
   forEach(times, level => {
     if (!level.Level.Hidden) {
-      const sortedTimes = level.LevelBesttime.sort((a, b) => a.Time - b.Time);
+      const sortedTimes = level.LevelBesttime.sort(sortTimes);
       let currentPosition = 0;
       forEach(sortedTimes, data => {
         const time = data.dataValues;
