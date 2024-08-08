@@ -34,8 +34,16 @@ export const getTimes = async (
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked || lev.Hidden) return [];
   let timeTable = Besttime;
+  let order = [
+    ['Time', 'ASC'],
+    ['TimeIndex', 'ASC'],
+  ];
   if (lev.Legacy && !eolOnly) {
     timeTable = LegacyBesttime;
+    order = [
+      ['Time', 'ASC'],
+      ['Driven', 'ASC'],
+    ];
   }
   const kuskiInclude = {
     model: Kuski,
@@ -49,10 +57,7 @@ export const getTimes = async (
   }
   const times = await timeTable.findAll({
     where: { LevelIndex },
-    order: [
-      ['Time', 'ASC'],
-      ['TimeIndex', 'ASC'],
-    ],
+    order,
     limit: parseInt(limit, 10),
     include: [kuskiInclude],
   });
