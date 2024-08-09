@@ -27,14 +27,14 @@ export function log(func, query, benchmark) {
       if (process.env.NODE_ENV === 'development') {
         fs.appendFile(
           `${folder}${moment().format('YYYY-MM-DD')}.log`,
-          `${func}: ${benchmark} ${query}\r\n`,
+          `${func}: ${benchmark} [${moment().format('HH:mm:ss')}] ${query}\r\n`,
           () => {},
         );
       }
       if (benchmark > 1000) {
         fs.appendFile(
           `${folder}${moment().format('YYYY-MM-DD')}-slow.log`,
-          `${func}: ${benchmark} ${query}\r\n`,
+          `${func}: ${benchmark} [${moment().format('HH:mm:ss')}] ${query}\r\n`,
           () => {},
         );
       }

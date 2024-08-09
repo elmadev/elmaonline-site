@@ -108,3 +108,10 @@ export const inBetween = (beforeParam, afterParam, upDown) => {
   }
   return sort;
 };
+
+export const sortTimes = (a, b) => {
+  if (a.Time === b.Time) {
+    return a.TimeIndex - b.TimeIndex;
+  }
+  return a.Time - b.Time;
+};
