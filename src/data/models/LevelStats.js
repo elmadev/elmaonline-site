@@ -1,5 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
-import { includes, range, toPairs, uniqBy, isEmpty } from 'lodash-es';
+import { includes, range, toPairs, uniqBy, isEmpty, omit } from 'lodash-es';
 import * as PlayStats from './PlayStats.js';
 import sequelize from '../sequelize.js';
 import { getPerfTracker } from '#utils/perf';
@@ -162,6 +162,13 @@ const cols = toPairs(ddl)
 export const defaultAttributes = () => {
   return cols.concat('TopXTimes');
 };
+
+export const getColsForCollectionStats = () => {
+  // just omit some cols that might contain a lot of data for ints
+  return cols.filter(col => {
+    return !includes(['LeaderHistory', 'KuskiIdsF', 'KuskiIdsAll'], col);
+  });
+}
 
 class LevelStats extends Model {
   // map an array of ids to existing instances or null

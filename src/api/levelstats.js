@@ -3,6 +3,7 @@ import sequelize from '#data/sequelize';
 import { mapValues, isEqual } from 'lodash-es';
 import { log } from '#utils/database';
 import { LevelStats, Level, Time } from '#data/models';
+import { getColsForCollectionStats } from '#data/models/LevelStats';
 
 const router = express.Router();
 
@@ -91,20 +92,54 @@ const mockUpdate = async LevelIndex => {
 };
 
 // useful for dev/testing
-router.get('/mock-update/:LevelIndex', async (req, res) => {
-  const LevelIndex = +req.params.LevelIndex;
+router
+  .get('/mock-update/:LevelIndex', async (req, res) => {
+    const LevelIndex = +req.params.LevelIndex;
 
-  const lev = await Level.findOne({ where: { LevelIndex } });
+    const lev = await Level.findOne({ where: { LevelIndex } });
 
-  if (lev && (lev.Locked || lev.Hidden)) {
-    res.json({
-      __locked: true,
+    if (lev && (lev.Locked || lev.Hidden)) {
+      res.json({
+        __locked: true,
+      });
+      return;
+    }
+
+    const payload = await mockUpdate(LevelIndex);
+    res.json(payload);
+  })
+  .get('/collection/:type/:value', async (req, res) => {
+
+    let ids = [];
+
+    if ( req.params.type === 'ids' ) {
+      ids = req.params.value.split(',').map(Number);
+    }
+
+    if ( req.params.type === 'cup' ) {
+    }
+
+    if ( req.params.type === 'pack' ) {
+    }
+    
+    const stats = await Level.findAll({
+      where: { LevelIndex: ids },
+      attributes: ['LevelIndex', 'LevelName', 'LongName', 'Locked', 'Hidden'],
+      include: [
+        {
+          model: LevelStats,
+          as: 'LevelStatsData',
+          attributes: getColsForCollectionStats(),
+        },
+      ],
     });
-    return;
-  }
 
-  const payload = await mockUpdate(LevelIndex);
-  res.json(payload);
-});
+    const payload = {
+      ids,
+      stats,
+    }
+
+    res.json(payload);
+  });
 
 export default router;
