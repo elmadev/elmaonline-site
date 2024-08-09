@@ -8,4 +8,6 @@ if (process.env.BROWSER) {
 
 // add keys from defaults.js that you want to change the value for
 // changes to this file will not be seen by git
-export default {};
+export default {
+  port: 3008
+};
