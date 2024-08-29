@@ -267,6 +267,10 @@ const getReplays = async (
       return [[sequelize.literal(`Views ${order}`)]];
     }
 
+    if (sortBy === 'time') {
+      return [[sequelize.literal(`ReplayTime ${order}`)]];
+    }
+
     return [['Uploaded', order]];
   };
 
