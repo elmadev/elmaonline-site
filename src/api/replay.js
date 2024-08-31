@@ -253,6 +253,7 @@ const getReplays = async (
   UserId = 0,
   LevelPackIndex = 0,
   excludedTags = [],
+  LevelIndex = 0,
 ) => {
   const getOrder = () => {
     if (sortBy === 'rating') {
@@ -264,6 +265,10 @@ const getReplays = async (
 
     if (sortBy === 'views') {
       return [[sequelize.literal(`Views ${order}`)]];
+    }
+
+    if (sortBy === 'time') {
+      return [[sequelize.literal(`ReplayTime ${order}`)]];
     }
 
     return [['Uploaded', order]];
@@ -295,7 +300,12 @@ const getReplays = async (
       },
     }).then(data => data.map(r => r.LevelIndex));
   }
-  const levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
+  let levelWhere = packLevels.length ? { LevelIndex: packLevels } : {};
+
+  // Filter by level (overrides level pack filtering)
+  if (LevelIndex && LevelIndex !== '0') {
+    levelWhere = { LevelIndex };
+  }
 
   let having = '';
   if (tags.length) {
@@ -881,6 +891,7 @@ router
       userId,
       req.query.levelPack,
       req.query.excludedTags,
+      req.query.level,
     );
     res.json(data);
   })
