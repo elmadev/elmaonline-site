@@ -13,7 +13,7 @@
     "apisauce": "^2.1.6",
     "archiver": "^5.3.1",
     "aws-sdk": "^2.1209.0",
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.3",
     "commitizen": "^4.2.5",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
