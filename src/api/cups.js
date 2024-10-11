@@ -19,6 +19,10 @@ import {
   SiteCupBlog,
   Team,
 } from '#data/models';
+import sequelize from '#data/sequelize';
+import {
+  log,
+} from '#utils/database';
 
 const router = express.Router();
 
@@ -535,6 +539,25 @@ const Replay = async CupTimeIndex => {
   return {};
 };
 
+// get cup(s) that a level belongs to
+const byLevel = async LevelIndex => {
+  const q = `
+    SELECT CupGroupIndex, CupName, ShortName
+    FROM sitecupgroup
+    WHERE CupGroupIndex IN
+    (SELECT CupGroupIndex from sitecup WHERE LevelIndex = ?)
+    ORDER BY CupName ASC
+  `;
+
+  const [cups] = await sequelize.query(q, {
+    replacements: [LevelIndex],
+    benchmark: true,
+    logging: (query, b) => log('query', query, b),
+  });
+
+  return cups;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await getCups();
@@ -848,6 +871,10 @@ router
       KuskiIndex,
     );
     res.json(event);
+  })
+  .get('/byLevel/:LevelIndex', async (req, res) => {
+    const cups = await byLevel(Number(req.params.LevelIndex));
+    res.json(cups);
   });
 
 export default router;
