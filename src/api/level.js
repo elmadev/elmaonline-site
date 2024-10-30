@@ -115,7 +115,18 @@ const getLevelAsPng = async LevelIndex => {
   const svgData = levToSvg(levelData.LevelData);
 
   try {
-    return await sharp(Buffer.from(svgData)).resize(1024).png().toBuffer();
+    return await sharp(Buffer.from(svgData))
+      .resize(1024)
+      .extend({
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
+        background: '#333',
+      })
+      .flatten({ background: '#333' })
+      .png()
+      .toBuffer();
   } catch (error) {
     return null;
   }
