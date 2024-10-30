@@ -24,6 +24,6 @@ jobs:
             source ~/.nvm/nvm.sh
             cd ${{ secrets.SSH_PATH }}
             git pull
-            git checkout lev-as-image-dev
+            git checkout dev
             yarn
             pm2 restart api
