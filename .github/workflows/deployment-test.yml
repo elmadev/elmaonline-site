@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - lev-as-image-dev
 
 jobs:
   build:
