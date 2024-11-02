@@ -14,6 +14,8 @@ import {
 } from '#data/models';
 import connection from '#data/sequelize';
 import { fromToTime, searchLimit, searchOffset, like } from '#utils/database';
+import { levToSvg } from 'elma-js';
+import sharp from 'sharp';
 
 const router = express.Router();
 
@@ -105,6 +107,28 @@ const getLevelData = async LevelIndex => {
     return { LevelIndex, LevelData: file };
   } catch (e) {
     return { LevelIndex, LevelData: null };
+  }
+};
+
+const getLevelAsPng = async LevelIndex => {
+  const levelData = await getLevelData(LevelIndex);
+  const svgData = levToSvg(levelData.LevelData);
+
+  try {
+    return await sharp(Buffer.from(svgData))
+      .resize(1024)
+      .extend({
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
+        background: '#333',
+      })
+      .flatten({ background: '#333' })
+      .png()
+      .toBuffer();
+  } catch (error) {
+    return null;
   }
 };
 
@@ -430,6 +454,18 @@ router.get('/', async (req, res) => {
     req.query.q,
   );
   res.json(data);
+});
+
+router.get('/:LevelIndex.png', async (req, res) => {
+  const pngBuffer = await getLevelAsPng(req.params.LevelIndex);
+
+  if (pngBuffer) {
+    res.set('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // Cache for one year (365 days)
+    res.send(pngBuffer);
+  } else {
+    res.status(500).send('Error generating image');
+  }
 });
 
 router.get('/:LevelIndex', async (req, res) => {
