@@ -19,7 +19,7 @@ import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
 import { filterResults, admins } from '#utils/cups';
-import jimp from 'jimp';
+import { Jimp, intToRGBA, JimpMime } from 'jimp';
 import config from '../config.js';
 
 const getReplayDataByBattleId = async battleId => {
@@ -366,8 +366,8 @@ export const getShirtByKuskiId = async KuskiIndex => {
   if (kuskiData.BmpCRC === 0) {
     return { file: null, filename: '', error: 'no bmp data' };
   }
-  const image = await jimp.read(kuskiData.BmpData);
-  const alphaKey = jimp.intToRGBA(image.getPixelColor(0, 0));
+  const image = await Jimp.read(kuskiData.BmpData);
+  const alphaKey = intToRGBA(image.getPixelColor(0, 0));
   const replaceColor = { r: 0, g: 0, b: 0, a: 0 };
   image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
     if (
@@ -383,6 +383,6 @@ export const getShirtByKuskiId = async KuskiIndex => {
     }
   });
   image.rotate(90);
-  const imageBuffer = await image.getBufferAsync(jimp.MIME_PNG);
+  const imageBuffer = await image.getBuffer(JimpMime.png);
   return { file: imageBuffer, filename: kuskiData.Kuski };
 };
