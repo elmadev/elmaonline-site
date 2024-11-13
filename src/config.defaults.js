@@ -41,6 +41,8 @@ export default {
   // s3
   accessKeyId: '',
   secretAccessKey: '',
+  SWaccessKeyId: '',
+  SWsecretAccessKey: '',
 
   // Google
   google: {
