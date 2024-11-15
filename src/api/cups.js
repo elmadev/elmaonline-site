@@ -20,9 +20,7 @@ import {
   Team,
 } from '#data/models';
 import sequelize from '#data/sequelize';
-import {
-  log,
-} from '#utils/database';
+import { log } from '#utils/database';
 
 const router = express.Router();
 

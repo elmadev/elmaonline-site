@@ -424,7 +424,6 @@ export const filterTimes = times => {
 
 export const mapTimeDriven = times => {
   return times.map(t => {
-    // eslint-disable-next-line no-param-reassign
     t.Driven = parseTimeDriven(t.Driven);
     return t;
   });
@@ -521,8 +520,6 @@ export const getTopTimes = (times, n) => {
  * @returns {Array<Object>}
  */
 export const getTopFinishes = (times, n) => {
-  // eslint-disable-next-line no-underscore-dangle
-
   const finishes = times.filter(t => t.Finished === 'F');
   return getTopTimes(finishes, n);
 };

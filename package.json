@@ -9,11 +9,10 @@
   },
   "scripts": {
     "start": "nodemon --no-warnings",
-    "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
+    "lint": "eslint .",
     "commit": "git-cz"
   },
   "dependencies": {
-    "@babel/plugin-syntax-import-assertions": "^7.26.0",
     "apisauce": "^3.1.0",
     "archiver": "^7.0.1",
     "aws-sdk": "^2.1692.0",
@@ -32,7 +31,7 @@
     "husky": "^8.0.1",
     "jimp": "^1.6.0",
     "jws": "^4.0.0",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^15.2.10",
     "lodash-contrib": "^4.1200.1",
     "lodash-es": "^4.17.21",
     "mysql2": "^3.11.4",
@@ -46,12 +45,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.23.3",
-    "eslint": "^8.54.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "@babel/eslint-parser": "^7.25.9",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.12.0",
     "nodemon": "^3.1.7",
-    "prettier": "2.7.1"
+    "prettier": "^3.3.3"
   },
   "imports": {
     "#api/*": "./src/api/*.js",
@@ -76,7 +76,7 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.js": "eslint . --cache --fix"
   },
   "nodemonConfig": {
     "env": {
