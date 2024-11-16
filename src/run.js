@@ -6,7 +6,7 @@ import {
 } from '#utils/levelstats';
 import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { updateRanking, deleteRanking } from '#utils/ranking';
-import { kuskimap, email, legacyTimes } from '#utils/dataImports';
+import { email, legacyTimes } from '#utils/dataImports';
 import { recapGenerate } from '#utils/recap';
 import { coldStorage, recoverRecFiles } from '#utils/timefile';
 
@@ -81,15 +81,6 @@ app.get('/ranking/:limit', async (req, res) => {
 });
 
 // data imports
-app.get('/kuskimap', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
-    await kuskimap();
-    res.json({ status: 'done' });
-  } else {
-    res.status(401);
-    res.send('Unauthorized');
-  }
-});
 app.get('/email', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     await email();
