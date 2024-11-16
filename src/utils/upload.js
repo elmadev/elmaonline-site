@@ -488,7 +488,9 @@ export const uploadTimeFile = async (
     }
     await deleteFile(filePath);
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('error', TimeIndex);
+    // eslint-disable-next-line no-console
     console.log(e);
     if (!isSentToS3) {
       if (parseInt(Multi, 10) === 1) {

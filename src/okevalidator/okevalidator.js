@@ -34,6 +34,7 @@ export async function getPigData(datFilePath, tempDir) {
     cwd: tempDir,
   });
   if (stderr) {
+    // eslint-disable-next-line no-console
     console.log(`okev error: ${stderr}`);
   }
 

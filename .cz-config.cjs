@@ -18,7 +18,27 @@ module.exports = {
     },
   ],
 
-  scopes: [{ name: ' ' }, { name: 'other' }, { name: 'deps' }, { name: 'config' }, { name: 'home' }, { name: 'battles' }, { name: 'cups' }, { name: 'levels' }, { name: 'levelpacks' }, { name: 'kuskis' }, { name: 'search' }, { name: 'chat' }, { name: 'login' }, { name: 'replays' }, { name: 'teams' }, { name: 'settings' }, { name: 'help' }, { name: 'ranking' }, { name: 'admin' }],
+  scopes: [
+    { name: ' ' },
+    { name: 'other' },
+    { name: 'deps' },
+    { name: 'config' },
+    { name: 'home' },
+    { name: 'battles' },
+    { name: 'cups' },
+    { name: 'levels' },
+    { name: 'levelpacks' },
+    { name: 'kuskis' },
+    { name: 'search' },
+    { name: 'chat' },
+    { name: 'login' },
+    { name: 'replays' },
+    { name: 'teams' },
+    { name: 'settings' },
+    { name: 'help' },
+    { name: 'ranking' },
+    { name: 'admin' },
+  ],
 
   allowTicketNumber: false,
   isTicketNumberRequired: false,
@@ -40,5 +60,5 @@ module.exports = {
   allowBreakingChanges: ['feat', 'fix'],
   skipQuestions: ['body', 'customScope', 'breaking'],
   subjectLimit: 100,
-  footerPrefix : 'Closes:'
+  footerPrefix: 'Closes:',
 };

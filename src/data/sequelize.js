@@ -63,9 +63,11 @@ const sequelize = new Sequelize(uri, {
 sequelize
   .authenticate()
   .then(() => {
+    // eslint-disable-next-line no-console
     console.info(`MySQL connection established at ${uri}`);
   })
   .catch(err => {
+    // eslint-disable-next-line no-console
     console.error(`Unable to connect to MySQL database at ${uri}:`, err);
   });
 

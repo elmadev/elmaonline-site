@@ -813,7 +813,6 @@ export const updateRanking = async limit => {
     CurrRank.all[c.dataValues.KuskiIndex] = c.dataValues;
   });
   let max = await RankingHistory.max('BattleIndex');
-  // eslint-disable-next-line no-restricted-globals
   if (isNaN(max)) {
     max = 0;
   }
