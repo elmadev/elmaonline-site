@@ -258,7 +258,6 @@ const getBestRecordsDrivenRecently = async (
     ],
   });
 
-  // eslint-disable-next-line no-underscore-dangle
   const _kuskis = groupBy(kuskis, 'KuskiIndex');
 
   const levels = await Level.findAll({
@@ -268,7 +267,6 @@ const getBestRecordsDrivenRecently = async (
     },
   });
 
-  // eslint-disable-next-line no-underscore-dangle
   const _levels = groupBy(levels, 'LevelIndex');
 
   records = records.map(r => {

@@ -178,6 +178,7 @@ export const getDatInfo = async (datFile, filename, LevelIndex) => {
       file: filename,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
     return {
       error,

@@ -6,8 +6,9 @@ import {
 } from '#utils/levelstats';
 import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { updateRanking, deleteRanking } from '#utils/ranking';
-import { kuskimap, email, legacyTimes } from '#utils/dataImports';
+import { email, legacyTimes } from '#utils/dataImports';
 import { recapGenerate } from '#utils/recap';
+import { coldStorage, recoverRecFiles } from '#utils/timefile';
 
 const app = express.Router();
 
@@ -80,15 +81,6 @@ app.get('/ranking/:limit', async (req, res) => {
 });
 
 // data imports
-app.get('/kuskimap', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
-    await kuskimap();
-    res.json({ status: 'done' });
-  } else {
-    res.status(401);
-    res.send('Unauthorized');
-  }
-});
 app.get('/email', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     await email();
@@ -113,6 +105,26 @@ app.get('/recap/:type', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     await recapGenerate(req.params.type, 2023);
     res.sendStatus(200);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+app.get('/coldstorage', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await coldStorage();
+    res.json(data);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+app.get('/recoverfiles', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const data = await recoverRecFiles();
+    res.json(data);
   } else {
     res.status(401);
     res.send('Unauthorized');

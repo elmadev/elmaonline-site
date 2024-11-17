@@ -218,7 +218,6 @@ const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
   }).then(data => data.map(r => r.LevelIndex));
 
   const multiTimesByLevel = [];
-  // eslint-disable-next-line
   const allMultiTimes = await BestMultitime.findAll({
     where: {
       [Op.and]: [

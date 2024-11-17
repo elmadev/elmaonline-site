@@ -83,7 +83,6 @@ export const doNext = async limit => {
 
     // add performance tracker (after commit)
     await levelStatsUpdate.updateDebug(prevValue => {
-      // eslint-disable-next-line no-param-reassign
       prevValue.perf = track(null);
     }, true);
 
@@ -112,10 +111,8 @@ export const doAll = async (batchSize, sleepMs) => {
   let moreExist = false;
 
   do {
-    // eslint-disable-next-line no-await-in-loop
     [update, moreExist] = await doNext(batchSize);
 
-    // eslint-disable-next-line no-await-in-loop
     await new Promise(resolve => {
       setTimeout(resolve, sleepMs);
     });

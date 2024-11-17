@@ -4,7 +4,7 @@ import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { create } from 'apisauce';
 import {
-  KuskiMap,
+  // KuskiMap,
   SiteSetting,
   Kuski,
   LevelPack,
@@ -16,7 +16,7 @@ import {
   Country,
   Team,
 } from '#data/models';
-import * as kuskiMapData from '../data/json/kuskimap.json' assert { type: 'json' };
+// import * as kuskiMapData from '../data/json/kuskimap.json' with { type: 'json' };
 
 const api = create({
   baseURL: 'https://eol.ams3.digitaloceanspaces.com/import/',
@@ -89,7 +89,7 @@ const ints = [
   17,
 ];
 
-const addMarker = async Data => {
+/* const addMarker = async Data => {
   let newMarker = false;
   newMarker = await KuskiMap.findOne({
     where: { KuskiIndex: Data.KuskiIndex },
@@ -100,9 +100,9 @@ const addMarker = async Data => {
     await KuskiMap.create(Data);
   }
   return newMarker;
-};
+}; */
 
-export const kuskimap = () => {
+/* export const kuskimap = () => {
   return new Promise(resolve => {
     forEach(kuskiMapData.default, d => {
       const addedDate = d.DateAdded.split('/');
@@ -126,7 +126,7 @@ export const kuskimap = () => {
       });
     });
   });
-};
+}; */
 
 const EmailsFromSettings = async () => {
   const get = await SiteSetting.findAll({

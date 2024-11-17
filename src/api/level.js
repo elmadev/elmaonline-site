@@ -259,9 +259,8 @@ const getLevels = async (
       return [];
     }
 
-    const levelIndexesByFinishedBy = await getLevelIndexesByFinishedBy(
-      finishedBy,
-    );
+    const levelIndexesByFinishedBy =
+      await getLevelIndexesByFinishedBy(finishedBy);
 
     return levelIndexesByFinishedBy;
   };
@@ -272,9 +271,8 @@ const getLevels = async (
     true,
   );
 
-  const levelIndexesByFinishedBy = await getFinishedByFinishedLevels(
-    finishedBy,
-  );
+  const levelIndexesByFinishedBy =
+    await getFinishedByFinishedLevels(finishedBy);
 
   const includeFinishedByLevelIndexes = finishedBy && finished === 'true';
   const excludeFinishedByLevelIndexes = finishedBy && finished === 'false';

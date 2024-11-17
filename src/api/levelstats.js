@@ -109,19 +109,16 @@ router
     res.json(payload);
   })
   .get('/collection/:type/:value', async (req, res) => {
-
     let ids = [];
 
-    if ( req.params.type === 'ids' ) {
+    if (req.params.type === 'ids') {
       ids = req.params.value.split(',').map(Number);
     }
 
-    if ( req.params.type === 'cup' ) {
-    }
+    // if (req.params.type === 'cup') {}
 
-    if ( req.params.type === 'pack' ) {
-    }
-    
+    // if (req.params.type === 'pack') {}
+
     const stats = await Level.findAll({
       where: { LevelIndex: ids },
       attributes: ['LevelIndex', 'LevelName', 'LongName', 'Locked', 'Hidden'],
@@ -137,7 +134,7 @@ router
     const payload = {
       ids,
       stats,
-    }
+    };
 
     res.json(payload);
   });

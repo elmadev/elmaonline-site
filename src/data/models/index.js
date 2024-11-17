@@ -502,6 +502,18 @@ TimeFile.belongsTo(AllFinished, {
   as: 'TimeData',
 });
 
+TimeFile.hasOne(Time, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'Time',
+});
+
+TimeFile.hasOne(Battletime, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'Battletime',
+});
+
 SiteCupTime.belongsTo(Time, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
