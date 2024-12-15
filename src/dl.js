@@ -140,6 +140,7 @@ app.get('/level/:id', async (req, res, next) => {
     res.set({
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
+      'Access-Control-Expose-Headers': 'Content-Disposition',
     });
     readStream.pipe(res);
   } catch (e) {
