@@ -1,12 +1,16 @@
-import { TimeFile, Time, SiteSetting } from '#data/models';
+import { TimeFile, MultiTimeFile, Time, SiteSetting } from '#data/models';
 import AWS from 'aws-sdk';
 import fs from 'fs';
+import util from 'util';
 import { Op } from 'sequelize';
 import { differenceInYears } from 'date-fns';
 import { zipFiles } from '#utils/download';
 import { dbquery } from '#data/sequelize';
-import { uploadTimeFile } from '#utils/upload';
+import { uuid } from '#utils/calcs';
 import config from '../config.js';
+import { checksumFile, s3Params, putObject } from '#utils/upload';
+
+const deleteFile = util.promisify(fs.unlink);
 
 const DO_endpoint = new AWS.Endpoint('ams3.digitaloceanspaces.com');
 const DO_s3 = new AWS.S3({
@@ -188,6 +192,52 @@ export const coldStorage = async () => {
     );
   }
   return { first, last };
+};
+
+const uploadTimeFile = async (
+  fileData,
+  TimeIndex = 0,
+  BattleIndex = 0,
+  Multi = 0,
+) => {
+  const UUID = uuid();
+  let { timeFolder } = config;
+  let s3TimeFolder = 'time';
+  if (parseInt(Multi, 10) === 1) {
+    timeFolder = `multi-${timeFolder}`;
+    s3TimeFolder = 'multitime';
+  }
+  let filePath = `../events/${timeFolder}/${TimeIndex}.rec`;
+  let MD5 = null;
+  try {
+    MD5 = await checksumFile('md5', filePath);
+    const params = s3Params(
+      `${config.s3SubFolder}${s3TimeFolder}/${UUID}-${MD5}/${TimeIndex}.rec`,
+      fileData,
+    );
+    await putObject(params);
+    if (parseInt(Multi, 10) === 1) {
+      await MultiTimeFile.upsert({
+        MultiTimeIndex: TimeIndex,
+        BattleIndex,
+        UUID,
+        MD5,
+      });
+    } else {
+      await TimeFile.upsert({
+        TimeIndex,
+        BattleIndex,
+        UUID,
+        MD5,
+      });
+    }
+    await deleteFile(filePath);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error', TimeIndex);
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
 };
 
 const uploadTimeFileIterator = async (fileName, multi = 0) => {

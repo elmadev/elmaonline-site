@@ -357,7 +357,7 @@ export function uploadCupReplay(
   });
 }
 
-const putObject = params => {
+export const putObject = params => {
   return new Promise((resolve, reject) => {
     s3.putObject(params, err => {
       if (err) {
