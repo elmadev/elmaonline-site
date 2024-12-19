@@ -94,7 +94,7 @@ const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
     include: {
       model: Team,
       as: 'TeamData',
-      attributes: ['Team', 'TeamIndex', 'Locked'],
+      attributes: ['Team', 'TeamIndex', 'Locked', 'Logo'],
     },
     attributes: [
       'KuskiIndex',
