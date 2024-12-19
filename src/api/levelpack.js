@@ -393,6 +393,7 @@ const mapKuskiData = times => {
       TeamData: {
         TeamIndex: t.TeamIndex,
         Team: t.Team,
+        Logo: t.Logo,
       },
     },
   }));
@@ -432,7 +433,7 @@ const getRecords = async (
   }
 
   const sql = `
-    SELECT bt.*, k.KuskiIndex, k.Kuski, k.Country, t.TeamIndex, t.Team
+    SELECT bt.*, k.KuskiIndex, k.Kuski, k.Country, t.TeamIndex, t.Team, t.Logo
     FROM (
         SELECT time.*, ROW_NUMBER() OVER (PARTITION BY LevelIndex ORDER BY TIME ASC, TimeIndex ASC) posn
         FROM ${isLegacy ? 'legacybesttime' : 'besttime'} time${join}

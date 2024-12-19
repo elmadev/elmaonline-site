@@ -136,6 +136,28 @@ const UpdateLocked = async (TeamIndex, Locked) => {
   await Team.update({ Locked }, { where: { TeamIndex } });
 };
 
+const LogoUpdate = async (LogoUrl, TeamIndex) => {
+  let message = '';
+  let error = false;
+  if (!TeamIndex) {
+    message = 'You need to be in a team to update the logo.';
+    error = true;
+  } else if (LogoUrl.length > 155) {
+    message = 'Logo filename is too long. Maximum number of characters is 155.';
+    error = true;
+  } else {
+    const split = LogoUrl.split('/u/');
+    if (split[0] === LogoUrl) {
+      message = 'Invalid logo URL.';
+      error = true;
+    }
+    const url = `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}files/${split[1]}`;
+    await Team.update({ Logo: url }, { where: { TeamIndex } });
+    message = 'Logo has been updated.';
+  }
+  return { message, error };
+};
+
 const Player = async KuskiIndex => {
   const data = await Kuski.findOne({
     where: { KuskiIndex },
@@ -152,7 +174,7 @@ const Player = async KuskiIndex => {
       {
         model: Team,
         as: 'TeamData',
-        attributes: ['Team', 'Locked'],
+        attributes: ['Team', 'Locked', 'Logo'],
       },
     ],
   });
@@ -282,6 +304,12 @@ router
           await UpdateTeam(TeamIndex, auth.userid);
           message = `Team updated to ${req.body.Value[0]}`;
         }
+        // logo
+      } else if (req.body.Field === 'Logo') {
+        const player = await Player(auth.userid);
+        const updateLogo = await LogoUpdate(req.body.Value, player.TeamIndex);
+        error = updateLogo.error;
+        message = updateLogo.message;
         // email
       } else if (req.body.Field === 'Email') {
         if (!validateEmail(req.body.Value[0])) {
