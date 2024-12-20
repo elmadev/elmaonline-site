@@ -20,6 +20,11 @@ const Team = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Logo: {
+      type: DataType.STRING(255),
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['Team'] }],
