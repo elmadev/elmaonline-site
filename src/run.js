@@ -101,9 +101,9 @@ app.get('/legacytimes/:strategy', async (req, res) => {
 });
 
 // recaps
-app.get('/recap/:type', async (req, res) => {
+app.get('/recap/:type/:year', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
-    await recapGenerate(req.params.type, 2023);
+    await recapGenerate(req.params.type, req.params.year);
     res.sendStatus(200);
   } else {
     res.status(401);
