@@ -24,8 +24,8 @@ export const pointsSystem2 = [
   17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
 ];
 
-const getPoints = (pos, pointSystem, double) => {
-  const multiplier = double ? 2 : 1;
+const getPoints = (pos, pointSystem, eventMultiplier) => {
+  const multiplier = eventMultiplier ? eventMultiplier : 1;
   let pts = points;
   if (pointSystem === 1) {
     pts = pointsSystem2;
@@ -90,7 +90,7 @@ export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
           combinedPoints += getPoints(
             drawPos,
             cupGroup?.PointSystem,
-            event.Double,
+            event.Multiplier,
           );
         }
         const drawPoints = combinedPoints / draws.length;
@@ -101,7 +101,7 @@ export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
         filteredResults[pos].Points = getPoints(
           pos,
           cupGroup?.PointSystem,
-          event.Double,
+          event.Multiplier,
         );
         filteredResults[pos].Position = pos + 1;
       }

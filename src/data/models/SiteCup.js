@@ -92,7 +92,7 @@ const SiteCup = Model.define(
       allowNull: true,
       defaultValue: null,
     },
-    Double: {
+    Multiplier: {
       type: DataType.INTEGER,
       allowNull: false,
       defaultValue: 0,
