@@ -24,20 +24,21 @@ export const pointsSystem2 = [
   17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
 ];
 
-const getPoints = (pos, pointSystem) => {
+const getPoints = (pos, pointSystem, double) => {
+  const multiplier = double ? 2 : 1;
   let pts = points;
   if (pointSystem === 1) {
     pts = pointsSystem2;
   }
   if (pts[pos]) {
-    return pts[pos] * 10;
+    return pts[pos] * 10 * multiplier;
   }
   if (pointSystem === 1) {
     if (pos > 49 && pos < 100) {
-      return 109 - pos;
+      return 109 - pos * multiplier;
     }
   }
-  return 10;
+  return 10 * multiplier;
 };
 
 export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
@@ -86,14 +87,22 @@ export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
           if (!firstDrawPos) {
             firstDrawPos = drawPos + 1;
           }
-          combinedPoints += getPoints(drawPos, cupGroup?.PointSystem);
+          combinedPoints += getPoints(
+            drawPos,
+            cupGroup?.PointSystem,
+            event.Double,
+          );
         }
         const drawPoints = combinedPoints / draws.length;
         filteredResults[pos].Points = drawPoints;
         filteredResults[pos].Position = firstDrawPos;
       } else {
         // otherwise assign points normally
-        filteredResults[pos].Points = getPoints(pos, cupGroup?.PointSystem);
+        filteredResults[pos].Points = getPoints(
+          pos,
+          cupGroup?.PointSystem,
+          event.Double,
+        );
         filteredResults[pos].Position = pos + 1;
       }
     });
