@@ -27,6 +27,22 @@ const router = express.Router();
 const getCups = async (ongoing = false) => {
   const query = {
     where: { Hidden: 0 },
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            '(SELECT MIN(StartTime) FROM sitecup WHERE sitecup.CupGroupIndex = sitecupgroup.CupGroupIndex)',
+          ),
+          'StartTime',
+        ],
+        [
+          sequelize.literal(
+            '(SELECT MAX(EndTime) FROM sitecup WHERE sitecup.CupGroupIndex = sitecupgroup.CupGroupIndex)',
+          ),
+          'EndTime',
+        ],
+      ],
+    },
   };
   if (ongoing) {
     query.where.Finished = 0;
@@ -62,7 +78,11 @@ const getCups = async (ongoing = false) => {
     ];
   }
   const data = await SiteCupGroup.findAll(query);
-  return data;
+  return data.map(cup => ({
+    ...cup.dataValues,
+    StartTime: moment(cup.dataValues.StartTime).format('X'),
+    EndTime: moment(cup.dataValues.EndTime).format('X'),
+  }));
 };
 
 const getCupById = async CupGroupIndex => {
