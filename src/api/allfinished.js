@@ -236,7 +236,10 @@ const getLeaderHistoryForLevel = async (
   BattleIndex,
   from,
   to,
+  UserId,
 ) => {
+  const personal = UserId === parseInt(KuskiIndex, 10);
+
   // Check that level isn't locked or hidden
   const lev = await levelInfo(LevelIndex);
   if (lev.Locked || lev.Hidden) {
@@ -285,20 +288,29 @@ const getLeaderHistoryForLevel = async (
   });
 
   // Populate leader history with extra data
+  const include = [
+    {
+      model: Kuski,
+      as: 'KuskiData',
+      attributes: ['Kuski'],
+    },
+  ];
+
+  if (personal) {
+    include.push({
+      model: TimeFile,
+      as: 'TimeFileData',
+    });
+  }
+
   const leaderHistoryWithData = await AllFinished.findAll({
-    attributes: ['TimeIndex', 'Time', 'Driven'],
+    attributes: personal ? undefined : ['TimeIndex', 'Time', 'Driven'],
     where: {
       TimeIndex: {
         [Op.in]: leaderHistory.map(r => r.TimeIndex),
       },
     },
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['Kuski'],
-      },
-    ],
+    include,
   });
 
   return leaderHistoryWithData;
@@ -336,12 +348,18 @@ router
     res.json(data);
   })
   .get('/leaderhistory/:LevelIndex', async (req, res) => {
+    const auth = authContext(req);
+    let UserId = 0;
+    if (auth.auth) {
+      UserId = auth.userid;
+    }
     const data = await getLeaderHistoryForLevel(
       req.params.LevelIndex,
       req.query.KuskiIndex,
       req.query.BattleIndex,
       req.query.from,
       req.query.to,
+      UserId,
     );
     res.json(data);
   })
