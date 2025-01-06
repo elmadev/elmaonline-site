@@ -73,11 +73,12 @@ app.get('/shirt/:id', async (req, res, next) => {
   }
 });
 
-app.get('/cupreplay/:id/:filename', async (req, res, next) => {
+app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
   try {
     const { file, filename, MD5, UUID, TimeIndex } = await getReplayByCupTimeId(
       req.params.id,
       req.params.filename,
+      req.params.code,
     );
     if (MD5 && UUID && TimeIndex) {
       res.set({
@@ -102,28 +103,6 @@ app.get('/cupreplay/:id/:filename', async (req, res, next) => {
       return;
     }
     next({ status: 404, msg: 'file not found' });
-  } catch (e) {
-    next({
-      status: 403,
-      msg: e.message,
-    });
-  }
-});
-
-app.get('/cupreplay/:id/:filename/:code', async (req, res, next) => {
-  try {
-    const { file, filename } = await getReplayByCupTimeId(
-      req.params.id,
-      req.params.filename,
-      req.params.code,
-    );
-    const readStream = new stream.PassThrough();
-    readStream.end(file);
-    res.set({
-      'Content-disposition': `attachment; filename=${filename}`,
-      'Content-Type': 'application/octet-stream',
-    });
-    readStream.pipe(res);
   } catch (e) {
     next({
       status: 403,

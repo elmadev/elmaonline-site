@@ -92,6 +92,11 @@ const SiteCup = Model.define(
       allowNull: true,
       defaultValue: null,
     },
+    Multiplier: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['CupGroupIndex, LevelIndex, Designer'] }],
