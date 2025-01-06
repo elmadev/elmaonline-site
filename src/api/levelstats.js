@@ -120,7 +120,7 @@ router
     // if (req.params.type === 'pack') {}
 
     const stats = await Level.findAll({
-      where: { LevelIndex: ids },
+      where: { LevelIndex: ids, Hidden: 0 },
       attributes: ['LevelIndex', 'LevelName', 'LongName', 'Locked', 'Hidden'],
       include: [
         {
