@@ -89,6 +89,8 @@ const getHighlights = async () => {
 };
 
 export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
+  const personal = LoggedIn === parseInt(KuskiIndex, 10);
+
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked) return [];
   if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
@@ -96,6 +98,22 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   if (lev.Legacy) {
     timeLimit = 10000;
   }
+
+  let include = [];
+  if (personal) {
+    include = [
+      {
+        model: TimeFile,
+        as: 'TimeFileData',
+      },
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ];
+  }
+
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
     order: [
@@ -104,12 +122,25 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
     ],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
     limit: timeLimit > 10000 ? 10000 : timeLimit,
+    include,
   });
   if (lev.Legacy) {
+    let includeLegacy = [];
+    if (personal) {
+      includeLegacy = [
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski'],
+        },
+      ];
+    }
+
     const legacyTimes = await LegacyFinished.findAll({
       where: { LevelIndex, KuskiIndex },
       attributes: ['Time', 'Driven', 'Source'],
       limit: timeLimit > 10000 ? 10000 : timeLimit,
+      include: includeLegacy,
     });
     return [...times, ...legacyTimes]
       .sort((a, b) => a.Time - b.Time)
