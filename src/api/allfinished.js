@@ -149,6 +149,26 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   return times;
 };
 
+export const getTopAppleRuns = async (LevelIndex, KuskiIndex, limit) => {
+  return await Time.findAll({
+    where: {
+      LevelIndex,
+      KuskiIndex,
+      Finished: { [Op.not]: 'F' },
+      Apples: { [Op.gt]: 0 },
+    },
+    attributes: ['Apples', 'Driven'],
+    order: [['Apples', 'DESC']],
+    limit: parseInt(limit, 10),
+    include: [
+      {
+        model: TimeFile,
+        as: 'TimeFileData',
+      },
+    ],
+  });
+};
+
 const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
   if (UserId !== parseInt(KuskiIndex, 10)) {
     return null;
@@ -361,6 +381,15 @@ router
       req.query.from,
       req.query.to,
       auth.userid,
+    );
+    res.json(data);
+  })
+  .get('/appleruns/:LevelIndex/:limit', async (req, res) => {
+    const auth = authContext(req);
+    const data = await getTopAppleRuns(
+      req.params.LevelIndex,
+      auth.userid,
+      req.params.limit,
     );
     res.json(data);
   })
