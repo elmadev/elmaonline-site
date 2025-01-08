@@ -89,6 +89,8 @@ const getHighlights = async () => {
 };
 
 export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
+  const personal = LoggedIn === parseInt(KuskiIndex, 10);
+
   const lev = await levelInfo(LevelIndex);
   if (!lev || lev.Locked) return [];
   if (lev.Hidden && parseInt(KuskiIndex, 10) !== LoggedIn) return [];
@@ -96,6 +98,22 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
   if (lev.Legacy) {
     timeLimit = 10000;
   }
+
+  let include = [];
+  if (personal) {
+    include = [
+      {
+        model: TimeFile,
+        as: 'TimeFileData',
+      },
+      {
+        model: Kuski,
+        as: 'KuskiData',
+        attributes: ['Kuski'],
+      },
+    ];
+  }
+
   const times = await AllFinished.findAll({
     where: { LevelIndex, KuskiIndex },
     order: [
@@ -104,18 +122,51 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
     ],
     attributes: ['TimeIndex', 'Time', 'Apples', 'Driven'],
     limit: timeLimit > 10000 ? 10000 : timeLimit,
+    include,
   });
   if (lev.Legacy) {
+    let includeLegacy = [];
+    if (personal) {
+      includeLegacy = [
+        {
+          model: Kuski,
+          as: 'KuskiData',
+          attributes: ['Kuski'],
+        },
+      ];
+    }
+
     const legacyTimes = await LegacyFinished.findAll({
       where: { LevelIndex, KuskiIndex },
       attributes: ['Time', 'Driven', 'Source'],
       limit: timeLimit > 10000 ? 10000 : timeLimit,
+      include: includeLegacy,
     });
     return [...times, ...legacyTimes]
       .sort((a, b) => a.Time - b.Time)
       .slice(0, parseInt(limit, 10));
   }
   return times;
+};
+
+export const getTopAppleRuns = async (LevelIndex, KuskiIndex, limit) => {
+  return await Time.findAll({
+    where: {
+      LevelIndex,
+      KuskiIndex,
+      Finished: { [Op.not]: 'F' },
+      Apples: { [Op.gt]: 0 },
+    },
+    attributes: ['Apples', 'Driven'],
+    order: [['Apples', 'DESC']],
+    limit: parseInt(limit, 10),
+    include: [
+      {
+        model: TimeFile,
+        as: 'TimeFileData',
+      },
+    ],
+  });
 };
 
 const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
@@ -330,6 +381,15 @@ router
       req.query.from,
       req.query.to,
       auth.userid,
+    );
+    res.json(data);
+  })
+  .get('/appleruns/:LevelIndex/:limit', async (req, res) => {
+    const auth = authContext(req);
+    const data = await getTopAppleRuns(
+      req.params.LevelIndex,
+      auth.userid,
+      req.params.limit,
     );
     res.json(data);
   })
