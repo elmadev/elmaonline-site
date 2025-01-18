@@ -2,7 +2,7 @@ import express from 'express';
 import { authContext } from '#utils/auth';
 import sequelize, { Op } from 'sequelize';
 import { orderBy, invert, groupBy, omit, mapValues } from 'lodash-es';
-import { Crippled, Kuski, Level, Time } from '#data/models';
+import { Crippled, Kuski, Level, Time, TimeFile } from '#data/models';
 import { getCrippledTypes } from '#data/models/Crippled';
 import { query } from '#utils/sequelize';
 import { getPackByName } from './levelpack.js';
@@ -132,9 +132,29 @@ const getTimesEtc = async (LevelIndex, CrippledType) => {
   return [times, parseBestTimes(times), parseLeaderHistory(times)];
 };
 
-const getKuskiTimes = async (LevelIndex, KuskiIndex, CrippledType) => {
+const getKuskiTimes = async (
+  LevelIndex,
+  KuskiIndex,
+  CrippledType,
+  personal,
+) => {
   if (!LevelIndex || !KuskiIndex || CrippledType === null) {
     return [[], []];
+  }
+
+  const include = [
+    {
+      model: Kuski,
+      as: 'KuskiData',
+      attributes: ['Kuski', 'Country'],
+    },
+  ];
+
+  if (personal) {
+    include.push({
+      model: TimeFile,
+      as: 'TimeFileData',
+    });
   }
 
   // very fast when KuskiIndex provided
@@ -145,13 +165,7 @@ const getKuskiTimes = async (LevelIndex, KuskiIndex, CrippledType) => {
       KuskiIndex,
       CrippledType,
     },
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-        attributes: ['Kuski', 'Country'],
-      },
-    ],
+    include,
     order: [
       ['Time', 'ASC'],
       ['TimeIndex', 'ASC'],
@@ -300,13 +314,15 @@ router
       }
 
       let KuskiIndex;
+      const auth = authContext(req);
 
       if (+req.params.KuskiIndex > 0) {
         KuskiIndex = +req.params.KuskiIndex;
       } else {
-        const auth = authContext(req);
         KuskiIndex = +auth.userid;
       }
+
+      const personal = +auth.userid === KuskiIndex;
 
       if (!KuskiIndex) {
         res.status(400).send('KuskiIndex not valid, or not logged in.');
@@ -317,6 +333,7 @@ router
         +req.params.LevelIndex,
         KuskiIndex,
         getCrippledTypeInt(req.params.cripple),
+        personal,
       );
 
       res.json({

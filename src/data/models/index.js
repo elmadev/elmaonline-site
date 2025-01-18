@@ -496,6 +496,12 @@ Crippled.belongsTo(Level, {
   as: 'LevelData',
 });
 
+Crippled.hasOne(TimeFile, {
+  foreignKey: 'TimeIndex',
+  sourceKey: 'TimeIndex',
+  as: 'TimeFileData',
+});
+
 TimeFile.belongsTo(AllFinished, {
   foreignKey: 'TimeIndex',
   targetKey: 'TimeIndex',
