@@ -1,6 +1,8 @@
 import express from 'express';
 import { authContext } from '#utils/auth';
 import { LGR, Kuski } from '#data/models';
+import { Op } from 'sequelize';
+import { like, searchLimit, searchOffset } from '#utils/database';
 import moment from 'moment';
 import stream from 'stream';
 import elmajs from 'elmajs';
@@ -21,12 +23,26 @@ const AddLGR = async lgr => {
   return NewLGR;
 };
 
-export const getLGRByName = async LGRName => {
+const getLGRByName = async (LGRName, include_file) => {
+  const attributes = include_file ? {} : { exclude: ['LGRData'] };
   const LGRInfo = await LGR.findOne({
     where: { LGRName: LGRName.toLowerCase() },
     include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    attributes: attributes,
   });
   return LGRInfo;
+};
+
+const LGRSearch = async (query, offset) => {
+  const lgrs = await LGR.findAll({
+    where: { LGRName: { [Op.like]: `${like(query)}%` } },
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    attributes: { exclude: ['LGRData'] },
+    limit: searchLimit(offset),
+    order: [['LGRName', 'ASC']],
+    offset: searchOffset(offset),
+  });
+  return lgrs;
 };
 
 // Add a new LGR
@@ -37,7 +53,7 @@ router.post('/add/:LGRName', async (req, res) => {
     return;
   }
   const LGRName = req.params.LGRName;
-  if (await getLGRByName(LGRName)) {
+  if (await getLGRByName(LGRName, false)) {
     res.status(403).json({ error: 'LGR name already exists.' });
     return;
   }
@@ -58,7 +74,7 @@ router.post('/add/:LGRName', async (req, res) => {
 // Get the LGR file
 router.get('/get/:LGRName', async (req, res, next) => {
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName);
+  const lgr = await getLGRByName(LGRName, true);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -77,15 +93,19 @@ router.get('/get/:LGRName', async (req, res, next) => {
   }
 });
 
+router.get('/search/:query/:offset', async (req, res) => {
+  const players = await LGRSearch(req.params.query, req.params.offset);
+  res.json(players);
+})
+
 // Get the LGR metadata
 router.get('/info/:LGRName', async (req, res) => {
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName);
+  const lgr = await getLGRByName(LGRName, false);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
   }
-  lgr.LGRData = undefined;
   res.json(lgr);
 });
 
@@ -97,7 +117,7 @@ router.post('/info/:LGRName', async (req, res) => {
     return;
   }
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName);
+  const lgr = await getLGRByName(LGRName, false);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -121,7 +141,7 @@ router.delete('/del/:LGRName', async (req, res) => {
     return;
   }
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName);
+  const lgr = await getLGRByName(LGRName, false);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
