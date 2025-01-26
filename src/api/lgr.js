@@ -33,6 +33,14 @@ const getLGRByName = async (LGRName, include_file) => {
   return LGRInfo;
 };
 
+const getAllLGRs = async () => {
+  const lgrs = await LGR.findAll({
+    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
+    attributes: { exclude: ['LGRData'] },
+  });
+  return lgrs;
+};
+
 const LGRSearch = async (query, offset) => {
   const lgrs = await LGR.findAll({
     where: { LGRName: { [Op.like]: `${like(query)}%` } },
@@ -93,10 +101,17 @@ router.get('/get/:LGRName', async (req, res, next) => {
   }
 });
 
+// Search for lgrs
 router.get('/search/:query/:offset', async (req, res) => {
-  const players = await LGRSearch(req.params.query, req.params.offset);
-  res.json(players);
-})
+  const lgrs = await LGRSearch(req.params.query, req.params.offset);
+  res.json(lgrs);
+});
+
+// Get all lgrs
+router.get('/all', async (req, res) => {
+  const lgrs = await getAllLGRs();
+  res.json(lgrs);
+});
 
 // Get the LGR metadata
 router.get('/info/:LGRName', async (req, res) => {
