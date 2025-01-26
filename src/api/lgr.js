@@ -64,7 +64,7 @@ router.get('/get/:LGRName', async (req, res, next) => {
     return;
   }
   try {
-    lgr.update({ Downloads: lgr.Downloads + 1 });
+    await lgr.update({ Downloads: lgr.Downloads + 1 });
     const readStream = new stream.PassThrough();
     readStream.end(lgr.LGRData);
     res.set({
@@ -117,7 +117,7 @@ router.post('/info/:LGRName', async (req, res) => {
 router.delete('/del/:LGRName', async (req, res) => {
   const auth = authContext(req);
   if (!auth.auth) {
-    res.sendStatus(401);
+    res.status(401).json({ error: 'Access denied.' });
     return;
   }
   const LGRName = req.params.LGRName;
@@ -133,15 +133,5 @@ router.delete('/del/:LGRName', async (req, res) => {
   await lgr.destroy();
   res.status(200).json({ success: 1 });
 });
-
-/*
-// Testing function, to remove TODO
-router.get('/sync', async (req, res) => {
-  //await LGR.sync();
-  await LGR.sync({ alter: true });
-  //await LGR.sync({force: true});
-  res.json('Success');
-});
-*/
 
 export default router;
