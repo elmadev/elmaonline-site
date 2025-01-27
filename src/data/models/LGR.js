@@ -34,8 +34,12 @@ const LGR = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
-    LGRData: {
-      type: DataType.BLOB('medium'),
+    FileLink: {
+      type: DataType.STRING(255),
+      allowNull: false,
+    },
+    PreviewLink: {
+      type: DataType.STRING(255),
       allowNull: false,
     },
     Added: {

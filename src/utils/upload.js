@@ -528,3 +528,60 @@ export const shareTimeFile = (data, RecFileName) => {
     });
   });
 };
+
+export const lgrUrl = urlEnd => {
+  const url = `${config.s3SubFolder}lgr/${urlEnd}`;
+  if (config.accessKeyId !== 'local') {
+    return url;
+  }
+  const localUrl = `.${config.publicFolder}/temp/${url.replaceAll('/', '_')}`;
+  return localUrl;
+};
+
+export const uploadLGRS3 = async (fileContent, filename) => {
+  const fileUuid = uuid();
+  const urlEnd = `${fileUuid}/${filename}`;
+  const url = lgrUrl(urlEnd);
+  const params = s3Params(url, fileContent.data);
+  if (MIMETYPES.indexOf(fileContent.mimetype) > -1) {
+    params.ContentType = fileContent.mimetype;
+  }
+  try {
+    // for local testing without s3 access
+    if (config.accessKeyId === 'local') {
+      await writeFile(url, fileContent.data, 'binary');
+    } else {
+      await putObject(params);
+    }
+  } catch (error) {
+    return { error, file: filename, size: fileContent.size };
+  }
+  return {
+    error: null,
+    url: urlEnd,
+  };
+};
+
+export const deleteLGRS3 = async urlEnd => {
+  const url = lgrUrl(urlEnd);
+  // for local testing without s3 access
+  if (config.accessKeyId === 'local') {
+    try {
+      await deleteFile(url);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        return error;
+      }
+    }
+  } else {
+    await s3.deleteObject(
+      {
+        Bucket: 'eol',
+        Key: `${config.s3SubFolder}lgr/${urlEnd}`,
+      },
+      err => {
+        return err;
+      },
+    );
+  }
+};

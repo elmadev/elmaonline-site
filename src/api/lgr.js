@@ -4,23 +4,56 @@ import { LGR, Kuski } from '#data/models';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from '#utils/database';
 import moment from 'moment';
-import stream from 'stream';
 import elmajs from 'elmajs';
+import request from 'request';
+import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
+import config from '../config.js';
+import path from 'path';
 
 const router = express.Router();
 
-const AddLGR = async lgr => {
+const CreateLGR = async (req, auth) => {
+  const lowerFilename = req.body.filename.toLowerCase();
+  const lgrS3 = await uploadLGRS3(req.files.lgr, `${lowerFilename}.lgr`);
+  if (lgrS3.error) {
+    return lgrS3;
+  }
+  const previewS3 = await uploadLGRS3(
+    req.files.preview,
+    `${lowerFilename}_${req.files.preview.name}`,
+  );
+  if (previewS3.error) {
+    await deleteLGRS3(lgrS3.url);
+    return previewS3;
+  }
+  const lgr = {
+    FileLink: lgrS3.url,
+    PreviewLink: previewS3.url,
+    LGRName: lowerFilename,
+    KuskiIndex: auth.userid,
+    LGRDesc: req.body.description,
+    Added: moment().format('YYYY-MM-DD HH:mm:ss'),
+  };
+  const NewLGR = await LGR.create(lgr);
+  if (NewLGR.error) {
+    await deleteLGRS3(lgrS3.url);
+    await deleteLGRS3(previewS3.url);
+  }
+  return NewLGR;
+};
+
+const ValidateLGR = async lgrBuffer => {
   try {
-    const lgr_parsed = elmajs.LGR.from(lgr.LGRData);
+    const lgr_parsed = elmajs.LGR.from(lgrBuffer);
     if (!lgr_parsed.pictureList.some(picture => picture.name === 'zz883000')) {
       return { error: 'LGR file must be fancyboosted.' };
     }
-  } catch {
-    // Failed to open file - invalid LGR file
+    // TODO, palette status tag
+  } catch (error) {
+    // If elmajs can't open the file, I guess it must be invalid
     return { error: 'Invalid LGR file.' };
   }
-  const NewLGR = await LGR.create(lgr);
-  return NewLGR;
+  return { ok: true };
 };
 
 const getLGRByName = async (LGRName, include_file) => {
@@ -54,33 +87,32 @@ const LGRSearch = async (query, offset) => {
 };
 
 // Add a new LGR
-router.post('/add/:LGRName', async (req, res) => {
+router.post('/add', async (req, res) => {
   const auth = authContext(req);
   if (!auth.auth) {
     res.status(401).json({ error: 'Access denied.' });
     return;
   }
-  const LGRName = req.params.LGRName;
+  const LGRName = req.body.filename;
   if (await getLGRByName(LGRName, false)) {
     res.status(403).json({ error: 'LGR name already exists.' });
     return;
   }
-  const response = await AddLGR({
-    LGRData: req.body,
-    LGRName,
-    KuskiIndex: auth.userid,
-    Added: moment().format('YYYY-MM-DD HH:mm:ss'),
-  });
+  const lgr_status = await ValidateLGR(req.files.lgr.data);
+  if (lgr_status.error) {
+    res.status(403).json({ error: lgr_status.error });
+    return;
+  }
+  const response = await CreateLGR(req, auth);
   if (response.error) {
     res.status(403).json({ error: response.error });
     return;
   }
-  delete response.dataValues.LGRData;
   res.json(response);
 });
 
-// Get the LGR file
-router.get('/get/:LGRName', async (req, res, next) => {
+// pipes a .lgr or preview.img file
+const getLGRFile = async (req, res, next, key) => {
   const LGRName = req.params.LGRName;
   const lgr = await getLGRByName(LGRName, true);
   if (!lgr) {
@@ -88,17 +120,36 @@ router.get('/get/:LGRName', async (req, res, next) => {
     return;
   }
   try {
-    await lgr.update({ Downloads: lgr.Downloads + 1 });
-    const readStream = new stream.PassThrough();
-    readStream.end(lgr.LGRData);
+    const link = lgr[key];
+    // cannot use relative path in dev environment - convert to full path
+    const url =
+      config.accessKeyId !== 'local'
+        ? lgrUrl(lgr.FileLink)
+        : `http://localhost:3003/${lgrUrl(link).slice(9)}`;
+    // .lgr for lgr files, or else .imgext for preview images
+    const filename =
+      key === 'FileLink'
+        ? `${lgr.LGRName}.lgr`
+        : `${lgr.LGRName}${path.extname(url)}`;
     res.set({
-      'Content-disposition': `attachment; filename=${lgr.LGRName}.lgr`,
+      'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
     });
-    readStream.pipe(res);
+    request.get(url).pipe(res);
+    if (key === 'FileLink') {
+      lgr.update({ Downloads: lgr.Downloads + 1 });
+    }
   } catch (e) {
     next({ msg: e.message, status: 422 });
   }
+};
+// Get the LGR file
+router.get('/get/:LGRName', async (req, res, next) => {
+  await getLGRFile(req, res, next, 'FileLink');
+});
+// Get the LGR preview image
+router.get('/preview/:LGRName', async (req, res, next) => {
+  await getLGRFile(req, res, next, 'PreviewLink');
 });
 
 // Search for lgrs
@@ -124,7 +175,7 @@ router.get('/info/:LGRName', async (req, res) => {
   res.json(lgr);
 });
 
-// Update the LGR info
+// Update the LGR info - TODO needs to be updated
 router.post('/info/:LGRName', async (req, res) => {
   const auth = authContext(req);
   if (!auth.auth) {
@@ -163,6 +214,16 @@ router.delete('/del/:LGRName', async (req, res) => {
   }
   if (!(lgr.KuskiIndex === auth.userid || auth.mod)) {
     res.status(401).json({ error: 'This is not your LGR.' });
+    return;
+  }
+  const errorFile = await deleteLGRS3(lgr.FileLink);
+  if (errorFile) {
+    res.status(500).json({ error: 'Internal server error.' });
+    return;
+  }
+  const errorPreview = await deleteLGRS3(lgr.PreviewLink);
+  if (errorPreview) {
+    res.status(500).json({ error: 'Internal server error.' });
     return;
   }
   await lgr.destroy();
