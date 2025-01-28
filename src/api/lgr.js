@@ -13,6 +13,12 @@ import path from 'path';
 const router = express.Router();
 
 const CreateLGR = async (req, auth) => {
+  if (!req.files.lgr || !req.files.preview) {
+    return {
+      error:
+        'Both an lgr and an image file must be provided to create new lgr!',
+    };
+  }
   const lowerFilename = req.body.filename.toLowerCase();
   const lgrS3 = await uploadLGRS3(req.files.lgr, `${lowerFilename}.lgr`);
   if (lgrS3.error) {
