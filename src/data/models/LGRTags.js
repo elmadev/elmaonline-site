@@ -1,7 +1,7 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
 
-const LevelTags = Model.define('lgr_tags', {
+const LGRTags = Model.define('lgr_tags', {
   TagIndex: {
     type: DataType.INTEGER,
     allowNull: false,
@@ -14,4 +14,4 @@ const LevelTags = Model.define('lgr_tags', {
   },
 });
 
-export default LevelTags;
+export default LGRTags;
