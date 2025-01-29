@@ -1,6 +1,6 @@
 import express from 'express';
 import { authContext } from '#utils/auth';
-import { LGR, Kuski } from '#data/models';
+import { LGR, Kuski, Tag } from '#data/models';
 import { Op } from 'sequelize';
 import { like, searchLimit, searchOffset } from '#utils/database';
 import moment from 'moment';
@@ -9,10 +9,11 @@ import request from 'request';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import config from '../config.js';
 import path from 'path';
+import { intersection } from 'lodash-es';
 
 const router = express.Router();
 
-const CreateLGR = async (req, auth) => {
+const CreateLGR = async (req, auth, usesDefaultPalette) => {
   if (!req.files.lgr || !req.files.preview) {
     return {
       error:
@@ -29,7 +30,7 @@ const CreateLGR = async (req, auth) => {
     `${lowerFilename}_${req.files.preview.name}`,
   );
   if (previewS3.error) {
-    await deleteLGRS3(lgrS3.url);
+    deleteLGRS3(lgrS3.url);
     return previewS3;
   }
   const lgr = {
@@ -42,9 +43,26 @@ const CreateLGR = async (req, auth) => {
   };
   const NewLGR = await LGR.create(lgr);
   if (NewLGR.error) {
-    await deleteLGRS3(lgrS3.url);
-    await deleteLGRS3(previewS3.url);
+    deleteLGRS3(lgrS3.url);
+    deleteLGRS3(previewS3.url);
+    return NewLGR;
   }
+
+  const tagIDs = JSON.parse(req.body.tags);
+  const allTags = await Tag.findAll({
+    where: { Type: 'lgr' },
+  });
+  const allValidTagIDs = allTags
+    .filter(tag => tag.Hidden === 0)
+    .map(tag => tag.TagIndex);
+  const validatedTagIDs = intersection(tagIDs, allValidTagIDs);
+  const altPaletteTagID = allTags.find(
+    tag => tag.Name === 'Alt Palette',
+  ).TagIndex;
+  if (!usesDefaultPalette) {
+    validatedTagIDs.push(altPaletteTagID);
+  }
+  await NewLGR.setTags(validatedTagIDs);
   return NewLGR;
 };
 
@@ -54,28 +72,56 @@ const ValidateLGR = async lgrBuffer => {
     if (!lgr_parsed.pictureList.some(picture => picture.name === 'zz883000')) {
       return { error: 'LGR file must be fancyboosted.' };
     }
-    // TODO, palette status tag
+    return { usesDefaultPalette: false }; //lgr_parsed.paletteIsDefault() };     // TODO, palette status tag
   } catch (error) {
     // If elmajs can't open the file, I guess it must be invalid
     return { error: 'Invalid LGR file.' };
   }
-  return { ok: true };
 };
 
-const getLGRByName = async (LGRName, include_file) => {
-  const attributes = include_file ? {} : { exclude: ['LGRData'] };
+const deleteLGR = async lgr => {
+  const errorFile = await deleteLGRS3(lgr.FileLink);
+  if (errorFile) {
+    return { error: 'Internal server error.' };
+  }
+  const errorPreview = await deleteLGRS3(lgr.PreviewLink);
+  if (errorPreview) {
+    return { error: 'Internal server error.' };
+  }
+  await lgr.setTags([]);
+  await lgr.destroy();
+  return {};
+};
+
+const getLGRByName = async LGRName => {
   const LGRInfo = await LGR.findOne({
     where: { LGRName: LGRName.toLowerCase() },
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
-    attributes: attributes,
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return LGRInfo;
 };
 
 const getAllLGRs = async () => {
   const lgrs = await LGR.findAll({
-    include: [{ model: Kuski, as: 'KuskiData', attributes: ['Kuski'] }],
-    attributes: { exclude: ['LGRData'] },
+    include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],
   });
   return lgrs;
 };
@@ -100,7 +146,7 @@ router.post('/add', async (req, res) => {
     return;
   }
   const LGRName = req.body.filename;
-  if (await getLGRByName(LGRName, false)) {
+  if (await getLGRByName(LGRName)) {
     res.status(403).json({ error: 'LGR name already exists.' });
     return;
   }
@@ -109,7 +155,7 @@ router.post('/add', async (req, res) => {
     res.status(403).json({ error: lgr_status.error });
     return;
   }
-  const response = await CreateLGR(req, auth);
+  const response = await CreateLGR(req, auth, lgr_status.usesDefaultPalette);
   if (response.error) {
     res.status(403).json({ error: response.error });
     return;
@@ -120,7 +166,7 @@ router.post('/add', async (req, res) => {
 // pipes a .lgr or preview.img file
 const getLGRFile = async (req, res, next, key) => {
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName, true);
+  const lgr = await getLGRByName(LGRName);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -164,16 +210,14 @@ router.get('/search/:query/:offset', async (req, res) => {
   res.json(lgrs);
 });
 
-// Get all lgrs
-router.get('/all', async (req, res) => {
+// Get the LGR metadata
+router.get('/info', async (req, res) => {
   const lgrs = await getAllLGRs();
   res.json(lgrs);
 });
-
-// Get the LGR metadata
 router.get('/info/:LGRName', async (req, res) => {
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName, false);
+  const lgr = await getLGRByName(LGRName);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -189,7 +233,7 @@ router.post('/info/:LGRName', async (req, res) => {
     return;
   }
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName, false);
+  const lgr = await getLGRByName(LGRName);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -213,7 +257,7 @@ router.delete('/del/:LGRName', async (req, res) => {
     return;
   }
   const LGRName = req.params.LGRName;
-  const lgr = await getLGRByName(LGRName, false);
+  const lgr = await getLGRByName(LGRName);
   if (!lgr) {
     res.status(404).json({ error: 'LGR not found.' });
     return;
@@ -222,18 +266,20 @@ router.delete('/del/:LGRName', async (req, res) => {
     res.status(401).json({ error: 'This is not your LGR.' });
     return;
   }
-  const errorFile = await deleteLGRS3(lgr.FileLink);
-  if (errorFile) {
-    res.status(500).json({ error: 'Internal server error.' });
+  const deleted = await deleteLGR(lgr);
+  if (deleted.error) {
+    res.status(500).json(deleted);
     return;
   }
-  const errorPreview = await deleteLGRS3(lgr.PreviewLink);
-  if (errorPreview) {
-    res.status(500).json({ error: 'Internal server error.' });
-    return;
-  }
-  await lgr.destroy();
   res.status(200).json({ success: 1 });
+});
+
+router.get('/sync', async (req, res) => {
+  //await LGR.sync();
+  await LGR.sync({ alter: true });
+  await LGRTags.sync({ alter: true });
+  //await LGR.sync({force: true});
+  res.json('Success');
 });
 
 export default router;
