@@ -10,6 +10,7 @@ import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import config from '../config.js';
 import path from 'path';
 import { intersection } from 'lodash-es';
+import { deleteLGRComments } from './lgr_comment.js';
 
 const router = express.Router();
 
@@ -80,6 +81,7 @@ const ValidateLGR = async lgrBuffer => {
 };
 
 const deleteLGR = async lgr => {
+  await deleteLGRComments(lgr.LGRIndex);
   const errorFile = await deleteLGRS3(lgr.FileLink);
   if (errorFile) {
     return { error: 'Internal server error.' };
@@ -93,7 +95,7 @@ const deleteLGR = async lgr => {
   return {};
 };
 
-const getLGRByName = async LGRName => {
+export const getLGRByName = async LGRName => {
   const LGRInfo = await LGR.findOne({
     where: { LGRName: LGRName.toLowerCase() },
     include: [
@@ -106,6 +108,24 @@ const getLGRByName = async LGRName => {
         },
       },
     ],
+  });
+  return LGRInfo;
+};
+
+
+export const getLGRByIndex = async LGRIndex => {
+  const LGRInfo = await LGR.findOne({
+    where: { LGRIndex },
+    /*include: [
+      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+      {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+    ],*/
   });
   return LGRInfo;
 };
@@ -266,6 +286,10 @@ router.delete('/del/:LGRName', async (req, res) => {
     res.status(401).json({ error: 'This is not your LGR.' });
     return;
   }
+  if (!auth.mod) {
+    res.status(401).json({ error: 'Only mods can delete LGRs.' });
+    return;
+  }
   const deleted = await deleteLGR(lgr);
   if (deleted.error) {
     res.status(500).json(deleted);
@@ -274,10 +298,11 @@ router.delete('/del/:LGRName', async (req, res) => {
   res.status(200).json({ success: 1 });
 });
 
+// TODO delete
 router.get('/sync', async (req, res) => {
-  //await LGR.sync();
   await LGR.sync({ alter: true });
-  await LGRTags.sync({ alter: true });
+  //await LGRTags.sync({ alter: true });
+  await LGRComment.sync({ alter: true });
   //await LGR.sync({force: true});
   res.json('Success');
 });
