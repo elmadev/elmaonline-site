@@ -20,7 +20,7 @@ const LGR = Model.define(
       },
     },
     LGRDesc: {
-      type: DataType.STRING(255),
+      type: DataType.TEXT,
       defaultValue: '',
       allowNull: false,
     },

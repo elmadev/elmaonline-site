@@ -24,7 +24,7 @@ const LGRComment = Model.define('lgr_comment', {
     allowNull: false,
   },
   Text: {
-    type: DataType.STRING(255),
+    type: DataType.TEXT,
     defaultValue: '',
     allowNull: true,
   },

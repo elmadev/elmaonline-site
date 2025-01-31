@@ -67,6 +67,63 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
   return NewLGR;
 };
 
+const EditLGR = async (req, auth) => {
+  const originalFilename = req.params.LGRName.toLowerCase();
+  const newFilename = req.body.filename.toLowerCase();
+  if (originalFilename !== newFilename) {
+    if (!auth.mod) {
+      return {
+        error: 'Cannot rename lgr - only a mod can rename an lgr!',
+      };
+    }
+    if (await getLGRByName(newFilename)) {
+      return {
+        error: `Cannot rename lgr - ${req.body.filename}.lgr is already used!`,
+      };
+    }
+  }
+  const lgr = await getLGRByName(originalFilename);
+  lgr.LGRName = newFilename;
+  lgr.LGRDesc = req.body.description;
+
+  let previewS3Url = null;
+  if (req.files?.preview) {
+    deleteLGRS3(lgr.PreviewLink);
+    const previewS3 = await uploadLGRS3(
+      req.files.preview,
+      `${newFilename}_${req.files.preview.name}`,
+    );
+    if (previewS3.error) {
+      return previewS3;
+    }
+    previewS3Url = previewS3.url;
+    lgr.PreviewLink = previewS3Url;
+  }
+  const NewLGR = await lgr.save();
+  if (NewLGR.error) {
+    if (previewS3Url) {
+      deleteLGRS3(previewS3Url);
+    }
+    return NewLGR;
+  }
+  const tagIDs = JSON.parse(req.body.tags);
+  const allTags = await Tag.findAll({
+    where: { Type: 'lgr' },
+  });
+  const allValidTagIDs = allTags
+    .filter(tag => tag.Hidden === 0 || auth.mod)
+    .map(tag => tag.TagIndex);
+  const validatedTagIDs = intersection(tagIDs, allValidTagIDs);
+  // Non-mods cannot affect hidden tags, so let's add them back in!
+  if (!auth.mod) {
+    validatedTagIDs.push(
+      ...NewLGR.Tags.filter(tag => tag.Hidden).map(tag => tag.TagIndex),
+    );
+  }
+  await NewLGR.setTags(validatedTagIDs);
+  return NewLGR;
+};
+
 const ValidateLGR = async lgrBuffer => {
   try {
     const lgr_parsed = elmajs.LGR.from(lgrBuffer);
@@ -111,7 +168,6 @@ export const getLGRByName = async LGRName => {
   });
   return LGRInfo;
 };
-
 
 export const getLGRByIndex = async LGRIndex => {
   const LGRInfo = await LGR.findOne({
@@ -245,7 +301,7 @@ router.get('/info/:LGRName', async (req, res) => {
   res.json(lgr);
 });
 
-// Update the LGR info - TODO needs to be updated
+// Edit the LGR
 router.post('/info/:LGRName', async (req, res) => {
   const auth = authContext(req);
   if (!auth.auth) {
@@ -262,11 +318,12 @@ router.post('/info/:LGRName', async (req, res) => {
     res.status(401).json({ error: 'This is not your LGR.' });
     return;
   }
-  const updated_data = {
-    LGRDesc: req.body.LGRDesc,
-  };
-  await lgr.update(updated_data);
-  res.json(updated_data);
+  const response = await EditLGR(req, auth);
+  if (response.error) {
+    res.status(403).json({ error: response.error });
+    return;
+  }
+  res.json(response);
 });
 
 // Delete an LGR
@@ -296,15 +353,6 @@ router.delete('/del/:LGRName', async (req, res) => {
     return;
   }
   res.status(200).json({ success: 1 });
-});
-
-// TODO delete
-router.get('/sync', async (req, res) => {
-  await LGR.sync({ alter: true });
-  //await LGRTags.sync({ alter: true });
-  //await LGRComment.sync({ alter: true });
-  await Notification.sync({ alter: true });
-  res.json('Success');
 });
 
 export default router;
