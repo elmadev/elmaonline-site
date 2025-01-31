@@ -1,6 +1,6 @@
 import DataType from 'sequelize';
-import moment from 'moment';
 import Model from '../sequelize.js';
+import moment from 'moment';
 
 const LGR = Model.define(
   'lgr',
