@@ -302,8 +302,8 @@ router.delete('/del/:LGRName', async (req, res) => {
 router.get('/sync', async (req, res) => {
   await LGR.sync({ alter: true });
   //await LGRTags.sync({ alter: true });
-  await LGRComment.sync({ alter: true });
-  //await LGR.sync({force: true});
+  //await LGRComment.sync({ alter: true });
+  await Notification.sync({ alter: true });
   res.json('Success');
 });
 

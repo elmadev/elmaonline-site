@@ -22,7 +22,7 @@ const Notification = Model.define('notification', {
   },
   Type: {
     type: DataType.ENUM,
-    values: ['comment', 'beaten', 'besttime'],
+    values: ['comment', 'beaten', 'besttime', 'news', 'lgr_comment'],
     allowNull: false,
   },
   Meta: {
