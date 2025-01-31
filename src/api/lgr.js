@@ -9,8 +9,9 @@ import request from 'request';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import config from '../config.js';
 import path from 'path';
-import { intersection } from 'lodash-es';
+import { intersection, isEqual } from 'lodash-es';
 import { deleteLGRComments } from './lgr_comment.js';
+import { DEFAULT_LGR_PALETTE } from '#constants/lgr';
 
 const router = express.Router();
 
@@ -127,10 +128,21 @@ const EditLGR = async (req, auth) => {
 const ValidateLGR = async lgrBuffer => {
   try {
     const lgr_parsed = elmajs.LGR.from(lgrBuffer);
-    if (!lgr_parsed.pictureList.some(picture => picture.name === 'zz883000')) {
+    if (
+      !lgr_parsed.pictureList.some(
+        picture => picture.name.toLowerCase() === 'zz883000',
+      )
+    ) {
       return { error: 'LGR file must be fancyboosted.' };
     }
-    return { usesDefaultPalette: false }; //lgr_parsed.paletteIsDefault() };     // TODO, palette status tag
+    const q1bike = lgr_parsed.pictureData.find(
+      image => image.name.toLowerCase() === 'q1bike.pcx',
+    );
+    if (q1bike.data[q1bike.data.byteLength - 769] !== 12) {
+      return { error: "LGR's q1bike.pcx's palette was not found!" };
+    }
+    const palette = q1bike.data.subarray(q1bike.data.byteLength - 768);
+    return { usesDefaultPalette: isEqual(palette, DEFAULT_LGR_PALETTE) };
   } catch (error) {
     // If elmajs can't open the file, I guess it must be invalid
     return { error: 'Invalid LGR file.' };
