@@ -59,6 +59,9 @@ import MultiTimeFile from './MultiTimeFile.js';
 import Crippled from './Crippled.js';
 import Recap from './Recap.js';
 import ReplayLog from './ReplayLog.js';
+import LGR from './LGR.js';
+import LGRTags from './LGRTags.js';
+import LGRComment from './LGRComment.js';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -459,6 +462,38 @@ LevelPackCollectionPack.belongsTo(LevelPack, {
   as: 'PackData',
 });
 
+LGR.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Tag.belongsToMany(LGR, {
+  through: LGRTags,
+  foreignKey: 'TagIndex',
+  as: 'LGRs',
+});
+
+LGR.belongsToMany(Tag, {
+  through: LGRTags,
+  foreignKey: 'LGRIndex',
+  as: 'Tags',
+});
+
+LGR.hasMany(LGRComment, {
+  foreignKey: 'LGRIndex',
+  as: 'Comments',
+});
+
+LGRComment.belongsTo(LGR, {
+  foreignKey: 'LGRIndex',
+  as: 'LGR',
+});
+
+LGRComment.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 Tag.belongsToMany(Replay, {
   through: ReplayTags,
   foreignKey: 'TagIndex',
@@ -594,6 +629,9 @@ export {
   LevelPackFavourite,
   LevelPackCollection,
   LevelPackCollectionPack,
+  LGR,
+  LGRComment,
+  LGRTags,
   Tag,
   Notification,
   LevelStats,

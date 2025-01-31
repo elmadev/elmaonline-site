@@ -44,7 +44,7 @@ app.get('/allshirts', async (req, res, next) => {
     });
     readStream.pipe(res);
   } catch (e) {
-    next({ msg: e.message, status: 430 });
+    next({ msg: e.message, status: 403 });
   }
 });
 

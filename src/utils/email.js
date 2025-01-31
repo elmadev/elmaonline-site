@@ -55,6 +55,11 @@ export const notificationMail = async (KuskiInfo, type, meta) => {
     text = `${meta.kuski} added a comment to your replay: "${meta.Text}"`;
     link = `/r/${meta.replayUUID}/${meta.replayName.replace('.rec', '')}`;
   }
+  if (type === 'lgr_comment') {
+    headline = 'LGR comment';
+    text = `${meta.kuski} added a comment to your lgr ${meta.LGRName}: "${meta.Text}"`;
+    link = `/l/${meta.LGRName}`;
+  }
   if (type === 'beaten') {
     headline = 'Record beaten';
     text = `${meta.kuski} crushed your record in level ${meta.level}`;

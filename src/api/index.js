@@ -26,6 +26,8 @@ import Notification from './notification.js';
 import LevelStats from './levelstats.js';
 import Crippled from './crippled.js';
 import Recap from './recap.js';
+import LGR from './lgr.js';
+import LGRComment from './lgr_comment.js';
 
 const router = express.Router();
 
@@ -59,6 +61,8 @@ router
   .use('/levelstats', LevelStats)
   .use('/crippled', Crippled)
   .use('/recap', Recap)
-  .use('/taswr', TasWr);
+  .use('/taswr', TasWr)
+  .use('/lgr', LGR)
+  .use('/lgr_comment', LGRComment);
 
 export default router;

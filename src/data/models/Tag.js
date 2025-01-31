@@ -19,7 +19,7 @@ const Tag = Model.define('tag', {
   },
   Type: {
     type: DataType.ENUM,
-    values: ['replay', 'level', 'levelpack'],
+    values: ['replay', 'level', 'levelpack', 'lgr'],
     allowNull: false,
   },
 });

@@ -114,6 +114,37 @@ export const createNewCommentNotification = async replayComment => {
   });
 };
 
+// Creates notification for uploader of the lgr
+export const createNewLGRCommentNotification = async (lgr, lgrComment) => {
+  if (lgrComment.KuskiIndex === lgr.KuskiIndex) {
+    return;
+  }
+
+  const { Settings, Send } = await NotifSetting(lgr.KuskiIndex, 'Comment');
+  if (!Send) {
+    return;
+  }
+
+  const sender = await Kuski.findOne({
+    where: { KuskiIndex: lgrComment.KuskiIndex },
+  });
+
+  const meta = {
+    kuski: sender.Kuski,
+    LGRName: lgr.LGRName,
+    Text: lgrComment.Text,
+  };
+
+  await Notification.create({
+    KuskiIndex: lgr.KuskiIndex,
+    CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
+    Type: 'lgr_comment',
+    Meta: JSON.stringify(meta),
+  });
+
+  await sendThirdParty(lgr.KuskiIndex, 'lgr_comment', Settings, meta);
+};
+
 // Creates notification for the previous record holder
 export const createTimeBeatenNotification = async body => {
   if (body.battleIndex) {
