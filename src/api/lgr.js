@@ -84,6 +84,23 @@ const EditLGR = async (req, auth) => {
     }
   }
   const lgr = await getLGRByName(originalFilename);
+  if (lgr.KuskiData.Kuski !== req.body.kuskiName) {
+    if (!auth.mod) {
+      return {
+        error: 'Cannot change lgr ownership - only a mod can reassign an lgr!',
+      };
+    }
+    const kuski = await Kuski.findOne({
+      where: { Kuski: req.body.kuskiName },
+      attributes: ['KuskiIndex', 'Kuski'],
+    });
+    if (!kuski) {
+      return {
+        error: 'Cannot change lgr ownership - kuski not found!',
+      };
+    }
+    lgr.KuskiIndex = kuski.KuskiIndex;
+  }
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
 
