@@ -288,9 +288,12 @@ const getLGRFile = async (req, res, next, key) => {
       key === 'FileLink'
         ? `${lgr.LGRName}.lgr`
         : `${lgr.LGRName}${path.extname(url)}`;
+    const cacheControl =
+      key === 'FileLink' ? 'public, max-age=2628000' : 'public, max-age=604800';
     res.set({
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
+      'Cache-Control': cacheControl,
     });
     request.get(url).pipe(res);
     if (key === 'FileLink') {

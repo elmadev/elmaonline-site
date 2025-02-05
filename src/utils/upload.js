@@ -543,6 +543,7 @@ export const uploadLGRS3 = async (fileContent, filename) => {
   const urlEnd = `${fileUuid}/${filename}`;
   const url = lgrUrl(urlEnd);
   const params = s3Params(url, fileContent.data);
+  params.CacheControl = 'public, max-age=31536000, immutable';
   if (MIMETYPES.indexOf(fileContent.mimetype) > -1) {
     params.ContentType = fileContent.mimetype;
   }
@@ -577,7 +578,7 @@ export const deleteLGRS3 = async urlEnd => {
     await s3.deleteObject(
       {
         Bucket: 'eol',
-        Key: `${config.s3SubFolder}lgr/${urlEnd}`,
+        Key: url,
       },
       err => {
         return err;
