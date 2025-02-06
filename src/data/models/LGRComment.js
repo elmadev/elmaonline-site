@@ -1,8 +1,8 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
 
-const Notification = Model.define('notification', {
-  NotificationIndex: {
+const LGRComment = Model.define('lgr_comment', {
+  LGRCommentIndex: {
     type: DataType.INTEGER,
     autoIncrement: true,
     allowNull: false,
@@ -10,25 +10,24 @@ const Notification = Model.define('notification', {
   },
   KuskiIndex: {
     type: DataType.INTEGER,
-    allowNull: true,
-  },
-  CreatedAt: {
-    type: DataType.INTEGER,
+    defaultValue: 0,
     allowNull: false,
   },
-  SeenAt: {
+  LGRIndex: {
     type: DataType.INTEGER,
-    allowNull: true,
-  },
-  Type: {
-    type: DataType.ENUM,
-    values: ['comment', 'beaten', 'besttime', 'news', 'lgr_comment'],
+    defaultValue: 0,
     allowNull: false,
   },
-  Meta: {
+  Entered: {
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  Text: {
     type: DataType.TEXT,
+    defaultValue: '',
     allowNull: true,
   },
 });
 
-export default Notification;
+export default LGRComment;
