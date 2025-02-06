@@ -281,7 +281,7 @@ const getLGRFile = async (req, res, next, key) => {
     // cannot use relative path in dev environment - convert to full path
     const url =
       config.accessKeyId !== 'local'
-        ? lgrUrl(lgr.FileLink)
+        ? `${config.s3Domain}${lgrUrl(lgr.FileLink)}`
         : `http://localhost:3003/${lgrUrl(link).slice(9)}`;
     // .lgr for lgr files, or else .imgext for preview images
     const filename =
