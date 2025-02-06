@@ -2308,7 +2308,7 @@ __metadata:
 "elma-js@https://github.com/ville-j/elma-js":
   version: 1.0.0
   resolution: "elma-js@https://github.com/ville-j/elma-js.git#commit=b93955b2de32f2896011e14d76e02ff1536348dc"
-  checksum: 681fc8a3ad3675d3088475e112cc400237074ca34b18f2bfa26396fbb9eccb7082b6a964e30f580b4a45c936028fb8f233776c452760cd74892de9a0329281a4
+  checksum: 438385dacbf13997e7754cadb6457bc85f80230b8f666303397b61634cd9f9c8911ed3c84afe8389a52b8ccfddcec2704fea0ae000ef66670de5359b4680a7be
   languageName: node
   linkType: hard
 
