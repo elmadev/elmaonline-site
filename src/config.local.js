@@ -6,6 +6,4 @@ if (process.env.BROWSER) {
 
 // add keys from defaults.js that you want to change the value for
 // changes to this file will not be seen by git
-export default {
-  //accessKeyId: 'local', // for local testing of replay and lgr uploads without s3 access
-};
+export default {};
