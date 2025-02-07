@@ -467,6 +467,11 @@ LGR.belongsTo(Kuski, {
   as: 'KuskiData',
 });
 
+LGR.belongsTo(Replay, {
+  foreignKey: 'ReplayIndex',
+  as: 'ReplayData',
+});
+
 Tag.belongsToMany(LGR, {
   through: LGRTags,
   foreignKey: 'TagIndex',

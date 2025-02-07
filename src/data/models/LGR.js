@@ -50,6 +50,10 @@ const LGR = Model.define(
         return moment(this.getDataValue('Added')).format('X');
       },
     },
+    ReplayIndex: {
+      type: DataType.INTEGER,
+      allowNull: false,
+    },
   },
   {
     indexes: [{ fields: ['LGRIndex', 'LGRName'] }],

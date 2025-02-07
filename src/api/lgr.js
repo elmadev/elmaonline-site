@@ -6,7 +6,7 @@ import moment from 'moment';
 import path from 'path';
 import elmajs from 'elmajs';
 import { authContext } from '#utils/auth';
-import { LGR, Kuski, Tag } from '#data/models';
+import { LGR, Kuski, Tag, Replay } from '#data/models';
 import { like, searchLimit, searchOffset } from '#utils/database';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import { deleteLGRComments } from './lgr_comment.js';
@@ -15,17 +15,43 @@ import config from '../config.js';
 
 const router = express.Router();
 
+const models = {
+  Kuski: { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
+  Replay: {
+    model: Replay,
+    as: 'ReplayData',
+    attributes: ['LevelIndex', 'UUID', 'RecFileName'],
+  },
+  Tag: {
+    model: Tag,
+    as: 'Tags',
+    through: {
+      attributes: [],
+    },
+  },
+};
+
 const CreateLGR = async (req, auth, usesDefaultPalette) => {
+  console.log('Hello')
   if (!req.files.lgr || !req.files.preview) {
     return {
       error:
         'Both an lgr and an image file must be provided to create new lgr!',
     };
   }
+  if (!req.body.replay) {
+    return {
+      error:
+        'A valid replay must be linked!',
+    };
+  }
   const lowerFilename = req.body.filename.toLowerCase();
   const lgrS3 = await uploadLGRS3(req.files.lgr, `${lowerFilename}.lgr`);
   if (lgrS3.error) {
-    return lgrS3;
+    return {
+      error:
+        'Unable to upload lgr file to database!',
+    };
   }
   const previewS3 = await uploadLGRS3(
     req.files.preview,
@@ -33,7 +59,10 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
   );
   if (previewS3.error) {
     deleteLGRS3(lgrS3.url);
-    return previewS3;
+    return {
+      error:
+        'Unable to upload preview file to database!',
+    };
   }
   const lgr = {
     FileLink: lgrS3.url,
@@ -41,13 +70,17 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
     LGRName: lowerFilename,
     KuskiIndex: auth.userid,
     LGRDesc: req.body.description,
+    ReplayIndex: req.body.replay,
     Added: moment().format('YYYY-MM-DD HH:mm:ss'),
   };
   const NewLGR = await LGR.create(lgr);
   if (NewLGR.error) {
     deleteLGRS3(lgrS3.url);
     deleteLGRS3(previewS3.url);
-    return NewLGR;
+    return {
+      error:
+        'Unable to add lgr information to database!',
+    };
   }
 
   const tagIDs = JSON.parse(req.body.tags);
@@ -103,6 +136,9 @@ const EditLGR = async (req, auth) => {
   }
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
+  if(req.body.replay) {
+    lgr.ReplayIndex = req.body.replay
+  }
 
   let previewS3Url = null;
   if (req.files?.preview) {
@@ -112,7 +148,10 @@ const EditLGR = async (req, auth) => {
       `${newFilename}_${req.files.preview.name}`,
     );
     if (previewS3.error) {
-      return previewS3;
+      return {
+        error:
+          'Unable to upload preview file to database!',
+      };
     }
     previewS3Url = previewS3.url;
     lgr.PreviewLink = previewS3Url;
@@ -122,7 +161,10 @@ const EditLGR = async (req, auth) => {
     if (previewS3Url) {
       deleteLGRS3(previewS3Url);
     }
-    return NewLGR;
+    return {
+      error:
+        'Unable update lgr information!',
+    };
   }
   const tagIDs = JSON.parse(req.body.tags);
   const allTags = await Tag.findAll({
@@ -184,16 +226,7 @@ const deleteLGR = async lgr => {
 export const getLGRByName = async LGRName => {
   const LGRInfo = await LGR.findOne({
     where: { LGRName: LGRName.toLowerCase() },
-    include: [
-      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-      {
-        model: Tag,
-        as: 'Tags',
-        through: {
-          attributes: [],
-        },
-      },
-    ],
+    include: [models.Kuski, models.Replay, models.Tag],
   });
   return LGRInfo;
 };
@@ -201,32 +234,14 @@ export const getLGRByName = async LGRName => {
 export const getLGRByIndex = async LGRIndex => {
   const LGRInfo = await LGR.findOne({
     where: { LGRIndex },
-    /*include: [
-      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-      {
-        model: Tag,
-        as: 'Tags',
-        through: {
-          attributes: [],
-        },
-      },
-    ],*/
+    /*include: [models.Kuski, models.Replay, models.Tag],*/
   });
   return LGRInfo;
 };
 
 const getAllLGRs = async () => {
   const lgrs = await LGR.findAll({
-    include: [
-      { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-      {
-        model: Tag,
-        as: 'Tags',
-        through: {
-          attributes: [],
-        },
-      },
-    ],
+    include: [models.Kuski, models.Replay, models.Tag],
   });
   return lgrs;
 };
