@@ -578,7 +578,9 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
   };
   if (replays.length === 1) {
     const data = await Replay.findOne(query);
-    updateViews(replays, Fingerprint, KuskiIndex, [data]);
+    if (data) {
+      updateViews(replays, Fingerprint, KuskiIndex, [data]);
+    }
     return data;
   }
   let listData;
