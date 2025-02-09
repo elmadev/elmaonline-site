@@ -32,7 +32,6 @@ const models = {
 };
 
 const CreateLGR = async (req, auth, usesDefaultPalette) => {
-  console.log('Hello')
   if (!req.files.lgr || !req.files.preview) {
     return {
       error:
@@ -41,16 +40,14 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
   }
   if (!req.body.replay) {
     return {
-      error:
-        'A valid replay must be linked!',
+      error: 'A valid replay must be linked!',
     };
   }
   const lowerFilename = req.body.filename.toLowerCase();
   const lgrS3 = await uploadLGRS3(req.files.lgr, `${lowerFilename}.lgr`);
   if (lgrS3.error) {
     return {
-      error:
-        'Unable to upload lgr file to database!',
+      error: 'Unable to upload lgr file to database!',
     };
   }
   const previewS3 = await uploadLGRS3(
@@ -60,8 +57,7 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
   if (previewS3.error) {
     deleteLGRS3(lgrS3.url);
     return {
-      error:
-        'Unable to upload preview file to database!',
+      error: 'Unable to upload preview file to database!',
     };
   }
   const lgr = {
@@ -78,8 +74,7 @@ const CreateLGR = async (req, auth, usesDefaultPalette) => {
     deleteLGRS3(lgrS3.url);
     deleteLGRS3(previewS3.url);
     return {
-      error:
-        'Unable to add lgr information to database!',
+      error: 'Unable to add lgr information to database!',
     };
   }
 
@@ -136,8 +131,8 @@ const EditLGR = async (req, auth) => {
   }
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
-  if(req.body.replay) {
-    lgr.ReplayIndex = req.body.replay
+  if (req.body.replay) {
+    lgr.ReplayIndex = req.body.replay;
   }
 
   let previewS3Url = null;
@@ -149,8 +144,7 @@ const EditLGR = async (req, auth) => {
     );
     if (previewS3.error) {
       return {
-        error:
-          'Unable to upload preview file to database!',
+        error: 'Unable to upload preview file to database!',
       };
     }
     previewS3Url = previewS3.url;
@@ -162,8 +156,7 @@ const EditLGR = async (req, auth) => {
       deleteLGRS3(previewS3Url);
     }
     return {
-      error:
-        'Unable update lgr information!',
+      error: 'Unable update lgr information!',
     };
   }
   const tagIDs = JSON.parse(req.body.tags);
