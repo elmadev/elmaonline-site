@@ -10,6 +10,7 @@ import { authContext } from '#utils/auth';
 import { LGR, Kuski, Tag, Replay } from '#data/models';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import { deleteLGRComments } from './lgr_comment.js';
+import { WriteActionLog } from './mod.js';
 import config from '../config.js';
 
 const router = express.Router();
@@ -104,6 +105,7 @@ const CreateLGR = async (req, auth, lgrParsed) => {
 const EditLGR = async (req, auth) => {
   const originalFilename = req.params.LGRName.toLowerCase();
   const newFilename = req.body.filename.toLowerCase();
+  let actionLog = [];
   if (originalFilename !== newFilename) {
     if (!auth.mod) {
       return {
@@ -115,6 +117,7 @@ const EditLGR = async (req, auth) => {
         error: `Cannot rename lgr - ${req.body.filename}.lgr is already used!`,
       };
     }
+    actionLog.push(`Rename ${originalFilename} => ${newFilename}`);
   }
   const lgr = await getLGRByName(originalFilename);
   if (lgr.KuskiData.Kuski !== req.body.kuskiName) {
@@ -132,7 +135,20 @@ const EditLGR = async (req, auth) => {
         error: 'Cannot change lgr ownership - kuski not found!',
       };
     }
+    actionLog.push(
+      `Ownership ${lgr.KuskiData?.Kuski} => ${req.body.kuskiName}`,
+    );
     lgr.KuskiIndex = kuski.KuskiIndex;
+  }
+  if (actionLog.length > 0) {
+    WriteActionLog(
+      auth.userid,
+      lgr.KuskiIndex,
+      'EditLGR',
+      1,
+      0,
+      actionLog.join(', '),
+    );
   }
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
@@ -571,6 +587,7 @@ router.delete('/del/:LGRName', async (req, res) => {
     res.status(401).json({ error: 'Only mods can delete LGRs.' });
     return;
   }
+  WriteActionLog(auth.userid, lgr.KuskiIndex, 'DeleteLGR', 1, 0, lgr.LGRName);
   const deleted = await deleteLGR(lgr);
   if (deleted.error) {
     res.status(500).json(deleted);
