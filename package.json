@@ -24,7 +24,7 @@
     "date-fns": "^4.1.0",
     "disco-oauth": "^5.1.1",
     "elma-js": "https://github.com/ville-j/elma-js",
-    "elma-pcx": "^1.0.0",
+    "elma-pcx": "^1.0.1",
     "elmajs": "^1.2.2",
     "express": "^4.21.1",
     "express-fileupload": "^1.5.1",
