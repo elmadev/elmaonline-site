@@ -2312,10 +2312,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elma-pcx@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "elma-pcx@npm:1.0.0"
-  checksum: 2875604ddb20b634797f2a4277320c681e9a401c1f0eda972f7739b9d6b42ea1198408bcdc3e3dd6b6737a787fd5e09f4e1ab098d668df0f73d0fb4e15ec37cc
+"elma-pcx@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "elma-pcx@npm:1.0.1"
+  checksum: 7f343bf3d097377935836295e7b4aa8b9d296dfc3e2ee5190ce831d9a6e652c25ad4a84d795ae36f6109c7000860589b99cf2833b72634e8d24139a5e2ca511d
   languageName: node
   linkType: hard
 
@@ -2345,7 +2345,7 @@ __metadata:
     date-fns: ^4.1.0
     disco-oauth: ^5.1.1
     elma-js: "https://github.com/ville-j/elma-js"
-    elma-pcx: ^1.0.0
+    elma-pcx: ^1.0.1
     elmajs: ^1.2.2
     eslint: ^9.15.0
     eslint-config-prettier: ^9.1.0
