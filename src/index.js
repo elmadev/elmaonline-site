@@ -23,7 +23,13 @@ const app = express();
 // ----------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(
+  express.static(path.join(__dirname, '../public'), {
+    setHeaders: res => {
+      res.set('Cache-Control', 'public, max-age=31536000');
+    },
+  }),
+);
 
 // ----------------------------------------------------------
 // express middleware
@@ -91,6 +97,7 @@ app.use('/upload', uploadRoutes);
 app.get('/u/:uuid/:filename', async (req, res) => {
   const allow = await downloadFileS3(req.params.uuid, req.params.filename);
   if (allow) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
     request
       .get(
         `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}files/${req.params.uuid}/${req.params.filename}`,
