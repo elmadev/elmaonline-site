@@ -2308,7 +2308,7 @@ __metadata:
 "elma-js@https://github.com/ville-j/elma-js":
   version: 1.0.0
   resolution: "elma-js@https://github.com/ville-j/elma-js.git#commit=b93955b2de32f2896011e14d76e02ff1536348dc"
-  checksum: 438385dacbf13997e7754cadb6457bc85f80230b8f666303397b61634cd9f9c8911ed3c84afe8389a52b8ccfddcec2704fea0ae000ef66670de5359b4680a7be
+  checksum: 681fc8a3ad3675d3088475e112cc400237074ca34b18f2bfa26396fbb9eccb7082b6a964e30f580b4a45c936028fb8f233776c452760cd74892de9a0329281a4
   languageName: node
   linkType: hard
 
@@ -2319,12 +2319,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elmajs@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "elmajs@npm:1.2.2"
+"elmajs@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "elmajs@npm:1.2.4"
   dependencies:
     buffer: ^6.0.1
-  checksum: aec28b1aa5bbfc7e4d486167e74a144d2e446deebdc6e0a062e4e5a905e1db74010861de6a73c9738083ec3d6e9ab9acf78f4dc1bae2dcb50856b6903b63b427
+  checksum: bdbb99d89699e04be408283b21613df10712568f4d0442e1c3bf3be8d071d36b7804a25360f08b197b60ec94334f5ed1c48f2e7c9d572606f735cac681f11c76
   languageName: node
   linkType: hard
 
@@ -2346,7 +2346,7 @@ __metadata:
     disco-oauth: ^5.1.1
     elma-js: "https://github.com/ville-j/elma-js"
     elma-pcx: ^1.0.1
-    elmajs: ^1.2.2
+    elmajs: ^1.2.4
     eslint: ^9.15.0
     eslint-config-prettier: ^9.1.0
     eslint-plugin-prettier: ^5.2.1
