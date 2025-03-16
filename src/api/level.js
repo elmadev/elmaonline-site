@@ -112,11 +112,46 @@ const getLevelData = async LevelIndex => {
 
 const getLevelAsPng = async LevelIndex => {
   const levelData = await getLevelData(LevelIndex);
-  const svgData = levToSvg(levelData.LevelData);
+  let svgData = levToSvg(levelData.LevelData);
+
+  // Predefined arrow shapes
+  const arrowShapes = {
+    GRAV_UP:
+      'M 0.4 1 L 0.4 -0.2 L 1 -0.2 L 0 -1 L -1 -0.2 L -0.4 -0.2 L -0.4 1 Z',
+    GRAV_DOWN:
+      'M -0.4 -1 L -0.4 0.2 L -1 0.2 L 0 1 L 1 0.2 L 0.4 0.2 L 0.4 -1 Z',
+    GRAV_LEFT:
+      'M 1 0.4 L -0.2 0.4 L -0.2 1 L -1 0 L -0.2 -1 L -0.2 -0.4 L 1 -0.4 Z',
+    GRAV_RIGHT:
+      'M -1 -0.4 L 0.2 -0.4 L 0.2 -1 L 1 0 L 0.2 1 L 0.2 0.4 L -1 0.4 Z',
+  };
+
+  // Function to scale path data by radius
+  const scalePath = (pathData, r) =>
+    pathData.replace(/([\d.-]+)/g, num => parseFloat(num) * r);
+
+  // Function to process each circle element
+  const processCircleElement = (match, className, cx, cy, r, fill) => {
+    // Check if the class name contains any gravity direction
+    const direction = Object.keys(arrowShapes).find(dir =>
+      className.includes(dir),
+    );
+
+    if (!direction) return match; // If no direction found, return the original match
+
+    const pathData = scalePath(arrowShapes[direction], r); // Scale the path according to radius
+    return `<path d="${pathData}" transform="translate(${cx},${cy})" fill="${fill}" />`; // Return the new path element
+  };
+
+  // Update SVG data
+  svgData = svgData.replace(
+    /<circle[^>]+class="([^"]*GRAV_[^"]*)"[^>]+cx="([^"]+)"[^>]+cy="([^"]+)"[^>]+r="([^"]+)"[^>]+fill="([^"]+)"[^>]*\/>/g,
+    processCircleElement, // Pass the function directly to replace
+  );
 
   try {
     return await sharp(Buffer.from(svgData))
-      .resize(1024)
+      .resize(2048)
       .extend({
         top: 10,
         bottom: 10,

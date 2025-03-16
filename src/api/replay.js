@@ -578,7 +578,9 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
   };
   if (replays.length === 1) {
     const data = await Replay.findOne(query);
-    updateViews(replays, Fingerprint, KuskiIndex, [data]);
+    if (data) {
+      updateViews(replays, Fingerprint, KuskiIndex, [data]);
+    }
     return data;
   }
   let listData;
@@ -977,6 +979,9 @@ router
       0,
       parseInt(req.params.KuskiIndex, 10),
       auth.userid,
+      req.query.levelPack,
+      req.query.excludedTags,
+      req.query.level,
     );
     res.json(data);
   })
@@ -991,6 +996,9 @@ router
       parseInt(req.params.KuskiIndex, 10),
       0,
       auth.userid,
+      req.query.levelPack,
+      req.query.excludedTags,
+      req.query.level,
     );
     res.json(data);
   })

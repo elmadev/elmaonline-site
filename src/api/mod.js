@@ -41,7 +41,7 @@ const getNickRequest = async SiteSettingIndex => {
   return data;
 };
 
-const WriteActionLog = async (
+export const WriteActionLog = async (
   KuskiIndex,
   RightsKuski,
   ActionType,

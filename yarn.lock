@@ -2312,12 +2312,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elmajs@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "elmajs@npm:1.2.2"
+"elma-pcx@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "elma-pcx@npm:1.0.1"
+  checksum: 7f343bf3d097377935836295e7b4aa8b9d296dfc3e2ee5190ce831d9a6e652c25ad4a84d795ae36f6109c7000860589b99cf2833b72634e8d24139a5e2ca511d
+  languageName: node
+  linkType: hard
+
+"elmajs@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "elmajs@npm:1.2.4"
   dependencies:
     buffer: ^6.0.1
-  checksum: aec28b1aa5bbfc7e4d486167e74a144d2e446deebdc6e0a062e4e5a905e1db74010861de6a73c9738083ec3d6e9ab9acf78f4dc1bae2dcb50856b6903b63b427
+  checksum: bdbb99d89699e04be408283b21613df10712568f4d0442e1c3bf3be8d071d36b7804a25360f08b197b60ec94334f5ed1c48f2e7c9d572606f735cac681f11c76
   languageName: node
   linkType: hard
 
@@ -2338,7 +2345,8 @@ __metadata:
     date-fns: ^4.1.0
     disco-oauth: ^5.1.1
     elma-js: "https://github.com/ville-j/elma-js"
-    elmajs: ^1.2.2
+    elma-pcx: ^1.0.1
+    elmajs: ^1.2.4
     eslint: ^9.15.0
     eslint-config-prettier: ^9.1.0
     eslint-plugin-prettier: ^5.2.1

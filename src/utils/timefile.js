@@ -71,6 +71,26 @@ const SW_s3PutObject = params => {
   });
 };
 
+const chunkArray = (array, chunkSize) => {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const processChunksInSeries = async (chunks, iterator, delayMs) => {
+  const results = [];
+  for (const chunk of chunks) {
+    const chunkResults = await Promise.all(chunk.map(iterator));
+    results.push(...chunkResults);
+    await delay(delayMs);
+  }
+  return results;
+};
+
 const getTimes = async () => {
   const last = await SiteSetting.findOne({
     where: { SettingName: 'LastCold' },
@@ -125,7 +145,7 @@ export const coldStorage = async () => {
       new Date(times[times.length - 1]['Time.Driven']),
     ) < 1
   ) {
-    // return { first, last, error: 'Last time is not old enough' };
+    return { first, last, error: 'Last time is not old enough' };
   }
   // get files from digital ocean s3
   times = times.map(entity => ({
@@ -141,7 +161,9 @@ export const coldStorage = async () => {
     }
     return entity;
   };
-  times = await Promise.all(times.map(entity => filesIterator(entity)));
+  // split times into chunks to avoid too many requests
+  const chunks = chunkArray(times, 250);
+  times = await processChunksInSeries(chunks, filesIterator, 1000);
   // zip the files
   const zip = await zipFiles(
     times

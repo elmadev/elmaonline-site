@@ -39,6 +39,7 @@ export default {
   // s3
   accessKeyId: '',
   secretAccessKey: '',
+  s3Domain: 'https://eol.ams3.digitaloceanspaces.com/',
   SWaccessKeyId: '',
   SWsecretAccessKey: '',
 

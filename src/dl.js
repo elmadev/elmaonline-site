@@ -23,6 +23,7 @@ app.get('/battlereplay/:id', async (req, res, next) => {
     res.set({
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000',
     });
     readStream.pipe(res);
   } catch (e) {
@@ -44,7 +45,7 @@ app.get('/allshirts', async (req, res, next) => {
     });
     readStream.pipe(res);
   } catch (e) {
-    next({ msg: e.message, status: 430 });
+    next({ msg: e.message, status: 403 });
   }
 });
 
@@ -62,6 +63,7 @@ app.get('/shirt/:id', async (req, res, next) => {
       res.set({
         'Content-disposition': `attachment; filename=${filename}`,
         'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=86400',
       });
       readStream.pipe(res);
     }
@@ -84,6 +86,7 @@ app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
       res.set({
         'Content-disposition': `attachment; filename=${filename}`,
         'Content-Type': 'application/octet-stream',
+        'Cache-Control': 'public, max-age=31536000',
       });
       request
         .get(
@@ -98,6 +101,7 @@ app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
       res.set({
         'Content-disposition': `attachment; filename=${filename}`,
         'Content-Type': 'application/octet-stream',
+        'Cache-Control': 'public, max-age=31536000',
       });
       readStream.pipe(res);
       return;
@@ -120,6 +124,7 @@ app.get('/level/:id', async (req, res, next) => {
       'Content-disposition': `attachment; filename=${filename}`,
       'Content-Type': 'application/octet-stream',
       'Access-Control-Expose-Headers': 'Content-Disposition',
+      'Cache-Control': 'public, max-age=31536000',
     });
     readStream.pipe(res);
   } catch (e) {
