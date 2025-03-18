@@ -50,8 +50,8 @@ const LGR = Model.define(
         return moment(this.getDataValue('Added')).format('X');
       },
     },
-    ReplayIndex: {
-      type: DataType.INTEGER,
+    ReplayUUID: {
+      type: DataType.STRING(10),
       allowNull: false,
     },
     CRC: {
