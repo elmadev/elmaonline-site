@@ -71,7 +71,7 @@ const CreateLGR = async (req, auth, lgrParsed) => {
     LGRName: lowerFilename,
     KuskiIndex: auth.userid,
     LGRDesc: req.body.description,
-    ReplayIndex: req.body.replay,
+    ReplayUUID: req.body.replay,
     CRC: lgrParsed.lgrHash,
     Added: moment().format('YYYY-MM-DD HH:mm:ss'),
   };
@@ -153,7 +153,7 @@ const EditLGR = async (req, auth) => {
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
   if (req.body.replay) {
-    lgr.ReplayIndex = req.body.replay;
+    lgr.ReplayUUID = req.body.replay;
   }
 
   let previewS3Url = null;
