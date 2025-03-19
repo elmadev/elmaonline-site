@@ -505,7 +505,7 @@ const getLGRFile = async (req, res, next, key) => {
       'Cache-Control': cacheControl,
     });
     request.get(url).pipe(res);
-    if (key === 'FileLink') {
+    if (key === 'FileLink' && req.query.dl !== undefined) {
       lgr.update({ Downloads: lgr.Downloads + 1 });
     }
   } catch (e) {
