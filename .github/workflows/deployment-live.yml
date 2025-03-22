@@ -22,6 +22,7 @@ jobs:
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           cd ${{ secrets.SSH_PATH_LIVE }}
+          git restore yarn.lock
           git pull
           yarn
           pm2 restart api
