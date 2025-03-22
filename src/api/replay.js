@@ -518,6 +518,9 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
       });
     } else {
       updateViews(replays, Fingerprint, KuskiIndex);
+      if (cuptimes.length === 0) {
+        return null;
+      }
       return cuptime2Rec(cuptimes[0], cuprecs[0]);
     }
   }
@@ -530,6 +533,9 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
         combined.push(battle2Rec(b));
       });
     } else {
+      if (battles.length === 0) {
+        return null;
+      }
       updateViews(replays, Fingerprint, KuskiIndex);
       return battle2Rec(battles[0]);
     }
@@ -545,6 +551,9 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
         combined.push(timeFile2Rec(b));
       });
     } else {
+      if (battlerecs.length === 0) {
+        return null;
+      }
       updateViews(replays, Fingerprint, KuskiIndex);
       return timeFile2Rec(battlerecs[0]);
     }

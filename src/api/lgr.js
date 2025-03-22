@@ -7,7 +7,7 @@ import path from 'path';
 import elmajs from 'elmajs';
 import { PCX, writePCX, DefaultLGRPalette } from 'elma-pcx';
 import { authContext } from '#utils/auth';
-import { LGR, Kuski, Tag, Replay } from '#data/models';
+import { LGR, Kuski, Tag } from '#data/models';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import { deleteLGRComments } from './lgr_comment.js';
 import { WriteActionLog } from './mod.js';
@@ -17,11 +17,6 @@ const router = express.Router();
 
 const models = {
   Kuski: { model: Kuski, as: 'KuskiData', attributes: ['Kuski'] },
-  Replay: {
-    model: Replay,
-    as: 'ReplayData',
-    attributes: ['LevelIndex', 'UUID', 'RecFileName'],
-  },
   Tag: {
     model: Tag,
     as: 'Tags',
@@ -71,7 +66,7 @@ const CreateLGR = async (req, auth, lgrParsed) => {
     LGRName: lowerFilename,
     KuskiIndex: auth.userid,
     LGRDesc: req.body.description,
-    ReplayIndex: req.body.replay,
+    ReplayUUID: req.body.replay,
     CRC: lgrParsed.lgrHash,
     Added: moment().format('YYYY-MM-DD HH:mm:ss'),
   };
@@ -153,7 +148,7 @@ const EditLGR = async (req, auth) => {
   lgr.LGRName = newFilename;
   lgr.LGRDesc = req.body.description;
   if (req.body.replay) {
-    lgr.ReplayIndex = req.body.replay;
+    lgr.ReplayUUID = req.body.replay;
   }
 
   let previewS3Url = null;
@@ -415,7 +410,7 @@ const fixLGR = lgr => {
 export const getLGRByName = async LGRName => {
   const LGRInfo = await LGR.findOne({
     where: { LGRName: LGRName.toLowerCase() },
-    include: [models.Kuski, models.Replay, models.Tag],
+    include: [models.Kuski, models.Tag],
   });
   return LGRInfo;
 };
@@ -428,7 +423,7 @@ export const getLGRByName = async LGRName => {
 export const getLGRByHash = async CRC => {
   const LGRInfo = await LGR.findOne({
     where: { CRC },
-    /*include: [models.Kuski, models.Replay, models.Tag],*/
+    /*include: [models.Kuski, models.Tag],*/
   });
   return LGRInfo;
 };
@@ -441,7 +436,7 @@ export const getLGRByHash = async CRC => {
 export const getLGRByIndex = async LGRIndex => {
   const LGRInfo = await LGR.findOne({
     where: { LGRIndex },
-    /*include: [models.Kuski, models.Replay, models.Tag],*/
+    /*include: [models.Kuski, models.Tag],*/
   });
   return LGRInfo;
 };
@@ -452,7 +447,7 @@ export const getLGRByIndex = async LGRIndex => {
  */
 const getAllLGRs = async () => {
   const lgrs = await LGR.findAll({
-    include: [models.Kuski, models.Replay, models.Tag],
+    include: [models.Kuski, models.Tag],
   });
   return lgrs;
 };
@@ -510,7 +505,7 @@ const getLGRFile = async (req, res, next, key) => {
       'Cache-Control': cacheControl,
     });
     request.get(url).pipe(res);
-    if (key === 'FileLink') {
+    if (key === 'FileLink' && req.query.dl !== undefined) {
       lgr.update({ Downloads: lgr.Downloads + 1 });
     }
   } catch (e) {
