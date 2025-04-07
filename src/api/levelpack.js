@@ -783,6 +783,12 @@ const kinglist = times => {
 };
 
 const AddLevelPack = async data => {
+  const check = await LevelPack.findOne({
+    where: { LevelPackName: data.LevelPackName },
+  });
+  if (check) {
+    return { error: 'Level pack name already exists' };
+  }
   const NewPack = await LevelPack.create(data);
   return NewPack;
 };
