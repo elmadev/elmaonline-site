@@ -269,6 +269,7 @@ const giveRights = async (Right, KuskiIndex, modId) => {
       Confirmed: 1,
       RChat: 1,
       RPlay: 1,
+      RMultiPlay: 1,
       ConfirmCode: '',
     });
   }
