@@ -807,6 +807,12 @@ const shareReplay = async data => {
   if (!time) {
     return false;
   }
+  const recExists = await Replay.findOne({
+    where: { MD5: data.TimeFileData.MD5 },
+  });
+  if (recExists) {
+    return { success: 0, error: 'duplicate' };
+  }
   if (time.KuskiIndex === data.KuskiIndex) {
     const RecFileName = createRecName(
       data.LevelData.LevelName,
@@ -839,7 +845,7 @@ const shareReplay = async data => {
         { Shared: 1 },
         { where: { TimeFileIndex: data.TimeFileData.TimeFileIndex } },
       );
-      return true;
+      return { success: 1 };
     }
   }
   return false;
@@ -934,7 +940,7 @@ router
         Kuski: auth.user,
       });
       if (success) {
-        res.json({ success: 1 });
+        res.json(success);
       } else {
         res.sendStatus(401);
       }
