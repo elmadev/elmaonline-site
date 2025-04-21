@@ -116,7 +116,7 @@ app.get('/heapdump', (req, res) => {
     res.status(401).send('Unauthorized');
     return;
   }
-  const filename = `./public/temp/heapdump-${Date.now()}.heapsnapshot`;
+  const filename = `../public/temp/heapdump-${Date.now()}.heapsnapshot`;
   writeHeapSnapshot(filename);
   res.download(filename, err => {
     if (err) {
