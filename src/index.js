@@ -112,15 +112,17 @@ app.get('/u/:uuid/:filename', async (req, res) => {
 
 // memory dump
 app.get('/heapdump', (req, res) => {
-  /*if (req.header('Authorization') !== config.run.ranking) {
+  if (req.header('Authorization') !== config.run.ranking) {
     res.status(401).send('Unauthorized');
     return;
-  }*/
+  }
   const filename = `public/temp/heapdump-${Date.now()}.heapsnapshot`;
   writeHeapSnapshot(filename);
   res.download(filename, err => {
     if (err) {
       res.status(500).send('Error downloading heapdump');
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
     unlink(filename, () => {});
   });
