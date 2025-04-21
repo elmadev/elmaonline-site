@@ -15,6 +15,8 @@ import eventsRoutes from './events.js';
 import dlRoutes from './dl.js';
 import runRoutes from './run.js';
 import uploadRoutes from './upload.js';
+import { writeHeapSnapshot } from 'v8';
+import { unlink } from 'fs';
 
 const app = express();
 
@@ -106,6 +108,22 @@ app.get('/u/:uuid/:filename', async (req, res) => {
   } else {
     res.sendStatus(404);
   }
+});
+
+// memory dump
+app.get('/heapdump', (req, res) => {
+  /*if (req.header('Authorization') !== config.run.ranking) {
+    res.status(401).send('Unauthorized');
+    return;
+  }*/
+  const filename = `public/temp/heapdump-${Date.now()}.heapsnapshot`;
+  writeHeapSnapshot(filename);
+  res.download(filename, err => {
+    if (err) {
+      res.status(500).send('Error downloading heapdump');
+    }
+    unlink(filename, () => {});
+  });
 });
 
 // wildcard and root
