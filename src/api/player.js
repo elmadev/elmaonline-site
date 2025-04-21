@@ -113,6 +113,7 @@ const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
       'RMod',
       'RAdmin',
       'BmpCRC',
+      'Confirmed',
     ],
   };
   if (

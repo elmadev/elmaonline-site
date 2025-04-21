@@ -264,7 +264,18 @@ const giveRights = async (Right, KuskiIndex, modId) => {
   const findKuski = await Kuski.scope(null).findOne({
     where: { KuskiIndex },
   });
-  await findKuski.update({ [Right]: 1 });
+  if (Right === 'Confirm') {
+    await findKuski.update({
+      Confirmed: 1,
+      RChat: 1,
+      RPlay: 1,
+      RMultiPlay: 1,
+      ConfirmCode: '',
+    });
+  }
+  if (Right !== 'Confirm') {
+    await findKuski.update({ [Right]: 1 });
+  }
   await WriteActionLog(modId, KuskiIndex, Right, 1, 0, '');
 };
 

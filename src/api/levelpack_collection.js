@@ -17,6 +17,12 @@ const GetCollections = async () => {
 };
 
 const AddColl = async data => {
+  const check = await LevelPackCollection.findOne({
+    where: { CollectionName: data.CollectionName },
+  });
+  if (check) {
+    return { error: 'Collection name already exists' };
+  }
   const add = await LevelPackCollection.create(data);
   return add;
 };
