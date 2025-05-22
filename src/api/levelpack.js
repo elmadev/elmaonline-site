@@ -42,7 +42,7 @@ import Admin from './levelpack_admin.js';
 import Favourite from './levelpack_favourite.js';
 import Collection from './levelpack_collection.js';
 import { checkSchemaAndBail } from '#middlewares/validate';
-import sequelize from '#data/sequelize';
+import sequelize, { dbquery } from '#data/sequelize';
 import { query as sqlQuery } from '#utils/sequelize';
 import { parseTimeDriven } from '#data/models/PlayStats';
 
@@ -1166,6 +1166,65 @@ const getLevelpackLevels = async LevelPackIndex => {
   return levelPackLevels.sort(sortPacks);
 };
 
+const getGraph = async (LevelPackName, KuskiIndex) => {
+  const packInfo = await LevelPack.findOne({
+    where: { LevelPackName },
+    include: [{ model: LevelPackLevel, as: 'Levels' }],
+  });
+  const q = `
+    SELECT af.KuskiIndex, af.LevelIndex, af.Time, af.Driven, af.TimeIndex
+    FROM allfinished af
+    JOIN levelpack_level lpl ON af.LevelIndex = lpl.LevelIndex
+    WHERE lpl.LevelPackIndex = ? AND af.KuskiIndex = ?
+    ORDER BY af.Driven ASC;
+  `;
+  let data = await dbquery(q, [packInfo.LevelPackIndex, KuskiIndex]);
+
+  if (packInfo.Legacy) {
+    const legacyQuery = `
+      SELECT lf.KuskiIndex, lf.LevelIndex, lf.Time, UNIX_TIMESTAMP(lf.Driven) as Driven
+      FROM legacyfinished lf
+      JOIN levelpack_level lpl ON lf.LevelIndex = lpl.LevelIndex
+      WHERE lpl.LevelPackIndex = ? AND lf.KuskiIndex = ?
+      ORDER BY lf.Driven ASC;
+    `;
+    const legacyData = await dbquery(legacyQuery, [
+      packInfo.LevelPackIndex,
+      KuskiIndex,
+    ]);
+    data.push(...legacyData);
+    data.sort((a, b) => a.Driven - b.Driven);
+  }
+
+  const bestTimes = new Map();
+  const history = [];
+  let lastTotal = null;
+  for (const row of data) {
+    const { LevelIndex, Time, Driven, TimeIndex } = row;
+
+    const currentBest = bestTimes.get(LevelIndex);
+    if (currentBest === undefined || Time < currentBest) {
+      bestTimes.set(LevelIndex, Time);
+
+      // Sum current best times
+      let total = 0;
+      for (const time of bestTimes.values()) {
+        total += time;
+      }
+
+      if (total !== lastTotal && bestTimes.size === packInfo.Levels.length) {
+        history.push({
+          timestamp: Driven,
+          totalTime: total,
+          index: TimeIndex,
+        });
+        lastTotal = total;
+      }
+    }
+  }
+  return history;
+};
+
 router
   .get('/', async (req, res) => {
     const data = await allPacks();
@@ -1287,6 +1346,19 @@ router
         KuskiIndex,
         parseInt(req.params.eolOnly, 10),
       );
+      res.json(data);
+    } else {
+      res.json({ error: 'Kuski does not exist' });
+    }
+  })
+  .get('/:LevelPackName/historic/:KuskiIndex', async (req, res) => {
+    let KuskiIndex = req.params.KuskiIndex;
+    if (isNaN(KuskiIndex)) {
+      const getKuskiIndex = await getKuski(req.params.KuskiIndex);
+      KuskiIndex = getKuskiIndex.dataValues.KuskiIndex;
+    }
+    if (KuskiIndex) {
+      const data = await getGraph(req.params.LevelPackName, KuskiIndex);
       res.json(data);
     } else {
       res.json({ error: 'Kuski does not exist' });
