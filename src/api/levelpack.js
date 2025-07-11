@@ -130,7 +130,7 @@ const getIntBestTimes = async KuskiIndex => {
 
   q += 'WHERE KuskiIndex = ? ';
   q +=
-    'AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ?)';
+    'AND LevelIndex IN (SELECT LevelIndex FROM levelpack_level WHERE LevelPackIndex = ? AND ExcludeFromTotal = 0)';
 
   const [besttimes] = await sequelize.query(q, {
     replacements: [+KuskiIndex, IntLevelPackIndex],
@@ -440,7 +440,7 @@ const getRecords = async (
         WHERE LevelIndex IN (
         SELECT LevelIndex
         FROM levelpack_level
-        WHERE LevelPackIndex = ?)${filter}) bt
+        WHERE LevelPackIndex = ? AND ExcludeFromTotal = 0)${filter}) bt
     LEFT OUTER JOIN kuski k ON k.KuskiIndex = bt.KuskiIndex
     LEFT OUTER JOIN team t ON t.TeamIndex = k.TeamIndex
     WHERE posn = 1;
@@ -493,7 +493,7 @@ const getTimes = async (
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
-    attributes: ['LevelIndex', 'Sort'],
+    attributes: ['LevelIndex', 'Sort', 'ExcludeFromTotal'],
     include: [
       {
         model: timeTable,
@@ -657,8 +657,11 @@ const totalTimes = (times, filters) => {
   const teams = [];
   const countries = [];
   const kuskiFilter = [];
+  
+  const nonExcludedLevelCount = times.filter(level => !level.Level.Hidden && !level.ExcludeFromTotal).length;
+  
   forEach(times, level => {
-    if (!level.Level.Hidden) {
+    if (!level.Level.Hidden && !level.ExcludeFromTotal) {
       forEach(level.LevelBesttime, time => {
         const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
@@ -717,13 +720,13 @@ const totalTimes = (times, filters) => {
   countries.sort((a, b) => a.name.localeCompare(b.name));
   if (filters) {
     return {
-      tts: tts.filter(x => x.count === times.length),
+      tts: tts.filter(x => x.count === nonExcludedLevelCount),
       teams,
       countries,
       kuskis: kuskiFilter.sort((a, b) => a.Kuski.localeCompare(b.Kuski)),
     };
   }
-  return tts.filter(x => x.count === times.length);
+  return tts.filter(x => x.count === nonExcludedLevelCount);
 };
 
 const sortPacks = (a, b) => {
@@ -741,7 +744,7 @@ const kinglist = times => {
   const points = [];
   const kuskis = [];
   forEach(times, level => {
-    if (!level.Level.Hidden) {
+    if (!level.Level.Hidden && !level.ExcludeFromTotal) {
       const sortedTimes = level.LevelBesttime.sort(sortTimes);
       let currentPosition = 0;
       forEach(sortedTimes, data => {
@@ -1018,6 +1021,7 @@ const allPacksStats = async () => {
          GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
   FROM levelstats s
       INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+  WHERE packlev.ExcludeFromTotal = 0
   GROUP BY LevelPackIndex`;
 
   let [stats] = await sequelize.query(q, {
@@ -1150,6 +1154,7 @@ const getLevelpackLevels = async LevelPackIndex => {
     where: {
       LevelPackIndex,
     },
+    attributes: ['LevelIndex', 'Sort', 'Targets', 'ExcludeFromTotal', 'LevelPackLevelIndex'],
     include: [
       {
         model: Level,
@@ -1171,11 +1176,13 @@ const getGraph = async (LevelPackName, KuskiIndex) => {
     where: { LevelPackName },
     include: [{ model: LevelPackLevel, as: 'Levels' }],
   });
+  
+  const nonExcludedLevelCount = packInfo.Levels.filter(level => !level.ExcludeFromTotal).length;
   const q = `
     SELECT af.KuskiIndex, af.LevelIndex, af.Time, af.Driven, af.TimeIndex
     FROM allfinished af
     JOIN levelpack_level lpl ON af.LevelIndex = lpl.LevelIndex
-    WHERE lpl.LevelPackIndex = ? AND af.KuskiIndex = ?
+    WHERE lpl.LevelPackIndex = ? AND af.KuskiIndex = ? AND lpl.ExcludeFromTotal = 0
     ORDER BY af.Driven ASC;
   `;
   let data = await dbquery(q, [packInfo.LevelPackIndex, KuskiIndex]);
@@ -1185,7 +1192,7 @@ const getGraph = async (LevelPackName, KuskiIndex) => {
       SELECT lf.KuskiIndex, lf.LevelIndex, lf.Time, UNIX_TIMESTAMP(lf.Driven) as Driven
       FROM legacyfinished lf
       JOIN levelpack_level lpl ON lf.LevelIndex = lpl.LevelIndex
-      WHERE lpl.LevelPackIndex = ? AND lf.KuskiIndex = ?
+      WHERE lpl.LevelPackIndex = ? AND lf.KuskiIndex = ? AND lpl.ExcludeFromTotal = 0
       ORDER BY lf.Driven ASC;
     `;
     const legacyData = await dbquery(legacyQuery, [
@@ -1212,7 +1219,7 @@ const getGraph = async (LevelPackName, KuskiIndex) => {
         total += time;
       }
 
-      if (total !== lastTotal && bestTimes.size === packInfo.Levels.length) {
+      if (total !== lastTotal && bestTimes.size === nonExcludedLevelCount) {
         history.push({
           timestamp: Driven,
           totalTime: total,
@@ -1479,6 +1486,7 @@ router
             LevelPackLevelIndex: lev.LevelPackLevelIndex,
             Sort: lev.Sort,
             Targets: lev.Targets,
+            ExcludeFromTotal: lev.ExcludeFromTotal,
           }))
         : [],
     });
