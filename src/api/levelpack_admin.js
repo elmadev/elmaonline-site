@@ -123,6 +123,45 @@ const DeleteLevel = async data => {
   return false;
 };
 
+const UpdateLevel = async data => {
+  if (!data.LevelPackLevelIndex) {
+    return 'Missing required parameter: LevelPackLevelIndex';
+  }
+
+  const levelPackLevel = await LevelPackLevel.findOne({
+    where: { LevelPackLevelIndex: data.LevelPackLevelIndex },
+  });
+  
+  if (!levelPackLevel) {
+    return 'Level pack level not found';
+  }
+  
+  const pack = await LevelPack.findOne({
+    where: { LevelPackIndex: levelPackLevel.LevelPackIndex },
+  });
+  
+  if (!pack) {
+    return 'Level pack not found';
+  }
+  
+  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
+    const updateData = {};
+    if (data.ExcludeFromTotal !== undefined) {
+      updateData.ExcludeFromTotal = data.ExcludeFromTotal;
+    }
+    
+    if (Object.keys(updateData).length === 0) {
+      return 'No valid fields to update';
+    }
+    
+    await LevelPackLevel.update(updateData, {
+      where: { LevelPackLevelIndex: data.LevelPackLevelIndex },
+    });
+    return true;
+  }
+  return 'This is not your level pack';
+};
+
 router
   .post('/sort', async (req, res) => {
     const auth = authContext(req);
@@ -187,6 +226,29 @@ router
         res.json({ success: 1 });
       } else {
         res.json({ success: 0, error: 'This is not your level pack' });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/updateLevel', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      try {
+        const update = await UpdateLevel({
+          ...req.body,
+          KuskiIndex: auth.userid,
+          mod: auth.mod,
+        });
+        
+        if (update === true) {
+          res.json({ success: 1 });
+        } else {
+          res.json({ success: 0, error: update });
+        }
+      } catch (error) {
+        console.error('Error in updateLevel:', error);
+        res.json({ success: 0, error: 'Internal server error: ' + error.message });
       }
     } else {
       res.sendStatus(401);
