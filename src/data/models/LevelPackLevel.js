@@ -35,6 +35,11 @@ const LevelPackLevel = Model.define(
       defaultValue: '',
       allowNull: true,
     },
+    ExcludeFromTotal: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['LevelIndex, LevelPackIndex'] }],
