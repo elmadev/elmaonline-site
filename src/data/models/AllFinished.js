@@ -95,6 +95,11 @@ const AllFinished = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    FPSLimit: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

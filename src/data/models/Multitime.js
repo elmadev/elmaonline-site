@@ -35,6 +35,17 @@ const Multitime = Model.define(
       allowNull: false,
       defaultValue: null,
     },
+    FPSLimit1: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+
+    FPSLimit2: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [

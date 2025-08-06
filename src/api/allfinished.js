@@ -234,7 +234,14 @@ const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   };
   if (!personal) {
-    query.attributes = ['TimeIndex', 'Time', 'Apples', 'Driven', 'LevelIndex'];
+    query.attributes = [
+      'TimeIndex',
+      'Time',
+      'Apples',
+      'Driven',
+      'LevelIndex',
+      'FPSLimit',
+    ];
   }
   const times = await AllFinished.findAll(query);
   if (personal) {
