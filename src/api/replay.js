@@ -4,6 +4,7 @@ import { like, searchLimit, searchOffset } from '#utils/database';
 import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
 import { forEach, groupBy } from 'lodash-es';
+import crypto from 'crypto';
 import { sortResults } from '#utils/battle';
 import { shareTimeFile } from '#utils/upload';
 import {
@@ -702,6 +703,61 @@ const getReplaysSearchFilename = async (query, offset) => {
   return replays;
 };
 
+const getMaxReplayIndex = async () => {
+  const result = await Replay.max('ReplayIndex');
+  return result || 1;
+};
+
+const generateRandomReplayIndices = (maxIndex, count) => {
+  const indices = new Set();
+  while (indices.size < count) {
+    indices.add(crypto.randomInt(1, maxIndex + 1));
+  }
+  return Array.from(indices);
+};
+
+const getRandomReplays = async (limit = 100) => {
+  const maxReplayIndex = await getMaxReplayIndex();
+  const requestedLimit = searchLimit(limit);
+  const randomIndices = generateRandomReplayIndices(
+    maxReplayIndex,
+    Math.min(requestedLimit * 2, maxReplayIndex),
+  );
+
+  const data = await Replay.findAll({
+    limit: requestedLimit,
+    where: {
+      Unlisted: 0,
+      ReplayIndex: { [Op.in]: randomIndices },
+    },
+    include: [
+      {
+        model: Level,
+        attributes: ['LevelName', 'LevelIndex'],
+        as: 'LevelData',
+        where: { Locked: 0 },
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country'],
+        as: 'UploadedByData',
+      },
+      {
+        model: Kuski,
+        attributes: ['Kuski', 'Country', 'KuskiIndex', 'BmpCRC'],
+        as: 'DrivenByData',
+      },
+    ],
+  });
+
+  const sortedData = randomIndices
+    .map(index => data.find(replay => replay.ReplayIndex === index))
+    .filter(replay => replay !== undefined)
+    .slice(0, requestedLimit);
+
+  return sortedData;
+};
+
 const InsertReplay = async (data, userid) => {
   const insertData = { ...data, UploadedBy: userid };
   if (insertData.DrivenBy !== 0) {
@@ -978,6 +1034,11 @@ router
     } else {
       res.sendStatus(401);
     }
+  })
+  .get('/random', async (req, res) => {
+    const limit = parseInt(req.query.limit) || 100;
+    const data = await getRandomReplays(limit);
+    res.json(data);
   })
   .get('/:ReplayIndex', async (req, res) => {
     const data = await getReplayByReplayId(req.params.ReplayIndex);
