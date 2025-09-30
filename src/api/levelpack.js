@@ -167,7 +167,7 @@ const getPersonalTimes = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
       LevelPackIndex: packInfo.dataValues.LevelPackIndex,
     },
     order: [
-      ['Sort', 'ASC'],
+      ['Order', 'ASC'],
       ['LevelPackLevelIndex', 'ASC'],
     ],
   }).then(data => data.map(r => r.LevelIndex));
@@ -212,7 +212,7 @@ const getPersonalWithMulti = async (LevelPackName, KuskiIndex, eolOnly = 0) => {
       LevelPackIndex: packInfo.dataValues.LevelPackIndex,
     },
     order: [
-      ['Sort', 'ASC'],
+      ['Order', 'ASC'],
       ['LevelPackLevelIndex', 'ASC'],
     ],
   }).then(data => data.map(r => r.LevelIndex));
@@ -493,7 +493,7 @@ const getTimes = async (
   }
   const times = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
-    attributes: ['LevelIndex', 'Sort', 'ExcludeFromTotal'],
+    attributes: ['LevelIndex', 'Order', 'ExcludeFromTotal'],
     include: [
       {
         model: timeTable,
@@ -657,9 +657,11 @@ const totalTimes = (times, filters) => {
   const teams = [];
   const countries = [];
   const kuskiFilter = [];
-  
-  const nonExcludedLevelCount = times.filter(level => !level.Level.Hidden && !level.ExcludeFromTotal).length;
-  
+
+  const nonExcludedLevelCount = times.filter(
+    level => !level.Level.Hidden && !level.ExcludeFromTotal,
+  ).length;
+
   forEach(times, level => {
     if (!level.Level.Hidden && !level.ExcludeFromTotal) {
       forEach(level.LevelBesttime, time => {
@@ -730,10 +732,10 @@ const totalTimes = (times, filters) => {
 };
 
 const sortPacks = (a, b) => {
-  if (a.Sort === b.Sort) {
+  if (a.Order === b.Order) {
     return a.LevelPackLevelIndex - b.LevelPackLevelIndex;
   }
-  return `${a.Sort}`.localeCompare(`${b.Sort}`);
+  return a.Order - b.Order;
 };
 
 const pointList = [
@@ -1154,7 +1156,13 @@ const getLevelpackLevels = async LevelPackIndex => {
     where: {
       LevelPackIndex,
     },
-    attributes: ['LevelIndex', 'Sort', 'Targets', 'ExcludeFromTotal', 'LevelPackLevelIndex'],
+    attributes: [
+      'LevelIndex',
+      'Order',
+      'Targets',
+      'ExcludeFromTotal',
+      'LevelPackLevelIndex',
+    ],
     include: [
       {
         model: Level,
@@ -1176,8 +1184,10 @@ const getGraph = async (LevelPackName, KuskiIndex) => {
     where: { LevelPackName },
     include: [{ model: LevelPackLevel, as: 'Levels' }],
   });
-  
-  const nonExcludedLevelCount = packInfo.Levels.filter(level => !level.ExcludeFromTotal).length;
+
+  const nonExcludedLevelCount = packInfo.Levels.filter(
+    level => !level.ExcludeFromTotal,
+  ).length;
   const q = `
     SELECT af.KuskiIndex, af.LevelIndex, af.Time, af.Driven, af.TimeIndex
     FROM allfinished af
@@ -1484,7 +1494,7 @@ router
             LevelName: lev.Level.LevelName,
             LongName: lev.Level.LongName,
             LevelPackLevelIndex: lev.LevelPackLevelIndex,
-            Sort: lev.Sort,
+            Order: lev.Order,
             Targets: lev.Targets,
             ExcludeFromTotal: lev.ExcludeFromTotal,
           }))

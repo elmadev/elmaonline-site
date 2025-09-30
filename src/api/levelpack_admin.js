@@ -1,43 +1,58 @@
 import express from 'express';
 import { authContext } from '#utils/auth';
-import { forEach } from 'lodash-es';
-import neoAsync from 'neo-async';
-const { eachSeries } = neoAsync;
-import { firstEntry, lastEntry, inBetween } from '#utils/sort';
 import { LevelPackLevel, LevelPack, Level } from '#data/models';
 
 const router = express.Router();
-
-const SortPackUpdate = async (data, done) => {
-  await LevelPackLevel.update(
-    { Sort: data.Sort },
-    { where: { LevelPackLevelIndex: data.LevelPackLevelIndex } },
-  );
-  done();
-};
 
 const SortPack = async data => {
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
+
+  if (!pack) {
+    return 'Level pack not found';
+  }
+
+  if (pack.KuskiIndex !== data.KuskiIndex && !data.mod) {
+    return 'This is not your level pack';
+  }
+
+  // validate that we have an array of LevelIndex values
+  if (!Array.isArray(data.levelOrder) || data.levelOrder.length === 0) {
+    return 'Invalid request: levelOrder must be a non-empty array of LevelIndex values';
+  }
+
+  // get all current levels in this pack
   const levels = await LevelPackLevel.findAll({
     where: { LevelPackIndex: data.LevelPackIndex },
   });
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    const updateBulk = [];
-    let Sort = '';
-    forEach(levels, l => {
-      if (!Sort) {
-        Sort = firstEntry();
-      } else {
-        Sort = lastEntry(Sort);
-      }
-      updateBulk.push({ LevelPackLevelIndex: l.LevelPackLevelIndex, Sort });
-    });
-    await eachSeries(updateBulk, SortPackUpdate);
-    return true;
+
+  // validate that all provided LevelIndex values exist in this pack
+  const existingLevelIndexes = levels.map(l => l.LevelIndex);
+  const invalidLevels = data.levelOrder.filter(
+    levelIndex => !existingLevelIndexes.includes(levelIndex),
+  );
+  if (invalidLevels.length > 0) {
+    return `Invalid LevelIndex values: ${invalidLevels.join(', ')}. These levels are not in this level pack`;
   }
-  return false;
+
+  // create a map of LevelIndex to new Order
+  const levelOrderMap = {};
+  data.levelOrder.forEach((levelIndex, index) => {
+    levelOrderMap[levelIndex] = index + 1; // Order starts from 1
+  });
+
+  // update all levels with their new Order values
+  const updatePromises = levels.map(level => {
+    const newOrder = levelOrderMap[level.LevelIndex] || 0; // 0 for levels not in the order array
+    return LevelPackLevel.update(
+      { Order: newOrder },
+      { where: { LevelPackLevelIndex: level.LevelPackLevelIndex } },
+    );
+  });
+
+  await Promise.all(updatePromises);
+  return true;
 };
 
 const AddLevel = async data => {
@@ -47,64 +62,55 @@ const AddLevel = async data => {
   const level = await Level.findOne({
     where: { LevelIndex: data.LevelIndex },
   });
+
+  if (!pack) {
+    return 'Level pack not found.';
+  }
+
+  if (!level) {
+    return 'Level not found.';
+  }
+
   if (level.Locked) {
     return 'Level is locked.';
   }
   if (level.Hidden) {
     return 'Level is hidden.';
   }
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    let Sort = '';
-    if (data.levels > 0) {
-      Sort = lastEntry(data.last.Sort);
-    } else {
-      Sort = firstEntry();
-    }
-    await LevelPackLevel.create({
+
+  if (pack.KuskiIndex !== data.KuskiIndex && !data.mod) {
+    return 'This is not your level pack';
+  }
+
+  // check if level is already in this pack
+  const existingLevel = await LevelPackLevel.findOne({
+    where: {
       LevelPackIndex: data.LevelPackIndex,
       LevelIndex: data.LevelIndex,
-      LevelName: level.LevelName,
-      Sort,
-    });
-    return '';
-  }
-  return 'This is not your level pack';
-};
+    },
+  });
 
-const SortLevel = async data => {
-  const pack = await LevelPack.findOne({
-    where: { LevelPackIndex: data.LevelPackIndex },
-  });
-  const levels = await LevelPackLevel.findAll({
-    where: { LevelPackIndex: data.LevelPackIndex },
-    order: ['Sort'],
-  });
-  if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
-    const { LevelIndex } = levels[data.source.index];
-    const beforeIndex =
-      data.destination.index === 0
-        ? data.destination.index
-        : data.destination.index - 1;
-    const midIndex = data.destination.index;
-    const afterIndex =
-      data.destination.index === levels.length - 1
-        ? data.destination.index
-        : data.destination.index + 1;
-    let Sort = '';
-    if (data.source.index > data.destination.index) {
-      Sort = inBetween(levels[beforeIndex].Sort, levels[midIndex].Sort, -1);
-    } else {
-      Sort = inBetween(levels[midIndex].Sort, levels[afterIndex].Sort, 1);
-    }
-    await LevelPackLevel.update(
-      { Sort },
-      {
-        where: { LevelPackIndex: data.LevelPackIndex, LevelIndex },
-      },
-    );
-    return true;
+  if (existingLevel) {
+    return 'Level is already in this pack.';
   }
-  return false;
+
+  // get the highest Order value in this pack and add 1
+  const maxOrderResult = await LevelPackLevel.findOne({
+    where: { LevelPackIndex: data.LevelPackIndex },
+    order: [['Order', 'DESC']],
+    attributes: ['Order'],
+  });
+
+  const newOrder = maxOrderResult ? maxOrderResult.Order + 1 : 1;
+
+  await LevelPackLevel.create({
+    LevelPackIndex: data.LevelPackIndex,
+    LevelIndex: data.LevelIndex,
+    LevelName: level.LevelName,
+    Order: newOrder,
+    Sort: '',
+  });
+  return '';
 };
 
 const DeleteLevel = async data => {
@@ -131,29 +137,29 @@ const UpdateLevel = async data => {
   const levelPackLevel = await LevelPackLevel.findOne({
     where: { LevelPackLevelIndex: data.LevelPackLevelIndex },
   });
-  
+
   if (!levelPackLevel) {
     return 'Level pack level not found';
   }
-  
+
   const pack = await LevelPack.findOne({
     where: { LevelPackIndex: levelPackLevel.LevelPackIndex },
   });
-  
+
   if (!pack) {
     return 'Level pack not found';
   }
-  
+
   if (pack.KuskiIndex === data.KuskiIndex || data.mod) {
     const updateData = {};
     if (data.ExcludeFromTotal !== undefined) {
       updateData.ExcludeFromTotal = data.ExcludeFromTotal;
     }
-    
+
     if (Object.keys(updateData).length === 0) {
       return 'No valid fields to update';
     }
-    
+
     await LevelPackLevel.update(updateData, {
       where: { LevelPackLevelIndex: data.LevelPackLevelIndex },
     });
@@ -166,15 +172,25 @@ router
   .post('/sort', async (req, res) => {
     const auth = authContext(req);
     if (auth.auth) {
-      const sort = await SortPack({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (sort) {
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
+      try {
+        const sort = await SortPack({
+          ...req.body,
+          KuskiIndex: auth.userid,
+          mod: auth.mod,
+        });
+        if (sort === true) {
+          res.json({ success: 1 });
+        } else {
+          res.json({
+            success: 0,
+            error: sort,
+          });
+        }
+      } catch (error) {
+        res.json({
+          success: 0,
+          error: 'Internal server error: ' + error.message,
+        });
       }
     } else {
       res.sendStatus(401);
@@ -215,21 +231,13 @@ router
     }
   })
   .post('/sortLevel', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const sort = await SortLevel({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        mod: auth.mod,
-      });
-      if (sort) {
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0, error: 'This is not your level pack' });
-      }
-    } else {
-      res.sendStatus(401);
-    }
+    // DEPRECATED: Use POST /sort with levelOrder array instead
+    res.status(410).json({
+      success: 0,
+      error:
+        'This endpoint is deprecated. Use POST /sort with a levelOrder array instead.',
+      deprecated: true,
+    });
   })
   .post('/updateLevel', async (req, res) => {
     const auth = authContext(req);
@@ -240,15 +248,17 @@ router
           KuskiIndex: auth.userid,
           mod: auth.mod,
         });
-        
+
         if (update === true) {
           res.json({ success: 1 });
         } else {
           res.json({ success: 0, error: update });
         }
       } catch (error) {
-        console.error('Error in updateLevel:', error);
-        res.json({ success: 0, error: 'Internal server error: ' + error.message });
+        res.json({
+          success: 0,
+          error: 'Internal server error: ' + error.message,
+        });
       }
     } else {
       res.sendStatus(401);
