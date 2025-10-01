@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { forEach } from 'lodash-es';
 import { format } from 'date-fns';
 import neoAsync from 'neo-async';
@@ -609,4 +610,154 @@ export const legacyTimes = async importStrategy => {
       });
     },
   );
+};
+
+export const orderLevels = async () => {
+  try {
+    console.log('Starting conversion of Sort values to Order values...');
+
+    // First, let's see what data we're working with
+    console.log('Fetching all levelpack_level records...');
+    const allRecords = await LevelPackLevel.findAll({
+      order: [
+        ['LevelPackIndex', 'ASC'],
+        ['Sort', 'ASC'],
+      ],
+    });
+
+    console.log(`Found ${allRecords.length} total records`);
+
+    // Group records by LevelPackIndex
+    const groupedRecords = {};
+    allRecords.forEach(record => {
+      const packIndex = record.LevelPackIndex;
+      if (!groupedRecords[packIndex]) {
+        groupedRecords[packIndex] = [];
+      }
+      groupedRecords[packIndex].push(record);
+    });
+
+    console.log(
+      `Found ${Object.keys(groupedRecords).length} unique LevelPackIndex groups`,
+    );
+
+    // Process each group and assign Order values
+    const updates = [];
+    let totalUpdates = 0;
+
+    for (const [packIndex, records] of Object.entries(groupedRecords)) {
+      // Filter out records with empty Sort values - they should keep Order = 0
+      const recordsWithSort = records.filter(
+        record => record.Sort && record.Sort.trim() !== '',
+      );
+      const recordsWithoutSort = records.filter(
+        record => !record.Sort || record.Sort.trim() === '',
+      );
+
+      console.log(
+        `Processing LevelPackIndex ${packIndex} with ${records.length} records (${recordsWithSort.length} with Sort, ${recordsWithoutSort.length} without Sort)`,
+      );
+
+      // Sort records by their current Sort value to maintain order
+      recordsWithSort.sort((a, b) => {
+        const sortA = a.Sort || '';
+        const sortB = b.Sort || '';
+        return sortA.localeCompare(sortB);
+      });
+
+      // Assign sequential Order values starting from 1 only to records with Sort values
+      recordsWithSort.forEach((record, index) => {
+        const newOrder = index + 1;
+        if (record.Order !== newOrder) {
+          updates.push({
+            id: record.LevelPackLevelIndex,
+            oldOrder: record.Order,
+            newOrder: newOrder,
+            sortValue: record.Sort,
+            levelPackIndex: record.LevelPackIndex,
+          });
+          totalUpdates++;
+        }
+      });
+
+      // Ensure records without Sort values have Order = 0
+      recordsWithoutSort.forEach(record => {
+        if (record.Order !== 0) {
+          updates.push({
+            id: record.LevelPackLevelIndex,
+            oldOrder: record.Order,
+            newOrder: 0,
+            sortValue: record.Sort || '',
+            levelPackIndex: record.LevelPackIndex,
+          });
+          totalUpdates++;
+        }
+      });
+    }
+
+    console.log(`\nPrepared ${totalUpdates} updates to be made`);
+
+    if (totalUpdates === 0) {
+      console.log('No updates needed - all Order values are already correct!');
+      return {
+        success: true,
+        message: 'No updates needed - all Order values are already correct!',
+        totalUpdates: 0,
+      };
+    }
+
+    // Show a preview of the first few updates
+    console.log('\nPreview of first 10 updates:');
+    updates.slice(0, 10).forEach(update => {
+      console.log(
+        `  ID ${update.id}: LevelPackIndex ${update.levelPackIndex}, Order ${update.oldOrder} -> ${update.newOrder}, Sort: "${update.sortValue}"`,
+      );
+    });
+
+    if (updates.length > 10) {
+      console.log(`  ... and ${updates.length - 10} more updates`);
+    }
+
+    // Ask for confirmation (in a real scenario, you might want to add a prompt here)
+    console.log('\nProceeding with updates...');
+
+    // Perform the updates in batches to avoid overwhelming the database
+    const batchSize = 100;
+    let processedBatches = 0;
+
+    for (let i = 0; i < updates.length; i += batchSize) {
+      const batch = updates.slice(i, i + batchSize);
+
+      // Create a single query to update all records in this batch
+      const updatePromises = batch.map(update =>
+        LevelPackLevel.update(
+          { Order: update.newOrder },
+          { where: { LevelPackLevelIndex: update.id } },
+        ),
+      );
+
+      await Promise.all(updatePromises);
+      processedBatches++;
+
+      console.log(
+        `Processed batch ${processedBatches}/${Math.ceil(updates.length / batchSize)} (${batch.length} records)`,
+      );
+    }
+
+    console.log(`\n✅ Successfully updated ${totalUpdates} records!`);
+
+    return {
+      success: true,
+      message: `Successfully updated ${totalUpdates} records!`,
+      totalUpdates,
+      processedBatches,
+    };
+  } catch (error) {
+    console.error('❌ Error during conversion:', error);
+    return {
+      success: false,
+      message: `Error during conversion: ${error.message}`,
+      error: error.message,
+    };
+  }
 };
