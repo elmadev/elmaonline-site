@@ -101,7 +101,7 @@ const AddLevel = async data => {
     attributes: ['Order'],
   });
 
-  const newOrder = maxOrderResult ? maxOrderResult.Order + 1 : 1;
+  const newOrder = maxOrderResult?.Order ? maxOrderResult.Order + 1 : 0;
 
   await LevelPackLevel.create({
     LevelPackIndex: data.LevelPackIndex,
