@@ -6,7 +6,7 @@ import {
 } from '#utils/levelstats';
 import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { updateRanking, deleteRanking } from '#utils/ranking';
-import { email, legacyTimes } from '#utils/dataImports';
+import { email, legacyTimes, orderLevels } from '#utils/dataImports';
 import { recapGenerate } from '#utils/recap';
 import { coldStorage, recoverRecFiles } from '#utils/timefile';
 
@@ -94,6 +94,24 @@ app.get('/legacytimes/:strategy', async (req, res) => {
   if (req.header('Authorization') === config.run.ranking) {
     res.json({ started: true });
     await legacyTimes(req.params.strategy);
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+app.get('/orderlevels', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    try {
+      const result = await orderLevels();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: error.message,
+      });
+    }
   } else {
     res.status(401);
     res.send('Unauthorized');

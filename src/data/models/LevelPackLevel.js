@@ -40,6 +40,11 @@ const LevelPackLevel = Model.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Order: {
+      type: DataType.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     indexes: [{ fields: ['LevelIndex, LevelPackIndex'] }],
