@@ -45,6 +45,11 @@ const BattleLeague = Model.define(
       allowNull: false,
       defaultValue: '0',
     },
+    Settings: {
+      type: DataType.JSON,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['KuskiIndex'] }],

@@ -78,6 +78,156 @@ const addLeague = async data => {
   return add;
 };
 
+const isPlainObject = value =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const validateWhitelistPayload = whitelist => {
+  if (!Array.isArray(whitelist)) {
+    return false;
+  }
+  return whitelist.every(item => Number.isInteger(item) && item >= 0);
+};
+
+const validateBreakPayload = brk => Number.isInteger(brk);
+
+const validateOverridePayload = data => {
+  if (!isPlainObject(data)) {
+    return false;
+  }
+
+  const { BattleLeagueBattleIndex, KuskiIndex, Time, DNF, Kuski } = data;
+
+  if (
+    !(
+      Number.isInteger(BattleLeagueBattleIndex) &&
+      BattleLeagueBattleIndex >= 0 &&
+      Number.isInteger(KuskiIndex) &&
+      KuskiIndex >= 0 &&
+      Number.isInteger(Time) &&
+      typeof DNF === 'boolean' &&
+      typeof Kuski === 'string'
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
+const getLeagueForSettingsUpdate = async data => {
+  const where = data.BattleLeagueIndex
+    ? { BattleLeagueIndex: data.BattleLeagueIndex }
+    : null;
+
+  if (!where) {
+    return { error: `Missing league identifier` };
+  }
+
+  const league = await BattleLeague.findOne({ where });
+  if (!league) {
+    return { error: `Can't find league` };
+  }
+  if (data.By !== league.KuskiIndex) {
+    return { error: `Not your battle league` };
+  }
+
+  return { league };
+};
+
+const updateLeagueWhitelist = async data => {
+  const whitelist = data?.whitelist;
+  if (!validateWhitelistPayload(whitelist)) {
+    return `Invalid whitelist format`;
+  }
+
+  const result = await getLeagueForSettingsUpdate(data);
+  if (result.error) {
+    return result.error;
+  }
+
+  const currentSettings = isPlainObject(result.league.Settings)
+    ? result.league.Settings
+    : {};
+  const override = isPlainObject(currentSettings.override)
+    ? currentSettings.override
+    : {};
+
+  await result.league.update({
+    Settings: { ...currentSettings, whitelist, override },
+  });
+  return false;
+};
+
+const updateLeagueBreak = async data => {
+  const brk = data?.break;
+  if (!validateBreakPayload(brk)) {
+    return `Invalid break format`;
+  }
+
+  const result = await getLeagueForSettingsUpdate(data);
+  if (result.error) {
+    return result.error;
+  }
+
+  const currentSettings = isPlainObject(result.league.Settings)
+    ? result.league.Settings
+    : {};
+
+  await result.league.update({
+    Settings: { ...currentSettings, break: brk },
+  });
+  return false;
+};
+
+const updateLeagueOverride = async data => {
+  if (!validateOverridePayload(data)) {
+    return `Invalid override format`;
+  }
+
+  const result = await getLeagueForSettingsUpdate(data);
+  if (result.error) {
+    return result.error;
+  }
+
+  const currentSettings = isPlainObject(result.league.Settings)
+    ? result.league.Settings
+    : {};
+  const currentOverride = isPlainObject(currentSettings.override)
+    ? currentSettings.override
+    : {};
+  const battleId = String(data.BattleLeagueBattleIndex);
+  const existingEntries = Array.isArray(currentOverride[battleId])
+    ? currentOverride[battleId]
+    : [];
+  const nextEntries =
+    data.Time === -1
+      ? existingEntries.filter(entry => entry.KuskiIndex !== data.KuskiIndex)
+      : [
+          ...existingEntries,
+          {
+            KuskiIndex: data.KuskiIndex,
+            Time: data.Time,
+            DNF: data.DNF,
+            Kuski: data.Kuski,
+          },
+        ];
+  const nextOverride = {
+    ...currentOverride,
+    [battleId]: nextEntries,
+  };
+
+  await result.league.update({
+    Settings: {
+      ...currentSettings,
+      whitelist: Array.isArray(currentSettings.whitelist)
+        ? currentSettings.whitelist
+        : [],
+      override: nextOverride,
+    },
+  });
+  return false;
+};
+
 const getKuski = async k => {
   if (!k) return false;
   const findKuski = await Kuski.findOne({
@@ -155,6 +305,54 @@ router
     if (auth.auth) {
       const add = await AddBattle(req.body);
       res.json(add);
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/update/whitelist', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const update = await updateLeagueWhitelist({
+        ...req.body,
+        By: auth.userid,
+      });
+      if (update) {
+        res.json({ success: 0, error: update });
+      } else {
+        res.json({ success: 1 });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/update/break', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const update = await updateLeagueBreak({
+        ...req.body,
+        By: auth.userid,
+      });
+      if (update) {
+        res.json({ success: 0, error: update });
+      } else {
+        res.json({ success: 1 });
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  })
+  .post('/update/override', async (req, res) => {
+    const auth = authContext(req);
+    if (auth.auth) {
+      const update = await updateLeagueOverride({
+        ...req.body,
+        By: auth.userid,
+      });
+      if (update) {
+        res.json({ success: 0, error: update });
+      } else {
+        res.json({ success: 1 });
+      }
     } else {
       res.sendStatus(401);
     }

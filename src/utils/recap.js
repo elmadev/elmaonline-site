@@ -203,6 +203,13 @@ const cutoffs = {
     LevelIndex: [566339, 583727],
     ReplayIndex: [16652, 30832],
   },
+  2025: {
+    TimeIndex: [224565895, 237082331],
+    BattleIndex: [198084, 210323],
+    ChatIndex: [8961619, 9263434],
+    LevelIndex: [583726, 608321],
+    ReplayIndex: [30831, 36949],
+  },
 };
 
 const timeKuski = async year => {
