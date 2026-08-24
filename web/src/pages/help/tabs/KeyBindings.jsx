@@ -137,6 +137,11 @@ const KeyBindings = () => {
         level. You can move your camera using the arrow keys and go faster by
         holding shift while moving.
       </p>
+      <p>
+        In order to send private message to a specific player, press F2 to pick
+        the next player or OPT2+F2 to pick the previous player while being in
+        chat mode (F9).
+      </p>
     </Text>
   );
 };
