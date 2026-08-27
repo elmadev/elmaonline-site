@@ -1,0 +1,23 @@
+import React, { useState, useEffect } from 'react';
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import { Paper } from 'components/Paper';
+
+const {{name}} = () => {
+  const [name, setName] = useState('');
+  const { data } = useStoreState(state => state.{{name}});
+  const { getData } = useStoreActions(actions => actions.{{name}});
+
+  useEffect(() => {
+    setName('{{name}}');
+    getData();
+  }, []);
+
+  return (
+    <Paper>
+      <div>{name}</div>
+      <div>{data}</div>
+    </Paper>
+  );
+};
+
+export default {{name}};

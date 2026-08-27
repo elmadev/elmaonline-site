@@ -1,0 +1,312 @@
+[
+  {
+    "type": "both",
+    "date": "31 Aug 2025",
+    "version": "1.0.15",
+    "highlights": [
+      "This update adds a couple of new features (like an option for showing the actual FPS ingame), and includes many FPS limiter fixes and checkpoint fixes."
+    ],
+    "changes": [
+      {
+        "section": "New features",
+        "changes": [
+          "Show actual FPS ingame. Toggle on/off with the `!fps` command ingame, or with the 'Show FPS info' checkbox in eolconf (renamed from 'Show FPS limit'). If the FPS limiter is on, the limit is shown in parentheses after the actual FPS.",
+          "Add a `!clear` command for clearing the chat log",
+          "Show FPS info also in F1-enter and F2-enter",
+          "Show battle countdown text also in F1-enter and F2-enter"
+        ]
+      },
+      {
+        "section": "FPS fixes",
+        "changes": [
+          "Fix FPS limiter breaking on very long runs (where the FPS used to drop to around 30 somewhere between 30 and 60 minutes into the run depending on the FPS limit)",
+          "Fix FPS limiter not working on the first frame",
+          "Fix FPS limiter not working properly in the editor after the first run. The frame counter was not reset between in-editor runs, causing the FPS to be limited to around 30 on most subsequent runs. Ingame runs were not affected."
+        ]
+      },
+      {
+        "section": "Checkpoint fixes",
+        "changes": [
+          "Fix unidirectional only-from-left and only-from-below checkpoints not working properly. They were just triggered from either direction.",
+          "Fix the positioning of horizontal checkpoints. The vertical offset of the '-' glyph was not taken into account when drawing the checkpoint line, so the line was drawn 8 pixels higher than where the checkpoint actually was.",
+          "Fix inaccurate checkpoint triggering. Triggering from left happened slightly too late: right wheel needed to go past the checkpoint by `(wheel radius - head radius)` before triggering. Also, kuski position was accidentally used instead of head position, so triggering by head was inaccurate (even though the wheel radius bug made it less obvious).",
+          "Reduce checkpoint editing speed to 1/10th for the first 100 ms. This allows for much more fine-grained control of moving/scaling the checkpoint.",
+          "Don't save apple checkpoint times when apple checkpoints are disabled. This fixes apple takes knocking other checkpoints off the checkpoint table when `(taken apples + taken checkpoints)` exceeds the max checkpoint amount to show. It also fixes an empty checkpoint table with just the column names showing up when taking an apple before any checkpoint."
+        ]
+      },
+      {
+        "section": "eolconf fixes",
+        "changes": [
+          "Show scrollbars if the window doesn't fit in the visible area of the screen",
+          "Fix crash and eolconf.json corruption when trying to save text fields that include non-ascii characters. Block non-ascii input for Nick, Player 2 nick, Hostname, Chat timestamp, and lev pack name/pattern/stats fields."
+        ]
+      },
+      {
+        "section": "Other client fixes",
+        "changes": [
+          "Fix unfiltered finished times list restricting the item count on filtered lists. That means external times can't anymore knock internals off the internal list and vice versa, even if they do so on the unfiltered main list.",
+          "If kuski changed nick capitalization mid-battle, the old result was not removed from the battle results table. Just a clientside display bug; the results were correctly updated on the serverside.",
+          "Update wxWidgets from 3.1.4 to 3.2.8.1. Fixes eolconf input validators accepting pasted invalid characters, and may improve high-DPI and dark mode compatibility for both eolconf and startballe."
+        ]
+      },
+      {
+        "section": "Server fixes",
+        "changes": [
+          "Fix duplicate results in a multi battle if one of the multiplaying kuskis changes nick capitalization mid-battle and rejoins",
+          "Fix a queued unlocked battle level being downloadable if you capitalize it differently in Ctrl-F4. Note that a queued level is typically locked, in which case this was not an issue."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/qm49ekjw1y/EOL_update_2025-08-31_v1.0.15.zip"
+  },
+  {
+    "type": "both",
+    "date": "31 Aug 2024",
+    "version": "1.0.14",
+    "highlights": [
+      "This update adds many new features, such as freely placeable checkpoints for timing your runs, taken apples disappearing when spying, one-frame brake key, filters in Finished times list, showing gravity arrows on apples, keys for decreasing/increasing the FPS limit by a fixed amount, and more!"
+    ],
+    "changes": [
+      {
+        "section": "New features",
+        "changes": [
+          "Freely placeable checkpoints for timing your runs. When playing, you'll see the time and speed when passing a checkpoint or taking an apple, and also the difference to your best checkpoint/apple time. Press F2 + enter in level menu to enter the checkpoint editor, it has more instructions to get you started. See also below for more details about the checkpoint features.",
+          "Taken apples disappear when you spy someone in F1 + enter.",
+          "One-frame brake key. Configurable in eolconf for both players separately.",
+          "Filters in Finished times list. When the list is shown (F7), shift-F7 toggles between 'Finished times' (the normal list), 'My finished times and checkpoints', 'Finished internal times', 'Finished external times' and 'Finished multi times'. Note that 'My finished times and checkpoints' respects the current checkpoint settings: it will show just finishes if checkpoints are disabled; it won't show apple times if they are disabled; and it will show checkpoint/apple speeds if speed is also shown when passing a checkpoint.",
+          "The Finished times list is now browsable offline. Offline finishes won't show up on the list (just like before), but checkpoint/apple times driven offline will show up.",
+          "'Public chat hidden' mode (only team chat and PMs shown). Shift-F9 now toggles between 'Chat shown', 'Public chat hidden' and 'Chat hidden'.",
+          "Restore apple battle progress after EOL crashes or is restarted. The server sends you your taken apples when you reconnect.",
+          "Keys for decreasing/increasing the FPS limit by a fixed amount (configure the keys in eolconf). The default step is 1, but it is also configurable. The change takes effect when the next run starts.",
+          "Option for showing the current FPS limit on screen (checkbox in eolconf). The `!fps` command will also now toggle this setting, instead of just printing a disappearing message with the limiter status.",
+          "Show pending FPS change in the FPS limit row (like 40 -> 41 or 30 -> off). The top messages about FPS change are not shown when the FPS limit row is shown.",
+          "The current FPS limit is saved in the database for every run, and the info will be made available to you on elma.online.",
+          "Option for showing the minimum distance between the bike and wheel on screen (checkbox in eolconf). Shows both the current distance (for the closest wheel) and the min distance reached during the run.",
+          "Show gravity arrows on apples. This is an experimental feature, so you'll have to enable it in eolconf if you want to use it. As eolconf will tell you when you turn it on, the arrows can be shaky, especially when playing at low FPS (but they should always be smooth when using F1 + enter). The arrows are shown when playing (both single and multi), spying, in editor, and in replays. Note that the actual size of the arrows depends on your zoom, because the available fonts are fixed-size. The large font size is always used if zoom is 1.0 or higher (your 'Large font' setting doesn't affect this), and the normal font size is used for zooms between 0.25 and 1. The arrows are not shown if zoom < 0.25.",
+          "After losing connection, show a sticky 'Lost connection' text until reconnecting.",
+          "Show [Download]/[Invite] text with lev download / multi invite input to distinguish them from the chat input.",
+          "Option for disabling the intro scrolling animation (checkbox in eolconf). Thanks to Smibu for the original patch.",
+          "End screen delay removed. This means that a quick double-enter won't get stuck on the 'Thank you for registering the game!' screen anymore. Thanks to Smibu for the original patch."
+        ]
+      },
+      {
+        "section": "eolconf",
+        "changes": [
+          "Show assigned keys on the button labels, instead of just saying 'Change' or 'Set key'.",
+          "Added accelerator keys (alt + key) for quick navigation (for Replay keys, Function keys, Hotkeys, Lev pack buttons, Save, Save and exit).",
+          "Removed the 'Lock new levels' checkbox, which means the lock will always be on at startup. It can still be toggled with shift-F3 ingame if you need it, but battle and cup levels are of course automatically unlocked when the battle / cup event starts, just like before.",
+          "Added tooltips for the 'Add/Edit lev pack' dialog to help with correct pattern formatting."
+        ]
+      },
+      {
+        "section": "Bug fixes",
+        "changes": [
+          "Fix crashing with certain configurations on high resolutions like 4K. Thanks to Smibu for the original patch.",
+          "Max speed display did not take the current frame into account, so it was lagging by one frame compared to the speed display.",
+          "Fix startballe having multi checkbox enabled when you don't have rights to start multi battles."
+        ]
+      },
+      {
+        "section": "More details about checkpoints",
+        "changes": [
+          "eolconf has various options for configuring the checkpoint behaviour.",
+          "By default, apple times are shown only if the level has checkpoints, but you can change the behaviour in eolconf. The old 'last apple' timer is unrelated to checkpoints, so it can still be toggled off/on separately.",
+          "By default, the times and speeds for 10 most recently passed checkpoints (including apples) for the current run are shown, but you can change the amount in eolconf.",
+          "Checkpoints can be bidirectional (triggers from either side) or unidirectional (triggers only from one side). Bidirectional is the default mode for a newly added checkpoint.",
+          "You can move, scale, rotate (vertical or horizontal) and change the orientation (bidirectional or unidirectional) of the checkpoints as instructed in F2 + enter. The modifications are applied to the currently selected checkpoint; use F2 or shift-F2 to change the selection.",
+          "Pressing F1 will add a vertical checkpoint if the currently selected checkpoint is vertical, or a horizontal checkpoint if the currently selected checkpoint is horizontal.",
+          "All checkpoints are automatically saved in eolconf.json when you return to menu from the checkpoint editor.",
+          "Shift-F11 shows/hides the checkpoint table when playing (shown by default when checkpoints are enabled).",
+          "If the 'Show speed' option is 'If speedometer is on' (which is the default), it means you can also toggle the visibility of the speed info when playing, by turning speedometer off/on.",
+          "For the customized checkpoint table alignment option, you can choose between Top/Middle/Bottom for the vertical alignment, and between Left/Middle/Right for the horizontal alignment. Alternatively, you can write any value between 0 and 1 (Vertical: Top is 1.0, Middle 0.5, and Bottom 0.0. Horizontal: Left is 0.25, Middle 0.5, and Right 0.75). If the checkbox is not ticked, the default location above the bottom right texts is used.",
+          "Best checkpoint/apple times are remembered for all levels until EOL is closed.",
+          "Best checkpoint/apple times and their speeds are also shown in the checkpoint editor.",
+          "Editing a checkpoint resets its best time and speed.",
+          "Ctrl + Delete in checkpoint editor resets the best checkpoint/apple times for that level."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/vo3wurmpk2/EOL_update_2024-08-31_v1.0.14.zip"
+  },
+  {
+    "type": "client",
+    "date": "20 Feb 2022",
+    "version": "1.0.13",
+    "highlights": [
+      "This update fixes a severe bug that was causing lag and sometimes crashes in first finish and one-life battles. Updating is highly recommended, as it will make the server more responsive for everyone. The update also adds more intelligent chat line splitting, and improves startballe by adding incremental search (=intuitive dropdown typing behaviour) and a way to reconnect after losing connection."
+    ],
+    "changes": [
+      {
+        "section": "Bug fixes",
+        "changes": [
+          "Fixed a bug in the real-time result updating of first finish and one-life battles. It was causing lagging for many people, and occasional crashes for some. Due to the accumulating effect of lag, their finishes often registered only after a significant delay."
+        ]
+      },
+      {
+        "section": "Improvements",
+        "changes": [
+          "Avoid splitting long chat lines in the middle of a word. A word is split only if a word boundary can't be found within the preceding 20 characters.",
+          "Startballe: Added incremental search to all dropdown lists. So for example when the Duration dropdown is selected, typing 15 will jump to '15 mins' as expected, instead of ending up at '50 mins'.",
+          "Startballe: Show a reconnect button after losing connection."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/fe18go75j4/EOL_update_2022-02-20.zip"
+  },
+  {
+    "type": "both",
+    "date": "23 Oct 2021",
+    "version": "1.0.12",
+    "highlights": [
+      "This update fixes bugs in the previous release, most notably an internal error randomly happening when a run ends, visual bugs with displaying shirts, and bugs with apple hiding in apple battles. It also adds support for over 60 minute battles, and it makes team chat easier to use: ctrl-F9 will now just toggle team chat mode on, and then F9 will work as team chat until you toggle it back off with ctrl-F9. In-editor gameplay is also improved by enabling the last apple time, speedometer and one-wheel status displays and cripple commands."
+    ],
+    "changes": [
+      {
+        "section": "Client improvements",
+        "changes": [
+          "Made team chat easier to use: team chat mode is now persistent, toggle it on/off with ctrl-F9. Then F9 will work as team chat until you toggle ctrl-F9 again.",
+          "Made !fps commands case insensitive.",
+          "Show last apple time, speedometer and one-wheel status when playing in editor.",
+          "Cripple commands work when playing in editor.",
+          "Added support for starting over 60 minute battles. Only for special events that are announced well in advance, so ask moderators to enable this feature for you when you want to start a pre-announced battle that needs more than 60 minutes."
+        ]
+      },
+      {
+        "section": "Client bug fixes",
+        "changes": [
+          "Fixed internal error randomly happening when a run ends.",
+          "Fixed your own shirt sometimes showing on shirtless kuskis.",
+          "Fixed a just downloaded shirt sometimes not instantly showing on a kuski (worked only after you restarted EOL).",
+          "Don't unhide taken apples in apple battle when dis/reconnecting (F12).",
+          "Don't hide an apple at start, when taken during apple battle countdown (because it doesn't yet count in the results anyway).",
+          "Fixed crash if writing a downloaded lev/rec to disk fails.",
+          "Fixed a duplicate of yourself sometimes showing up (showing your current run with a slight delay) for a moment after reconnecting mid-run."
+        ]
+      },
+      {
+        "section": "Server improvements",
+        "changes": [
+          "Show completion time in apple battle results instead of max apple count.",
+          "Database traffic optimizations, which should decrease spying lag.",
+          "Fixed a just reconnected player being shown in a hidden battle for the rest of the run."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/lf6xwng7bk/EOL_update_2021-10-23.zip"
+  },
+  {
+    "type": "both",
+    "date": "05 Sep 2021",
+    "version": "1.0.11",
+    "highlights": [
+      "This is a massive update that provides dozens of new features and fixes dozens of bugs. Everyone needs to update their EOL client as instructed in the 'How to update' section, you won't be able to play online with an old version anymore.",
+      "Highlights of this release include new 64-bit versions of startballe and eolconf, real-time result updating for first finish and one-life battles, best times lists always showing your own position, legacy times imported from Moposite/Kopasite/skintatious, automatic shirt downloading, more customizable replay controls (up to 1024x fast motion), ingame FPS changing, taken apples staying hidden in apple battles, team chat, chat timestamps, longer chat lines, enabling cripple modes outside battle, the last run being automatically saved in a temporary rec file, being able to watch replays of all your PRs and other finished runs on the website (all your PRs/finishes driven after this release), large font layout option for the ingame texts, customizable table alignment, ingame help showing the default key bindings and chat commands, better support for high resolutions, and much more!",
+      "Linux users may need to update their Wine to the newest dev or stable version or use winetricks to install vcrun2019, if there's a complaint about a missing dll when launching the new startballe or eolconf."
+    ],
+    "changes": [
+      {
+        "section": "New features",
+        "changes": [
+          "New 64-bit startballe.exe, GUI rewritten from scratch.",
+          "New 64-bit eolconf.exe with various new options, GUI rewritten from scratch. It will continue to save your settings in eol.exe as before, but also in a new human-readable file called eolconf.json, which is created automatically in your EOL folder. Settings in eolconf.json take priority, so advanced users can also edit most of them manually (but resolution/zoom, navigator size/zoom and main menu items can only be edited through eolconf.exe).",
+          "Real-time result updating for first finish and one-life (single player) battles, instead of having to wait for the run to end.",
+          "Best single and multi times lists (shift-F5 and ctrl-F5) always show your own position even if you're not in top20.",
+          "Best single times list (shift-F5) shows also legacy times (imported from Moposite, Kopasite and skintatious).",
+          "Other players' custom shirts are downloaded automatically. Enabled by default, but can be disabled in eolconf.",
+          "Maximum vertex limit increased from 5130 to 20000.",
+          "The 4x and 8x fast motion replay controls are replaced with two custom slots where you can choose a speed between 4x and 1024x. Press the 'Replay keys' button in eolconf to customize the settings.",
+          "Ingame help showing the default key bindings and chat commands. Press ctrl-F1 to open help page 1 (key bindings), and ctrl-F1 again to change to help page 2 (chat commands).",
+          "Ingame FPS changing. Press F9 and type '!fps <30-1000>' (example: !fps 60) to set the FPS limit, or '!fps on/off' to toggle the FPS limiter on or off, or '!fps' to show the current limiter status. These commands are also listed on ingame help page 2. The FPS change is applied at the start of the next run. The commands work also in offline mode.",
+          "Taken apples stay hidden in apple battles. Enabled by default, but can be disabled in eolconf. In free camera mode (F1+enter), press F1 to toggle between showing/hiding the taken apples. It matches the F1 'hide others' setting: when others are hidden, taken apples are also hidden. Gravity apples do not stay hidden, due to gameplay purposes. You can make all apples visible again by restarting EOL.",
+          "Countdown for apple battles.",
+          "Show total apple count in standings title for apple battles.",
+          "Team chat (ctrl-F9). Due to this feature, the show/hide last apple key is moved from ctrl-F9 to ctrl-F8.",
+          "Timestamp for chat lines. Timestamp formatting can be configured in eolconf. You can press the 'Chat timestamp' link in eolconf to open the formatting reference in your browser.",
+          "Triple the maximum chat line input length (from 65 to 195 characters). Long lines are automatically split into up to 3 separate lines as needed.",
+          "Enable cripple modes (no volt, no turn, one turn, no brake, no throttle, always throttle, one wheel, drunk) outside battle. Press F9 and type a command, for example '!novolt on', or '!noturn off', or '!nobrake' (toggles the current no brake status), or '!cripples off' (switches all active cripples off). See all the commands and their shorter aliases (for these examples: !nv on, !nt off, !nb, !cr off) on ingame help page 2.",
+          "Free camera (F1+enter) in offline mode. Previously this worked only in online mode.",
+          "Last run is always saved in a temporary rec file (!last.rec) when the run ends. Works also offline and for multi.",
+          "All online runs are sent to the server, so you can watch/share the recs of all your PRs and other finished runs on the website (all your PRs/finishes driven after this release). With the exception of battle recs (everyone's best rec will be publicly visible on the website, not only the winner rec like before), all your recs are only visible to you, unless you explicitly share it through the website.",
+          "Battle leader recs are uploaded instantly during the battle, so the winner rec will be available even if the winner is not online when the battle ends.",
+          "Improved password security and anticheat. AHK and other keyboard macros are detected and their usage is visible to moderators.",
+          "All EOL server database calls are rewritten, in order to get rid of a legacy 32-bit dependency. The server is now compiled in 64-bit mode, ensuring easier OS upgrades on the serverside in the future.",
+          "A hostname for the server (eol.elma.online by default, game.elma.online also works) can be used in eolconf, instead of having to manually specify the server IP.",
+          "Option for allowing chat lines and tables to overlap (can be enabled in eolconf). Disables the default behaviour where the number of chat lines limits the vertical size of tables (and some tables getting split into multiple columns if there would be overlap).",
+          "Large font layout option for the ingame texts (can be enabled in eolconf). When enabling it, the 'Chat and tables can overlap' checkbox is also checked by default (large font layout usually works better with that enabled, but it can also depend on your other custom settings).",
+          "Tables can be moved to the left or right instead of centered tables ('Table alignment' in eolconf). You can also set a custom value between 0 and 1, where Left = 0.25, Middle = 0.5, and Right = 0.75.",
+          "Show a 'Times hidden' text in leader/position line for hidden times battles.",
+          "Lev file can be drag and dropped to startballe.",
+          "Locked levels will not get unlocked if a moderator has locked them permanently, or if another version of the level already exists in one of the level packs on the website. This reduces the amount of user-visible wrong versions of levels significantly. As of writing, over 94000 wrong versions have already been permanently locked. Keeping the 'Lock new levels' option checked in eolconf is highly recommended, especially for level designers who test many incomplete versions ingame before battling the final version (battling will automatically unlock the level).",
+          "An eolconf option for disabling rec frame capture ('Capture FPS' checkbox). For those who tend to accidentally press F1+enter in replay menu.",
+          "Ctrl+letter in multi invite (F8) jumps to the closest nick. Now this matches the chat PM behaviour (F2 and shift-F2 for scrolling through invitees was already possible before).",
+          "Press F8 and enter to accept the newest multi invite. No need to write the nick anymore, but it will still work as well.",
+          "Apple bug times (= 'Hooked bug' times) are allowed for specific levels (decided by admins/moderators). The best times lists for these levels show which times are driven with the bug. The feature is intended for levels where the bug is an essential part of the level (for example WCup512 and WCup705), not for levels where accidental bugs might happen. As of writing, this is enabled for 115 levels."
+        ]
+      },
+      {
+        "section": "Bug fixes",
+        "changes": [
+          "Fixed flag tag flag not showing in free camera mode.",
+          "Fixed free camera movement speed depending on FPS.",
+          "Fixed dying at the end of FF (or any other battle with countdown) if you were in countdown and still on the same run when the battle ended.",
+          "Fixed EOL crashing for resolutions with height > 1118. You won't need eolresofix.exe anymore, this does the same thing automatically when you change the resolution in eolconf and save the settings (thanks to jonsykkel for the eolresofix code).",
+          "Fixed ended battles not always being removed from startballe's dropdown list when you keep startballe open.",
+          "Fixed hidemode setting changing when you get a tcp error and reconnect with F12.",
+          "Fixed players online list (F5) breaking when many people are online.",
+          "Fixed downloading long battle win recs (files over 1 MB).",
+          "Fixed wrong battle win rec saved and uploaded for survivor and apple bug battles.",
+          "Fixed battle rec getting overwritten by a worse rec if EOL is restarted mid-battle.",
+          "Workaround to prevent freezing on a very long run with high FPS and FPS limiter on. There may still be some lagging (= low FPS) after the critical point where you would previously totally freeze (usually somewhere between 30 and 60 minutes into the run depending on the FPS limit), so the 'high FPS + limiter on' combination is still not recommended for very long levels.",
+          "Fixed 'now spying x' messages appearing when pressing F2 in a replay after having spied someone in level.",
+          "Fixed being unable to connect if player 2 was enabled in eolconf but the nick was empty.",
+          "Fixed battle countdown not working if you reconnect (F12) during it.",
+          "Fixed battle index overflowing at every 2^16 battles.",
+          "Fixed local top10s not being 100% cleared from an uploaded level.",
+          "Fixed ingame texts overlapping in certain cases.",
+          "Fixed inconsistent formatting in last apple time display in multi mode for >1 minute runs.",
+          "Fixed potential small rounding errors in last apple time and spied kuski time displays.",
+          "Fixed hotkeys that use F11 or F12.",
+          "Fixed wrong initial battle status message when you open EOL and there's an ongoing battle with countdown. It would always say 'battle countdown started' instead of 'battle running' even if the countdown had ended already.",
+          "Fixed crash when reconnecting (F12) with PM open. The current chat line and PM selection will now be cleared when reconnecting.",
+          "Fixed crash when lev or rec folder doesn't exist. They are now created at startup if needed.",
+          "Fixed spying and best times tables being broken right after reconnecting (before re-entering the level).",
+          "Fixed startballe disconnecting when trying to start a speed battle with apple bugs. The flower is hidden in speed battles, so this is not a sensible combination. The apple bugs checkbox is now disabled for speed battles.",
+          "Allow only moderators to start internal battles. This has been the rule for a long time, but was just not enforced in startballe until now. Special battle rights are still enough to start a 1h TT battle.",
+          "Fixed best times tables not working in replay and editor.",
+          "Fixed spying (F2) not working right after multi invite input (F8) was closed. Invite mode didn't get reset properly until re-entering the level or opening another input (F9 or ctrl-F4).",
+          "Fixed wrong player 2 turn and volt counts being saved in the database for some multiplayer runs. They were counted wrong if player 2 rec had more events than player 1 rec.",
+          "Fixed battle/countdown timer not running properly during replay watching.",
+          "Fixed finished multi times being always shown to everyone, regardless of your visibility settings.",
+          "Fixed inconsistent apple bug handling in online multi between player 1 and player 2. Player 2 bug apple counted as 2 instead of 1 in places where it counts as 1 for player 1 (in the last apple time display; and in drunk mode, player 2 keys didn't swap after bug apple). Changed to match player 1 behaviour.",
+          "Online multi sync fix: Apple at start wasn't taken, so inviter couldn't finish the level.",
+          "Online multi sync fix: With an apple bug start, you would freeze at flower; or if both died, inviter would crash when entering a level next time.",
+          "Online multi sync fix: Fixed wrong apple counts in menu.",
+          "Online multi sync fix: Improved event syncing and rec file cleanup when both take the same apple at around the same time.",
+          "Fixed function keys not working in editor offline.",
+          "Fixed unwanted esc when chat line or other text input is sent/closed very soon after typing with esc alias key. Pressing esc alias to type a character will now block esc for the next 0.3 seconds, if text input was sent/closed sooner than that.",
+          "Fixed a finished run being saved as esced in the database if esc was pressed during the flower-taking lag.",
+          "Prevent PM from accidentally going into public chat when the recipient logs out right before you send the PM (show a notification that they logged out, and clear the chat line)."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/is1yr0b07j/EOL_update_2021-09-05.zip"
+  },
+  {
+    "type": "client",
+    "date": "25 May 2020",
+    "version": "1.0.10",
+    "highlights": [
+      "In celebration of the Steam release, we are releasing a quality-of-life update to your EOL client which fixes a couple of long standing bugs. The old version will continue to work, but everyone is recommended to update."
+    ],
+    "changes": [
+      {
+        "section": "Bug fixes",
+        "changes": [
+          "Shift-F5 (best times lists) no longer wrapping back to 0 for long times.",
+          "It's now possible to upload long battle win recs (files over 1 MB)."
+        ]
+      }
+    ],
+    "file": "https://up.elma.online/u/mpve11oezf/bs.zip"
+  }
+]

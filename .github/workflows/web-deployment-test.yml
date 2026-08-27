@@ -1,0 +1,40 @@
+name: Build and deploy react to test.elma.online
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - "web/**"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: yarn install --frozen-lockfile
+
+      - name: Build project
+        working-directory: ./web
+        run: yarn build --mode test
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "web/build/*"
+          target: "${{ secrets.SSH_BUILD_PATH }}"
+          strip_components: 2

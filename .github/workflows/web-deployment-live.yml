@@ -1,0 +1,45 @@
+name: Build and deploy react to elma.online
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "web/**"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: yarn install --frozen-lockfile
+
+      - name: Build project
+        working-directory: ./web
+        run: yarn build
+        env:
+          VITE_API_URL: ${{ secrets.API_URL_LIVE }}
+          VITE_S3_SUB_FOLDER: ${{ secrets.S3_SUB_FOLDER_LIVE }}
+          VITE_UP_URL: ${{ secrets.UP_LIVE }}
+          VITE_RECAPTCHA: ${{ secrets.RECAPTCHA_LIVE }}
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_LIVE }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "web/build/*"
+          target: "${{ secrets.SSH_BUILD_PATH }}"
+          strip_components: 2

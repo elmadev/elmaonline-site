@@ -1,0 +1,119 @@
+[
+  { "name": "Games/Patches", "items": [
+    { "n": "Amle - Amle 2", "d": "Versions of Elma without bike (editors / +260levs).", "l": "https://up.elma.online/u/48e0fmpgug/Amle%20-%20Amle2.rar" },
+    { "n": "Elastomania II Patchs", "d": "sunl's patchs (alo volt, centered cam, extended polygons, change map dimensions and others).", "l": "https://up.elma.online/u/0a0a0a0a01/Elma_2_patchs_by_sunl.rar" },
+    { "n": "Elma Land", "d": "Elastomania on RPG.", "l": "https://up.elma.online/u/hpqtx0kt08/Elma%20Land.rar" },
+    { "n": "Elma Nitro", "d": "Changes physics of Elma (For Elma 1.0v).", "l": "https://up.elma.online/u/l71ahns8cg/ELMA%20NITRO.rar" },
+    { "n": "Elma Shooter", "d": "Elma related game.", "l": "https://up.elma.online/u/o5ff6yh8qq/shooter.fixed.zip" },
+    { "n": "Elma Slot Machine", "d": "Elma related game.", "l": "https://up.elma.online/u/v61ebjran4/elma%20slot%20machine%20-%20one_armed_elma.zip" },
+    { "n": "EOL Plus", "d": "Meme Elma made by jonsykkel.", "l": "https://up.elma.online/u/y1cnz1ugua/eolplus.rar" },
+    { "n": "EOL Plus+", "d": "An updated meme Elma made by bene.", "l": [
+      { "t": "Windows", "l": "https://up.elma.online/u/k52xmv8kjd/eolplusplus_windows.zip" },
+      { "t": "Linux", "l": "https://up.elma.online/u/terjsrjxjm/eolplusplus_linux.zip" },
+      { "t": "macOS", "l": "https://up.elma.online/u/b2rvaqxy0c/eolplusplus_macos.zip" },
+      { "t": "macOS-ARM", "l": "https://up.elma.online/u/f0ybfq6123/eolplusplus_macos_arm.zip" }
+    ] },
+    { "n": "Kuski Doll", "d": "Elma related game.", "l": "https://up.elma.online/u/4z2fy0x8xo/Kuski_doll.zip" },
+    { "n": "IncrElastoMania", "d": "Elma Simulation - Browser Game 2020 by ribot.", "l": "https://robinmanoli.github.io/IncrElastoMania/" }
+  ] },
+  { "name": "Statistics/Timers", "items": [
+    { "n": "Average counter", "d": "Makes stats with average times on internal levels.", "l": "https://up.elma.online/u/5p96fzq17k/average_counter.zip" },
+    { "n": "Bug Time Remover", "d": "Removes bug times from state.dat and .lev files.", "l": "https://up.elma.online/u/93jsls7k4k/BRemover11.zip" },
+    { "n": "Elma Times", "d": "Statistics program.", "l": "https://up.elma.online/u/lc63c3lh7x/ElmaTimes.zip" },
+    { "n": "Elma Timing", "d": "Statistics program.", "l": "https://up.elma.online/u/dn0hub6p6t/elma_timing_int.zip" },
+    { "n": "Elma Tim0r", "d": "Gives exact time of replays (e.g. Warm Up: 14.031).", "l": "https://up.elma.online/u/98xavjcb2s/ELMATIm0r.rar" },
+    { "n": "Lev Stats", "d": "Statistics program.", "l": "https://up.elma.online/u/og32hf35z2/lev_stats.zip" },
+    { "n": "Merge Stats", "d": "Big statistics program with several options made by Zebra.", "l": "https://up.elma.online/u/l8capuporj/mergestats17.zip" },
+    { "n": "Pab's Level Stats Maker", "d": "Statistics program made by Pab.", "l": "https://up.elma.online/u/gz3i3zjvuu/PLSM.exe" },
+    { "n": "Rec Stats", "d": "Makes statistics with .rec files.", "l": "https://up.elma.online/u/6j4ipl5cei/rec_stats.zip" },
+    { "n": "State Multiplayer Remover", "d": "Removes multiplayer times from state.dat. Made by skint.", "l": "https://up.elma.online/u/va8v07c6bf/state-multiplayer-remover.rar" },
+    { "n": "Stats", "d": "Statistics program.", "l": "https://up.elma.online/u/3hfy9twqqa/stats.zip" },
+    { "n": "Stats View", "d": "Statistics program.", "l": "https://up.elma.online/u/lxywq9jd7h/sview103b21.zip" },
+    { "n": "Stats2HTML", "d": "Makes a HTML file from your stats.txt", "l": "https://up.elma.online/u/3e8ptm4ojn/Stats2Html_v1_03.zip" },
+    { "n": "Target Times", "d": "Latest Internals target times.", "l": "https://up.elma.online/u/jnjp8i2hwy/wr-stats_targets.csv" },
+    { "n": "WR Stats", "d": "Targets desktop app made by edahl (v0.6.0-alpha - 32/64bits).", "l": "https://up.elma.online/u/x9gkdkbayd/wrstats.rar" }
+  ] },
+  { "name": "Level editors", "items": [
+    { "n": "Ale 2.1", "d": "Advanced Level Editor.", "l": "https://up.elma.online/u/mecinlc0f6/Ale2.1.rar" },
+    { "n": "Domi's Level Generator", "d": "Generates different kind of levels. Made by Domi.", "l": "https://up.elma.online/u/0ldrp0xovw/DomisLevGenRelease(BugFixed).rar" },
+    { "n": "Elma Quantum Lev", "d": "Generates different kind of levels.", "l": "https://up.elma.online/u/wgc09stb1l/Elma_Quantumlev.zip" },
+    { "n": "Fancy Pic 2.01", "d": "Program to make high quality images on .lev files made by sunl.", "l": [{ "t": "32 bit", "l": "https://up.elma.online/u/0a0a0a0a01/FancyPic2.01%2032b.rar" }, { "t": "64 bit", "l": "https://up.elma.online/u/0a0a0a0a01/FancyPic2.01%2064b.zip" }] },
+    { "n": "Flat tracks & hills generator", "d": "SVG output / Elmanager required to open. Made by iCS.", "l": [{ "t": "32 bit", "l": "https://up.elma.online/u/ziznprrrl6/hill32bits.rar" }, { "t": "64 bit", "l": "https://up.elma.online/u/cz7nlku34z/hill64bits.rar" }] },
+    { "n": "Map Maker", "d": "Create mini map look alike images from level files.", "l": "https://up.elma.online/u/a7i60qplth/MM117b.exe" },
+    { "n": "New!", "d": "External level editor made by totem.", "l": "https://up.elma.online/u/obiaf0137s/NEW!_1.7.5b.rar" },
+    { "n": "Rad's Level Maker", "d": "Takes images and converts them to levs and back.", "l": "https://up.elma.online/u/bsne30vy19/rad.zip" },
+    { "n": "SLE", "d": "Smibu's Level Editor, Replay Manager and Level Manager.", "l": "https://m-l.fi/files/Elmanager.zip" },
+    { "n": "Vectrast", "d": "Makes bmp from lev file and back.", "l": "https://up.elma.online/u/lqrhf9h280/vectrast.zip" },
+    { "n": "Verzio Maker", "d": "Converts Elma levs to Across levs in the Verzio file format - Moving objects. Made by sunl.", "l": "https://up.elma.online/u/59w4avs59h/Verzio_Maker.zip" },
+    { "n": "ZLE (v1.3)", "d": "Zebra's Level Editor.", "l": "https://up.elma.online/u/rud8moetcs/ZLE_v1.3.zip" }
+  ] },
+  { "name": "LGR", "items": [
+    { "n": "Default LGR", "d": "The recommended original Default.lgr file with fixed sky tiling. Fancy boosted (= includes 256 additional single-color pictures, one for each color in the LGR palette).", "l": "https://up.elma.online/u/ly8259kxy2/Default.lgr" },
+    { "n": "LGR Collection", "d": "A large collection of LGRs. Collected by Sla.", "l": "https://elastomania.wixsite.com/tools/lgr" },
+    { "n": "LGR Studio", "d": "An in-browser LGR editor. It works offline, so you can also install it as a web app. Made by jaws.", "l": "https://lgrstudio.janka.la" },
+    { "n": "Change LGR", "d": "Change easily lgr before entering Elma.", "l": "https://up.elma.online/u/hj7mmpj2uv/chanlgrs.rar" },
+    { "n": "Easy LGR", "d": "Create and modify lgrs with this tool.", "l": "https://up.elma.online/u/0a0a0a0a01/easylgr.zip" },
+    { "n": "Lgr-Shirt Palettes", "d": "Default palettes .act files for Photoshop to make bmp t-shirts and lgr images properly.", "l": "https://up.elma.online/u/17tdgwo1dj/elma%20shirt-elma%20lgr.rar" },
+    { "n": "LGRDK", "d": "Official Elma LGR development kit for DOS, with the original 24-bit TGA images.", "l": "https://up.elma.online/u/ml08qxhgqu/elma_lgrdk.zip" },
+    { "n": "LGR Loader", "d": "Change easily lgr before entering Elma.", "l": "https://up.elma.online/u/c3mcy5oae0/lgr_loader.zip" },
+    { "n": "LGR Selector", "d": "Change easily lgr before entering Elma.", "l": "https://up.elma.online/u/5uxzt66dok/LGRselector.exe" },
+    { "n": "LGR Utility", "d": "Modify LGR files. Automatically fixes palette issues and reports LGR errors. Made by sunl.", "l": "https://up.elma.online/u/0a0a0a0a01/LGR_Utility_64bit_V5.zip" },
+    { "n": "Prop Replacer", "d": "Change properties of internal levels (only for Elma 1.0).", "l": "https://up.elma.online/u/5qpeb7jerz/PropReplacer.rar" }
+  ] },
+  { "name": "Replay", "items": [
+    { "n": "Elma Imager", "d": "Create images and animations from rec and lev. Made by ribot (improved by iCS).", "l": "https://up.elma.online/u/0a0a0a0a01/elma-imager-master%20fixed%20by%20iCS.zip" },
+    { "n": "Recedit", "d": "Cut and merge .rec files - Shows info about them. Made by jon.", "l": "https://up.elma.online/u/5l4sjjdf5y/recedit.exe" },
+    { "n": "Replay Editor", "d": "Edit .rec files. Made by ribot.", "l": "https://up.elma.online/u/j5dt7kd66k/Replay_Editor.zip" },
+    { "n": "Replayer", "d": "Transform .rec files to video - Made by jonsykkel.", "l": "https://up.elma.online/u/a91gadv2pl/replayer.zip" },
+    { "n": "Rec Merge", "d": "Merges two different recs and makes one.", "l": "https://up.elma.online/u/1laz58u0c3/rec_merge.zip" },
+    { "n": "Run Replay Offline", "d": "Advanced desktop program to watch replays with 3D mode.", "l": "https://up.elma.online/u/ml1ueh0fx0/Setup_RunReplayOffline.rar" }
+  ] },
+  { "name": "Various", "items": [
+    { "n": "Big Book of Elma Facts", "d": "Big book of Elma facts made by Domi (2010).", "l": "https://up.elma.online/u/90dbyk0o32/big-book-of-elma-facts_domi_2010.png" },
+    { "n": "ddraw", "d": "(•12kb •259kb win10 •564kb steam) More efficient ddraw.dll, which is responsible for the rendering routines in Elma.", "l": "https://up.elma.online/u/18cuceuz3r/ddraws.rar" },
+    { "n": "Elma Font", "d": "Creates an image of a text with the elma font. By Domovoy.", "l": "https://up.elma.online/u/sqq1nykae7/elmafont.zip" },
+    { "n": "Elma Icons", "d": "Different kinds of icons related to Elastomania.", "l": "https://up.elma.online/u/74nwf61ggs/Elma%20Icons.rar" },
+    { "n": "Elma Info", "d": "Gives info about levs and recs by holding cursor on these files.", "l": "https://up.elma.online/u/vkjoqa0pzl/elmainfo.rar" },
+    { "n": "Elma Sounds", "d": ".res file with edited sounds (suspension, apple, exit, etc) made by Sla.", "l": [{ "t": "v01", "l": "https://up.elma.online/u/mhdth3rp5x/Elma.res%20%20susp%20off,%20lower%20apple%20-%20final.rar" }, { "t": "v02", "l": "https://up.elma.online/u/athftc0vgg/Elma.res%20edited%20sounds,%20susp%20off%20-%20final.rar" }] },
+    { "n": "Elma Shirt", "d": "Makes EOL's shirts for those player who doesnt have it.", "l": "https://up.elma.online/u/nftqfcqfpe/elmashirt.zip" },
+    { "n": "Elma Skip", "d": "Skips from 1 to 54 internal levels.", "l": "https://up.elma.online/u/h8r92ksknc/elmaskip.zip" },
+    { "n": "Elma Text", "d": "Changes text in game (Only for 1.0v).", "l": "https://up.elma.online/u/fwchur0m24/elmatext.zip" },
+    { "n": "Elma Ultimate Dvd", "d": "Collection of the best Elma (and Across) stuff made from 1997 to 2010.", "l": "https://mega.co.nz/#!mVNhWCDZ!DoDJ7BAVP-j9Ew6k2P4x-h6eOBkUv4uswbHgPebgGaM" },
+    { "n": "EOL Reso Fix", "d": "Fixes high resolution problems. Built-in in EOL v1.0.11 and newer.", "l": "https://up.elma.online/u/uf5r4w5eh2/eolresofix.exe" },
+    { "n": "EOL Shirts", "d": "Download latest user shirts (.bmp files for your bmp folder).", "l": "https://api.elma.online/dl/allshirts" },
+    { "n": "FEM photos", "d": "All images and videos from Finnish Elma Meetings.", "l": [
+      { "t": "2014", "l": "http://mm.1g.fi/kuvat/FEM2014" },
+      { "t": "2015", "l": "http://mm.1g.fi/kuvat/FEM2015" },
+      { "t": "2016", "l": "http://mm.1g.fi/kuvat/FEM2016" },
+      { "t": "2017", "l": "http://mm.1g.fi/kuvat/FEM2017" },
+      { "t": "2018", "l": "http://mm.1g.fi/kuvat/FEM2018" },
+      { "t": "2019", "l": "http://mm.1g.fi/kuvat/FEM2019" },
+      { "t": "2020", "l": "http://mm.1g.fi/kuvat/FEM2020" }
+    ] },
+    { "n": "History of Elma (1995-2018)", "d": "Article made by Abula.", "l": "https://palsta.pulu.org/en/60-elasto-mania-1995-2018" },
+    { "n": "Internal maps", "d": "All internals saved as .png in high resolution.", "l": "https://up.elma.online/u/0a0a0a0a01/Internal%20Levels%20High%20Resolution.zip" },
+    { "n": "Level Unlocker", "d": "Unlocks levels.", "l": "https://up.elma.online/u/bxnedcdjpo/levunlck.zip" },
+    { "n": "Lev Fix", "d": "Unlocks levels.", "l": "https://up.elma.online/u/914jgl9d7p/levfix.exe" },
+    { "n": "Lev Search", "d": "", "l": "https://up.elma.online/u/rqpdqxfjw3/levsearch.exe" },
+    { "n": "Nick Change", "d": "Changes nick from state.dat (only single player).", "l": "https://up.elma.online/u/y8qeeab64m/nickchange.zip" },
+    { "n": "Noty Balle", "d": "Easy to use desktop program that shows notifications of battles from Elma Online made by Ropelli.", "l": "https://up.elma.online/u/vp7r40dzru/notifyballe.zip" },
+    { "n": "Out Of Bounds Zoom Fix", "d": "Modifies levels to avoid out-of-bounds errors at very high resolution made by sunl.", "l": "https://up.elma.online/u/douvyr7q9p/OutOfBoundsZoomFix.zip" },
+    { "n": "SKIPPED.dat", "d": "All internals levels SKIPPED! (nickname: SKIPPED).", "l": "https://up.elma.online/u/df9sacmlc3/state.dat" },
+    { "n": "State.dat Utility v6", "d": "Import internal times from Elma webs into a state.dat file / unlock internal levs. Made by sunl.", "l": "https://up.elma.online/u/b98l9o9nle/StateDatUtilityV6.zip" },
+    { "n": "Stategak", "d": "Converts two state.dat with different nicks into one.", "l": "https://up.elma.online/u/ttc65xgsjt/stategak.rar" },
+    { "n": "Text Colors", "d": "Changes text colors in Elma in another way so you do not have to change the lgr palete.", "l": "https://up.elma.online/u/ts4weic2gu/textcolors.zip" },
+    { "n": "XtraBMP 2019", "d": "Extra bmps for those who have not t-shirt on Elma Online. Made by Polarix and iCS.", "l": "https://up.elma.online/u/fndr7rmh2s/2019_12_04_XtraBMP.zip" }
+  ] },
+  { "name": "lev/rec collections", "items": [
+    { "n": "Best Internal Recs", "d": "Best internal recs shared. v190521.", "l": "https://up.elma.online/u/st2kp0whdv/Best%20Internal%20Recs%20v190521.rar" },
+    { "n": "Internal Levels", "d": "Internal levels saved as .lev files.", "l": "https://up.elma.online/u/ohatp0kowy/Internal_levels.zip" },
+    { "n": "Pipe Collection", "d": "All pipes (or almost) ever made - Collected by pawq.", "l": "https://up.elma.online/u/0a0a0a0a01/pipe%20archive%20-%206669%20levs%20-%202019.06.28.zip" }
+  ] },
+  { "name": "Save/Load", "items": [
+    { "n": "milatools", "d": "Save Load patch made by milagros. Patched to work with levels that have up to 20k vertices.", "l": "https://up.elma.online/u/qlt7ca0rbl/milatools.zip" },
+    { "n": "okeSL (v0.10)", "d": "A modern and versatile save load tool. Originally made by jonsykkel, improved by bene, joey and others.", "l": "https://up.elma.online/u/01x3mnq1rl/okesl%200.10.0%20windows.zip" },
+    { "n": "okeSL (v0.10) - Linux", "d": "Native Linux build of okeSL. Works at least on Ubuntu 24.04 and newer.", "l": "https://up.elma.online/u/envco5ki36/okesl%200.10.0%20linux.zip" },
+    { "n": "SL Key", "d": "Makes Smibu's Save Load patch keys to be configurable.", "l": "https://up.elma.online/u/uuu2g3rrvp/slkey.zip" },
+    { "n": "Smibu's Save Load Patch", "d": "Save Load patch made by Smibu. Patched to work with levels that have up to 20k vertices.", "l": "https://up.elma.online/u/5sab3e5vxg/smibu_saveload_patch.zip" }
+  ] }
+]
