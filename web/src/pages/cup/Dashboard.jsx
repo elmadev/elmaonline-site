@@ -50,7 +50,9 @@ const Dashboard = props => {
           <Paper>
             <Content>
               <Header h2>
-                <Link to={`/cup/${cup.ShortName}/events/${lastEvent + 1}`}>
+                <Link
+                  to={`/cup/${cup.ShortName}/events/${lastEvent + 1}/results`}
+                >
                   Last Event
                 </Link>
               </Header>
