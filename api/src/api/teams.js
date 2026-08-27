@@ -4,13 +4,14 @@ import { Team, Kuski } from '#data/models';
 const router = express.Router();
 
 const getTeams = async () => {
-  const data = await Team.findAll({});
+  const data = await Team.findAll({ order: [['Team', 'ASC']] });
   return data;
 };
 
 const GetMembers = async t => {
   const data = await Team.findOne({
     where: { Team: t },
+    order: [[{ model: Kuski, as: 'Members' }, 'Kuski', 'ASC']],
     include: [
       {
         model: Kuski,
