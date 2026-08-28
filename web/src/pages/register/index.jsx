@@ -49,9 +49,9 @@ const Register = () => {
     if (!kuski && !password && !repeatPassword && !email && !country) {
       setError('Mandatory field is missing.');
     } else if (password !== repeatPassword) {
-      setError('Passwords does not match.');
+      setError('Passwords do not match.');
     } else if (!validateEmail(email)) {
-      setError('Invalid email adresse.');
+      setError('Invalid email address.');
     } else if (captcha === '') {
       setError('ReCAPTCHA not completed.');
     } else {
