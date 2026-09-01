@@ -36,7 +36,7 @@
     "lodash-contrib": "^4.1200.1",
     "lodash-es": "^4.17.21",
     "mysql2": "^3.11.4",
-    "nanoid": "^5.0.8",
+    "nanoid": "^5.1.16",
     "neo-async": "^2.6.2",
     "read-chunk": "4.0.3",
     "request": "^2.88.2",
