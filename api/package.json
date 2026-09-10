@@ -41,7 +41,7 @@
     "read-chunk": "4.0.3",
     "request": "^2.88.2",
     "sequelize": "^6.37.5",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.4",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {
