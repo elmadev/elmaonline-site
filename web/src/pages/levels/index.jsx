@@ -6,18 +6,16 @@ import { useNavigate, useLocation } from '@tanstack/react-router';
 import { VariableSizeGrid as Grid } from 'react-window';
 import Layout from 'components/Layout';
 import GridItem from 'components/GridItem';
-import Popularity from 'components/Popularity';
 import useElementSize from 'utils/useWindowSize';
 import Fab from 'components/Fab';
 import LevelpacksDetailed from './LevelpacksDetailed';
 import Controls from './Controls';
-import FavStar from './FavStar';
 import RecordsCard from './RecordsCard';
 import LevelList from '../../features/LevelList';
 import { useQueryAlt, LevelPackStatsKuski } from 'api';
 import { nickId } from 'utils/nick';
 import { LevelExplorerDialog } from 'features/LevelExplorer';
-import PreviewButton from './PreviewButton';
+import LevelpackCard from './LevelpackCard';
 
 const getColumnCount = window_width => {
   if (window_width > 1300) {
@@ -154,44 +152,15 @@ const Levels = ({ tab, detailed }) => {
                     const index =
                       rowIndex * columnCount + (columnIndex + 1) - 1;
                     const p = levelpacksSorted[index];
-                    if (!p) {
-                      return <GridItem2 full></GridItem2>;
-                    }
-                    const s = stats[p.LevelPackIndex] ?? {};
-
-                    const widthPct = (s.NormalizedPopularity || 0) * 100;
-                    const avg = (s.AvgKuskiPerLevel || 0).toFixed(1);
-                    const count = s.LevelCountAll || 0;
-
+                    if (!p) return null;
                     return (
                       <div style={style} key={p.LevelPackIndex}>
-                        <GridItem2
-                          key={p.LevelPackIndex}
-                          to={`/levels/packs/${p.LevelPackName}`}
-                          name={p.LevelPackName}
-                          nameAction={
-                            <PreviewButton
-                              pack={p}
-                              onPreview={setPreviewPack}
-                            />
-                          }
-                          longname={p.LevelPackLongName}
-                          afterName={` (${count} levels)`}
-                          afterLongname={
-                            <Popularity2
-                              title={`Avg. number of kuskis played per level: ${avg}`}
-                              widthPct={widthPct}
-                              after={<span>{avg}</span>}
-                            />
-                          }
-                        >
-                          <StarCon>
-                            <FavStar
-                              pack={p}
-                              {...{ loggedIn, addFav, removeFav }}
-                            />
-                          </StarCon>
-                        </GridItem2>
+                        <LevelpackCard
+                          pack={p}
+                          stats={stats[p.LevelPackIndex]}
+                          onPreview={setPreviewPack}
+                          {...{ loggedIn, addFav, removeFav }}
+                        />
                       </div>
                     );
                   }}
@@ -239,39 +208,6 @@ const Levels = ({ tab, detailed }) => {
     </Layout>
   );
 };
-
-const GridItem2 = styled(GridItem)`
-  width: 100% !important;
-  &:hover .pack-preview,
-  &:focus-within .pack-preview {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  &:hover {
-    .pop-bar-1 {
-      background: ${p => p.theme.paperBackground};
-    }
-  }
-`;
-
-const Popularity2 = styled(Popularity)`
-  margin-top: 20px;
-  width: 100%;
-  max-width: 320px;
-  .pop-after {
-    min-width: 24px;
-    span {
-      font-size: 12px;
-    }
-  }
-`;
-
-const StarCon = styled.div`
-  cursor: pointer;
-  position: absolute;
-  top: 12px;
-  right: 13px;
-`;
 
 const StyledRecentRecords = styled.div`
   padding: 10px 0 40px 0;
