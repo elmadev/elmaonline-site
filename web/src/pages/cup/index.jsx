@@ -18,6 +18,7 @@ import Dashboard from './Dashboard';
 import Personal from './Personal';
 import Team from './Team';
 import PlayStats from './PlayStats';
+import LevelExplorer from 'features/LevelExplorer';
 
 const Cups = () => {
   const { ShortName, tab, eventNumber, eventTab } = useParams({
@@ -27,6 +28,15 @@ const Cups = () => {
   const cupTab = tab || '';
 
   const { cup, lastCupShortName, events } = useStoreState(state => state.Cup);
+  const explorerLevels = events
+    .filter(
+      event =>
+        event.CupGroupIndex === cup.CupGroupIndex &&
+        event.Level &&
+        event.LevelIndex > 0,
+    )
+    .sort((a, b) => a.CupIndex - b.CupIndex)
+    .map(event => ({ ...event.Level, LevelIndex: event.LevelIndex }));
   const { getCup, update, addNewBlog } = useStoreActions(
     actions => actions.Cup,
   );
@@ -72,7 +82,14 @@ const Cups = () => {
             {nickId() > 0 && <Tab label="Team" value="team" />}
             {isCupAdmin && <Tab label="Admin" value="admin" />}
           </Tabs>
-          <CupCover cup={cup} />
+          <CupCover cup={cup}>
+            {explorerLevels.length > 0 && (
+              <LevelExplorer
+                levels={explorerLevels}
+                title={`${cup.CupName} levels`}
+              />
+            )}
+          </CupCover>
           {!tab ? <Dashboard cup={cup} events={events} /> : null}
           {tab === 'events' ? (
             <div>
@@ -139,7 +156,7 @@ const Cups = () => {
   );
 };
 
-export const CupCover = ({ cup, noBottomMargin = false }) => {
+export const CupCover = ({ cup, noBottomMargin = false, children }) => {
   const theme = useTheme();
   const cover = cup.Cover ? cup.Cover : null;
   let bgColor = null;
@@ -167,6 +184,7 @@ export const CupCover = ({ cup, noBottomMargin = false }) => {
         <CoverHeadline>
           {cover ? <Img src={cover} alt="" /> : null}
           {hideHeadline ? null : <Header h1>{cup.CupName}</Header>}
+          {children}
         </CoverHeadline>
         <Description
           dangerouslySetInnerHTML={{ __html: cup.Description }}
@@ -214,6 +232,7 @@ const CoverCon = styled.div`
 
 const CoverHeadline = styled.div`
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;

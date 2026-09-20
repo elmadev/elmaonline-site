@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Tabs, Tab } from '@material-ui/core';
@@ -16,6 +16,8 @@ import RecordsCard from './RecordsCard';
 import LevelList from '../../features/LevelList';
 import { useQueryAlt, LevelPackStatsKuski } from 'api';
 import { nickId } from 'utils/nick';
+import { LevelExplorerDialog } from 'features/LevelExplorer';
+import PreviewButton from './PreviewButton';
 
 const getColumnCount = window_width => {
   if (window_width > 1300) {
@@ -38,6 +40,7 @@ const getColumnCount = window_width => {
 };
 
 const Levels = ({ tab, detailed }) => {
+  const [previewPack, setPreviewPack] = useState(null);
   const GridRef = useRef();
   const navigate = useNavigate();
   const windowSize = useElementSize();
@@ -130,6 +133,7 @@ const Levels = ({ tab, detailed }) => {
               removeFav={removeFav}
               loggedIn={loggedIn}
               levelpackStats={levelpackStats}
+              onPreview={setPreviewPack}
             />
           )}
           {!detailed && (
@@ -165,6 +169,12 @@ const Levels = ({ tab, detailed }) => {
                           key={p.LevelPackIndex}
                           to={`/levels/packs/${p.LevelPackName}`}
                           name={p.LevelPackName}
+                          nameAction={
+                            <PreviewButton
+                              pack={p}
+                              onPreview={setPreviewPack}
+                            />
+                          }
                           longname={p.LevelPackLongName}
                           afterName={` (${count} levels)`}
                           afterLongname={
@@ -216,12 +226,27 @@ const Levels = ({ tab, detailed }) => {
         </StyledRecentRecords>
       )}
       {tab === 'search' && <LevelList />}
+      <LevelExplorerDialog
+        open={previewPack !== null}
+        onClose={() => setPreviewPack(null)}
+        levelPack={previewPack}
+        title={`Levelpack Preview — ${previewPack}`}
+        contextLink={{
+          to: `/levels/packs/${previewPack}`,
+          label: 'Go to levelpack page →',
+        }}
+      />
     </Layout>
   );
 };
 
 const GridItem2 = styled(GridItem)`
   width: 100% !important;
+  &:hover .pack-preview,
+  &:focus-within .pack-preview {
+    opacity: 1;
+    pointer-events: auto;
+  }
   &:hover {
     .pop-bar-1 {
       background: ${p => p.theme.paperBackground};

@@ -8,6 +8,7 @@ const GridItem = ({
   name = '',
   longname = '',
   afterName,
+  nameAction,
   afterLongname,
   to = '',
   children = null,
@@ -26,7 +27,21 @@ const GridItem = ({
 
   return (
     <Container className={className} promote={promote}>
-      {to ? <Link to={to}>{inner}</Link> : <>{inner}</>}
+      {nameAction ? (
+        <ActionCard>
+          <Name>
+            <Link to={to}>{name}</Link>
+            {afterName && <AfterName>{afterName}</AfterName>}
+            {nameAction}
+          </Name>
+          <LongName>{longname}</LongName>
+          {afterLongname}
+        </ActionCard>
+      ) : to ? (
+        <Link to={to}>{inner}</Link>
+      ) : (
+        <>{inner}</>
+      )}
       {children}
     </Container>
   );
@@ -35,6 +50,26 @@ const GridItem = ({
 const Name = styled.div`
   font-weight: 500;
   color: ${p => p.theme.linkColor};
+`;
+
+const ActionCard = styled.div`
+  background: ${p => p.theme.paperBackground};
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  &:hover {
+    background: ${p => p.theme.hoverColor};
+  }
+  a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  button {
+    position: relative;
+    z-index: 1;
+  }
 `;
 
 const AfterName = styled.span`
