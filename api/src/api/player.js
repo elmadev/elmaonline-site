@@ -17,7 +17,10 @@ const router = express.Router();
 
 const PlayersSearch = async (query, offset) => {
   const get = await Kuski.findAll({
-    where: { Kuski: { [Op.like]: `${like(query)}%` } },
+    where: {
+      Kuski: { [Op.like]: `${like(query)}%` },
+      Confirmed: 1,
+    },
     attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
     limit: searchLimit(offset),
     order: [['Kuski', 'ASC']],
