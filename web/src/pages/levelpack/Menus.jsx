@@ -16,7 +16,7 @@ import { Dropdown } from 'components/Inputs';
 import { Row } from 'components/Containers';
 import { KuskiAutoComplete } from 'components/AutoComplete';
 
-const Menus = ({ name, hideFilter }) => {
+const Menus = ({ name, hideFilter, hideControls = false }) => {
   const [openSettings, setOpenSettings] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
   const {
@@ -44,7 +44,7 @@ const Menus = ({ name, hideFilter }) => {
 
   return (
     <Settings>
-      {openSettings || openFilter ? (
+      {hideControls ? null : openSettings || openFilter ? (
         <>
           {openFilter && (
             <ClickAwayListener
@@ -282,7 +282,8 @@ const AutoCompleteCon = styled.div`
 const Settings = styled.div`
   padding: 0 10px;
   font-size: 14px;
-  width: 50%;
+  flex: 1;
+  min-width: 0;
   margin-top: ${p => p.theme.padSmall};
 `;
 

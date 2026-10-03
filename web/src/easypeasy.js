@@ -4,6 +4,7 @@ import ReplayRating from 'features/ReplayRating/store';
 import ChatView from 'features/ChatView/store';
 import RecList from 'features/RecList/store';
 import LevelMap from 'features/LevelMap/store';
+import LevelExplorer from 'features/LevelExplorer/store';
 import Register from 'pages/register/store';
 import Login from 'pages/login/store';
 import RankingTable from 'features/RankingTable/store';
@@ -62,6 +63,7 @@ export default {
   KuskiMap,
   Kuskis,
   LevelMap,
+  LevelExplorer,
   LevelPack,
   Search,
   Kuski,

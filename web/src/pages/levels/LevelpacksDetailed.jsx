@@ -6,6 +6,8 @@ import Time from 'components/Time';
 import { FixedSizeList as List } from 'react-window';
 import useElementSize from 'utils/useWindowSize';
 import FavStar from './FavStar';
+import Link from 'components/Link';
+import PreviewButton from './PreviewButton';
 import { formatTimeSpent, formatAttempts, formatPct } from 'utils/format';
 
 const disableTT = true;
@@ -17,6 +19,7 @@ const LevelpacksDetailed = ({
   addFav,
   removeFav,
   levelpackStats = [],
+  onPreview,
 }) => {
   const windowSize = useElementSize();
   const listHeight = windowSize.height - 264;
@@ -93,10 +96,15 @@ const LevelpacksDetailed = ({
             return (
               <div style={style} key={p.LevelPackIndex}>
                 <Row style={style} key={p.LevelPackIndex}>
-                  <ListCell to={url}>
-                    <ShortName>{p.LevelPackName}</ShortName>
-                    <LongName>{p.LevelPackLongName}</LongName>
-                  </ListCell>
+                  <PackCell>
+                    <ShortName>
+                      <Link to={url}>{p.LevelPackName}</Link>
+                      <PreviewButton pack={p} onPreview={onPreview} />
+                    </ShortName>
+                    <Link to={url}>
+                      <LongName>{p.LevelPackLongName}</LongName>
+                    </Link>
+                  </PackCell>
                   <ListCell>
                     <FavStar pack={p} {...{ loggedIn, addFav, removeFav }} />
                   </ListCell>
@@ -236,6 +244,14 @@ const LevelpacksDetailed = ({
 
 const Root = styled.div`
   overflow: auto;
+`;
+
+const PackCell = styled(ListCell)`
+  &:hover .pack-preview,
+  &:focus-within .pack-preview {
+    opacity: 1;
+    pointer-events: auto;
+  }
 `;
 
 const Table = styled(ListContainer)`

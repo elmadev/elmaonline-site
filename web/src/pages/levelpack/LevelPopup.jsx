@@ -36,6 +36,16 @@ const LevelPopup = ({
     useStoreActions(actions => actions.LevelPack);
   const [timesLimit, setTimesLimit] = useState(10);
 
+  useEffect(() => {
+    const handleEscape = event => {
+      if (event.key === 'Escape' && !event.defaultPrevented) {
+        close();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [close]);
+
   // calculate height for react-window
   const HeaderConRef = useRef(null);
   const LevelPopUpConSize = useElementSize();

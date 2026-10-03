@@ -20,6 +20,7 @@ import Crippled from './Crippled';
 import Admin from './Admin';
 import { useQueryAlt, LevelPackLevelStats } from '../../api';
 import Menus from './Menus';
+import LevelExplorer from 'features/LevelExplorer';
 import RecordHistory from './RecordHistory';
 import PlayStats from './PlayStats';
 
@@ -120,7 +121,7 @@ const LevelPack = () => {
           <Tab label="Crippled" value="crippled" />
           {adminAuth && <Tab label="Admin" value="admin" />}
         </Tabs>
-        <Row b="Large">
+        <PackHeader b="Large">
           <div>
             <LevelPackName>
               <ShortNameStyled>{levelPackInfo.LevelPackName}</ShortNameStyled>{' '}
@@ -128,6 +129,14 @@ const LevelPack = () => {
               <Download href={`pack/${levelPackInfo.LevelPackName}`}>
                 <DownloadText>Download</DownloadText>
               </Download>
+              <LevelExplorer
+                levelPack={name}
+                levels={
+                  levelPackInfo.LevelPackName === name
+                    ? levelPackInfo.levels
+                    : undefined
+                }
+              />
             </LevelPackName>
             <DescriptionStyle>
               {levelPackInfo.LevelPackDesc} - Maintainer:{' '}
@@ -137,17 +146,19 @@ const LevelPack = () => {
               )}
             </DescriptionStyle>
           </div>
-          {[
-            'record-history',
-            'replays',
-            'admin',
-            'multi',
-            'play-stats',
-            'crippled',
-          ].indexOf(tab) === -1 && (
-            <Menus name={name} hideFilter={tab === 'personal'} />
-          )}
-        </Row>
+          <Menus
+            name={name}
+            hideFilter={tab === 'personal'}
+            hideControls={[
+              'record-history',
+              'replays',
+              'admin',
+              'multi',
+              'play-stats',
+              'crippled',
+            ].includes(tab)}
+          />
+        </PackHeader>
         {!tab && <Records levelStats={levelStats} />}
         {tab === 'total-times' && (
           <TotalTimes
@@ -199,6 +210,14 @@ const RootStyle = styled.div`
   background: ${p => p.theme.paperBackground};
   min-height: 100%;
   box-sizing: border-box;
+`;
+
+const PackHeader = styled(Row)`
+  flex-wrap: wrap;
+  gap: 8px;
+  @media (max-width: 700px) {
+    flex-direction: column;
+  }
 `;
 
 const LevelPackName = styled.div`
