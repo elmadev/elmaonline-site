@@ -46,7 +46,7 @@ const Register = () => {
 
   const clickRegister = () => {
     setError('');
-    if (!kuski && !password && !repeatPassword && !email && !country) {
+    if (!kuski || !password || !repeatPassword || !email || !country) {
       setError('Mandatory field is missing.');
     } else if (password !== repeatPassword) {
       setError('Passwords does not match.');

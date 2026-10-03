@@ -2,7 +2,7 @@ import express from 'express';
 import { uuid } from '#utils/calcs';
 import crypto from 'crypto';
 import { format } from 'date-fns';
-import { Team, Kuski, SiteSetting } from '#data/models';
+import { Team, Kuski, SiteSetting, Country } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
 import { authContext } from '#utils/auth';
 import { sendMessage } from '#utils/discord';
@@ -185,10 +185,46 @@ router
   .post('/', async (req, res) => {
     let message = '';
     let TeamIndex = 0;
-    const kuskiData = await getKuskiData(req.body.Kuski);
-    if (kuskiData.length > 0) {
-      message = 'Nickname is already taken.';
+    const isFilled = v => typeof v === 'string' && v.trim() !== '';
+    if (
+      !isFilled(req.body.Kuski) ||
+      !isFilled(req.body.Password) ||
+      !isFilled(req.body.Email) ||
+      !isFilled(req.body.Country)
+    ) {
+      message = 'Mandatory field is missing.';
+    } else if (req.body.Team && typeof req.body.Team !== 'string') {
+      message = 'Invalid team.';
+    } else if (req.body.Kuski.length > 15) {
+      message = 'Nick is too long. Maximum number of characters is 15.';
+    } else if (req.body.Password.length > 26) {
+      message = 'Password is too long. Maximum number of characters is 26.';
+    } else if (req.body.Team && req.body.Team.length > 9) {
+      message = 'Team is too long. Maximum number of characters is 9.';
+    } else if (req.body.Email.length > 255) {
+      message = 'Email is too long. Maximum number of characters is 255.';
+    } else if (!validateEmail(req.body.Email)) {
+      message = 'Invalid email address.';
     }
+    if (!message) {
+      const country = await Country.findByPk(req.body.Country);
+      if (!country) {
+        message = 'Invalid country.';
+      }
+    }
+    if (!message) {
+      const kuskiData = await getKuskiData(req.body.Kuski);
+      if (kuskiData.length > 0) {
+        message = 'Nickname is already taken.';
+      }
+    }
+    if (!message) {
+      const emails = await checkEmail(req.body.Email);
+      if (emails.length > 0) {
+        message = 'Email is already taken.';
+      }
+    }
+    // team is created last so a failed registration doesn't leave a new team behind
     if (!message && req.body.Team) {
       const teamData = await getTeamData(req.body.Team);
       if (teamData.length > 0) {
@@ -200,17 +236,6 @@ router
       } else {
         const addTeam = await createTeam({ Team: req.body.Team });
         TeamIndex = addTeam.TeamIndex;
-      }
-    }
-    if (!message) {
-      if (!validateEmail(req.body.Email)) {
-        message = 'Invalid email address.';
-      }
-    }
-    if (!message) {
-      const emails = await checkEmail(req.body.Email);
-      if (emails.length > 0) {
-        message = 'Email is already taken.';
       }
     }
     if (message !== '') {
