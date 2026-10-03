@@ -130,9 +130,11 @@ app.get('/heapdump', (req, res) => {
 
 // wildcard and root
 app.get('*', (req, res) => {
-  res.send(
-    `I just don't have time to be responsible for every little thing that goes wrong in your life.`,
-  );
+  res
+    .status(404)
+    .send(
+      `I just don't have time to be responsible for every little thing that goes wrong in your life.`,
+    );
 });
 
 // ----------------------------------------------------------
