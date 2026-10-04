@@ -342,6 +342,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
           setPreviewRec={() => close()}
           nextReplay={() => nextReplay()}
           previousReplay={() => previousReplay()}
+          kuskiName={kuski?.Kuski}
         />
       )}
       {share && (

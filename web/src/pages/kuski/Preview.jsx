@@ -8,7 +8,7 @@ import LocalTime from 'components/LocalTime';
 import CloseIcon from '@material-ui/icons/HighlightOffOutlined';
 import { Grid, Typography, Backdrop } from '@material-ui/core';
 import config from 'config';
-import { shirtUrl } from 'utils/misc';
+import { downloadRec, shirtUrl } from 'utils/misc';
 import styled from '@emotion/styled';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -28,6 +28,7 @@ export default function Preview({
   setPreviewRec,
   nextReplay,
   previousReplay,
+  kuskiName,
 }) {
   if (!previewRec?.TimeFileData?.UUID || !previewRec?.TimeFileData?.MD5) {
     return (
@@ -45,13 +46,15 @@ export default function Preview({
     );
   }
 
+  const recUrl = `${config.s3Url}time/${previewRec.TimeFileData.UUID}-${previewRec.TimeFileData.MD5}/${previewRec.TimeIndex}.rec`;
+
   return (
     <Backdrop open={true} style={{ zIndex: 100 }}>
       <Container container>
         <Grid item sm={8} xs={12}>
           <Player>
             <Recplayer
-              rec={`${config.s3Url}time/${previewRec.TimeFileData.UUID}-${previewRec.TimeFileData.MD5}/${previewRec.TimeIndex}.rec`}
+              rec={recUrl}
               lev={`${config.dlUrl}level/${previewRec.LevelIndex}?UUID=${previewRec.TimeFileData.UUID}`}
               shirt={[shirtUrl(previewRec.KuskiIndex)]}
               controls
@@ -66,7 +69,24 @@ export default function Preview({
                 <Header h2>
                   {previousReplay && <Previous onClick={previousReplay} />}
                   <a
-                    href={`${config.s3Url}time/${previewRec.TimeFileData.UUID}-${previewRec.TimeFileData.MD5}/${previewRec.TimeIndex}.rec`}
+                    href={recUrl}
+                    onClick={e => {
+                      // let the browser handle new tab/window clicks with the original url
+                      if (
+                        e.ctrlKey ||
+                        e.metaKey ||
+                        e.shiftKey ||
+                        e.button !== 0
+                      )
+                        return;
+                      e.preventDefault();
+                      downloadRec(
+                        recUrl,
+                        previewRec.LevelData?.LevelName,
+                        kuskiName,
+                        previewRec.Time,
+                      );
+                    }}
                   >
                     Download
                   </a>
