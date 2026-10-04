@@ -783,12 +783,23 @@ const UpdateReplay = async (ReplayIndex, userid) => {
   const replay = await Replay.findOne({
     where: { ReplayIndex },
   });
-  if (replay) {
-    if (replay.UploadedBy === userid) {
-      await replay.update({ Unlisted: 0 });
-    }
+  if (!replay) {
+    return { success: 0, error: 'Replay not found.' };
   }
-  return replay;
+  if (replay.UploadedBy !== userid) {
+    return {
+      success: 0,
+      error: 'Only the original uploader can make this replay public.',
+    };
+  }
+  await replay.update({ Unlisted: 0 });
+  return {
+    success: 1,
+    ReplayIndex: replay.ReplayIndex,
+    UUID: replay.UUID,
+    RecFileName: replay.RecFileName,
+    Unlisted: replay.Unlisted,
+  };
 };
 
 const getReplaysByLevelIndex = async LevelIndex => {

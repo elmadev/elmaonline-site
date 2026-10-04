@@ -32,7 +32,11 @@ export default {
   updateReplay: thunk(async (actions, payload) => {
     const update = await UpdateReplay({ ReplayIndex: payload });
     if (update.ok) {
-      actions.setUpdated(update.data);
+      if (update.data.error) {
+        actions.setError(update.data.error);
+      } else {
+        actions.setUpdated(update.data);
+      }
     }
   }),
   getKuskiByName: thunk(async (actions, payload) => {
