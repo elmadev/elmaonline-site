@@ -3,7 +3,7 @@ const notifMessage = (type, meta, url) => {
   if (type === 'comment') {
     text = `${meta.kuski} added a comment to your replay: "${
       meta.Text
-    }" <${url}r/${meta.replayUUID}/${meta.replayName.replace('.rec', '')}>`;
+    }" <${url}r/${meta.replayUUID}/${meta.replayName.replace(/\.rec$/i, '')}>`;
   }
   if (type === 'lgr_comment') {
     text = `${meta.kuski} added a comment to your lgr: "${

@@ -59,6 +59,8 @@ export const renameFile = (originalFile, newName) => {
   });
 };
 
+export const stripRecExt = (filename = '') => filename.replace(/\.rec$/i, '');
+
 export const createRecName = (LevelName, nick, recTime, apple = false) => {
   let timeAsString = `${recTime}`;
   if (apple) {

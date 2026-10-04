@@ -8,6 +8,7 @@ import Link from 'components/Link';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Loading from 'components/Loading';
 import Stepper from 'components/Stepper';
+import { stripRecExt } from 'utils/misc';
 import { Text, StepCon } from './index';
 
 const Name = ({ award, index }) => {
@@ -73,9 +74,9 @@ const Awards = ({ overall, year }) => {
     .map(m => ({
       ...m,
       Value: parseInt(m.Value),
-      Link: `/r/${m.ReplayData?.UUID || ''}/${
-        m.ReplayData?.RecFileName ? m.ReplayData.RecFileName.split('.')[0] : ''
-      }`,
+      Link: `/r/${m.ReplayData?.UUID || ''}/${stripRecExt(
+        m.ReplayData?.RecFileName || '',
+      )}`,
     }));
 
   const awards = [

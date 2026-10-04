@@ -15,6 +15,7 @@ import config from 'config';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
+import { stripRecExt } from 'utils/misc';
 
 export default function ReplayCard({ replay, onPreviewClick }) {
   const [picExists, setPicExists] = useState(true);
@@ -23,7 +24,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
 
   const handleOpenReplay = () => {
     navigate({
-      to: `/r/${replay.UUID}/${replay.RecFileName?.split('.')[0] || ''}`,
+      to: `/r/${replay.UUID}/${stripRecExt(replay.RecFileName || '')}`,
     });
   };
 

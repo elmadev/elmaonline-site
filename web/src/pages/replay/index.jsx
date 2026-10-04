@@ -44,6 +44,7 @@ import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
 import { getReplayLink } from 'utils/link';
+import { stripRecExt } from 'utils/misc';
 
 const RecTime = ({ type, replay }) => {
   if (type === 'cup') {
@@ -106,7 +107,7 @@ const Replay = () => {
 
   if (!RecFileName && replay && replay.UUID === ReplayUuid) {
     navigate({
-      to: `/r/${ReplayUuid}/${replay.RecFileName.replace('.rec', '')}`,
+      to: `/r/${ReplayUuid}/${stripRecExt(replay.RecFileName)}`,
       replace: true,
     });
   }
@@ -115,7 +116,7 @@ const Replay = () => {
 
   if (
     !replay ||
-    (replay?.RecFileName.replace('.rec', '') !== RecFileName && RecFileName)
+    (stripRecExt(replay?.RecFileName) !== RecFileName && RecFileName)
   )
     return (
       <Layout t={`rec - ${ReplayUuid}`}>
