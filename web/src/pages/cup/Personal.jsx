@@ -20,6 +20,7 @@ import Recplayer from 'components/Recplayer';
 import { getPrivateCupRecUri } from 'utils/cups';
 import PreviewRecButton from 'components/PreviewRecButton';
 import config from 'config';
+import { shirtUrl } from 'utils/misc';
 import FieldBoolean from 'components/FieldBoolean';
 import Preview from '../kuski/Preview';
 import { PlayArrow } from '@material-ui/icons';
@@ -164,7 +165,7 @@ const Personal = () => {
                             replay.Time,
                           )}
                           lev={`${config.dlUrl}level/${e.LevelIndex}`}
-                          shirt={[`${config.dlUrl}shirt/${replay.KuskiIndex}`]}
+                          shirt={[shirtUrl(replay.KuskiIndex)]}
                           height={400}
                           controls
                         />

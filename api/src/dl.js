@@ -50,13 +50,19 @@ app.get('/allshirts', async (req, res, next) => {
 });
 
 app.get('/shirt/:id', async (req, res, next) => {
+  // missing shirts are expected, respond directly so they aren't logged as errors
+  const notFound = msg => {
+    res.set({ 'Cache-Control': 'public, max-age=3600' });
+    res.status(404).send(msg);
+  };
+  if (!/^\d+$/.test(req.params.id)) {
+    notFound('invalid kuski id');
+    return;
+  }
   try {
     const { file, filename, error } = await getShirtByKuskiId(req.params.id);
     if (error) {
-      next({
-        status: 404,
-        msg: error,
-      });
+      notFound(error);
     } else {
       const readStream = new stream.PassThrough();
       readStream.end(file);

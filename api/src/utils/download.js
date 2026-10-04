@@ -363,7 +363,7 @@ export const getShirtByKuskiId = async KuskiIndex => {
   const kuskiData = await Kuski.scope(null).findOne({
     where: { KuskiIndex },
   });
-  if (kuskiData.BmpCRC === 0) {
+  if (!kuskiData || !kuskiData.BmpCRC || !kuskiData.BmpData) {
     return { file: null, filename: '', error: 'no bmp data' };
   }
   const image = await Jimp.read(kuskiData.BmpData);

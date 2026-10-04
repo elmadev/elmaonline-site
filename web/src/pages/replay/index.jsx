@@ -44,7 +44,7 @@ import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
 import { getReplayLink } from 'utils/link';
-import { stripRecExt } from 'utils/misc';
+import { stripRecExt, shirtUrl } from 'utils/misc';
 
 const RecTime = ({ type, replay }) => {
   if (type === 'cup') {
@@ -177,8 +177,8 @@ const Replay = () => {
 
   const shirtUrls =
     replays.length > 0
-      ? replays.map(r => `${config.dlUrl}shirt/${r.DrivenByData?.KuskiIndex}`)
-      : [`${config.dlUrl}shirt/${replay.DrivenByData?.KuskiIndex}`];
+      ? replays.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
+      : [shirtUrl(replay.DrivenByData?.KuskiIndex)];
 
   return (
     <Layout t={`rec - ${replay.RecFileName}`}>

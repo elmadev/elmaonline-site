@@ -102,6 +102,10 @@ export const downloadRec = (url, levName, kuski, time) => {
   });
 };
 
+// returns null without a kuski so no request is made for shirt/undefined
+export const shirtUrl = kuskiIndex =>
+  kuskiIndex ? `${config.dlUrl}shirt/${kuskiIndex}` : null;
+
 export const highlightTime = (time, level, isMedalsTargets) => {
   let colors = [
     '#aa43dd',

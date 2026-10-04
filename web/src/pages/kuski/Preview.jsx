@@ -8,6 +8,7 @@ import LocalTime from 'components/LocalTime';
 import CloseIcon from '@material-ui/icons/HighlightOffOutlined';
 import { Grid, Typography, Backdrop } from '@material-ui/core';
 import config from 'config';
+import { shirtUrl } from 'utils/misc';
 import styled from '@emotion/styled';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -52,7 +53,7 @@ export default function Preview({
             <Recplayer
               rec={`${config.s3Url}time/${previewRec.TimeFileData.UUID}-${previewRec.TimeFileData.MD5}/${previewRec.TimeIndex}.rec`}
               lev={`${config.dlUrl}level/${previewRec.LevelIndex}?UUID=${previewRec.TimeFileData.UUID}`}
-              shirt={[`${config.dlUrl}shirt/${previewRec.KuskiIndex}`]}
+              shirt={[shirtUrl(previewRec.KuskiIndex)]}
               controls
               autoPlay="yes"
             />
