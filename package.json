@@ -1,0 +1,10 @@
+{
+  "name": "elmaonline-site",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"yarn --cwd api start\" \"yarn --cwd web start:dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
