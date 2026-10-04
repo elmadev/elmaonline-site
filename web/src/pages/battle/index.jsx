@@ -100,9 +100,10 @@ const Battle = () => {
 
   const openReplay = time => {
     const TimeFileData = replays.find(r => r.TimeIndex === time.TimeIndex);
-    if (TimeFileData) {
-      setReplayUrl(recUrl(TimeFileData));
+    if (!TimeFileData) {
+      return;
     }
+    setReplayUrl(recUrl(TimeFileData));
     setWinner({
       Kuski: time.KuskiData || {},
       Time: time.Time,
@@ -166,7 +167,11 @@ const Battle = () => {
         )}
         {battle && rankingHistory ? (
           <LevelStatsContainer
-            openReplay={replays.length === 0 ? null : time => openReplay(time)}
+            openReplay={time =>
+              replays.some(r => r.TimeIndex === time.TimeIndex)
+                ? () => openReplay(time)
+                : null
+            }
             battle={battle}
             rankingHistory={rankingHistory}
             runStats={runStats}
