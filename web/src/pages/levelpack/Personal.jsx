@@ -518,6 +518,9 @@ const Personal = ({ name, player }) => {
                                 time={r.single.Time}
                                 compareTime={r.record.Time}
                                 relative={relative}
+                                hideCrown={
+                                  r.single.TimeIndex !== r.record.TimeIndex
+                                }
                               />{' '}
                               <Kuski kuskiData={r.record.KuskiData} />
                             </>
