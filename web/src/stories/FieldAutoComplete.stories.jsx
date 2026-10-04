@@ -24,7 +24,7 @@ Field.args = {
 };
 
 export const FieldWithError = Template.bind({});
-Field.args = {
+FieldWithError.args = {
   label: 'fieldname',
   error: 'Error message',
   list: [
