@@ -1117,13 +1117,22 @@ const statsCache = {
   data: [],
 };
 
-const updateStatsCache = async () => {
-  const stats = await allPacksStats();
-  statsCache.time = new Date().getTime();
-  statsCache.data = stats;
+// in-flight update, shared so concurrent requests don't run the query twice
+let statsCachePromise = null;
 
-  // might end up ignoring the return value
-  return stats;
+const updateStatsCache = () => {
+  if (!statsCachePromise) {
+    statsCachePromise = allPacksStats()
+      .then(stats => {
+        statsCache.time = new Date().getTime();
+        statsCache.data = stats;
+        return stats;
+      })
+      .finally(() => {
+        statsCachePromise = null;
+      });
+  }
+  return statsCachePromise;
 };
 
 // @see https://express-validator.github.io/docs/schema-validation.html
@@ -1260,9 +1269,18 @@ router
     const refresh = 60 * 60 * 1000;
     const now = new Date().getTime();
 
-    // just update the cache for next time, it's ok to serve data that
-    // is a bit stale.
-    if (now - statsCache.time > refresh) {
+    // cache has never been populated (e.g. right after a restart),
+    // wait for it instead of serving an empty array
+    if (statsCache.time === 0) {
+      try {
+        await updateStatsCache();
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to load levelpack stats' });
+        return;
+      }
+    } else if (now - statsCache.time > refresh) {
+      // just update the cache for next time, it's ok to serve data that
+      // is a bit stale.
       updateStatsCache();
     }
 
