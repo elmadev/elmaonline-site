@@ -20,7 +20,7 @@ import { authContext } from '#utils/auth';
 import { sortTimes } from '#utils/sort';
 import {
   like,
-  searchLimit,
+  searchPageLimit,
   searchOffset,
   log,
   formatLevelSearch,
@@ -599,7 +599,7 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
     ],
     offset: searchOffset(offset),
     where,
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [
       [sequelize.literal(`LevelName = ${sequelize.escape(LevelName)} DESC`)],
       ['LevelName', 'ASC'],

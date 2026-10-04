@@ -61,6 +61,10 @@ export function searchLimit(limit) {
   return limitInt;
 }
 
+export function searchPageLimit(offset) {
+  return parseInt(offset, 10) < 0 ? 10000 : 25;
+}
+
 export function searchOffset(offset) {
   const offsetInt = parseInt(offset, 10);
   if (offsetInt < 0) {

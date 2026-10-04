@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from '#utils/database';
+import { like, searchPageLimit, searchOffset } from '#utils/database';
 import { add, parse } from 'date-fns';
 import { forEach, omit } from 'lodash-es';
 import {
@@ -120,7 +120,7 @@ const BattlesSearchByFilename = async (query, offset) => {
       'BattleType',
       'Started',
     ],
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['BattleIndex', 'DESC']],
     offset: searchOffset(offset),
     include: [
@@ -149,7 +149,7 @@ const BattlesSearchByDesigner = async (query, offset) => {
       'BattleType',
       'Started',
     ],
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['BattleIndex', 'DESC']],
     offset: searchOffset(offset),
     include: [

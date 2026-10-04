@@ -1,6 +1,11 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from '#utils/database';
+import {
+  like,
+  searchLimit,
+  searchPageLimit,
+  searchOffset,
+} from '#utils/database';
 import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
 import { forEach, groupBy } from 'lodash-es';
@@ -617,7 +622,7 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
 
 const getReplaysSearchDriven = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
     order: [['Uploaded', 'DESC']],
@@ -645,7 +650,7 @@ const getReplaysSearchDriven = async (query, offset) => {
 
 const getReplaysSearchLevel = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     offset: searchOffset(offset),
     order: [['ReplayTime', 'ASC']],
     where: { Unlisted: 0 },
@@ -680,7 +685,7 @@ const getReplaysSearchFilename = async (query, offset) => {
       },
       Unlisted: 0,
     },
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['RecFileName', 'ASC']],
     include: [
       {
