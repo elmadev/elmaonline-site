@@ -6,6 +6,12 @@ import { Team, Kuski, SiteSetting, Country } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
 import { authContext } from '#utils/auth';
 import { sendMessage } from '#utils/discord';
+import {
+  validKuski,
+  validTeam,
+  kuskiCharsMessage,
+  teamCharsMessage,
+} from '#utils/names';
 import Discord from './register_discord.js';
 import config from '../config.js';
 
@@ -201,6 +207,10 @@ router
       message = 'Password is too long. Maximum number of characters is 26.';
     } else if (req.body.Team && req.body.Team.length > 9) {
       message = 'Team is too long. Maximum number of characters is 9.';
+    } else if (!validKuski(req.body.Kuski)) {
+      message = kuskiCharsMessage;
+    } else if (req.body.Team && !validTeam(req.body.Team)) {
+      message = teamCharsMessage;
     } else if (req.body.Email.length > 255) {
       message = 'Email is too long. Maximum number of characters is 255.';
     } else if (!validateEmail(req.body.Email)) {
@@ -296,11 +306,17 @@ router
       let error = false;
       // nick
       if (req.body.Field === 'Kuski') {
-        const kuskiData = await getKuskiData(req.body.Value[0]);
-        if (req.body.Value[0].length > 15) {
+        const nick = req.body.Value?.[0];
+        if (typeof nick !== 'string' || nick.trim() === '') {
+          message = 'Invalid nick.';
+          error = true;
+        } else if (nick.length > 15) {
           message = 'Nick is too long. Maximum number of characters is 15.';
           error = true;
-        } else if (kuskiData.length > 0) {
+        } else if (!validKuski(nick)) {
+          message = kuskiCharsMessage;
+          error = true;
+        } else if ((await getKuskiData(nick)).length > 0) {
           message = 'Nickname is already taken.';
           error = true;
         } else {
@@ -311,7 +327,16 @@ router
         // team
       } else if (req.body.Field === 'Team') {
         let TeamIndex = 0;
-        if (req.body.Value[0] !== '') {
+        if (typeof req.body.Value?.[0] !== 'string') {
+          message = 'Invalid team.';
+          error = true;
+        } else if (req.body.Value[0].length > 9) {
+          message = 'Team is too long. Maximum number of characters is 9.';
+          error = true;
+        } else if (!validTeam(req.body.Value[0])) {
+          message = teamCharsMessage;
+          error = true;
+        } else if (req.body.Value[0] !== '') {
           const teamData = await getTeamData(req.body.Value[0]);
           if (teamData.length > 0) {
             if (teamData[0].dataValues.Locked) {
