@@ -370,9 +370,9 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             </Row>
             <div>
               <TextField
-                id="Comment"
+                id="Description"
                 multiline
-                label="Comment"
+                label="Description"
                 value={share ? share.comment : ''}
                 onChange={e => setShare({ ...share, comment: e.target.value })}
                 margin="normal"

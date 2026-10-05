@@ -443,7 +443,7 @@ const EditReplay = ({ replay, type }) => {
           <AccordionDetails style={{ flexDirection: 'column' }}>
             {userid === replay.UploadedBy && (
               <TextField
-                name="Comment"
+                name="Description"
                 value={edit.Comment}
                 onChange={value =>
                   setEdit(prev => ({ ...prev, Comment: value }))

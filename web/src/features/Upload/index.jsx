@@ -355,9 +355,9 @@ const Upload = ({ onUpload = null, filetype }) => {
                         <Grid item xs={12} sm={6}>
                           <div>
                             <TextField
-                              id="Comment"
+                              id="Description"
                               multiline
-                              label="Comment"
+                              label="Description"
                               value={fileInfo[rec.name].comment}
                               onChange={e => handleComment(rec.name, e)}
                               margin="normal"
