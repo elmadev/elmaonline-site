@@ -950,12 +950,17 @@ const EditReplay = async data => {
     const tags = data.edit.Tags.filter(tag => !tag.Hidden).map(
       tag => tag.TagIndex,
     );
+    // hidden tags cannot be edited here, so keep the existing ones
+    const currentTags = await rec.getTags();
+    tags.push(
+      ...currentTags.filter(tag => tag.Hidden).map(tag => tag.TagIndex),
+    );
     // Add DNF tag when needed
     if (!rec.Finished) {
       const dnfTag = await Tag.findOne({ where: { Name: 'DNF' } });
       tags.push(dnfTag.TagIndex);
     }
-    await rec.setTags(tags);
+    await rec.setTags([...new Set(tags)]);
 
     return 200;
   }
