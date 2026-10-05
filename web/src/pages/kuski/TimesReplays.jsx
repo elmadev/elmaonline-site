@@ -276,7 +276,11 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                       />
                     </ListCell>
                     <ListCell width={120}>
-                      <Time time={time.Time} />
+                      {type === 'runsAndReplays' && !time.Time ? (
+                        '0,00'
+                      ) : (
+                        <Time time={time.Time} />
+                      )}
                     </ListCell>
                     <ListCell width={300}>
                       <LocalTime

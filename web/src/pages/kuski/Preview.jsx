@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { Column, Row } from 'components/Containers';
+import { parseTimeHundreds, parsedTimeToString } from 'utils/recTime';
 
 const finishedTypes = {
   B: 'Finished (Apple Bug)',
@@ -98,7 +99,13 @@ export default function Preview({
                 />
               </Row>
               <p>
-                <Time time={previewRec.Time} /> in{' '}
+                {['D', 'E'].includes(previewRec.Finished) &&
+                !previewRec.Time ? (
+                  '0,00'
+                ) : (
+                  <Time time={previewRec.Time} />
+                )}{' '}
+                in{' '}
                 <Level
                   LevelData={previewRec.LevelData}
                   LevelIndex={previewRec.LevelIndex}
@@ -112,9 +119,15 @@ export default function Preview({
                   <br />
                   {previewRec.MaxSpeed / 100} Max speed
                   <br />
-                  <Time time={previewRec.ThrottleTime} /> Throttle time
+                  {parsedTimeToString(
+                    parseTimeHundreds(previewRec.ThrottleTime || 0),
+                  )}{' '}
+                  Throttle time
                   <br />
-                  <Time time={previewRec.BrakeTime} /> Brake time
+                  {parsedTimeToString(
+                    parseTimeHundreds(previewRec.BrakeTime || 0),
+                  )}{' '}
+                  Brake time
                   <br />
                   {previewRec.LeftVolt} Left volts
                   <br />
