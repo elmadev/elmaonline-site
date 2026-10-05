@@ -131,6 +131,8 @@ const Levels = ({ tab, detailed }) => {
                     Math.floor(levelpacksSorted.length / columnCount) + 1
                   }
                   rowHeight={() => 100}
+                  estimatedRowHeight={100}
+                  estimatedColumnWidth={(listWidth - 20) / columnCount}
                   width={listWidth}
                 >
                   {({ columnIndex, rowIndex, style }) => {
