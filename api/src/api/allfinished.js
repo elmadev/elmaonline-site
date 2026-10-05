@@ -2,7 +2,7 @@ import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from '#utils/auth';
-import { formatLevelSearch, fromTo } from '#utils/database';
+import { levelNameSearch, fromTo } from '#utils/database';
 import {
   AllFinished,
   Kuski,
@@ -192,19 +192,15 @@ const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     return null;
   }
   let where = { KuskiIndex };
-  const LevelName = formatLevelSearch(lev);
-  if (LevelName) {
-    const level = await Level.findAll({ where: { LevelName } });
-    where.LevelIndex = {
-      [Op.in]: level.map(r => r.LevelIndex),
-    };
-  }
   where = { ...where, ...fromTo(from, to, 'Driven', 'datetime') };
   const include = [
     {
       model: Level,
       as: 'LevelData',
       attributes: ['LevelName', 'LongName'],
+      ...(lev
+        ? { where: { LevelName: levelNameSearch(lev) }, required: true }
+        : {}),
     },
     {
       model: TimeFile,
@@ -224,19 +220,15 @@ const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
 const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
   let where = { KuskiIndex };
   const personal = UserId === parseInt(KuskiIndex, 10);
-  const LevelName = formatLevelSearch(lev);
-  if (LevelName) {
-    const level = await Level.findAll({ where: { LevelName } });
-    where.LevelIndex = {
-      [Op.in]: level.map(r => r.LevelIndex),
-    };
-  }
   where = { ...where, ...fromTo(from, to, 'Driven') };
   const include = [
     {
       model: Level,
       as: 'LevelData',
       attributes: ['LevelName', 'Locked', 'Hidden', 'LongName'],
+      ...(lev
+        ? { where: { LevelName: levelNameSearch(lev) }, required: true }
+        : {}),
     },
   ];
   if (personal) {

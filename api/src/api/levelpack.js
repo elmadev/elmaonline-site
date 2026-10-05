@@ -24,6 +24,7 @@ import {
   searchOffset,
   log,
   formatLevelSearch,
+  levelNameSearch,
 } from '#utils/database';
 import { Op } from 'sequelize';
 import {
@@ -569,18 +570,7 @@ const getPacksByQuery = async query => {
 
 const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
   const LevelName = formatLevelSearch(query);
-  let where = {
-    LevelName: {
-      [Op.like]: `${like(query)}%`,
-    },
-  };
-  if (LevelName !== query) {
-    where = {
-      LevelName: {
-        [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
-      },
-    };
-  }
+  const where = { LevelName: levelNameSearch(query) };
   let show = false;
   const q = {
     attributes: [

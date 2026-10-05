@@ -85,6 +85,16 @@ export const formatLevelSearch = level => {
   return level;
 };
 
+export const levelNameSearch = query => {
+  const LevelName = formatLevelSearch(query);
+  if (LevelName !== query) {
+    return {
+      [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
+    };
+  }
+  return { [Op.like]: `${like(query)}%` };
+};
+
 export const fromTo = (from, to, column, format = 'ts') => {
   const where = {};
   let fromTs;
