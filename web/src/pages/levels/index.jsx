@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Tabs, Tab } from '@material-ui/core';
-import { useNavigate, useLocation } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
 import { VariableSizeGrid as Grid } from 'react-window';
 import Layout from 'components/Layout';
 import GridItem from 'components/GridItem';
@@ -11,6 +10,7 @@ import useElementSize from 'utils/useWindowSize';
 import Fab from 'components/Fab';
 import LevelpacksDetailed from './LevelpacksDetailed';
 import Controls from './Controls';
+import LevelsTabs from './LevelsTabs';
 import FavStar from './FavStar';
 import RecordsCard from './RecordsCard';
 import LevelList from '../../features/LevelList';
@@ -39,7 +39,6 @@ const getColumnCount = window_width => {
 
 const Levels = ({ tab, detailed }) => {
   const GridRef = useRef();
-  const navigate = useNavigate();
   const windowSize = useElementSize();
   const listHeight = windowSize.height - 186;
   const listWidth =
@@ -106,19 +105,7 @@ const Levels = ({ tab, detailed }) => {
 
   return (
     <Layout edge t="Levels">
-      <Tabs
-        variant="scrollable"
-        scrollButtons="auto"
-        value={tab || ''}
-        onChange={(e, value) =>
-          navigate({ to: ['/levels', value].filter(Boolean).join('/') })
-        }
-      >
-        <Tab label="Packs" value="" />
-        <Tab label="Collections" value="collections" />
-        <Tab label="Recent Records" value="recent-records" />
-        <Tab label="Search" value="search" />
-      </Tabs>
+      <LevelsTabs tab={tab} />
       {!tab && (
         <>
           <Controls detailed={detailed} sort={sort} />
