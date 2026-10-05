@@ -222,6 +222,9 @@ export const createBestTimeNotification = async body => {
   const groupedByKuski = groupBy(favouritedBy, 'KuskiIndex');
 
   Object.entries(groupedByKuski).forEach(async ([KuskiIndex, levPacks]) => {
+    if (Number(KuskiIndex) === Number(body.kuskiIndex)) {
+      return;
+    }
     const { Settings, Send } = await NotifSetting(KuskiIndex, 'Besttime');
     if (!Send) {
       return;
