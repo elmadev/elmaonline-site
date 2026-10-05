@@ -115,6 +115,12 @@ const Personal = ({ name, player }) => {
     }
   }, [player]);
 
+  useEffect(() => {
+    setCompares(prev =>
+      prev.filter(c => !(c.type === 'Players' && c.Kuski === kuski)),
+    );
+  }, [kuski]);
+
   const levels = useMemo(() => {
     let arr = [];
     if (isRehydrated) {
@@ -293,7 +299,7 @@ const Personal = ({ name, player }) => {
         key: `team-${t.id}`,
       })),
     ];
-  }, [kuskis, teams, countries]);
+  }, [kuskis, teams, countries, kuski, targetsCount]);
 
   if (recordsLoading || !isRehydrated) {
     return <Loading />;
