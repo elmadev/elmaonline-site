@@ -1,5 +1,5 @@
 import DataType, { Op } from 'sequelize';
-import { groupBy } from 'lodash-es';
+import { groupBy, chunk } from 'lodash-es';
 import { notificationMail } from '#utils/email';
 import { discordNotification } from '#utils/discord';
 import { getTimes } from '#api/besttime';
@@ -45,35 +45,46 @@ const sendThirdParty = async (KuskiIndex, type, Settings, meta) => {
 
 // Creates notification for news item
 export const createNewNewsNotification = async newsItem => {
-  const allKuskis = await Kuski.findAll({ where: { Confirmed: 1 }, limit: 10 });
-  const kuski = await newsItem.getKuskiData();
-  const notifs = [];
-  allKuskis.forEach(k => {
-    notifs.push({
-      KuskiIndex: k.KuskiIndex,
-      CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
-      Type: 'news',
-      Meta: JSON.stringify({
-        Headline: newsItem.Headline,
-        KuskiIndex: newsItem.KuskiIndex,
-        kuski: kuski.Kuski,
-      }),
-    });
+  // kuskis without a settings row get news by default
+  const optedOut = await Setting.findAll({
+    where: { News: 0 },
+    attributes: ['KuskiIndex'],
   });
-  await Notification.bulkCreate(notifs);
+  const where = { Confirmed: 1 };
+  if (optedOut.length) {
+    where.KuskiIndex = { [Op.notIn]: optedOut.map(s => s.KuskiIndex) };
+  }
+  const allKuskis = await Kuski.findAll({ where, attributes: ['KuskiIndex'] });
+  const kuski = await newsItem.getKuskiData();
+  const Meta = JSON.stringify({
+    Headline: newsItem.Headline,
+    KuskiIndex: newsItem.KuskiIndex,
+    kuski: kuski.Kuski,
+  });
+  const notifs = allKuskis.map(k => ({
+    KuskiIndex: k.KuskiIndex,
+    CreatedAt: DataType.fn('UNIX_TIMESTAMP'),
+    Type: 'news',
+    Meta,
+  }));
+  for (const batch of chunk(notifs, 1000)) {
+    await Notification.bulkCreate(batch);
+  }
 
   // bulk send to discord, skip email due to formatting issues and 300 a day limit at the provider
   const Discords = await Setting.findAll({
-    where: { DiscordId: { [Op.not]: null }, SendDiscord: 1 },
+    where: { DiscordId: { [Op.ne]: 0 }, SendDiscord: 1, News: 1 },
   });
-  Discords.forEach(d => {
-    discordNotification(d.DiscordId, 'news', {
-      Headline: newsItem.Headline,
-      KuskiIndex: newsItem.KuskiIndex,
-      kuski: kuski.Kuski,
-      text: newsItem.News,
-    });
-  });
+  Promise.allSettled(
+    Discords.map(d =>
+      discordNotification(d.DiscordId, 'news', {
+        Headline: newsItem.Headline,
+        KuskiIndex: newsItem.KuskiIndex,
+        kuski: kuski.Kuski,
+        text: newsItem.News,
+      }),
+    ),
+  );
 };
 
 // Creates notification for uploader of the replay
