@@ -1005,20 +1005,20 @@ const allPacksStats = async () => {
   // aggregates for groups of levels.
   const q = `
   SELECT packlev.LevelPackIndex,
-         AVG(KuskiCountAll) AvgKuskiPerLevel,
+         AVG(COALESCE(s.KuskiCountAll, 0)) AvgKuskiPerLevel,
          SUM(TimeAll) as TimeAll, SUM(AttemptsAll) as AttemptsAll,
          SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
          SUM(TimeD) as TimeD, SUM(AttemptsD) as AttemptsD,
          SUM(TimeE) as TimeE, SUM(AttemptsE) as AttemptsE,
          MIN(TopTime0) MinRecordTime, MAX(TopTime0) as MaxRecordTime,
          AVG(TopTime0) AvgRecordTime,
-         COUNT(s.LevelIndex) LevelCountAll,
-         COUNT(TopKuskiIndex0) LevelCountF,
-         GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
-  FROM levelstats s
-      INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+         COUNT(packlev.LevelIndex) LevelCountAll,
+         COUNT(s.TopKuskiIndex0) LevelCountF,
+         GROUP_CONCAT(s.TopKuskiIndex0) RecordKuskiIds
+  FROM levelpack_level packlev
+      LEFT JOIN levelstats s ON s.LevelIndex = packlev.LevelIndex
   WHERE packlev.ExcludeFromTotal = 0
-  GROUP BY LevelPackIndex`;
+  GROUP BY packlev.LevelPackIndex`;
 
   let [stats] = await sequelize.query(q, {
     replacements: [],
@@ -1028,11 +1028,14 @@ const allPacksStats = async () => {
 
   stats = stats.map(s => {
     // from comma sep list to array
-    const RecordKuskiIds = (s.RecordKuskiIds || '').split(',').map(Number);
+    const RecordKuskiIds = (s.RecordKuskiIds || '')
+      .split(',')
+      .filter(Boolean)
+      .map(Number);
 
     const KuskiRecordFreq = frequencies(RecordKuskiIds);
 
-    const TopRecordCount = Math.max(...values(KuskiRecordFreq));
+    const TopRecordCount = Math.max(0, ...values(KuskiRecordFreq));
 
     // handles ties between kuskis
     const TopRecordKuskiIds = toPairs(KuskiRecordFreq)
