@@ -227,6 +227,35 @@ const Personal = ({ name, player }) => {
     compareTeam,
   ]);
 
+  const victories = useMemo(() => {
+    const keys = compares
+      .filter(c => ['Players', 'Countries', 'Teams'].indexOf(c.type) > -1)
+      .map(c => c.key);
+    if (keys.length === 0) {
+      return null;
+    }
+    const participants = ['single', ...keys];
+    const obj = {};
+    participants.forEach(key => {
+      obj[key] = 0;
+    });
+    levels.forEach(r => {
+      if (r.Level.ExcludeFromTotal) {
+        return;
+      }
+      const finished = participants.filter(key => r[key]?.Time);
+      if (finished.length === 0) {
+        return;
+      }
+      const best = Math.min(...finished.map(key => r[key].Time));
+      const winners = finished.filter(key => r[key].Time === best);
+      if (winners.length === 1) {
+        obj[winners[0]] += 1;
+      }
+    });
+    return obj;
+  }, [levels, compares]);
+
   const updateCompare = values => {
     const newValues = values.filter(v => !compares.find(c => c.key === v.key));
     newValues.forEach(newValue => {
@@ -684,6 +713,19 @@ const Personal = ({ name, player }) => {
               })}
               <ListCell />
             </TTRow>
+            {victories && (
+              <TTRow>
+                <ListCell />
+                <ListCell>Victories</ListCell>
+                <ListCell>{victories.single}</ListCell>
+                {compares.map(compare => (
+                  <ListCell key={compare.key}>
+                    {victories[compare.key] ?? ''}
+                  </ListCell>
+                ))}
+                <ListCell />
+              </TTRow>
+            )}
           </>
         )}
       </ListContainer>
