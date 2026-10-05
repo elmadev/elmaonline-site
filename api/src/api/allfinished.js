@@ -109,7 +109,8 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
       {
         model: Kuski,
         as: 'KuskiData',
-        attributes: ['Kuski'],
+        attributes: ['Kuski', 'Country'],
+        include: [{ model: Team, as: 'TeamData', attributes: ['Team'] }],
       },
     ];
   }
@@ -149,7 +150,8 @@ export const getTimes = async (LevelIndex, KuskiIndex, limit, LoggedIn = 0) => {
         {
           model: Kuski,
           as: 'KuskiData',
-          attributes: ['Kuski'],
+          attributes: ['Kuski', 'Country'],
+          include: [{ model: Team, as: 'TeamData', attributes: ['Team'] }],
         },
       ];
     }
@@ -281,7 +283,7 @@ const timesByLevel = async LevelIndex => {
       {
         model: Kuski,
         as: 'KuskiData',
-        attributes: ['Kuski'],
+        attributes: ['Kuski', 'Country'],
         include: [
           {
             model: Team,
