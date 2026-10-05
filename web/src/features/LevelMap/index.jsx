@@ -79,8 +79,18 @@ const LevelMap = ({
   );
 };
 
+// defs-only svg, kept out of layout so it doesn't cover nearby elements or catch clicks
 const ArrowSvg = () => (
-  <svg>
+  <svg
+    aria-hidden="true"
+    style={{
+      position: 'absolute',
+      width: 0,
+      height: 0,
+      overflow: 'hidden',
+      pointerEvents: 'none',
+    }}
+  >
     <clipPath id="up__clip-path" clipPathUnits="objectBoundingBox">
       <polygon
         transform="scale(.01)"
