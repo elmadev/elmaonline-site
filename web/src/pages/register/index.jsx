@@ -14,6 +14,12 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'components/Link';
 import Layout from 'components/Layout';
 import config from 'config';
+import {
+  validKuski,
+  validTeam,
+  kuskiCharsMessage,
+  teamCharsMessage,
+} from 'utils/names';
 
 const Register = () => {
   const [kuski, setKuski] = useState('');
@@ -50,6 +56,10 @@ const Register = () => {
       setError('Mandatory field is missing.');
     } else if (password !== repeatPassword) {
       setError('Passwords do not match.');
+    } else if (!validKuski(kuski)) {
+      setError(kuskiCharsMessage);
+    } else if (team && !validTeam(team)) {
+      setError(teamCharsMessage);
     } else if (!validateEmail(email)) {
       setError('Invalid email address.');
     } else if (captcha === '') {

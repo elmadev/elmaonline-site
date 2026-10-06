@@ -1,6 +1,11 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from '#utils/database';
+import {
+  like,
+  searchLimit,
+  searchPageLimit,
+  searchOffset,
+} from '#utils/database';
 import { authContext } from '#utils/auth';
 import { format } from 'date-fns';
 import { forEach, groupBy } from 'lodash-es';
@@ -617,7 +622,7 @@ const getReplayByUUID = async (replayUUID, Fingerprint, KuskiIndex) => {
 
 const getReplaysSearchDriven = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     offset: searchOffset(offset),
     where: { Unlisted: 0 },
     order: [['Uploaded', 'DESC']],
@@ -645,7 +650,7 @@ const getReplaysSearchDriven = async (query, offset) => {
 
 const getReplaysSearchLevel = async (query, offset) => {
   const data = await Replay.findAll({
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     offset: searchOffset(offset),
     order: [['ReplayTime', 'ASC']],
     where: { Unlisted: 0 },
@@ -680,7 +685,7 @@ const getReplaysSearchFilename = async (query, offset) => {
       },
       Unlisted: 0,
     },
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['RecFileName', 'ASC']],
     include: [
       {
@@ -783,12 +788,23 @@ const UpdateReplay = async (ReplayIndex, userid) => {
   const replay = await Replay.findOne({
     where: { ReplayIndex },
   });
-  if (replay) {
-    if (replay.UploadedBy === userid) {
-      await replay.update({ Unlisted: 0 });
-    }
+  if (!replay) {
+    return { success: 0, error: 'Replay not found.' };
   }
-  return replay;
+  if (replay.UploadedBy !== userid) {
+    return {
+      success: 0,
+      error: 'Only the original uploader can make this replay public.',
+    };
+  }
+  await replay.update({ Unlisted: 0 });
+  return {
+    success: 1,
+    ReplayIndex: replay.ReplayIndex,
+    UUID: replay.UUID,
+    RecFileName: replay.RecFileName,
+    Unlisted: replay.Unlisted,
+  };
 };
 
 const getReplaysByLevelIndex = async LevelIndex => {
@@ -934,12 +950,17 @@ const EditReplay = async data => {
     const tags = data.edit.Tags.filter(tag => !tag.Hidden).map(
       tag => tag.TagIndex,
     );
+    // hidden tags cannot be edited here, so keep the existing ones
+    const currentTags = await rec.getTags();
+    tags.push(
+      ...currentTags.filter(tag => tag.Hidden).map(tag => tag.TagIndex),
+    );
     // Add DNF tag when needed
     if (!rec.Finished) {
       const dnfTag = await Tag.findOne({ where: { Name: 'DNF' } });
       tags.push(dnfTag.TagIndex);
     }
-    await rec.setTags(tags);
+    await rec.setTags([...new Set(tags)]);
 
     return 200;
   }

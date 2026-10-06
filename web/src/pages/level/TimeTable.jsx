@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
+import Kuski from 'components/Kuski';
 import LegacyIcon from 'components/LegacyIcon';
 import LocalTime from 'components/LocalTime';
 import { FixedSizeList as List } from 'react-window';
@@ -53,9 +54,7 @@ const TimeTable = ({ data, latestBattle, loading, height, openReplay }) => {
                         {index + 1}.
                       </ListCell>
                       <ListCell whiteSpace="nowrap" width={200}>
-                        {t.KuskiData.Kuski}{' '}
-                        {t.KuskiData.TeamData &&
-                          `[${t.KuskiData.TeamData.Team}]`}
+                        <Kuski kuskiData={t.KuskiData} team flag />
                       </ListCell>
                       <ListCell width={140}>
                         <Time time={t.Time} />

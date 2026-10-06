@@ -109,16 +109,7 @@ const Upload = ({ onUpload = null, filetype }) => {
             newFiles.splice(fileInfo[inserted.RecFileName].index, 1);
             setFiles(newFiles);
           }
-          const newUploaded = uploaded.slice();
-          const fullUrl = `${location.protocol}//${location.hostname}${
-            location.port ? `:${location.port}` : ''
-          }${url(inserted)}`;
-          newUploaded.push({
-            RecFileName: inserted.RecFileName,
-            UUID: inserted.UUID,
-            url: fullUrl,
-          });
-          setUploaded(newUploaded);
+          addUploaded(inserted);
           if (onUpload) {
             onUpload();
           }
@@ -132,6 +123,16 @@ const Upload = ({ onUpload = null, filetype }) => {
       0,
       rec.RecFileName.length - 4,
     )}`;
+  };
+
+  const addUploaded = rec => {
+    const fullUrl = `${location.protocol}//${location.hostname}${
+      location.port ? `:${location.port}` : ''
+    }${url(rec)}`;
+    setUploaded(prev => [
+      ...prev,
+      { RecFileName: rec.RecFileName, UUID: rec.UUID, url: fullUrl },
+    ]);
   };
 
   const handleUnlisted = (name, event) => {
@@ -188,6 +189,9 @@ const Upload = ({ onUpload = null, filetype }) => {
   useEffect(() => {
     if (updated) {
       if (updated.ReplayIndex) {
+        if (updated.UUID) {
+          addUploaded(updated);
+        }
         if (onUpload) {
           onUpload();
         }
@@ -240,11 +244,21 @@ const Upload = ({ onUpload = null, filetype }) => {
                   setDuplicateLink(url(body.replayInfo[0]));
                   setDuplicateOptions(['okay']);
                 } else if (oldUnlisted === 1 && newUnlisted === 0) {
-                  setDuplicateText(
-                    'Replay already in database, but currently Unlisted. Would you like to make it public?',
-                  );
-                  setDuplicateOptions(['Cancel upload', 'Yes']);
-                  setDuplicateReplayIndex(body.replayInfo[0].ReplayIndex);
+                  if (loggedIn && body.replayInfo[0].UploadedBy === userid) {
+                    setDuplicateText(
+                      'Replay already in database, but currently Unlisted. Would you like to make it public?',
+                    );
+                    setDuplicateOptions(['Cancel upload', 'Yes']);
+                    setDuplicateReplayIndex(body.replayInfo[0].ReplayIndex);
+                  } else {
+                    setDuplicateText(
+                      loggedIn
+                        ? 'Replay already in database as Unlisted, uploaded by someone else. Only the original uploader can make it public. Upload failed.'
+                        : 'Replay already in database as Unlisted. Only the original uploader can make it public, log in if this is you. Upload failed.',
+                    );
+                    setDuplicateLink('');
+                    setDuplicateOptions(['okay']);
+                  }
                 }
               } else if (body.error && body.error.code) {
                 if (body.error.code === 'ENOENT' && body.error.errno === -2) {
@@ -341,9 +355,9 @@ const Upload = ({ onUpload = null, filetype }) => {
                         <Grid item xs={12} sm={6}>
                           <div>
                             <TextField
-                              id="Comment"
+                              id="Description"
                               multiline
-                              label="Comment"
+                              label="Description"
                               value={fileInfo[rec.name].comment}
                               onChange={e => handleComment(rec.name, e)}
                               margin="normal"

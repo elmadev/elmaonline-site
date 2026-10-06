@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import config from 'config';
+import { shirtUrl } from 'utils/misc';
 
 const Avatar = ({ collapse = false, kuski, margin = 20 }) => {
   return (
     <Picture collapse={collapse} margin={margin}>
       {kuski.BmpCRC ? (
-        <img src={`${config.dlUrl}shirt/${kuski.KuskiIndex}`} alt="shirt" />
+        <img src={shirtUrl(kuski.KuskiIndex)} alt="shirt" />
       ) : null}
     </Picture>
   );

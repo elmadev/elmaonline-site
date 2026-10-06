@@ -1,8 +1,7 @@
 import express from 'express';
 import connection from '#data/sequelize';
-import { Op } from 'sequelize';
 import { authContext } from '#utils/auth';
-import { formatLevelSearch, fromTo, log } from '#utils/database';
+import { levelNameSearch, fromTo, log } from '#utils/database';
 import { groupBy, orderBy, uniqBy } from 'lodash-es';
 import {
   Besttime,
@@ -91,19 +90,15 @@ const getMultiTimes = async (LevelIndex, limit) => {
 const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
   let where = { KuskiIndex };
   const personal = UserId === parseInt(KuskiIndex, 10);
-  const LevelName = formatLevelSearch(lev);
-  if (LevelName) {
-    const level = await Level.findAll({ where: { LevelName } });
-    where.LevelIndex = {
-      [Op.in]: level.map(r => r.LevelIndex),
-    };
-  }
   where = { ...where, ...fromTo(from, to, 'Driven') };
   const include = [
     {
       model: Level,
       as: 'LevelData',
       attributes: ['LevelName', 'Locked', 'Hidden', 'LongName'],
+      ...(lev
+        ? { where: { LevelName: levelNameSearch(lev) }, required: true }
+        : {}),
     },
   ];
   const attributes = ['TimeIndex', 'Time', 'Driven', 'LevelIndex'];

@@ -5,7 +5,7 @@ React based frontend for the [elmaonline site](https://elma.online). The backend
 - [test.elma.online](https://test.elma.online) New features will be tested here first, this site uses a secondary copy of the database, so you can mess up as much as you want here, and nothing you do here will be saved on the real site.
 - [elma.online](https://elma.online) This site is using the live database.
 
-- [storybook.elma.online](https://storybook.elma.online) UI library of the components that exists in the code
+- [storybook.elma.online](https://elmadev.github.io/elmaonline-site/) UI library of the components that exists in the code
 
 ## Branches
 

@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import LevelMap from 'features/LevelMap';
 import Kuski from 'components/Kuski';
 import { formatDistanceStrict, isValid } from 'date-fns';
-import config from 'config';
+import { shirtUrl } from 'utils/misc';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
@@ -33,9 +33,9 @@ export default function LevelCard({ level, tags }) {
     >
       <CardHeader
         avatar={
-          picExists ? (
+          picExists && level.KuskiData?.KuskiIndex ? (
             <img
-              src={`${config.dlUrl}shirt/${level.KuskiData?.KuskiIndex}`}
+              src={shirtUrl(level.KuskiData.KuskiIndex)}
               onError={() => setPicExists(false)}
               height="40"
               alt="shirt"

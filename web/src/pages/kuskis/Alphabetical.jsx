@@ -67,7 +67,7 @@ const Kuskis = ({ playerList }) => {
               placeholder="Filter"
             />
           </Filter>
-          <KuskiList>
+          <div>
             {groups.map(g => {
               const kuskis = filteredKuskis.filter(k => {
                 const firstChar = k.Kuski[0]
@@ -100,7 +100,7 @@ const Kuskis = ({ playerList }) => {
                 </div>
               );
             })}
-          </KuskiList>
+          </div>
         </KuskisContainer>
       )}
     </div>
@@ -130,9 +130,9 @@ const GroupContent = styled.div`
 
 const Filter = styled.div`
   background: ${p => p.theme.pageBackground};
-  position: fixed;
-  width: 100%;
-  z-index: 5;
+  position: sticky;
+  top: 100px;
+  z-index: 9;
 
   input {
     color: ${p => p.theme.fontColor};
@@ -146,10 +146,6 @@ const Filter = styled.div`
     display: block;
     box-sizing: border-box;
   }
-`;
-
-const KuskiList = styled.div`
-  padding-top: 46px;
 `;
 
 const KuskiRow = styled(Link)`

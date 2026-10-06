@@ -11,6 +11,7 @@ import { AddBox, IndeterminateCheckBox } from '@material-ui/icons';
 import { useLocation } from '@tanstack/react-router';
 import { formatDistanceStrict } from 'date-fns';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { stripRecExt } from 'utils/misc';
 
 const RecListItem = ({
   replay,
@@ -22,7 +23,7 @@ const RecListItem = ({
   const location = useLocation();
   const { merge } = location.search;
 
-  const url = `/r/${replay.UUID}/${replay.RecFileName.replace('.rec', '')}`;
+  const url = `/r/${replay.UUID}/${stripRecExt(replay.RecFileName)}`;
 
   const updateUrl = (unmerge = false) => {
     if (unmerge) {

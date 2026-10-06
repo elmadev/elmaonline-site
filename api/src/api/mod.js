@@ -4,6 +4,7 @@ const { eachSeries } = neoAsync;
 import { acceptNickMail } from '#utils/email';
 import { authContext } from '#utils/auth';
 import { sendMessage } from '#utils/discord';
+import { validKuski } from '#utils/names';
 import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {
@@ -334,6 +335,11 @@ router
       const data = await getNickRequest(req.params.id);
       if (data) {
         if (req.params.action === 'accept') {
+          // requests made before name validation existed may be invalid
+          if (!validKuski(data.Setting)) {
+            res.json({ success: 0 });
+            return;
+          }
           await AcceptNick(data, auth.userid);
         }
         if (req.params.action === 'decline') {

@@ -214,11 +214,15 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
         <ListRow>
           <ListInput
             label="Search level"
-            title="Exact file name"
+            title="Level file name or start of it"
             value={search.level}
             onChange={value => setSearch({ field: 'level', value })}
             maxLength={11}
-            onEnter={level => fetch({ ...search, level })}
+            onEnter={level => {
+              if (level === '' || level.length > 1) {
+                fetch({ ...search, level });
+              }
+            }}
           />
           <ListCell />
           <ListInput
@@ -272,7 +276,11 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                       />
                     </ListCell>
                     <ListCell width={120}>
-                      <Time time={time.Time} />
+                      {type === 'runsAndReplays' && !time.Time ? (
+                        '0,00'
+                      ) : (
+                        <Time time={time.Time} />
+                      )}
                     </ListCell>
                     <ListCell width={300}>
                       <LocalTime
@@ -342,6 +350,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
           setPreviewRec={() => close()}
           nextReplay={() => nextReplay()}
           previousReplay={() => previousReplay()}
+          kuskiName={kuski?.Kuski}
         />
       )}
       {share && (
@@ -365,9 +374,9 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             </Row>
             <div>
               <TextField
-                id="Comment"
+                id="Description"
                 multiline
-                label="Comment"
+                label="Description"
                 value={share ? share.comment : ''}
                 onChange={e => setShare({ ...share, comment: e.target.value })}
                 margin="normal"

@@ -20,10 +20,11 @@ import { authContext } from '#utils/auth';
 import { sortTimes } from '#utils/sort';
 import {
   like,
-  searchLimit,
+  searchPageLimit,
   searchOffset,
   log,
   formatLevelSearch,
+  levelNameSearch,
 } from '#utils/database';
 import { Op } from 'sequelize';
 import {
@@ -569,18 +570,7 @@ const getPacksByQuery = async query => {
 
 const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
   const LevelName = formatLevelSearch(query);
-  let where = {
-    LevelName: {
-      [Op.like]: `${like(query)}%`,
-    },
-  };
-  if (LevelName !== query) {
-    where = {
-      LevelName: {
-        [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
-      },
-    };
-  }
+  const where = { LevelName: levelNameSearch(query) };
   let show = false;
   const q = {
     attributes: [
@@ -599,7 +589,7 @@ const getLevelsByQuery = async (query, offset, showLocked, isMod) => {
     ],
     offset: searchOffset(offset),
     where,
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [
       [sequelize.literal(`LevelName = ${sequelize.escape(LevelName)} DESC`)],
       ['LevelName', 'ASC'],
@@ -1015,20 +1005,20 @@ const allPacksStats = async () => {
   // aggregates for groups of levels.
   const q = `
   SELECT packlev.LevelPackIndex,
-         AVG(KuskiCountAll) AvgKuskiPerLevel,
+         AVG(COALESCE(s.KuskiCountAll, 0)) AvgKuskiPerLevel,
          SUM(TimeAll) as TimeAll, SUM(AttemptsAll) as AttemptsAll,
          SUM(TimeF) as TimeF, SUM(AttemptsF) as AttemptsF,
          SUM(TimeD) as TimeD, SUM(AttemptsD) as AttemptsD,
          SUM(TimeE) as TimeE, SUM(AttemptsE) as AttemptsE,
          MIN(TopTime0) MinRecordTime, MAX(TopTime0) as MaxRecordTime,
          AVG(TopTime0) AvgRecordTime,
-         COUNT(s.LevelIndex) LevelCountAll,
-         COUNT(TopKuskiIndex0) LevelCountF,
-         GROUP_CONCAT(TopKuskiIndex0) RecordKuskiIds
-  FROM levelstats s
-      INNER JOIN levelpack_level packlev ON packlev.LevelIndex = s.LevelIndex
+         COUNT(packlev.LevelIndex) LevelCountAll,
+         COUNT(s.TopKuskiIndex0) LevelCountF,
+         GROUP_CONCAT(s.TopKuskiIndex0) RecordKuskiIds
+  FROM levelpack_level packlev
+      LEFT JOIN levelstats s ON s.LevelIndex = packlev.LevelIndex
   WHERE packlev.ExcludeFromTotal = 0
-  GROUP BY LevelPackIndex`;
+  GROUP BY packlev.LevelPackIndex`;
 
   let [stats] = await sequelize.query(q, {
     replacements: [],
@@ -1038,11 +1028,14 @@ const allPacksStats = async () => {
 
   stats = stats.map(s => {
     // from comma sep list to array
-    const RecordKuskiIds = (s.RecordKuskiIds || '').split(',').map(Number);
+    const RecordKuskiIds = (s.RecordKuskiIds || '')
+      .split(',')
+      .filter(Boolean)
+      .map(Number);
 
     const KuskiRecordFreq = frequencies(RecordKuskiIds);
 
-    const TopRecordCount = Math.max(...values(KuskiRecordFreq));
+    const TopRecordCount = Math.max(0, ...values(KuskiRecordFreq));
 
     // handles ties between kuskis
     const TopRecordKuskiIds = toPairs(KuskiRecordFreq)
@@ -1117,13 +1110,22 @@ const statsCache = {
   data: [],
 };
 
-const updateStatsCache = async () => {
-  const stats = await allPacksStats();
-  statsCache.time = new Date().getTime();
-  statsCache.data = stats;
+// in-flight update, shared so concurrent requests don't run the query twice
+let statsCachePromise = null;
 
-  // might end up ignoring the return value
-  return stats;
+const updateStatsCache = () => {
+  if (!statsCachePromise) {
+    statsCachePromise = allPacksStats()
+      .then(stats => {
+        statsCache.time = new Date().getTime();
+        statsCache.data = stats;
+        return stats;
+      })
+      .finally(() => {
+        statsCachePromise = null;
+      });
+  }
+  return statsCachePromise;
 };
 
 // @see https://express-validator.github.io/docs/schema-validation.html
@@ -1260,9 +1262,18 @@ router
     const refresh = 60 * 60 * 1000;
     const now = new Date().getTime();
 
-    // just update the cache for next time, it's ok to serve data that
-    // is a bit stale.
-    if (now - statsCache.time > refresh) {
+    // cache has never been populated (e.g. right after a restart),
+    // wait for it instead of serving an empty array
+    if (statsCache.time === 0) {
+      try {
+        await updateStatsCache();
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to load levelpack stats' });
+        return;
+      }
+    } else if (now - statsCache.time > refresh) {
+      // just update the cache for next time, it's ok to serve data that
+      // is a bit stale.
       updateStatsCache();
     }
 

@@ -59,6 +59,8 @@ export const renameFile = (originalFile, newName) => {
   });
 };
 
+export const stripRecExt = (filename = '') => filename.replace(/\.rec$/i, '');
+
 export const createRecName = (LevelName, nick, recTime, apple = false) => {
   let timeAsString = `${recTime}`;
   if (apple) {
@@ -99,6 +101,10 @@ export const downloadRec = (url, levName, kuski, time) => {
     a.click();
   });
 };
+
+// returns null without a kuski so no request is made for shirt/undefined
+export const shirtUrl = kuskiIndex =>
+  kuskiIndex ? `${config.dlUrl}shirt/${kuskiIndex}` : null;
 
 export const highlightTime = (time, level, isMedalsTargets) => {
   let colors = [

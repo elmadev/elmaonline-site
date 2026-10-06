@@ -4,7 +4,8 @@ import {
   doAll as doAllLevelStats,
   doNext as doNextLevelStats,
 } from '#utils/levelstats';
-import { LevelStats, LevelStatsUpdate } from '#data/models';
+import { LevelStats, LevelStatsUpdate, Kuski, Team } from '#data/models';
+import { validKuski, validTeam } from '#utils/names';
 import { updateRanking, deleteRanking } from '#utils/ranking';
 import { email, legacyTimes, orderLevels } from '#utils/dataImports';
 import { recapGenerate } from '#utils/recap';
@@ -194,6 +195,23 @@ app.get('/levelpackstats/:identifier', async (req, res) => {
         error: error.message,
       });
     }
+  } else {
+    res.status(401);
+    res.send('Unauthorized');
+  }
+});
+
+// lists existing kuskis and teams with restricted characters in their names
+app.get('/restricted-names', async (req, res) => {
+  if (req.header('Authorization') === config.run.ranking) {
+    const kuskis = await Kuski.scope(null).findAll({
+      attributes: ['KuskiIndex', 'Kuski'],
+    });
+    const teams = await Team.findAll({ attributes: ['TeamIndex', 'Team'] });
+    res.json({
+      kuskis: kuskis.filter(k => !validKuski(k.Kuski)),
+      teams: teams.filter(t => !validTeam(t.Team)),
+    });
   } else {
     res.status(401);
     res.send('Unauthorized');

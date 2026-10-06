@@ -84,6 +84,15 @@ const Player = styled.div`
   @media screen and (max-width: 640px) {
     height: 350px;
   }
+  /* hide playback controls */
+  .RecPlayer-controls-progress-bar,
+  .RecPlayer-controls-timestamp,
+  .RecPlayer-controls-bottom-row
+    > .RecPlayer-controls-button:not(.RecPlayer-controls-button-fullscreen):not(
+      .RecPlayer-controls-button-zoom
+    ) {
+    display: none !important;
+  }
 `;
 
 const StyledFormControlLabel = styled(FormControlLabel)`

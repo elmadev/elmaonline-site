@@ -1,4 +1,5 @@
 import config from 'config';
+import { stripRecExt } from 'utils/misc';
 
 export const getReplayLink = replay => {
   let link = '';
@@ -6,9 +7,9 @@ export const getReplayLink = replay => {
   if (replay.UUID.substring(0, 5) === 'local') {
     link = `${config.url}temp/${replay.UUID}-${replay.RecFileName}`;
   } else if (replay.UUID.substring(0, 2) === 'c-') {
-    link = `${config.dlUrl}cupreplay/${replay.UUID.split('-')[1]}/${
-      replay.RecFileName
-    }`.replace('.rec', '');
+    link = `${config.dlUrl}cupreplay/${replay.UUID.split('-')[1]}/${stripRecExt(
+      replay.RecFileName,
+    )}`;
     type = 'cup';
   } else if (replay.UUID.substring(0, 2) === 'b-') {
     link = `${config.dlUrl}battlereplay/${replay.UUID.split('-')[1]}`;

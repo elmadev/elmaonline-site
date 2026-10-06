@@ -12,6 +12,7 @@ import PreviewRecButton from 'components/PreviewRecButton';
 import FieldBoolean from 'components/FieldBoolean';
 import { CupUpload } from './Dashboard';
 import config from 'config';
+import { shirtUrl } from 'utils/misc';
 import Link from '../../components/Link';
 import { Share, AddBox, IndeterminateCheckBox } from '@material-ui/icons';
 
@@ -209,9 +210,7 @@ const Team = () => {
                                 replay.Time,
                               )}${getMergeRecUri(e.CupIndex)}`}
                               lev={`${config.dlUrl}level/${e.LevelIndex}`}
-                              shirt={[
-                                `${config.dlUrl}shirt/${replay.KuskiIndex}`,
-                              ]}
+                              shirt={[shirtUrl(replay.KuskiIndex)]}
                               height={400}
                               controls
                             />

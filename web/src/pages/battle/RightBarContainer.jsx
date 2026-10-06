@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Accordion,
@@ -21,8 +21,10 @@ import Header from 'components/Header';
 import ChatView from 'features/ChatView';
 import LocalTime from 'components/LocalTime';
 import LeaderHistory from 'components/LeaderHistory';
-import { battleStatus } from 'utils/battle';
+import LinearProgressWithLabel from 'components/LinearProgressWithLabel';
+import { battleStatus, battleRemaining } from 'utils/battle';
 import { pluralize } from 'utils/misc';
+import { useInterval } from 'utils/useInterval';
 import { useNavigate } from '@tanstack/react-router';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import IconButton from '@material-ui/core/IconButton';
@@ -51,6 +53,15 @@ const RightBarContainer = props => {
 
   const { getNextBattleFound } = useStoreActions(actions => actions.Battle);
   const { nextBattleFound } = useStoreState(state => state.Battle);
+  const isOngoing = battleStatus(battle) === 'Ongoing';
+  const [remaining, setRemaining] = useState(() => battleRemaining(battle));
+
+  useInterval(
+    () => {
+      setRemaining(battleRemaining(battle));
+    },
+    isOngoing ? 1000 : null,
+  );
 
   useEffect(() => {
     getNextBattleFound(battle.BattleIndex + 1);
@@ -98,6 +109,12 @@ const RightBarContainer = props => {
               </div>
             ) : null}
             <AbortedText>{aborted === 1 && 'Battle Aborted'}</AbortedText>
+            {isOngoing && battle.Started && (
+              <LinearProgressWithLabel
+                value={remaining.percent}
+                remainingSeconds={remaining.seconds}
+              />
+            )}
             <div className="timeStamp">
               <Download href={`battlereplay/${battle.BattleIndex}`}>
                 Download replay
