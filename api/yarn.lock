@@ -2361,7 +2361,7 @@ __metadata:
     lodash-contrib: ^4.1200.1
     lodash-es: ^4.17.21
     mysql2: ^3.11.4
-    nanoid: ^5.0.8
+    nanoid: ^5.1.16
     neo-async: ^2.6.2
     nodemon: ^3.1.7
     prettier: ^3.3.3
@@ -4737,12 +4737,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.0.8":
-  version: 5.0.8
-  resolution: "nanoid@npm:5.0.8"
+"nanoid@npm:^5.1.16":
+  version: 5.1.16
+  resolution: "nanoid@npm:5.1.16"
   bin:
     nanoid: bin/nanoid.js
-  checksum: df131a515465053ff25c8cf0450ef191e1db83b45fe125af43f50d39feddf1f161d3b2abb34cb993df35a76b427f8d6d982e16e47d67b2fbe843664af025b5e2
+  checksum: b1e702e2b7072e74ac2ae880907d0a291853a36617ec5c3d27d81ab04965ebc0d4d0f707cf9220928cf93d5370b1f561c930efee853dc9c1a3facaefdf1a42ee
   languageName: node
   linkType: hard
 
