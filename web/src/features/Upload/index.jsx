@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import {
@@ -46,6 +46,7 @@ const Upload = ({ onUpload = null, filetype }) => {
   const [duplicateReplayIndex, setDuplicateReplayIndex] = useState(0);
   const [uploaded, setUploaded] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const uploadingRef = useRef(false);
   const [warning, setWarning] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [update, setUpdate] = useState(0);
@@ -210,93 +211,99 @@ const Upload = ({ onUpload = null, filetype }) => {
     }
   };
 
-  const upload = () => {
+  const upload = async () => {
+    // ref guard so a fast double click can't start a second upload before re-render
+    if (uploadingRef.current) {
+      return;
+    }
+    uploadingRef.current = true;
     setIsUploading(true);
-    files.forEach(file => {
+    const uploads = files.map(file => {
       const data = new FormData();
       data.append('file', file);
       data.append('filename', file.name);
-      fetch(`${config.url}upload/replay`, {
+      return fetch(`${config.url}upload/replay`, {
         method: 'POST',
         body: data,
         headers: {
           Authorization: authToken(),
         },
-      })
-        .then(response => {
-          response.json().then(body => {
-            if (body.error) {
-              if (body.error === 'Duplicate') {
-                setError(body.error);
-                setDuplicate(true);
-                const oldUnlisted = body.replayInfo[0].Unlisted;
-                const newUnlisted = +fileInfo[body.file].unlisted;
-                if (oldUnlisted === newUnlisted) {
+      }).then(response =>
+        response.json().then(body => {
+          if (body.error) {
+            if (body.error === 'Duplicate') {
+              setError(body.error);
+              setDuplicate(true);
+              const oldUnlisted = body.replayInfo[0].Unlisted;
+              const newUnlisted = +fileInfo[body.file].unlisted;
+              if (oldUnlisted === newUnlisted) {
+                setDuplicateText(
+                  'Replay already in the database. Upload failed.',
+                );
+                setDuplicateLink(url(body.replayInfo[0]));
+                setDuplicateOptions(['okay']);
+              } else if (oldUnlisted === 0 && newUnlisted === 1) {
+                setDuplicateText(
+                  'Replay already public in database. Upload failed.',
+                );
+                setDuplicateLink(url(body.replayInfo[0]));
+                setDuplicateOptions(['okay']);
+              } else if (oldUnlisted === 1 && newUnlisted === 0) {
+                if (loggedIn && body.replayInfo[0].UploadedBy === userid) {
                   setDuplicateText(
-                    'Replay already in the database. Upload failed.',
+                    'Replay already in database, but currently Unlisted. Would you like to make it public?',
                   );
-                  setDuplicateLink(url(body.replayInfo[0]));
-                  setDuplicateOptions(['okay']);
-                } else if (oldUnlisted === 0 && newUnlisted === 1) {
+                  setDuplicateOptions(['Cancel upload', 'Yes']);
+                  setDuplicateReplayIndex(body.replayInfo[0].ReplayIndex);
+                } else {
                   setDuplicateText(
-                    'Replay already public in database. Upload failed.',
+                    loggedIn
+                      ? 'Replay already in database as Unlisted, uploaded by someone else. Only the original uploader can make it public. Upload failed.'
+                      : 'Replay already in database as Unlisted. Only the original uploader can make it public, log in if this is you. Upload failed.',
                   );
-                  setDuplicateLink(url(body.replayInfo[0]));
+                  setDuplicateLink('');
                   setDuplicateOptions(['okay']);
-                } else if (oldUnlisted === 1 && newUnlisted === 0) {
-                  if (loggedIn && body.replayInfo[0].UploadedBy === userid) {
-                    setDuplicateText(
-                      'Replay already in database, but currently Unlisted. Would you like to make it public?',
-                    );
-                    setDuplicateOptions(['Cancel upload', 'Yes']);
-                    setDuplicateReplayIndex(body.replayInfo[0].ReplayIndex);
-                  } else {
-                    setDuplicateText(
-                      loggedIn
-                        ? 'Replay already in database as Unlisted, uploaded by someone else. Only the original uploader can make it public. Upload failed.'
-                        : 'Replay already in database as Unlisted. Only the original uploader can make it public, log in if this is you. Upload failed.',
-                    );
-                    setDuplicateLink('');
-                    setDuplicateOptions(['okay']);
-                  }
                 }
-              } else if (body.error && body.error.code) {
-                if (body.error.code === 'ENOENT' && body.error.errno === -2) {
-                  setError('Filename too long.');
-                }
-              } else {
-                setError(body.error.toString());
+              }
+            } else if (body.error && body.error.code) {
+              if (body.error.code === 'ENOENT' && body.error.errno === -2) {
+                setError('Filename too long.');
               }
             } else {
-              insertReplay({
-                UploadedBy: 0,
-                UUID: body.uuid,
-                RecFileName: body.file,
-                Uploaded: Math.floor(Date.now() / 1000),
-                ReplayTime: body.time,
-                Finished: body.finished,
-                LevelIndex: body.LevelIndex,
-                Unlisted:
-                  body.uuid.substring(0, 5) === 'local'
-                    ? 1
-                    : +fileInfo[body.file].unlisted,
-                Hide: +fileInfo[body.file].hide,
-                DrivenBy: fileInfo[body.file].kuskiIndex,
-                TAS: +fileInfo[body.file].tas,
-                Bug: +fileInfo[body.file].bug,
-                Nitro: +fileInfo[body.file].nitro,
-                Comment: fileInfo[body.file].comment,
-                MD5: body.MD5,
-                DrivenByText: fileInfo[body.file].drivenBy,
-                Tags: fileInfo[body.file].tags,
-              });
+              setError(body.error.toString());
             }
-          });
-        })
-        .finally(() => {
-          setIsUploading(false);
-        });
+          } else {
+            return insertReplay({
+              UploadedBy: 0,
+              UUID: body.uuid,
+              RecFileName: body.file,
+              Uploaded: Math.floor(Date.now() / 1000),
+              ReplayTime: body.time,
+              Finished: body.finished,
+              LevelIndex: body.LevelIndex,
+              Unlisted:
+                body.uuid.substring(0, 5) === 'local'
+                  ? 1
+                  : +fileInfo[body.file].unlisted,
+              Hide: +fileInfo[body.file].hide,
+              DrivenBy: fileInfo[body.file].kuskiIndex,
+              TAS: +fileInfo[body.file].tas,
+              Bug: +fileInfo[body.file].bug,
+              Nitro: +fileInfo[body.file].nitro,
+              Comment: fileInfo[body.file].comment,
+              MD5: body.MD5,
+              DrivenByText: fileInfo[body.file].drivenBy,
+              Tags: fileInfo[body.file].tags,
+            });
+          }
+          return null;
+        }),
+      );
     });
+    // keep the button disabled until every file is uploaded and inserted
+    await Promise.allSettled(uploads);
+    uploadingRef.current = false;
+    setIsUploading(false);
   };
 
   return (
