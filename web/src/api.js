@@ -1,7 +1,6 @@
 import { create } from 'apisauce';
 import config from 'config';
 import { authToken } from 'utils/nick';
-import assert from 'assert';
 import { isObjectLike, isArray, mapValues, meanBy } from 'lodash';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 
@@ -55,10 +54,11 @@ export const useQueryAlt = (
       const res = await queryFn(...args);
 
       if (arrayFormat) {
-        assert(
-          isArray(res) && res.length === 2,
-          'Expected an async queryFn that resolves to an array of length 2.',
-        );
+        if (!(isArray(res) && res.length === 2)) {
+          throw new Error(
+            'Expected an async queryFn that resolves to an array of length 2.',
+          );
+        }
 
         if (res[0]) {
           return res[1];
@@ -68,10 +68,11 @@ export const useQueryAlt = (
         console.error('Status not OK', queryKey, res[1]);
         throw new Error('Status not OK');
       } else {
-        assert(
-          isObjectLike(res),
-          'Expected an async queryFn that resolves to an object.',
-        );
+        if (!isObjectLike(res)) {
+          throw new Error(
+            'Expected an async queryFn that resolves to an object.',
+          );
+        }
 
         if (res.ok) {
           return res.data;
