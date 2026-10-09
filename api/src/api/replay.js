@@ -1,5 +1,5 @@
 import express from 'express';
-import { Op } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 import {
   like,
   searchLimit,
@@ -768,7 +768,16 @@ const InsertReplay = async (data, userid) => {
   if (insertData.DrivenBy !== 0) {
     insertData.DrivenByText = '';
   }
-  const replay = await Replay.create(insertData);
+  // unique MD5 index guards against concurrent uploads of the same replay
+  let replay;
+  try {
+    replay = await Replay.create(insertData);
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      return { error: 'Duplicate upload.' };
+    }
+    throw error;
+  }
 
   // Set tags
   const tags = insertData.Tags.filter(tag => !tag.Hidden).map(
@@ -893,7 +902,7 @@ const shareReplay = async data => {
     );
     const isMoved = await shareTimeFile(data.TimeFileData, RecFileName);
     if (isMoved) {
-      await InsertReplay(
+      const inserted = await InsertReplay(
         {
           DrivenBy: time.KuskiIndex,
           UploadedBy: time.KuskiIndex,
@@ -913,6 +922,9 @@ const shareReplay = async data => {
         },
         time.KuskiIndex,
       );
+      if (inserted.error) {
+        return { success: 0, error: 'Duplicate upload' };
+      }
       await TimeFile.update(
         { Shared: 1 },
         { where: { TimeFileIndex: data.TimeFileData.TimeFileIndex } },

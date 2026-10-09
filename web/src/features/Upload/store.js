@@ -26,7 +26,11 @@ export default {
   insertReplay: thunk(async (actions, payload) => {
     const insert = await InsertReplay(payload);
     if (insert.ok) {
-      actions.setInserted(insert.data);
+      if (insert.data.error) {
+        actions.setError(insert.data.error);
+      } else {
+        actions.setInserted(insert.data);
+      }
     }
   }),
   updateReplay: thunk(async (actions, payload) => {
