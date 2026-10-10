@@ -99,6 +99,20 @@ Use `yarn commit` or follow [guidelines](https://github.com/elmadev/elmaonline-s
 - Type name of component in CamelCase
 - Import in relevant screens/features
 
+## Smoke tests
+
+`e2e/` contains Playwright smoke tests that build the site in test mode, visit every route in `e2e/routes.js` against apitest.elma.online and check that:
+
+- the page renders without uncaught errors or the router's "Something went wrong" screen
+- the set of api calls the page makes matches the snapshot in `e2e/__snapshots__`
+
+The tests don't import any app code, so refactors that keep pages working need no test changes. If a change to api calls is intended, review the diff and run `yarn test:e2e:update`.
+
+- `npx playwright install chromium` once
+- `yarn test:e2e` to run, `yarn test:e2e:ui` to step through pages
+- Add new pages to `e2e/routes.js`. Use `actions` for calls that only happen after interaction, POST/PUT/DELETE are intercepted so nothing is written to apitest
+- Set `E2E_USER` and `E2E_PASS` to also run the logged in routes
+
 ## Setting up editor
 
 The project is configured to use eslint and prettier to ensure good coding practices. Make sure you install relevant plugins for your editor.
