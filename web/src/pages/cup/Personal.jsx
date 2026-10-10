@@ -239,6 +239,7 @@ const Personal = () => {
                               key={t.TimeIndex}
                               TimeIndex={t.TimeIndex}
                               LevelIndex={e.LevelIndex}
+                              LevelData={e.Level}
                               setPreviewRec={setPreviewRec}
                             />
                           ))}
@@ -249,6 +250,7 @@ const Personal = () => {
                               key={t.TimeFileData?.TimeIndex}
                               TimeIndex={t.TimeFileData?.TimeIndex}
                               LevelIndex={e.LevelIndex}
+                              LevelData={e.Level}
                               setPreviewRec={setPreviewRec}
                             />
                           ))}
@@ -272,7 +274,7 @@ const Personal = () => {
   );
 };
 
-const TimeRow = ({ time, TimeIndex, LevelIndex, setPreviewRec }) => {
+const TimeRow = ({ time, TimeIndex, LevelIndex, LevelData, setPreviewRec }) => {
   return (
     <>
       <ReplayCon key={time.TimeIndex}>
@@ -295,6 +297,7 @@ const TimeRow = ({ time, TimeIndex, LevelIndex, setPreviewRec }) => {
                 ...time,
                 TimeIndex,
                 LevelIndex,
+                LevelData,
               })
             }
           >
