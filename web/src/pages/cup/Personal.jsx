@@ -1,6 +1,6 @@
 import React, { useEffect, Fragment, useState } from 'react';
 import styled from '@emotion/styled';
-import { nickId } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
 import {
@@ -262,7 +262,11 @@ const Personal = () => {
         </Grid>
       )}
       {previewRec && (
-        <Preview previewRec={previewRec} setPreviewRec={setPreviewRec} />
+        <Preview
+          previewRec={previewRec}
+          setPreviewRec={setPreviewRec}
+          kuskiName={nick()}
+        />
       )}
     </Container>
   );

@@ -111,7 +111,11 @@ const Level = () => {
         </Grid>
       </Grid>
       {previewRec && (
-        <Preview previewRec={previewRec} setPreviewRec={setPreviewRec} />
+        <Preview
+          previewRec={previewRec}
+          setPreviewRec={setPreviewRec}
+          kuskiName={previewRec.KuskiData?.Kuski}
+        />
       )}
     </Layout>
   );
