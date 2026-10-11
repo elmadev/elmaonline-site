@@ -79,7 +79,7 @@ const LevelPopup = ({
                 {longName}
               </Title>
               <Header h2 mLeft>
-                Top-{timesLimit.toLocaleString()} times
+                Top {timesLimit.toLocaleString()} times
               </Header>
             </Column>
             <LevelMap LevelIndex={levelId} width="50%" />
