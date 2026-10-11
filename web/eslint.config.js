@@ -43,7 +43,7 @@ export default [
     },
   },
   {
-    files: ['e2e/**/*.js', 'playwright.config.js'],
+    files: ['e2e/**/*.js'],
     languageOptions: { globals: globals.node },
   },
   {
@@ -53,6 +53,9 @@ export default [
       'public',
       'templates',
       'storybook-static',
+      'test-results',
+      'playwright-report',
+      'coverage',
       '**/test/*',
       '**/stories/*',
     ],

@@ -58,9 +58,13 @@
     "prettier": "prettier --check src/**/*.js",
     "commit": "git-cz",
     "lint": "eslint .",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:update": "playwright test --update-snapshots"
+    "test:e2e": "playwright test --config e2e/playwright.config.js",
+    "test:e2e:guest": "playwright test --config e2e/playwright.config.js --project=guest",
+    "test:e2e:user": "playwright test --config e2e/playwright.config.js --project=user",
+    "test:e2e:coverage": "node e2e/coverage.js",
+    "test:e2e:ui": "playwright test --config e2e/playwright.config.js --ui",
+    "test:e2e:quick": "E2E_EXPLORE=0 playwright test --config e2e/playwright.config.js",
+    "test:e2e:update": "playwright test --config e2e/playwright.config.js --update-snapshots"
   },
   "browserslist": {
     "production": [

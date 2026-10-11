@@ -30,7 +30,7 @@ export const Content = styled.div`
   flex-direction: column;
 `;
 
-const ChildrenCon = styled.div`
+const ChildrenCon = styled.main`
   min-height: 100%;
   margin-top: -54px;
   box-sizing: border-box;
