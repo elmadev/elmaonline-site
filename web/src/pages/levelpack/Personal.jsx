@@ -767,6 +767,9 @@ const ChoosePlayer = styled.div`
   div {
     padding-left: 6px;
   }
+  label {
+    padding-left: 8px;
+  }
 `;
 
 const LegacyContainer = styled.span`
