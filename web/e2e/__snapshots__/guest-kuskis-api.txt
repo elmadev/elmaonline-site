@@ -1,0 +1,3 @@
+GET country
+GET news/status
+GET player/

@@ -1,0 +1,3 @@
+GET cups/:n/myreplays
+GET cups/:n/teamreplays
+GET levelstats/collection/ids/:ids

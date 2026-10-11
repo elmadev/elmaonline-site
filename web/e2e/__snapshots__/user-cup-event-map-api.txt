@@ -1,0 +1,5 @@
+GET cups/FAE
+GET cups/events/:n
+GET lgr/get/default
+GET news/status
+GET notification/count

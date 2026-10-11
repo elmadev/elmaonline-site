@@ -1,0 +1,9 @@
+GET battle/replays?limit=200
+GET lgr/get/default
+GET replay/random
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=1&tags[]=50&tags[]=51
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50&tags[]=51
+GET replay_comment/?limit=20&offset=0
+GET tag

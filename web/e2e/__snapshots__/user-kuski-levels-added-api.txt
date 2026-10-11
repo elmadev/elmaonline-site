@@ -1,0 +1,9 @@
+GET level/kuskis
+GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=
+GET levelpack
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET notification/count
+GET player/Kuski/Zero
+GET ranking/kuski/:n
+GET tag?type=level

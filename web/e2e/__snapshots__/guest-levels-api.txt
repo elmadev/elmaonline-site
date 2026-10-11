@@ -1,0 +1,3 @@
+GET levelpack
+GET levelpack/stats
+GET news/status

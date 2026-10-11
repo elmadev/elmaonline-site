@@ -1,0 +1,4 @@
+GET news/status
+GET notification/count
+GET recap/:n
+GET recap/:n/:n

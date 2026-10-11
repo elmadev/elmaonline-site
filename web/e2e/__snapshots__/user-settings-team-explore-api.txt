@@ -1,0 +1,3 @@
+GET player/settings
+POST register/update {"Field":"Locked","Value":[1]}
+POST upload/file <multipart>

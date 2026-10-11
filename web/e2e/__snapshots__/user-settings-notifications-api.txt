@@ -1,0 +1,5 @@
+GET news/status
+GET notification/count
+GET player/:n
+GET player/ignored
+GET player/settings

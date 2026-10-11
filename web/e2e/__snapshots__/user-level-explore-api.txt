@@ -1,0 +1,10 @@
+GET battle/allBattleTimes/:n
+GET battle/allRuns/:n
+GET battle/byBattleIndex/:n
+GET battle/replays/:n
+GET chatlog?params={"start":<timestamp>,"end":<timestamp>,"limit":1000,"order":"ASC","count":false,"offset":0}
+GET crippled/bestTimes/:n/drunk/:n?all=1&limitAll=10000
+GET crippled/personal/:n/:n/drunk/:n
+GET crippled/timeStats/:n/:n/drunk
+GET ranking/battle/:n
+POST level/:n/tags {"Tags":[31,19,37,35,47,66]}

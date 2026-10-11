@@ -1,0 +1,6 @@
+GET level/kuskis
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=
+GET levelpack
+GET levelpack/stats
+GET news/status
+GET tag?type=level

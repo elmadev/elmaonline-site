@@ -1,0 +1,3 @@
+GET recap/alltime
+GET recap/alltime/:n
+GET recap/bestof/:n

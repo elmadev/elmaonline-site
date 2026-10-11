@@ -1,0 +1,10 @@
+GET allfinished/highlight
+GET levelpack/e2e/personalwithmulti/playwright/:n
+GET levelpack/e2e/records/:n
+GET levelpack/e2e/stats/:n
+GET levelpack/e2e?levels=1
+GET levelpack/favourite
+GET levelpack/level-stats/:n/e2e
+GET news/status
+GET notification/count
+GET tag?type=levelpack

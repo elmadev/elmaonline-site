@@ -1,0 +1,7 @@
+GET lgr/info/black
+GET lgr_comment/get/:n
+GET news/status
+GET notification/count
+GET replay/byUUID/3uvd9i1zgz?f=<hash>
+GET replay/byUUID/3uvd9i1zgz?f=undefined
+GET tag?type=lgr

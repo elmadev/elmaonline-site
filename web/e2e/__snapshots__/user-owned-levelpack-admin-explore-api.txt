@@ -1,0 +1,10 @@
+GET crippled/levelPackPersonalRecords/e2e/:n
+GET crippled/levelPackRecords/e2e/noVolt
+GET levelpack/e2e/multirecords
+GET levelpack/record-history/e2e?limit=50&sort=desc
+GET levelstats/collection/ids/
+GET replay?levelPack=412&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":412}
+POST levelpack/update/:n {"LevelPackDesc":"pack used for e2e testing","LevelPackIndex":412,"LevelPackLongName":"test","Tags":[32,20,38,36,48,22]}
+POST levelpack/update/:n {"LevelPackDesc":"pack used for e2e testing","LevelPackIndex":412,"LevelPackLongName":"test","Tags":[]}

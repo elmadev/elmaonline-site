@@ -1,0 +1,4 @@
+GET besttime/best-records/:n/:n/:n/:n?daysPast=14
+GET level/kuskis
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=
+GET tag?type=level

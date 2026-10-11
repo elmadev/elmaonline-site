@@ -1,0 +1,2 @@
+GET news/status
+GET replay_comment/?limit=20&offset=0

@@ -1,0 +1,4 @@
+GET battle/:n
+GET battleleague/mopo
+GET news/status
+GET notification/count

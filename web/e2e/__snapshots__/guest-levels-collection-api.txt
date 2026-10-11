@@ -1,0 +1,2 @@
+GET levelpack/collections/KOPA
+GET news/status

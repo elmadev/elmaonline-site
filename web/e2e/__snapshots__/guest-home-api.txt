@@ -1,0 +1,8 @@
+GET battle/:n
+GET cups/ongoing
+GET levelpack/latest/:n
+GET news/:n
+GET news/status
+GET ranking/month/:n
+GET replay?levelPack=0&order=desc&page=0&pageSize=20&sortBy=uploaded
+GET tag?type=replay

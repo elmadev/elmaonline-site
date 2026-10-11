@@ -1,0 +1,3 @@
+GET chatlog?params={"KuskiIds":[],"text":"","start":<timestamp>,"end":<timestamp>,"limit":25,"order":"DESC","count":false,"offset":0}
+GET news/status
+GET player/

@@ -1,0 +1,5 @@
+GET lgr/info
+GET replay/byUUID/qf37iupf5t?f=undefined
+POST replay/edit {"RecFileName":"QWQUU001_975Kop","ReplayUuid":"qf37iupf5t","edit":{"Comment":"789","DrivenBy":"Kopaka","Tags":[{"Hidden":0,"Name":"Across","TagIndex":13,"Type":"replay"},{"Hidden":0,"Name":"Always Throttle","TagIndex":10,"Type":"replay"},{"Hidden":0,"Name":"Bug","TagIndex":2,"Type":"replay"},{"Hidden":0,"Name":"Cup","TagIndex":52,"Type":"replay"},{"Hidden":0,"Name":"Drunk","TagIndex":12,"Type":"replay"},{"Hidden":0,"Name":"FALp","TagIndex":83,"Type":"replay"}],"Unlisted":0}}
+POST replay_comment/add {"Entered":"<timestamp>","ReplayIndex":354,"Text":""}
+POST replay_rating/add {"ReplayIndex":354,"Vote":1}

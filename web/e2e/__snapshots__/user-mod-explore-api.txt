@@ -1,0 +1,4 @@
+GET mod/actionlog/:n/:n
+GET mod/banlist
+GET mod/errorlog/:n/:n
+POST news {"Headline":"test","News":"test"}

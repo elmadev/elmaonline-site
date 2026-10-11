@@ -1,0 +1,3 @@
+GET kuskimap
+GET news/status
+GET notification/count

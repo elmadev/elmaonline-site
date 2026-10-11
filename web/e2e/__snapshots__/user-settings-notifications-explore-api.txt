@@ -1,0 +1,2 @@
+POST player/settings {"Setting":"SendEmail","Value":1}
+POST register/discord {}
