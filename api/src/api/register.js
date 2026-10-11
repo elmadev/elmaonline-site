@@ -102,6 +102,9 @@ const UpdatePasswordConfirm = async ConfirmCode => {
   return null;
 };
 
+const validConfirmCode = c => typeof c === 'string' && /^[0-9a-z]{10}$/.test(c);
+const validResetCode = c => validConfirmCode(c) && c.startsWith('rez');
+
 const validateEmail = e => {
   const re = /\S+@\S+\.\S+/;
   return re.test(e);
@@ -274,6 +277,10 @@ router
   })
   .use('/discord', Discord)
   .post('/confirm', async (req, res) => {
+    if (!validConfirmCode(req.body.confirmCode)) {
+      res.json({ success: false });
+      return;
+    }
     const confirmed = await updateConfirm(req.body.confirmCode);
     if (confirmed) {
       res.json({ success: true });
@@ -282,6 +289,10 @@ router
     }
   })
   .post('/resetconfirm', async (req, res) => {
+    if (!validateEmail(req.body.Email)) {
+      res.json({ success: false, message: 'Email not found' });
+      return;
+    }
     const resetCode = `rez${uuid(7)}`;
     const reset = await ResetPasswordConfirm(req.body.Email, resetCode);
     if (reset) {
@@ -292,6 +303,10 @@ router
     }
   })
   .post('/reset', async (req, res) => {
+    if (!validResetCode(req.body.confirmCode)) {
+      res.json({ success: false });
+      return;
+    }
     const reset = await UpdatePasswordConfirm(req.body.confirmCode);
     if (reset) {
       res.json({ success: true, newPassword: reset });
