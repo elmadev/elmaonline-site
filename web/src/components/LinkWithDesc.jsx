@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
 import { Divider as MuiDivider } from '@material-ui/core';
+import { sanitizeHtml } from 'utils/html';
 
 const TimeRange = ({ start, end }) => {
   if (!start) {
@@ -25,7 +26,7 @@ const LinkWithDesc = ({ link, name, desc, start, end, divider }) => {
       </Link>
       <TimeRange start={start} end={end} />
       <Description
-        dangerouslySetInnerHTML={{ __html: desc }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(desc) }}
         paddingBottom={!divider}
       />
       {divider && <Divider />}

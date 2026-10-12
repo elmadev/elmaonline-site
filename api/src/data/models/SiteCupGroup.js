@@ -1,5 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
+import { sanitizeHtml } from '#utils/html';
 
 const SiteCupGroup = Model.define(
   'sitecupgroup',
@@ -34,6 +35,9 @@ const SiteCupGroup = Model.define(
       type: DataType.STRING(65535),
       allowNull: true,
       defaultValue: false,
+      set(val) {
+        this.setDataValue('Description', sanitizeHtml(val));
+      },
     },
     Cover: {
       type: DataType.STRING(255),

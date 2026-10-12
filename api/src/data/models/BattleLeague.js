@@ -1,5 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
+import { sanitizeHtml } from '#utils/html';
 
 const BattleLeague = Model.define(
   'battleleague',
@@ -29,6 +30,9 @@ const BattleLeague = Model.define(
       type: DataType.STRING(25555),
       allowNull: false,
       defaultValue: '',
+      set(val) {
+        this.setDataValue('LeagueDescription', sanitizeHtml(val));
+      },
     },
     PointSystem: {
       type: DataType.INTEGER,

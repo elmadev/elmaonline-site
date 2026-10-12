@@ -7,6 +7,7 @@ import DerpTable from 'components/Table/DerpTable';
 import Header from 'components/Header';
 import { ListRow, ListCell } from 'components/List';
 import { points, pointsSystem2, pts } from 'utils/cups';
+import { sanitizeHtml } from 'utils/html';
 
 const RulesInfo = props => {
   const { description, owner, updateDesc, cup } = props;
@@ -26,7 +27,9 @@ const RulesInfo = props => {
         <Grid item xs={12} sm={6}>
           <Paper padding>
             <Header h2>Cup description</Header>
-            <Text dangerouslySetInnerHTML={{ __html: description }} />
+            <Text
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+            />
             {owner.length > 0 && owner.indexOf(nickId()) > -1 && (
               <>
                 <Button

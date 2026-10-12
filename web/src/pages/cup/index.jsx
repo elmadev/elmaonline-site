@@ -9,6 +9,7 @@ import { nickId } from 'utils/nick';
 import Layout from 'components/Layout';
 import Loading from 'components/Loading';
 import { admins } from 'utils/cups';
+import { sanitizeHtml } from 'utils/html';
 import Events from './Events';
 import Standings from './Standings';
 import RulesInfo from './RulesInfo';
@@ -169,7 +170,7 @@ export const CupCover = ({ cup, noBottomMargin = false }) => {
           {hideHeadline ? null : <Header h1>{cup.CupName}</Header>}
         </CoverHeadline>
         <Description
-          dangerouslySetInnerHTML={{ __html: cup.Description }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(cup.Description) }}
           textColor={textColor}
         />
       </CoverCon>
