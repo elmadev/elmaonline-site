@@ -3,6 +3,41 @@ import crypto from 'crypto';
 import { Kuski } from '#data/models';
 import config from '../config.js';
 
+// the hash format is shared with the game server, don't change it
+export const hashPassword = (password, salt) =>
+  crypto.createHash('RSA-SHA3-512').update(`${password}${salt}`).digest('hex');
+
+// constant time comparison so response times don't leak how much of a hash
+// matched
+export const hashesMatch = (hash, expected) => {
+  if (
+    typeof hash !== 'string' ||
+    typeof expected !== 'string' ||
+    !expected ||
+    hash.length !== expected.length
+  ) {
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expected));
+};
+
+// rules for new passwords, returns an error message or '' if it's valid.
+// max length is limited by the game
+export const passwordMinLength = 6;
+export const passwordMaxLength = 26;
+export const validatePassword = password => {
+  if (typeof password !== 'string' || password === '') {
+    return 'Password is missing.';
+  }
+  if (password.length < passwordMinLength) {
+    return `Password is too short. Minimum number of characters is ${passwordMinLength}.`;
+  }
+  if (password.length > passwordMaxLength) {
+    return `Password is too long. Maximum number of characters is ${passwordMaxLength}.`;
+  }
+  return '';
+};
+
 const getKuskiData = async k => {
   const kuskiData = await Kuski.findOne({
     attributes: [
@@ -84,11 +119,10 @@ const generateToken = async kuskiData => {
 };
 
 const addSha3 = async (salt, password, KuskiIndex) => {
-  const sha3 = crypto
-    .createHash('RSA-SHA3-512')
-    .update(`${password}${salt}`)
-    .digest('hex');
-  await Kuski.update({ Password2: sha3 }, { where: { KuskiIndex } });
+  await Kuski.update(
+    { Password2: hashPassword(password, salt) },
+    { where: { KuskiIndex } },
+  );
 };
 
 const deleteMD5 = async KuskiIndex => {
@@ -97,6 +131,12 @@ const deleteMD5 = async KuskiIndex => {
 
 export const auth = async body => {
   const { kuski, password } = body;
+  if (typeof kuski !== 'string' || typeof password !== 'string') {
+    return {
+      success: false,
+      message: 'Incorrect credentials',
+    };
+  }
   const kuskiData = await getKuskiData(kuski);
   if (!kuskiData) {
     return {
@@ -111,11 +151,8 @@ export const auth = async body => {
     };
   }
   if (kuskiData.dataValues.Salt && kuskiData.dataValues.Password2) {
-    const sha3 = crypto
-      .createHash('RSA-SHA3-512')
-      .update(`${password}${kuskiData.dataValues.Salt}`)
-      .digest('hex');
-    if (sha3 === kuskiData.dataValues.Password2) {
+    const sha3 = hashPassword(password, kuskiData.dataValues.Salt);
+    if (hashesMatch(sha3, kuskiData.dataValues.Password2)) {
       return generateToken(kuskiData.dataValues);
     }
     return {
@@ -125,7 +162,7 @@ export const auth = async body => {
   }
   if (kuskiData.dataValues.Password) {
     const md5 = crypto.createHash('md5').update(password).digest('hex');
-    if (md5 === kuskiData.dataValues.Password) {
+    if (hashesMatch(md5, kuskiData.dataValues.Password)) {
       if (kuskiData.dataValues.Salt) {
         await addSha3(
           kuskiData.dataValues.Salt,

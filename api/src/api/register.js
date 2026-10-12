@@ -1,10 +1,14 @@
 import express from 'express';
 import { uuid } from '#utils/calcs';
-import crypto from 'crypto';
 import { format } from 'date-fns';
 import { Team, Kuski, SiteSetting, Country } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
-import { authContext } from '#utils/auth';
+import {
+  authContext,
+  hashPassword,
+  hashesMatch,
+  validatePassword,
+} from '#utils/auth';
 import { sendMessage } from '#utils/discord';
 import {
   validKuski,
@@ -88,13 +92,9 @@ const UpdatePasswordConfirm = async ConfirmCode => {
     if (!Salt) {
       Salt = uuid(32);
     }
-    const newpass = crypto
-      .createHash('RSA-SHA3-512')
-      .update(`${newPassword}${Salt}`)
-      .digest('hex');
     await findReset.update({
       ConfirmCode: '',
-      Password2: newpass,
+      Password2: hashPassword(newPassword, Salt),
       Salt,
     });
     return newPassword;
@@ -170,15 +170,7 @@ const LogoUpdate = async (LogoUrl, TeamIndex) => {
 const Player = async KuskiIndex => {
   const data = await Kuski.findOne({
     where: { KuskiIndex },
-    attributes: [
-      'KuskiIndex',
-      'Kuski',
-      'TeamIndex',
-      'Country',
-      'Email',
-      'Password2',
-      'Salt',
-    ],
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Email'],
     include: [
       {
         model: Team,
@@ -186,6 +178,15 @@ const Player = async KuskiIndex => {
         attributes: ['Team', 'Locked', 'Logo'],
       },
     ],
+  });
+  return data;
+};
+
+// kept separate from Player so the hash is never sent in a response
+const PlayerPassword = async KuskiIndex => {
+  const data = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: ['Password2', 'Salt'],
   });
   return data;
 };
@@ -206,8 +207,8 @@ router
       message = 'Invalid team.';
     } else if (req.body.Kuski.length > 15) {
       message = 'Nick is too long. Maximum number of characters is 15.';
-    } else if (req.body.Password.length > 26) {
-      message = 'Password is too long. Maximum number of characters is 26.';
+    } else if (validatePassword(req.body.Password)) {
+      message = validatePassword(req.body.Password);
     } else if (req.body.Team && req.body.Team.length > 9) {
       message = 'Team is too long. Maximum number of characters is 9.';
     } else if (!validKuski(req.body.Kuski)) {
@@ -259,12 +260,9 @@ router
     } else {
       const ConfirmCode = uuid();
       const Salt = uuid(32);
-      const data = await addKuski({
+      await addKuski({
         Kuski: req.body.Kuski,
-        Password2: crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Password}${Salt}`)
-          .digest('hex'),
+        Password2: hashPassword(req.body.Password, Salt),
         Salt,
         Email: req.body.Email,
         Country: req.body.Country,
@@ -272,7 +270,8 @@ router
         ConfirmCode,
       });
       await confirmMail(req.body.Kuski, req.body.Email, ConfirmCode);
-      res.json({ success: true, data });
+      // don't return the new row, it has the password hash and confirm code
+      res.json({ success: true });
     }
   })
   .use('/discord', Discord)
@@ -393,32 +392,35 @@ router
         }
         // password
       } else if (req.body.Field === 'Password') {
-        const playerInfo = await Player(auth.userid);
+        const playerInfo = await PlayerPassword(auth.userid);
         let { Salt } = playerInfo;
         if (!Salt) {
           Salt = uuid(32);
         }
-        const oldpass = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[0]}${Salt}`)
-          .digest('hex');
-        const pass = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[1]}${Salt}`)
-          .digest('hex');
-        const passAgain = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[2]}${Salt}`)
-          .digest('hex');
-        if (oldpass !== playerInfo.Password2) {
+        const [oldPassword, newPassword, newPasswordAgain] = Array.isArray(
+          req.body.Value,
+        )
+          ? req.body.Value
+          : [];
+        if (
+          typeof oldPassword !== 'string' ||
+          !hashesMatch(hashPassword(oldPassword, Salt), playerInfo.Password2)
+        ) {
           message = 'Old password does not match.';
           error = true;
-        } else if (pass !== passAgain) {
+        } else if (validatePassword(newPassword)) {
+          message = validatePassword(newPassword);
+          error = true;
+        } else if (newPassword !== newPasswordAgain) {
           message = 'Password again does not match.';
           error = true;
         }
         if (!error) {
-          await UpdatePassword(pass, auth.userid, Salt);
+          await UpdatePassword(
+            hashPassword(newPassword, Salt),
+            auth.userid,
+            Salt,
+          );
           message = 'Password has been updated.';
         }
         // team lock
