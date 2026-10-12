@@ -175,7 +175,11 @@ const Register = () => {
                   value={country}
                   onChange={e => setCountry(e.target.value)}
                   input={
-                    <OutlinedInput labelWidth={0} name="country" id="country" />
+                    <OutlinedInput
+                      labelWidth={72}
+                      name="country"
+                      id="country"
+                    />
                   }
                 >
                   <option value=""> </option>

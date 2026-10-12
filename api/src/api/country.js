@@ -4,7 +4,9 @@ import { Country } from '#data/models';
 const router = express.Router();
 
 const getCountries = async () => {
-  const data = await Country.findAll({});
+  const data = await Country.findAll({
+    order: [['Name', 'ASC']],
+  });
   return data;
 };
 

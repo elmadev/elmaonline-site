@@ -197,7 +197,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
               <FormControlLabel
                 value="PRsAndReplays"
                 checked={type === 'PRsAndReplays'}
-                label="Only PR's"
+                label="Only PRs"
                 control={<RadioThin size="small" />}
               />
               {KuskiIndex === nickId() ? (

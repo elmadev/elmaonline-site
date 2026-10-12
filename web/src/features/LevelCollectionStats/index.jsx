@@ -105,7 +105,7 @@ const LevelCollectionStats = ({ levelIds, excludeFromTotalIds = [] }) => {
             <ListCell>Filename</ListCell>
             <ListCell>Level Name</ListCell>
             <ListCell>Playtime</ListCell>
-            <ListCell>Kuski's Played</ListCell>
+            <ListCell>Kuskis Played</ListCell>
             <ListCell>Kuski Finish %</ListCell>
             <ListCell>Finish %</ListCell>
             <ListCell>Death %</ListCell>
