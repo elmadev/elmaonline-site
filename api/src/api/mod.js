@@ -261,10 +261,23 @@ const getActionLog = async (k, LogTime) => {
   return logs;
 };
 
+const modRights = [
+  'Confirm',
+  'RStartBattle',
+  'RSpecialBattle',
+  'RStartCup',
+  'RStart24htt',
+  'RStop',
+];
+const adminRights = ['RMod'];
+
 const giveRights = async (Right, KuskiIndex, modId) => {
   const findKuski = await Kuski.scope(null).findOne({
     where: { KuskiIndex },
   });
+  if (!findKuski) {
+    return false;
+  }
   if (Right === 'Confirm') {
     await findKuski.update({
       Confirmed: 1,
@@ -278,6 +291,7 @@ const giveRights = async (Right, KuskiIndex, modId) => {
     await findKuski.update({ [Right]: 1 });
   }
   await WriteActionLog(modId, KuskiIndex, Right, 1, 0, '');
+  return true;
 };
 
 const getIPlogs = async KuskiIndex => {
@@ -401,14 +415,16 @@ router
   .post('/giverights', async (req, res) => {
     const auth = authContext(req);
     if (auth.mod) {
+      const { Right } = req.body;
       if (
-        req.body.Right === 'RBan' ||
-        (req.body.Right === 'RMod' && !auth.admin)
+        !modRights.includes(Right) &&
+        !(adminRights.includes(Right) && auth.admin)
       ) {
         res.sendStatus(401);
-      } else {
-        await giveRights(req.body.Right, req.body.KuskiIndex, auth.userid);
+      } else if (await giveRights(Right, req.body.KuskiIndex, auth.userid)) {
         res.json({ success: 1 });
+      } else {
+        res.sendStatus(404);
       }
     } else {
       res.sendStatus(401);
