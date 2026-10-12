@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import path from 'path';
 import elmajs from 'elmajs';
 import { PCX, writePCX, DefaultLGRPalette } from 'elma-pcx';
-import { authContext } from '#utils/auth';
+import { authContext, authRights } from '#utils/auth';
 import { LGR, Kuski, Tag } from '#data/models';
 import { uploadLGRS3, deleteLGRS3, lgrUrl } from '#utils/upload';
 import { deleteLGRComments } from './lgr_comment.js';
@@ -538,7 +538,7 @@ router.get('/info/:LGRName', async (req, res) => {
 
 // Edit the LGR
 router.post('/info/:LGRName', async (req, res) => {
-  const auth = authContext(req);
+  const auth = await authRights(req);
   if (!auth.auth) {
     res.status(401).json({ error: 'Access denied.' });
     return;
@@ -563,7 +563,7 @@ router.post('/info/:LGRName', async (req, res) => {
 
 // Delete an LGR
 router.delete('/del/:LGRName', async (req, res) => {
-  const auth = authContext(req);
+  const auth = await authRights(req);
   if (!auth.auth) {
     res.status(401).json({ error: 'Access denied.' });
     return;

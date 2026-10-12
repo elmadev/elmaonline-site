@@ -527,7 +527,7 @@ const routeTree = rootRoute.addChildren([
   uploadRoute,
 ]);
 
-const router = createRouter({
+export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: () => <NotFound />,
 });

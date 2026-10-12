@@ -6,7 +6,7 @@ import {
   searchPageLimit,
   searchOffset,
 } from '#utils/database';
-import { authContext } from '#utils/auth';
+import { authContext, authRights } from '#utils/auth';
 import { format } from 'date-fns';
 import { forEach, groupBy } from 'lodash-es';
 import crypto from 'crypto';
@@ -1038,7 +1038,7 @@ router
     }
   })
   .post('/edit', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       const edit = await EditReplay({
         ...req.body,

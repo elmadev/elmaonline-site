@@ -2,7 +2,7 @@ import express from 'express';
 import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { acceptNickMail } from '#utils/email';
-import { authContext } from '#utils/auth';
+import requireMod from '#middlewares/requireMod';
 import { sendMessage } from '#utils/discord';
 import { validKuski } from '#utils/names';
 import { format, addDays } from 'date-fns';
@@ -334,110 +334,65 @@ const expiredExpired = async (data, done) => {
 };
 
 router
-  .get('/nickrequests', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getNickRequests();
-      res.json(data);
-    } else {
-      res.sendStatus(401);
-    }
+  .get('/nickrequests', requireMod, async (req, res) => {
+    const data = await getNickRequests();
+    res.json(data);
   })
-  .post('/nickrequests/:action/:id', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getNickRequest(req.params.id);
-      if (data) {
-        if (req.params.action === 'accept') {
-          // requests made before name validation existed may be invalid
-          if (!validKuski(data.Setting)) {
-            res.json({ success: 0 });
-            return;
-          }
-          await AcceptNick(data, auth.userid);
+  .post('/nickrequests/:action/:id', requireMod, async (req, res) => {
+    const data = await getNickRequest(req.params.id);
+    if (data) {
+      if (req.params.action === 'accept') {
+        // requests made before name validation existed may be invalid
+        if (!validKuski(data.Setting)) {
+          res.json({ success: 0 });
+          return;
         }
-        if (req.params.action === 'decline') {
-          await DeclineNick(data, auth.userid);
-        }
-        res.json({ success: 1 });
-      } else {
-        res.json({ success: 0 });
+        await AcceptNick(data, req.auth.userid);
       }
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .get('/banlist', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getBanlists(0);
-      res.json(data);
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .get('/banlist/:KuskiIndex', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getBanlists(req.params.KuskiIndex);
-      res.json(data);
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/bankuski', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      await banKuski({ ...req.body, modId: auth.userid });
+      if (req.params.action === 'decline') {
+        await DeclineNick(data, req.auth.userid);
+      }
       res.json({ success: 1 });
     } else {
-      res.sendStatus(401);
+      res.json({ success: 0 });
     }
   })
-  .get('/errorlog/:Kuski/:ErrorTime', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getErrorLog(req.params.Kuski, req.params.ErrorTime);
-      res.json(data);
-    } else {
+  .get('/banlist', requireMod, async (req, res) => {
+    const data = await getBanlists(0);
+    res.json(data);
+  })
+  .get('/banlist/:KuskiIndex', requireMod, async (req, res) => {
+    const data = await getBanlists(req.params.KuskiIndex);
+    res.json(data);
+  })
+  .post('/bankuski', requireMod, async (req, res) => {
+    await banKuski({ ...req.body, modId: req.auth.userid });
+    res.json({ success: 1 });
+  })
+  .get('/errorlog/:Kuski/:ErrorTime', requireMod, async (req, res) => {
+    const data = await getErrorLog(req.params.Kuski, req.params.ErrorTime);
+    res.json(data);
+  })
+  .get('/actionlog/:Kuski/:ErrorTime', requireMod, async (req, res) => {
+    const data = await getActionLog(req.params.Kuski, req.params.ErrorTime);
+    res.json(data);
+  })
+  .post('/giverights', requireMod, async (req, res) => {
+    const { Right } = req.body;
+    if (
+      !modRights.includes(Right) &&
+      !(adminRights.includes(Right) && req.auth.admin)
+    ) {
       res.sendStatus(401);
+    } else if (await giveRights(Right, req.body.KuskiIndex, req.auth.userid)) {
+      res.json({ success: 1 });
+    } else {
+      res.sendStatus(404);
     }
   })
-  .get('/actionlog/:Kuski/:ErrorTime', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const data = await getActionLog(req.params.Kuski, req.params.ErrorTime);
-      res.json(data);
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .post('/giverights', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const { Right } = req.body;
-      if (
-        !modRights.includes(Right) &&
-        !(adminRights.includes(Right) && auth.admin)
-      ) {
-        res.sendStatus(401);
-      } else if (await giveRights(Right, req.body.KuskiIndex, auth.userid)) {
-        res.json({ success: 1 });
-      } else {
-        res.sendStatus(404);
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  })
-  .get('/iplogs/:KuskiIndex', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.mod) {
-      const logs = await getIPlogs(req.params.KuskiIndex);
-      res.json(logs);
-    } else {
-      res.sendStatus(401);
-    }
+  .get('/iplogs/:KuskiIndex', requireMod, async (req, res) => {
+    const logs = await getIPlogs(req.params.KuskiIndex);
+    res.json(logs);
   })
   .post('/unban', async (req, res) => {
     const expired = await getExpired();

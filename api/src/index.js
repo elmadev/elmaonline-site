@@ -9,6 +9,7 @@ import fileUpload from 'express-fileupload';
 import config from './config.js';
 import './data/sequelize.js';
 import { auth } from '#utils/auth';
+import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api/index.js';
 import eventsRoutes from './events.js';
@@ -39,9 +40,10 @@ app.use(
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ exposedHeaders: [renewedTokenHeader] }));
 app.use(fileUpload());
 app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
+app.use(renewToken);
 
 // ----------------------------------------------------------
 // development settings

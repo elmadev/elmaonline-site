@@ -1,7 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { StoreProvider, createStore } from 'easy-peasy';
 import { HelmetProvider } from 'react-helmet-async';
-import Router from './router';
+import Router, { router } from './router';
+import { watchSession } from 'utils/nick';
 import model from './easypeasy';
 import { queryClient } from './react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -20,6 +21,8 @@ const ReactQueryDevtools =
 const easyPeasyStore = createStore(model, {
   version: 2,
 });
+
+watchSession(easyPeasyStore, router);
 
 function App() {
   return (

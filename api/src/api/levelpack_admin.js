@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
+import { authRights } from '#utils/auth';
 import { LevelPackLevel, LevelPack, Level } from '#data/models';
 
 const router = express.Router();
@@ -170,7 +170,7 @@ const UpdateLevel = async data => {
 
 router
   .post('/sort', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       try {
         const sort = await SortPack({
@@ -197,7 +197,7 @@ router
     }
   })
   .post('/deleteLevel', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       const del = await DeleteLevel({
         ...req.body,
@@ -214,7 +214,7 @@ router
     }
   })
   .post('/addLevel', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       const add = await AddLevel({
         ...req.body,
@@ -240,7 +240,7 @@ router
     });
   })
   .post('/updateLevel', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       try {
         const update = await UpdateLevel({
