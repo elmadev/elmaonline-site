@@ -9,6 +9,7 @@ import config from './config.js';
 import './data/sequelize.js';
 import { auth } from '#utils/auth';
 import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
+import { loginLimit } from '#middlewares/rateLimit';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api/index.js';
 import eventsRoutes from './events.js';
@@ -75,8 +76,10 @@ app.use(async (req, res, next) => {
 // ----------------------------------------------------------
 
 // login
-app.post('/token', async (req, res) => {
+app.post('/token', loginLimit, async (req, res) => {
   const authResponse = await auth(req.body);
+  // only failed logins count towards the rate limit
+  res.locals.success = authResponse.success;
   res.json({ Response: authResponse });
 });
 

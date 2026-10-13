@@ -16,6 +16,11 @@ import {
   kuskiCharsMessage,
   teamCharsMessage,
 } from '#utils/names';
+import {
+  registerLimit,
+  resetRequestLimit,
+  codeLimit,
+} from '#middlewares/rateLimit';
 import Discord from './register_discord.js';
 import config from '../config.js';
 
@@ -192,7 +197,7 @@ const PlayerPassword = async KuskiIndex => {
 };
 
 router
-  .post('/', async (req, res) => {
+  .post('/', registerLimit, async (req, res) => {
     let message = '';
     let TeamIndex = 0;
     const isFilled = v => typeof v === 'string' && v.trim() !== '';
@@ -275,7 +280,7 @@ router
     }
   })
   .use('/discord', Discord)
-  .post('/confirm', async (req, res) => {
+  .post('/confirm', codeLimit, async (req, res) => {
     if (!validConfirmCode(req.body.confirmCode)) {
       res.json({ success: false });
       return;
@@ -287,7 +292,7 @@ router
       res.json({ success: false });
     }
   })
-  .post('/resetconfirm', async (req, res) => {
+  .post('/resetconfirm', resetRequestLimit, async (req, res) => {
     if (!validateEmail(req.body.Email)) {
       res.json({ success: false, message: 'Email not found' });
       return;
@@ -301,7 +306,7 @@ router
       res.json({ success: false, message: 'Email not found' });
     }
   })
-  .post('/reset', async (req, res) => {
+  .post('/reset', codeLimit, async (req, res) => {
     if (!validResetCode(req.body.confirmCode)) {
       res.json({ success: false });
       return;
