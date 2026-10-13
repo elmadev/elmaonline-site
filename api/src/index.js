@@ -10,6 +10,7 @@ import './data/sequelize.js';
 import { auth, secretMatches } from '#utils/auth';
 import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
 import { loginLimit } from '#middlewares/rateLimit';
+import securityHeaders from '#middlewares/securityHeaders';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api/index.js';
 import eventsRoutes from './events.js';
@@ -20,6 +21,9 @@ import { writeHeapSnapshot } from 'v8';
 import { unlink } from 'fs';
 
 const app = express();
+
+// headers first, so static files get them too
+app.use(securityHeaders);
 
 // ----------------------------------------------------------
 // public/static folder

@@ -64,11 +64,14 @@ sequelize
   .authenticate()
   .then(() => {
     // eslint-disable-next-line no-console
-    console.info(`MySQL connection established at ${uri}`);
+    console.info(`MySQL connection established at db ${database}`);
   })
   .catch(err => {
     // eslint-disable-next-line no-console
-    console.error(`Unable to connect to MySQL database at ${uri}:`, err);
+    console.error(
+      `Unable to connect to MySQL database at db ${database}:`,
+      err,
+    );
   });
 
 export const dbquery = async (q, replacements = []) => {
