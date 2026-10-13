@@ -44,7 +44,7 @@ import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
 import { getReplayLink } from 'utils/link';
-import { stripRecExt, shirtUrl } from 'utils/misc';
+import { isRecName, stripRecExt, shirtUrl } from 'utils/misc';
 
 const RecTime = ({ type, replay }) => {
   if (type === 'cup') {
@@ -114,10 +114,7 @@ const Replay = () => {
 
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
-  if (
-    !replay ||
-    (stripRecExt(replay?.RecFileName) !== RecFileName && RecFileName)
-  )
+  if (!replay || (RecFileName && !isRecName(RecFileName, replay.RecFileName)))
     return (
       <Layout t={`rec - ${ReplayUuid}`}>
         {loading ? <Loading /> : <div>not found</div>}

@@ -21,7 +21,7 @@ import { Text, Column } from 'components/Containers';
 import config from 'config';
 import { authToken, nick } from 'utils/nick';
 import { xor } from 'lodash';
-import { renameFile } from 'utils/misc';
+import { renameFile, stripRecExt } from 'utils/misc';
 import Feedback from 'components/Feedback';
 
 const Upload = ({ onUpload = null, filetype }) => {
@@ -120,10 +120,7 @@ const Upload = ({ onUpload = null, filetype }) => {
   }, [inserted]);
 
   const url = rec => {
-    return `/r/${rec.UUID}/${rec.RecFileName.substring(
-      0,
-      rec.RecFileName.length - 4,
-    )}`;
+    return `/r/${rec.UUID}/${stripRecExt(rec.RecFileName)}`;
   };
 
   const addUploaded = rec => {
