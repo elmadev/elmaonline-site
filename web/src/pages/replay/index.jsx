@@ -170,10 +170,7 @@ const Replay = () => {
       : `${location.pathname}?merge=${recUuid}`;
   };
 
-  let dlLink = link;
-  if (linkArray?.length > 0) {
-    dlLink = linkArray[linkArray.length - 1];
-  }
+  const dlLink = isWindow ? getReplayLink(replay).link : link;
 
   const shirtUrls =
     replays.length > 0
