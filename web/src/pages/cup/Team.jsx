@@ -84,10 +84,13 @@ const Team = () => {
     );
   };
 
-  const getMergeRecUri = cupIndex => {
-    const replay = teamReplays
+  const getMergeReplay = cupIndex =>
+    teamReplays
       .find(e => e.CupIndex === cupIndex)
       ?.CupTimes.find(r => r.CupTimeIndex === mergeRecIndex);
+
+  const getMergeRecUri = cupIndex => {
+    const replay = getMergeReplay(cupIndex);
 
     if (!replay) {
       return '';
@@ -210,7 +213,20 @@ const Team = () => {
                                 replay.Time,
                               )}${getMergeRecUri(e.CupIndex)}`}
                               lev={`${config.dlUrl}level/${e.LevelIndex}`}
-                              shirt={[shirtUrl(replay.KuskiIndex)]}
+                              shirt={[
+                                shirtUrl(replay.KuskiIndex),
+                                ...(getMergeReplay(e.CupIndex)
+                                  ? [
+                                      shirtUrl(
+                                        getMergeReplay(e.CupIndex).KuskiIndex,
+                                      ),
+                                    ]
+                                  : []),
+                              ]}
+                              names={[
+                                replay.KuskiData.Kuski,
+                                getMergeReplay(e.CupIndex)?.KuskiData.Kuski,
+                              ]}
                               height={400}
                               controls
                             />

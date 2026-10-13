@@ -23,6 +23,7 @@ import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Link from 'components/Link';
+import Feedback from 'components/Feedback';
 import Header from 'components/Header';
 import RecList from 'features/RecList';
 import { useLocation, useParams, useNavigate } from '@tanstack/react-router';
@@ -60,6 +61,7 @@ const Replay = () => {
   const { ReplayUuid, RecFileName } = useParams({ strict: false });
   const navigate = useNavigate();
   const [isHover, setHover] = useState(-1);
+  const [mergeError, setMergeError] = useState('');
   const fingerprint = useRef('');
   const isWindow = typeof window !== 'undefined';
   let link = '';
@@ -156,6 +158,16 @@ const Replay = () => {
     );
   }
 
+  const dropFailedMerge = error => {
+    if (error.kind !== 'ghost' || !merge) return;
+    setMergeError(`Couldn't merge the replay: ${error.message}`);
+    const rest = merge.split(';').slice(0, -1).join(';');
+    navigate({
+      to: rest ? `${location.pathname}?merge=${rest}` : location.pathname,
+      replace: true,
+    });
+  };
+
   const updateUrl = (unmerge = false, recUuid) => {
     if (unmerge) {
       return merge?.includes(';')
@@ -175,6 +187,8 @@ const Replay = () => {
     merged.length > 0
       ? merged.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
       : [shirtUrl(replay.DrivenByData?.KuskiIndex)];
+  const kuskiName = r => r.DrivenByData?.Kuski || r.DrivenByText || null;
+  const names = merged.length > 0 ? merged.map(kuskiName) : [kuskiName(replay)];
 
   return (
     <Layout t={`rec - ${replay.RecFileName}`}>
@@ -185,9 +199,17 @@ const Replay = () => {
               rec={link}
               lev={`${config.dlUrl}level/${replay.LevelIndex}`}
               shirt={shirtUrls}
+              names={names}
               controls
+              onError={dropFailedMerge}
             />
           )}
+          <Feedback
+            open={mergeError !== ''}
+            text={mergeError}
+            type="error"
+            close={() => setMergeError('')}
+          />
         </Player>
         <ReplaySettings />
       </PlayerContainer>

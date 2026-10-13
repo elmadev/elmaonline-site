@@ -84,7 +84,7 @@ const LGR = () => {
                   lgr={getLgrLink(lgr)}
                   controls
                 />
-                <ReplaySettings lgrPage={true} />
+                <ReplaySettings />
               </>
             )}
           </PreviewContainer>
