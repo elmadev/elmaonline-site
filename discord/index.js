@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -23,8 +24,18 @@ app.use(cors());
 // start discord bot
 discord();
 
+// compares sha256 digests in constant time so the secret doesn't leak through
+// timing, and rejects everything when no secret is configured
+const secretMatches = (provided, secret) => {
+  if (typeof secret !== 'string' || !secret || typeof provided !== 'string') {
+    return false;
+  }
+  const digest = value => crypto.createHash('sha256').update(value).digest();
+  return crypto.timingSafeEqual(digest(provided), digest(secret));
+};
+
 const checkAuth = (req, res, next) => {
-  if (req.header('Authorization') === config.auth) {
+  if (secretMatches(req.header('Authorization'), config.auth)) {
     return next();
   }
   return res.sendStatus(401);

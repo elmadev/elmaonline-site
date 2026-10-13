@@ -21,6 +21,15 @@ export const hashesMatch = (hash, expected) => {
   return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expected));
 };
 
+// checks a shared secret sent in a header (cron jobs, game server events).
+export const secretMatches = (provided, secret) => {
+  if (typeof secret !== 'string' || !secret || typeof provided !== 'string') {
+    return false;
+  }
+  const digest = value => crypto.createHash('sha256').update(value).digest();
+  return crypto.timingSafeEqual(digest(provided), digest(secret));
+};
+
 // rules for new passwords, returns an error message or '' if it's valid.
 // max length is limited by the game
 export const passwordMinLength = 6;

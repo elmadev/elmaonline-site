@@ -1,5 +1,6 @@
 import express from 'express';
 import config from './config.js';
+import { secretMatches } from '#utils/auth';
 import {
   doAll as doAllLevelStats,
   doNext as doNextLevelStats,
@@ -19,7 +20,7 @@ const app = express.Router();
 
 // cron
 app.get('/levelstats/do-next/:limit', async (req, res) => {
-  if (req.header('Authorization') === config.run.playStats) {
+  if (secretMatches(req.header('Authorization'), config.run.playStats)) {
     const limit = +req.params.limit;
     const result = await doNextLevelStats(limit);
     res.json({
@@ -32,7 +33,7 @@ app.get('/levelstats/do-next/:limit', async (req, res) => {
 });
 
 app.get('/levelstats/sync', async (req, res) => {
-  if (req.header('Authorization') === config.run.playStats) {
+  if (secretMatches(req.header('Authorization'), config.run.playStats)) {
     await LevelStats.sync({ alter: false });
     await LevelStatsUpdate.sync({ alter: false });
     res.json('Success');
@@ -44,7 +45,7 @@ app.get('/levelstats/sync', async (req, res) => {
 
 // destructive, and very slow
 app.get('/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
-  if (req.header('Authorization') === config.run.playStats) {
+  if (secretMatches(req.header('Authorization'), config.run.playStats)) {
     res.json({ status: 'started' });
     await doAllLevelStats(+req.params.batchSize, +req.params.sleepMs);
   } else {
@@ -55,7 +56,7 @@ app.get('/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
 
 // ranking
 app.get('/ranking/delete', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const data = await deleteRanking();
     res.json({ deleted: data });
   } else {
@@ -64,7 +65,7 @@ app.get('/ranking/delete', async (req, res) => {
   }
 });
 app.get('/ranking/:limit', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const limit = Math.round(
       Math.min(parseInt(req.params.limit, 10), 10000) / 10,
     );
@@ -87,7 +88,7 @@ app.get('/ranking/:limit', async (req, res) => {
 
 // data imports
 app.get('/email', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     await email();
     res.json({ status: 'done' });
   } else {
@@ -96,7 +97,7 @@ app.get('/email', async (req, res) => {
   }
 });
 app.get('/legacytimes/:strategy', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     res.json({ started: true });
     await legacyTimes(req.params.strategy);
   } else {
@@ -106,7 +107,7 @@ app.get('/legacytimes/:strategy', async (req, res) => {
 });
 
 app.get('/orderlevels', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     try {
       const result = await orderLevels();
       res.json(result);
@@ -125,7 +126,7 @@ app.get('/orderlevels', async (req, res) => {
 
 // recaps
 app.get('/recap/:type/:year', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     await recapGenerate(req.params.type, req.params.year);
     res.sendStatus(200);
   } else {
@@ -135,7 +136,7 @@ app.get('/recap/:type/:year', async (req, res) => {
 });
 
 app.get('/coldstorage', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const data = await coldStorage();
     res.json(data);
   } else {
@@ -145,7 +146,7 @@ app.get('/coldstorage', async (req, res) => {
 });
 
 app.get('/recoverfiles', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const data = await recoverRecFiles();
     res.json(data);
   } else {
@@ -156,7 +157,7 @@ app.get('/recoverfiles', async (req, res) => {
 
 // levelpack stats
 app.get('/levelpackstats/all', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     try {
       const eolOnly = parseInt(req.query.eolOnly, 10) || 0;
       const results = await populateAllLevelPackStats(eolOnly);
@@ -175,7 +176,7 @@ app.get('/levelpackstats/all', async (req, res) => {
 });
 
 app.get('/levelpackstats/:identifier', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     try {
       const identifier = req.params.identifier;
       const eolOnly = parseInt(req.query.eolOnly, 10) || 0;
@@ -203,7 +204,7 @@ app.get('/levelpackstats/:identifier', async (req, res) => {
 
 // lists existing kuskis and teams with restricted characters in their names
 app.get('/restricted-names', async (req, res) => {
-  if (req.header('Authorization') === config.run.ranking) {
+  if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const kuskis = await Kuski.scope(null).findAll({
       attributes: ['KuskiIndex', 'Kuski'],
     });

@@ -7,7 +7,7 @@ import request from 'request';
 import fileUpload from 'express-fileupload';
 import config from './config.js';
 import './data/sequelize.js';
-import { auth } from '#utils/auth';
+import { auth, secretMatches } from '#utils/auth';
 import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
 import { loginLimit } from '#middlewares/rateLimit';
 import { downloadFileS3 } from '#utils/upload';
@@ -115,7 +115,7 @@ app.get('/u/:uuid/:filename', async (req, res) => {
 
 // memory dump
 app.get('/heapdump', (req, res) => {
-  if (req.header('Authorization') !== config.run.ranking) {
+  if (!secretMatches(req.header('Authorization'), config.run.ranking)) {
     res.status(401).send('Unauthorized');
     return;
   }
