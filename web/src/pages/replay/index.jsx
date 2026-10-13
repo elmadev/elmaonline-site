@@ -124,14 +124,16 @@ const Replay = () => {
       </Layout>
     );
 
+  const merged = replays.filter(Boolean);
+
   if (isWindow) {
     uuidarray.push(replay.UUID);
     const linkType = getReplayLink(replay);
     link = linkType.link;
     type = linkType.type;
-    if (replays.length > 0) {
+    if (merged.length > 0) {
       uuidarray = [];
-      replays.forEach(r => {
+      merged.forEach(r => {
         linkArray.push(getReplayLink(r).link);
         uuidarray.push(r.UUID);
       });
@@ -173,8 +175,8 @@ const Replay = () => {
   const dlLink = isWindow ? getReplayLink(replay).link : link;
 
   const shirtUrls =
-    replays.length > 0
-      ? replays.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
+    merged.length > 0
+      ? merged.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
       : [shirtUrl(replay.DrivenByData?.KuskiIndex)];
 
   return (
