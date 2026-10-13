@@ -45,7 +45,7 @@ import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
 import { getReplayLink } from 'utils/link';
-import { isRecName, stripRecExt, shirtUrl } from 'utils/misc';
+import { isRecName, stripRecExt, shirtBmpUrl } from 'utils/misc';
 
 const RecTime = ({ type, replay }) => {
   if (type === 'cup') {
@@ -185,8 +185,8 @@ const Replay = () => {
 
   const shirtUrls =
     merged.length > 0
-      ? merged.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
-      : [shirtUrl(replay.DrivenByData?.KuskiIndex)];
+      ? merged.map(r => shirtBmpUrl(r.DrivenByData?.KuskiIndex))
+      : [shirtBmpUrl(replay.DrivenByData?.KuskiIndex)];
   const kuskiName = r => r.DrivenByData?.Kuski || r.DrivenByText || null;
   const names = merged.length > 0 ? merged.map(kuskiName) : [kuskiName(replay)];
 

@@ -359,6 +359,16 @@ export const getEventReplays = async (CupIndex, filename, auth) => {
   return false;
 };
 
+export const getShirtBmpByKuskiId = async KuskiIndex => {
+  const kuskiData = await Kuski.scope(null).findOne({
+    where: { KuskiIndex },
+  });
+  if (!kuskiData || !kuskiData.BmpCRC || !kuskiData.BmpData) {
+    return { file: null, filename: '', error: 'no bmp data' };
+  }
+  return { file: kuskiData.BmpData, filename: `${kuskiData.Kuski}.bmp` };
+};
+
 export const getShirtByKuskiId = async KuskiIndex => {
   const kuskiData = await Kuski.scope(null).findOne({
     where: { KuskiIndex },

@@ -111,6 +111,10 @@ export const downloadRec = (url, levName, kuski, time) => {
 export const shirtUrl = kuskiIndex =>
   kuskiIndex ? `${config.dlUrl}shirt/${kuskiIndex}` : null;
 
+// The shirt as a bmp, which the replay player draws with the level's LGR colors like the game
+export const shirtBmpUrl = kuskiIndex =>
+  kuskiIndex ? `${config.dlUrl}shirtbmp/${kuskiIndex}` : null;
+
 export const highlightTime = (time, level, isMedalsTargets) => {
   let colors = [
     '#aa43dd',

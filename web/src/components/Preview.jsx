@@ -10,7 +10,7 @@ import LocalTime from 'components/LocalTime';
 import CloseIcon from '@material-ui/icons/HighlightOffOutlined';
 import { Grid, Typography, Backdrop } from '@material-ui/core';
 import config from 'config';
-import { shirtUrl } from 'utils/misc';
+import { shirtBmpUrl } from 'utils/misc';
 import styled from '@emotion/styled';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -39,7 +39,7 @@ export default function Preview({
             <Recplayer
               rec={getRecUri()}
               lev={`${config.dlUrl}level/${previewRec.LevelIndex}?UUID=${previewRec.UUID}`}
-              shirt={[shirtUrl(previewRec.DrivenByData?.KuskiIndex)]}
+              shirt={[shirtBmpUrl(previewRec.DrivenByData?.KuskiIndex)]}
               controls
               autoPlay="yes"
             />
