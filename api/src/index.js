@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import request from 'request';
@@ -37,7 +36,6 @@ app.use(
 // ----------------------------------------------------------
 // express middleware
 // ----------------------------------------------------------
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({ exposedHeaders: [renewedTokenHeader] }));

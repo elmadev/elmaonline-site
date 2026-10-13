@@ -1942,16 +1942,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie-parser@npm:^1.4.7":
-  version: 1.4.7
-  resolution: "cookie-parser@npm:1.4.7"
-  dependencies:
-    cookie: 0.7.2
-    cookie-signature: 1.0.6
-  checksum: 243fa13f217e793d20a57675e6552beea08c5989fcc68495d543997a31646875335e0e82d687b42dcfd466df57891d22bae7f5ba6ab33b7705ed2dd6eb989105
-  languageName: node
-  linkType: hard
-
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
@@ -1963,13 +1953,6 @@ __metadata:
   version: 0.7.1
   resolution: "cookie@npm:0.7.1"
   checksum: cec5e425549b3650eb5c3498a9ba3cde0b9cd419e3b36e4b92739d30b4d89e0b678b98c1ddc209ce7cf958cd3215671fd6ac47aec21f10c2a0cc68abd399d8a7
-  languageName: node
-  linkType: hard
-
-"cookie@npm:0.7.2":
-  version: 0.7.2
-  resolution: "cookie@npm:0.7.2"
-  checksum: 9bf8555e33530affd571ea37b615ccad9b9a34febbf2c950c86787088eb00a8973690833b0f8ebd6b69b753c62669ea60cec89178c1fb007bf0749abed74f93e
   languageName: node
   linkType: hard
 
@@ -2391,7 +2374,6 @@ __metadata:
     aws-sdk: ^2.1692.0
     body-parser: ^1.20.3
     commitizen: ^4.3.1
-    cookie-parser: ^1.4.7
     cors: ^2.8.5
     cz-customizable: ^7.2.1
     date-fns: ^4.1.0

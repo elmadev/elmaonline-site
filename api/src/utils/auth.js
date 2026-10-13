@@ -181,12 +181,7 @@ export const auth = async body => {
 };
 
 export function authContext(req) {
-  let token = '';
-  if (req.cookies.token) {
-    token = req.cookies.token;
-  } else if (req.headers.authorization) {
-    token = req.headers.authorization;
-  }
+  const token = req.headers.authorization || '';
   if (token) {
     try {
       if (jws.verify(token, config.jwtAlgo, config.jwtSecret)) {

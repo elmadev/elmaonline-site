@@ -5,6 +5,8 @@ import Cookies from 'universal-cookie';
 export const loginCookieOptions = {
   path: '/',
   maxAge: 300 * 24 * 60 * 60,
+  sameSite: 'strict',
+  secure: window.location.protocol === 'https:',
 };
 
 export const saveToken = token => {
