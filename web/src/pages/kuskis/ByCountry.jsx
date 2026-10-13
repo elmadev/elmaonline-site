@@ -95,6 +95,11 @@ const sortCountries = (
     return c;
   });
 
+  // remove countries with 0 ranked players
+  if (rankedOnly) {
+    countries = countries.filter(c => c.players.length > 0);
+  }
+
   return countries;
 };
 
