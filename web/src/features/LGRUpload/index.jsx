@@ -20,6 +20,7 @@ import {
 import { NewLGR, EditLGR } from 'api';
 import { xor } from 'lodash';
 import { mod, nick } from 'utils/nick';
+import { stripRecExt } from 'utils/misc';
 
 const tagDescriptions = [
   { label: 'Bike', description: 'Modified bike' },
@@ -110,7 +111,8 @@ const LGRUpload = ({ lgrToEdit }) => {
   }, [lgrData.replayUuid]);
   const replayValid = lgrData.replayUuid && !loading && replay;
   const replayLink =
-    replayValid && `${location.origin}/r/${replay.UUID}/${replay.RecFileName}`;
+    replayValid &&
+    `${location.origin}/r/${replay.UUID}/${stripRecExt(replay.RecFileName)}`;
   const replayInvalid = lgrData.replayUuid && !loading && !replay;
 
   useEffect(() => {

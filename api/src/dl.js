@@ -11,6 +11,7 @@ import {
   getEventReplays,
   getAllShirts,
   getShirtByKuskiId,
+  getShirtBmpByKuskiId,
 } from '#utils/download';
 
 const app = express.Router();
@@ -49,7 +50,7 @@ app.get('/allshirts', async (req, res, next) => {
   }
 });
 
-app.get('/shirt/:id', async (req, res, next) => {
+const shirt = (getShirt, contentType) => async (req, res, next) => {
   // missing shirts are expected, respond directly so they aren't logged as errors
   const notFound = msg => {
     res.set({ 'Cache-Control': 'public, max-age=3600' });
@@ -60,7 +61,7 @@ app.get('/shirt/:id', async (req, res, next) => {
     return;
   }
   try {
-    const { file, filename, error } = await getShirtByKuskiId(req.params.id);
+    const { file, filename, error } = await getShirt(req.params.id);
     if (error) {
       notFound(error);
     } else {
@@ -68,7 +69,7 @@ app.get('/shirt/:id', async (req, res, next) => {
       readStream.end(file);
       res.set({
         'Content-disposition': `attachment; filename=${filename}`,
-        'Content-Type': 'image/png',
+        'Content-Type': contentType,
         'Cache-Control': 'public, max-age=86400',
       });
       readStream.pipe(res);
@@ -79,7 +80,11 @@ app.get('/shirt/:id', async (req, res, next) => {
       msg: e.message,
     });
   }
-});
+};
+
+app.get('/shirt/:id', shirt(getShirtByKuskiId, 'image/png'));
+// The bmp as it was uploaded, for the replay player: the game draws it with the LGR's colors
+app.get('/shirtbmp/:id', shirt(getShirtBmpByKuskiId, 'image/bmp'));
 
 app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
   try {

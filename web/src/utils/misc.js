@@ -61,6 +61,11 @@ export const renameFile = (originalFile, newName) => {
 
 export const stripRecExt = (filename = '') => filename.replace(/\.rec$/i, '');
 
+export const isRecName = (name, filename) =>
+  name === filename ||
+  name === stripRecExt(filename) ||
+  stripRecExt(name) === stripRecExt(filename);
+
 export const createRecName = (LevelName, nick, recTime, apple = false) => {
   let timeAsString = `${recTime}`;
   if (apple) {
@@ -105,6 +110,10 @@ export const downloadRec = (url, levName, kuski, time) => {
 // returns null without a kuski so no request is made for shirt/undefined
 export const shirtUrl = kuskiIndex =>
   kuskiIndex ? `${config.dlUrl}shirt/${kuskiIndex}` : null;
+
+// The shirt as a bmp, which the replay player draws with the level's LGR colors like the game
+export const shirtBmpUrl = kuskiIndex =>
+  kuskiIndex ? `${config.dlUrl}shirtbmp/${kuskiIndex}` : null;
 
 export const highlightTime = (time, level, isMedalsTargets) => {
   let colors = [

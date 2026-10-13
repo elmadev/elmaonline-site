@@ -23,6 +23,7 @@ import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Link from 'components/Link';
+import Feedback from 'components/Feedback';
 import Header from 'components/Header';
 import RecList from 'features/RecList';
 import { useLocation, useParams, useNavigate } from '@tanstack/react-router';
@@ -44,7 +45,7 @@ import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
 import { getReplayLink } from 'utils/link';
-import { stripRecExt, shirtUrl } from 'utils/misc';
+import { isRecName, stripRecExt, shirtBmpUrl } from 'utils/misc';
 
 const RecTime = ({ type, replay }) => {
   if (type === 'cup') {
@@ -60,6 +61,7 @@ const Replay = () => {
   const { ReplayUuid, RecFileName } = useParams({ strict: false });
   const navigate = useNavigate();
   const [isHover, setHover] = useState(-1);
+  const [mergeError, setMergeError] = useState('');
   const fingerprint = useRef('');
   const isWindow = typeof window !== 'undefined';
   let link = '';
@@ -114,24 +116,23 @@ const Replay = () => {
 
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
-  if (
-    !replay ||
-    (stripRecExt(replay?.RecFileName) !== RecFileName && RecFileName)
-  )
+  if (!replay || (RecFileName && !isRecName(RecFileName, replay.RecFileName)))
     return (
       <Layout t={`rec - ${ReplayUuid}`}>
         {loading ? <Loading /> : <div>not found</div>}
       </Layout>
     );
 
+  const merged = replays.filter(Boolean);
+
   if (isWindow) {
     uuidarray.push(replay.UUID);
     const linkType = getReplayLink(replay);
     link = linkType.link;
     type = linkType.type;
-    if (replays.length > 0) {
+    if (merged.length > 0) {
       uuidarray = [];
-      replays.forEach(r => {
+      merged.forEach(r => {
         linkArray.push(getReplayLink(r).link);
         uuidarray.push(r.UUID);
       });
@@ -157,6 +158,16 @@ const Replay = () => {
     );
   }
 
+  const dropFailedMerge = error => {
+    if (error.kind !== 'ghost' || !merge) return;
+    setMergeError(`Couldn't merge the replay: ${error.message}`);
+    const rest = merge.split(';').slice(0, -1).join(';');
+    navigate({
+      to: rest ? `${location.pathname}?merge=${rest}` : location.pathname,
+      replace: true,
+    });
+  };
+
   const updateUrl = (unmerge = false, recUuid) => {
     if (unmerge) {
       return merge?.includes(';')
@@ -170,15 +181,14 @@ const Replay = () => {
       : `${location.pathname}?merge=${recUuid}`;
   };
 
-  let dlLink = link;
-  if (linkArray?.length > 0) {
-    dlLink = linkArray[linkArray.length - 1];
-  }
+  const dlLink = isWindow ? getReplayLink(replay).link : link;
 
   const shirtUrls =
-    replays.length > 0
-      ? replays.map(r => shirtUrl(r.DrivenByData?.KuskiIndex))
-      : [shirtUrl(replay.DrivenByData?.KuskiIndex)];
+    merged.length > 0
+      ? merged.map(r => shirtBmpUrl(r.DrivenByData?.KuskiIndex))
+      : [shirtBmpUrl(replay.DrivenByData?.KuskiIndex)];
+  const kuskiName = r => r.DrivenByData?.Kuski || r.DrivenByText || null;
+  const names = merged.length > 0 ? merged.map(kuskiName) : [kuskiName(replay)];
 
   return (
     <Layout t={`rec - ${replay.RecFileName}`}>
@@ -189,9 +199,17 @@ const Replay = () => {
               rec={link}
               lev={`${config.dlUrl}level/${replay.LevelIndex}`}
               shirt={shirtUrls}
+              names={names}
               controls
+              onError={dropFailedMerge}
             />
           )}
+          <Feedback
+            open={mergeError !== ''}
+            text={mergeError}
+            type="error"
+            close={() => setMergeError('')}
+          />
         </Player>
         <ReplaySettings />
       </PlayerContainer>

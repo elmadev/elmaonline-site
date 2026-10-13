@@ -12,7 +12,7 @@ import PreviewRecButton from 'components/PreviewRecButton';
 import FieldBoolean from 'components/FieldBoolean';
 import { CupUpload } from './Dashboard';
 import config from 'config';
-import { shirtUrl } from 'utils/misc';
+import { shirtBmpUrl } from 'utils/misc';
 import Link from '../../components/Link';
 import { Share, AddBox, IndeterminateCheckBox } from '@material-ui/icons';
 
@@ -84,10 +84,13 @@ const Team = () => {
     );
   };
 
-  const getMergeRecUri = cupIndex => {
-    const replay = teamReplays
+  const getMergeReplay = cupIndex =>
+    teamReplays
       .find(e => e.CupIndex === cupIndex)
       ?.CupTimes.find(r => r.CupTimeIndex === mergeRecIndex);
+
+  const getMergeRecUri = cupIndex => {
+    const replay = getMergeReplay(cupIndex);
 
     if (!replay) {
       return '';
@@ -210,7 +213,20 @@ const Team = () => {
                                 replay.Time,
                               )}${getMergeRecUri(e.CupIndex)}`}
                               lev={`${config.dlUrl}level/${e.LevelIndex}`}
-                              shirt={[shirtUrl(replay.KuskiIndex)]}
+                              shirt={[
+                                shirtBmpUrl(replay.KuskiIndex),
+                                ...(getMergeReplay(e.CupIndex)
+                                  ? [
+                                      shirtBmpUrl(
+                                        getMergeReplay(e.CupIndex).KuskiIndex,
+                                      ),
+                                    ]
+                                  : []),
+                              ]}
+                              names={[
+                                replay.KuskiData.Kuski,
+                                getMergeReplay(e.CupIndex)?.KuskiData.Kuski,
+                              ]}
                               height={400}
                               controls
                             />

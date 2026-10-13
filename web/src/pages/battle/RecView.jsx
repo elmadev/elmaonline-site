@@ -8,7 +8,7 @@ import config from 'config';
 import { Row } from 'components/Containers';
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
-import { downloadRec, shirtUrl } from 'utils/misc';
+import { downloadRec, shirtBmpUrl } from 'utils/misc';
 import ReplaySettings from 'features/ReplaySettings';
 
 const RecView = props => {
@@ -45,7 +45,7 @@ const RecView = props => {
                         `${config.dlUrl}battlereplay/${BattleIndex}`
                   }
                   lev={`${config.dlUrl}level/${levelIndex}`}
-                  shirt={[shirtUrl(player?.Kuski?.KuskiIndex)]}
+                  shirt={[shirtBmpUrl(player?.Kuski?.KuskiIndex)]}
                   controls
                   forceRefresh
                 />

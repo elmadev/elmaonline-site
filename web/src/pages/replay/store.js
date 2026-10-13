@@ -1,6 +1,6 @@
 import { action, thunk } from 'easy-peasy';
 import { ReplayByUUID, EditReplay, CupEventByTimeIndex } from 'api';
-import { stripRecExt } from 'utils/misc';
+import { isRecName } from 'utils/misc';
 
 export default {
   replay: null,
@@ -40,8 +40,8 @@ export default {
       if (Array.isArray(replays.data)) {
         actions.setReplays(replays.data);
         actions.setReplayByUUID(
-          replays.data.filter(
-            d => stripRecExt(d.RecFileName) === payload.RecFileName,
+          replays.data.filter(d =>
+            isRecName(payload.RecFileName || '', d.RecFileName),
           )[0],
         );
       } else {
