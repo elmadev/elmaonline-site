@@ -3,6 +3,7 @@ import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { acceptNickMail } from '#utils/email';
 import requireMod from '#middlewares/requireMod';
+import { secretMatches } from '#utils/auth';
 import { sendMessage } from '#utils/discord';
 import { validKuski } from '#utils/names';
 import { format, addDays } from 'date-fns';
@@ -394,10 +395,15 @@ router
     const logs = await getIPlogs(req.params.KuskiIndex);
     res.json(logs);
   })
+  // cron job, lifts expired bans
   .post('/unban', async (req, res) => {
+    if (!secretMatches(req.header('Authorization'), config.run.ranking)) {
+      res.sendStatus(401);
+      return;
+    }
     const expired = await getExpired();
     await eachSeries(expired, expiredExpired);
-    res.json(expired);
+    res.json({ unbanned: expired.length });
   });
 
 export default router;
