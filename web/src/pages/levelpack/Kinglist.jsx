@@ -3,7 +3,7 @@ import { useStoreState } from 'easy-peasy';
 import Loading from 'components/Loading';
 import Header from 'components/Header';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'components/List';
-import Link from 'components/Link';
+import Kuski from 'components/Kuski';
 import { Text } from 'components/Containers';
 
 // must match pointList in api/src/api/levelpack.js
@@ -39,11 +39,12 @@ const Kinglist = ({ highlight, highlightWeeks, name }) => {
                 <ListRow key={r.KuskiIndex}>
                   <ListCell width={70}>{no + 1}</ListCell>
                   <ListCell width={320}>
-                    <Link
-                      to={`/levels/packs/${name}/personal/${r.KuskiData.Kuski}`}
-                    >
-                      {r.KuskiData.Kuski}
-                    </Link>
+                    <Kuski
+                      kuskiData={r.KuskiData}
+                      team
+                      flag
+                      customUrl={`/levels/packs/${name}/personal/${r.KuskiData.Kuski}`}
+                    />
                   </ListCell>
                   <ListCell
                     width={180}

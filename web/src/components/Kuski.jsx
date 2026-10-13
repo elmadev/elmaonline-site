@@ -10,6 +10,7 @@ const Kuski = ({
   flag = false,
   noLink = false,
   logo = false,
+  customUrl = null,
 }) => (
   <>
     {kuskiData ? (
@@ -22,7 +23,7 @@ const Kuski = ({
         {noLink ? (
           <span>{kuskiData.Kuski && kuskiData.Kuski}</span>
         ) : (
-          <Link to={`/kuskis/${kuskiData.Kuski}`}>
+          <Link to={customUrl || `/kuskis/${kuskiData.Kuski}`}>
             {kuskiData.Kuski && kuskiData.Kuski}
           </Link>
         )}
@@ -83,6 +84,8 @@ Kuski.propTypes = {
   team: PropTypes.bool,
   flag: PropTypes.bool,
   noLink: PropTypes.bool,
+  logo: PropTypes.bool,
+  customUrl: PropTypes.string,
 };
 
 export default Kuski;
