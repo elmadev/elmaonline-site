@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { RecPlayer } from '@rectools/react-rec-viewer';
+import { RecPlayer } from '@elmadev/react-rec-viewer';
 import config from 'config';
 
 const DEFAULT_LGR = 'https://space.elma.online/lgr/cr6m27a3t1/default.lgr';

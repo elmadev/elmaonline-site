@@ -55,7 +55,7 @@ export default defineConfig(() => {
       },
     },
     optimizeDeps: {
-      exclude: ['@rectools/react-rec-viewer'],
+      exclude: ['@elmadev/react-rec-viewer'],
       esbuildOptions: {
         // Node.js global to browser globalThis
         define: {
