@@ -605,6 +605,14 @@ const Personal = ({ name, player }) => {
                           relative={relative}
                           hideCrown
                         />
+                        {r[compare.key].Source !== null && (
+                          <LegacyContainer>
+                            <LegacyIcon
+                              source={r[compare.key].Source || 0}
+                              show={showLegacyIcon}
+                            />
+                          </LegacyContainer>
+                        )}
                       </ListCell>
                     );
                   }
