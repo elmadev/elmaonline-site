@@ -229,7 +229,9 @@ const Personal = ({ name, player }) => {
 
   const victories = useMemo(() => {
     const keys = compares
-      .filter(c => ['Players', 'Countries', 'Teams'].indexOf(c.type) > -1)
+      .filter(
+        c => ['Players', 'Countries', 'Teams', 'Targets'].indexOf(c.type) > -1,
+      )
       .map(c => c.key);
     if (keys.length === 0) {
       return null;
@@ -248,7 +250,7 @@ const Personal = ({ name, player }) => {
         return;
       }
       const best = Math.min(...finished.map(key => r[key].Time));
-      const winners = finished.filter(key => r[key].Time === best);
+      const winners = finished.filter(key => parseInt(r[key].Time) === best);
       if (winners.length === 1) {
         obj[winners[0]] += 1;
       }
@@ -605,6 +607,14 @@ const Personal = ({ name, player }) => {
                           relative={relative}
                           hideCrown
                         />
+                        {r[compare.key].Source !== null && (
+                          <LegacyContainer>
+                            <LegacyIcon
+                              source={r[compare.key].Source || 0}
+                              show={showLegacyIcon}
+                            />
+                          </LegacyContainer>
+                        )}
                       </ListCell>
                     );
                   }
