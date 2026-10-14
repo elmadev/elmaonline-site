@@ -17,6 +17,7 @@ export default {
       translucentGhosts: false,
       timer: true,
       minimap: false,
+      lastAppleTime: true,
       theater: false,
       // scaling (%) for default zoom on page load
       zoomScale: 100,

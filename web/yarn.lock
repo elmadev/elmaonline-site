@@ -429,10 +429,10 @@
   dependencies:
     tslib "^2.0.0"
 
-"@elmadev/react-rec-viewer@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@elmadev/react-rec-viewer/-/react-rec-viewer-0.1.7.tgz#af8f8ebbc68cf7e7b337c8a43ae316be51cdef43"
-  integrity sha512-QPnlmNsr7vmuC0nInfVSov6DpX/uAOidHGAjp1xjYiZ8KHFtaxi4aiCh2FSkfhnOJ0Ofm3kGg47MofGYihrb3g==
+"@elmadev/react-rec-viewer@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@elmadev/react-rec-viewer/-/react-rec-viewer-0.1.8.tgz#03639ec404c7131d2c9c76870978024b37c24487"
+  integrity sha512-zwalIOxoFx3HnQZeJCbiaaV2AEgfMQDPnuJYcuFiwhdgm3aOWTNAVf2L7g42KkOb1C8UWeISKYDcXQXy8qmHpQ==
 
 "@emnapi/core@1.11.0":
   version "1.11.0"
