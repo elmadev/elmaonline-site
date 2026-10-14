@@ -11,10 +11,10 @@ import LevelMap from 'features/LevelMap';
 import { Level } from 'components/Names';
 import Kuski from 'components/Kuski';
 import { formatDistanceStrict } from 'date-fns';
-import config from 'config';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
+import { stripRecExt, shirtUrl } from 'utils/misc';
 
 export default function ReplayCard({ replay, onPreviewClick }) {
   const [picExists, setPicExists] = useState(true);
@@ -23,7 +23,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
 
   const handleOpenReplay = () => {
     navigate({
-      to: `/r/${replay.UUID}/${replay.RecFileName?.split('.')[0] || ''}`,
+      to: `/r/${replay.UUID}/${stripRecExt(replay.RecFileName || '')}`,
     });
   };
 
@@ -43,7 +43,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
         avatar={
           replay.DrivenByData?.BmpCRC && picExists ? (
             <img
-              src={`${config.dlUrl}shirt/${replay.DrivenByData?.KuskiIndex}`}
+              src={shirtUrl(replay.DrivenByData.KuskiIndex)}
               onError={() => setPicExists(false)}
               height="40"
               alt="shirt"

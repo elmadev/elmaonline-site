@@ -102,7 +102,10 @@ const Replay = Model.define(
     },
   },
   {
-    indexes: [{ fields: ['LevelIndex', 'TimeIndex'] }],
+    indexes: [
+      { fields: ['LevelIndex', 'TimeIndex'] },
+      { unique: true, fields: ['MD5'] },
+    ],
   },
 );
 

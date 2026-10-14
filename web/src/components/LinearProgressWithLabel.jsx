@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import { Text } from 'components/Containers';
 import { addSeconds, format } from 'date-fns';
 
-function formattedTime(seconds) {
+export function formattedTime(seconds) {
   const helperDate = addSeconds(new Date(0), seconds);
   if (seconds >= 3600) {
     return `1:${format(helperDate, 'mm:ss')}`;

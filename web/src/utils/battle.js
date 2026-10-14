@@ -13,6 +13,18 @@ const sortResults = battleType => (a, b) => {
   return d === 0 ? a.BattleTimeIndex - b.BattleTimeIndex : d;
 };
 
+const battleRemaining = battle => {
+  const start = parseInt(battle.Started) + (battle.Countdown || 0);
+  const end = start + battle.Duration * 60;
+  const now = Math.floor(Date.now() / 1000);
+  if (now < start) return { percent: 100, seconds: end - start };
+  if (now > end) return { percent: 0, seconds: 0 };
+  return {
+    percent: Math.round(((end - now) / (end - start)) * 100),
+    seconds: end - now,
+  };
+};
+
 const battleStatus = data => {
   let status;
   if (data.Aborted === 1) {
@@ -168,4 +180,10 @@ const getBattleType = battle => {
   return battle.BattleType;
 };
 
-export { sortResults, battleStatus, battleStatusBgColor, getBattleType };
+export {
+  sortResults,
+  battleStatus,
+  battleStatusBgColor,
+  battleRemaining,
+  getBattleType,
+};

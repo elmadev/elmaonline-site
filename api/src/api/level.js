@@ -1,6 +1,7 @@
 import express from 'express';
 import sequelize from 'sequelize';
-import { authContext } from '#utils/auth';
+import { authContext, authRights } from '#utils/auth';
+import requireMod from '#middlewares/requireMod';
 import { has, intersection } from 'lodash-es';
 import { getLevel as getLevelSecure } from '#utils/download';
 import {
@@ -506,33 +507,28 @@ router.get('/:LevelIndex', async (req, res) => {
   res.json(data);
 });
 
-router.post('/:LevelIndex', async (req, res) => {
-  const auth = authContext(req);
-  if (auth.mod) {
-    let update = { success: 0 };
-    if (has(req.body, 'Locked')) {
-      update = await UpdateLevel(req.params.LevelIndex, {
-        Locked: parseInt(req.body.Locked, 10),
-      });
-    }
-    if (has(req.body, 'HardLocked')) {
-      update = await UpdateLevel(req.params.LevelIndex, {
-        HardLocked: parseInt(req.body.HardLocked, 10),
-      });
-    }
-    if (has(req.body, 'Hidden')) {
-      update = await UpdateLevel(req.params.LevelIndex, {
-        Hidden: parseInt(req.body.Hidden, 10),
-      });
-    }
-    res.json(update);
-  } else {
-    res.sendStatus(401);
+router.post('/:LevelIndex', requireMod, async (req, res) => {
+  let update = { success: 0 };
+  if (has(req.body, 'Locked')) {
+    update = await UpdateLevel(req.params.LevelIndex, {
+      Locked: parseInt(req.body.Locked, 10),
+    });
   }
+  if (has(req.body, 'HardLocked')) {
+    update = await UpdateLevel(req.params.LevelIndex, {
+      HardLocked: parseInt(req.body.HardLocked, 10),
+    });
+  }
+  if (has(req.body, 'Hidden')) {
+    update = await UpdateLevel(req.params.LevelIndex, {
+      Hidden: parseInt(req.body.Hidden, 10),
+    });
+  }
+  res.json(update);
 });
 
 router.post('/:LevelIndex/tags', async (req, res) => {
-  const auth = authContext(req);
+  const auth = await authRights(req);
 
   const level = await Level.findByPk(req.params.LevelIndex);
 

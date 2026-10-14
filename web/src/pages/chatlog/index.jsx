@@ -18,6 +18,8 @@ import { Paper } from 'components/Paper';
 import { format, addDays } from 'date-fns';
 import { KuskiAutoComplete } from 'components/AutoComplete';
 
+const ROWS_PER_PAGE_OPTIONS = [10, 25, 50, 100, 250, 1000];
+
 const ChatLog = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,6 +29,7 @@ const ChatLog = () => {
     ? query.KuskiIds.toString()
         .split(',')
         .map(id => +id)
+        .filter(id => Number.isInteger(id) && id > 0)
     : [];
 
   // Store state
@@ -40,7 +43,9 @@ const ChatLog = () => {
   // Local state
   const [KuskiIds, setKuskiIds] = useState(queryIds);
   const [text, setText] = useState(query.text || '');
-  const [rowsPerPage, setRowsPerPage] = useState(Number(query.rpp) || 25);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    ROWS_PER_PAGE_OPTIONS.includes(Number(query.rpp)) ? Number(query.rpp) : 25,
+  );
 
   const now = new Date();
 
@@ -222,7 +227,7 @@ const ChatLog = () => {
             page={chatPage}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[10, 25, 50, 100, 250, 1000]}
+            rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         )}

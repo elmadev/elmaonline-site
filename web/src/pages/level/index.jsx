@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
+import NotFound from 'pages/not-found';
 import { ExpandMore } from '@material-ui/icons';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import RecList from 'features/RecList';
@@ -23,7 +24,13 @@ import LevelTimes from './LevelTimes/LevelTimes.jsx';
 
 const Level = () => {
   const { LevelId } = useParams({ strict: false });
-  const LevelIndex = parseInt(LevelId, 10);
+
+  if (!/^[1-9]\d*$/.test(LevelId)) return <NotFound />;
+
+  return <LevelPage LevelIndex={parseInt(LevelId, 10)} />;
+};
+
+const LevelPage = ({ LevelIndex }) => {
   const [previewRec, setPreviewRec] = useState(null);
 
   const { level, battlesForLevel, loading, levelpacks, cups } = useStoreState(
@@ -111,7 +118,11 @@ const Level = () => {
         </Grid>
       </Grid>
       {previewRec && (
-        <Preview previewRec={previewRec} setPreviewRec={setPreviewRec} />
+        <Preview
+          previewRec={previewRec}
+          setPreviewRec={setPreviewRec}
+          kuskiName={previewRec.KuskiData?.Kuski}
+        />
       )}
     </Layout>
   );

@@ -38,8 +38,11 @@ const CrippledSelectWrapper = styled.div`
   justify-content: flex-end;
   margin-top: ${p => (p.topMargin ? '-12px' : '-22px')};
   margin-bottom: 12px;
+  /* negative margin overlaps the map checkboxes above, so only the select itself takes clicks */
+  pointer-events: none;
   .MuiFormControl-root {
     min-width: 180px;
+    pointer-events: auto;
   }
   @media screen and (max-width: 1100px) {
     margin-top: 0;

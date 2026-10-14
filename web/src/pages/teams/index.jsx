@@ -32,7 +32,7 @@ const groups = [
   'x',
   'y',
   'z',
-  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'],
+  '…',
 ];
 
 const Teams = () => {
@@ -89,11 +89,13 @@ const Teams = () => {
         </Filter>
         <KuskiList>
           {groups.map(g => {
-            const letterTeams = filteredTeams.filter(k =>
-              Array.isArray(g)
-                ? g.includes(k.Team[0].toLowerCase())
-                : g === k.Team[0].toLowerCase(),
-            );
+            const letterTeams = filteredTeams.filter(k => {
+              const firstChar = k.Team[0]
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase();
+              return g === '…' ? !/^[a-z]$/.test(firstChar) : g === firstChar;
+            });
             if (letterTeams.length < 1) return null;
             return (
               <div key={g}>
@@ -103,7 +105,7 @@ const Teams = () => {
                   role="button"
                   tabIndex="0"
                 >
-                  <GroupChar>{Array.isArray(g) ? '…' : g}</GroupChar>
+                  <GroupChar>{g}</GroupChar>
                   <GroupItemCount>{letterTeams.length}</GroupItemCount>
                 </GroupTitle>
                 {(filter.length > 0 || expanded.includes(g)) && (

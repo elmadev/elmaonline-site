@@ -59,6 +59,7 @@ const GlobalStyle = () => {
           padding: 0;
           font-weight: 400;
           background: ${theme.pageBackground};
+          color-scheme: ${theme.type || 'normal'};
         }
         body {
           margin: 0;

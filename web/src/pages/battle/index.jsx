@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { groupBy, mapValues, sumBy, filter } from 'lodash';
 import Layout from 'components/Layout';
+import NotFound from 'pages/not-found';
 import styled from '@emotion/styled';
 import config from 'config';
 import Time from '../../components/Time';
@@ -60,7 +61,13 @@ const getWinnerData = battle => {
 
 const Battle = () => {
   const { BattleId } = useParams({ strict: false });
-  const BattleIndex = parseInt(BattleId, 10);
+
+  if (!/^[1-9]\d*$/.test(BattleId)) return <NotFound />;
+
+  return <BattlePage BattleIndex={parseInt(BattleId, 10)} />;
+};
+
+const BattlePage = ({ BattleIndex }) => {
   const [replayUrl, setReplayUrl] = useState('');
   const [winner, setWinner] = useState(null);
   let runStats = null;
@@ -100,9 +107,10 @@ const Battle = () => {
 
   const openReplay = time => {
     const TimeFileData = replays.find(r => r.TimeIndex === time.TimeIndex);
-    if (TimeFileData) {
-      setReplayUrl(recUrl(TimeFileData));
+    if (!TimeFileData) {
+      return;
     }
+    setReplayUrl(recUrl(TimeFileData));
     setWinner({
       Kuski: time.KuskiData || {},
       Time: time.Time,
@@ -166,7 +174,11 @@ const Battle = () => {
         )}
         {battle && rankingHistory ? (
           <LevelStatsContainer
-            openReplay={replays.length === 0 ? null : time => openReplay(time)}
+            openReplay={time =>
+              replays.some(r => r.TimeIndex === time.TimeIndex)
+                ? () => openReplay(time)
+                : null
+            }
             battle={battle}
             rankingHistory={rankingHistory}
             runStats={runStats}

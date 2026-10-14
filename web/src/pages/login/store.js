@@ -1,12 +1,13 @@
 import { action, thunk } from 'easy-peasy';
 import Cookies from 'universal-cookie';
 import config from 'config';
-import { setApiAuth, GetNotificationsCount, SystemStatus } from 'api';
+import { GetNotificationsCount, SystemStatus } from 'api';
+import { authToken, loginCookieOptions, saveToken } from 'utils/nick';
 
 const cookies = new Cookies();
 
 export default {
-  loggedIn: cookies.get('token') !== undefined,
+  loggedIn: authToken() !== '',
   username: cookies.get('username'),
   userid: cookies.get('userid'),
   setLoggedIn: action((state, payload) => {
@@ -32,19 +33,14 @@ export default {
       return Promise.reject(body.Response.message);
     }
 
-    const options = {
-      path: '/',
-      maxAge: 8640000,
-    };
-    cookies.set('token', body.Response.token, options);
-    setApiAuth(body.Response.token);
-    cookies.set('username', body.Response.username, options);
-    cookies.set('userid', body.Response.userid, options);
+    saveToken(body.Response.token);
+    cookies.set('username', body.Response.username, loginCookieOptions);
+    cookies.set('userid', body.Response.userid, loginCookieOptions);
     if (body.Response.mod) {
-      cookies.set('mod', body.Response.mod, options);
+      cookies.set('mod', body.Response.mod, loginCookieOptions);
     }
     if (body.Response.admin) {
-      cookies.set('admin', body.Response.admin, options);
+      cookies.set('admin', body.Response.admin, loginCookieOptions);
     }
     actions.setLoggedIn(true);
     actions.setUsername(body.Response.username);
@@ -53,7 +49,6 @@ export default {
   }),
   logout: thunk(async actions => {
     cookies.remove('token', { path: '/' });
-    setApiAuth('');
     cookies.remove('username', { path: '/' });
     cookies.remove('userid', { path: '/' });
     cookies.remove('mod', { path: '/' });

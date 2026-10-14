@@ -35,4 +35,17 @@ export default {
       actions.setTagOptions(get.data);
     }
   }),
+  tags: persist(
+    {
+      includedTags: [],
+      setIncludedTags: action((state, payload) => {
+        state.includedTags = payload;
+      }),
+      excludedTags: [],
+      setExcludedTags: action((state, payload) => {
+        state.excludedTags = payload;
+      }),
+    },
+    { storage: 'localStorage' },
+  ),
 };

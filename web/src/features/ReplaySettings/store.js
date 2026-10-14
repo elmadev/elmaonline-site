@@ -3,12 +3,21 @@ import { action, persist } from 'easy-peasy';
 export default {
   settings: persist(
     {
-      revealOnClick: false,
       autoPlay: false,
       grass: true,
       arrows: false,
       pictures: true,
       customSkyGround: true,
+      animatedObjects: true,
+      stillObjects: false,
+      fancyboost: true,
+      centeredCamera: true,
+      picturesInBackground: true,
+      autoZoom: false,
+      translucentGhosts: false,
+      timer: true,
+      minimap: false,
+      lastAppleTime: true,
       theater: false,
       // scaling (%) for default zoom on page load
       zoomScale: 100,
@@ -19,6 +28,9 @@ export default {
   ),
   toggleSetting: action((state, payload) => {
     state.settings[payload] = !state.settings[payload];
+  }),
+  setSetting: action((state, payload) => {
+    state.settings[payload.name] = payload.value;
   }),
   setZoomScale: action((state, payload) => {
     state.settings.zoomScale = parseInt(payload, 10);

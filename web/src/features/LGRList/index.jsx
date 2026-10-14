@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
 import LGRListItem from 'components/LGRListItem';
@@ -16,12 +16,18 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 const LGRList = () => {
-  const { lgrs, settings, tagOptions } = useStoreState(state => state.LGRList);
-  const { getLGRs, setSettings, getTagOptions } = useStoreActions(
-    actions => actions.LGRList,
-  );
-  const [includedTags, setIncludedTags] = useState([]);
-  const [excludedTags, setExcludedTags] = useState([]);
+  const {
+    lgrs,
+    settings,
+    tagOptions,
+    tags: { includedTags, excludedTags },
+  } = useStoreState(state => state.LGRList);
+  const {
+    getLGRs,
+    setSettings,
+    getTagOptions,
+    tags: { setIncludedTags, setExcludedTags },
+  } = useStoreActions(actions => actions.LGRList);
 
   useEffect(() => {
     getLGRs();

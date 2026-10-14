@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Recplayer from 'components/Recplayer';
 import config from 'config';
+import { shirtBmpUrl } from 'utils/misc';
 import styled from '@emotion/styled';
 import useElementSize from 'utils/useWindowSize';
 import { useQueryAlt, RandomReplay } from 'api';
@@ -51,13 +52,7 @@ export default function Randomizer() {
       <Recplayer
         rec={link.link}
         lev={`${config.dlUrl}level/${randomReplays[index].LevelData.LevelIndex}`}
-        shirt={
-          randomReplays[index].DrivenByData?.KuskiIndex
-            ? [
-                `${config.dlUrl}shirt/${randomReplays[index].DrivenByData?.KuskiIndex}`,
-              ]
-            : []
-        }
+        shirt={[shirtBmpUrl(randomReplays[index].DrivenByData?.KuskiIndex)]}
         controls
         height={height}
         onEnd={handleReplayEnd}

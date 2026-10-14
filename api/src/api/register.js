@@ -1,11 +1,26 @@
 import express from 'express';
 import { uuid } from '#utils/calcs';
-import crypto from 'crypto';
 import { format } from 'date-fns';
-import { Team, Kuski, SiteSetting } from '#data/models';
+import { Team, Kuski, SiteSetting, Country } from '#data/models';
 import { confirmMail, resetMail } from '#utils/email';
-import { authContext } from '#utils/auth';
+import {
+  authContext,
+  hashPassword,
+  hashesMatch,
+  validatePassword,
+} from '#utils/auth';
 import { sendMessage } from '#utils/discord';
+import {
+  validKuski,
+  validTeam,
+  kuskiCharsMessage,
+  teamCharsMessage,
+} from '#utils/names';
+import {
+  registerLimit,
+  resetRequestLimit,
+  codeLimit,
+} from '#middlewares/rateLimit';
 import Discord from './register_discord.js';
 import config from '../config.js';
 
@@ -82,19 +97,18 @@ const UpdatePasswordConfirm = async ConfirmCode => {
     if (!Salt) {
       Salt = uuid(32);
     }
-    const newpass = crypto
-      .createHash('RSA-SHA3-512')
-      .update(`${newPassword}${Salt}`)
-      .digest('hex');
     await findReset.update({
       ConfirmCode: '',
-      Password2: newpass,
+      Password2: hashPassword(newPassword, Salt),
       Salt,
     });
     return newPassword;
   }
   return null;
 };
+
+const validConfirmCode = c => typeof c === 'string' && /^[0-9a-z]{10}$/.test(c);
+const validResetCode = c => validConfirmCode(c) && c.startsWith('rez');
 
 const validateEmail = e => {
   const re = /\S+@\S+\.\S+/;
@@ -161,15 +175,7 @@ const LogoUpdate = async (LogoUrl, TeamIndex) => {
 const Player = async KuskiIndex => {
   const data = await Kuski.findOne({
     where: { KuskiIndex },
-    attributes: [
-      'KuskiIndex',
-      'Kuski',
-      'TeamIndex',
-      'Country',
-      'Email',
-      'Password2',
-      'Salt',
-    ],
+    attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country', 'Email'],
     include: [
       {
         model: Team,
@@ -181,14 +187,63 @@ const Player = async KuskiIndex => {
   return data;
 };
 
+// kept separate from Player so the hash is never sent in a response
+const PlayerPassword = async KuskiIndex => {
+  const data = await Kuski.findOne({
+    where: { KuskiIndex },
+    attributes: ['Password2', 'Salt'],
+  });
+  return data;
+};
+
 router
-  .post('/', async (req, res) => {
+  .post('/', registerLimit, async (req, res) => {
     let message = '';
     let TeamIndex = 0;
-    const kuskiData = await getKuskiData(req.body.Kuski);
-    if (kuskiData.length > 0) {
-      message = 'Nickname is already taken.';
+    const isFilled = v => typeof v === 'string' && v.trim() !== '';
+    if (
+      !isFilled(req.body.Kuski) ||
+      !isFilled(req.body.Password) ||
+      !isFilled(req.body.Email) ||
+      !isFilled(req.body.Country)
+    ) {
+      message = 'Mandatory field is missing.';
+    } else if (req.body.Team && typeof req.body.Team !== 'string') {
+      message = 'Invalid team.';
+    } else if (req.body.Kuski.length > 15) {
+      message = 'Nick is too long. Maximum number of characters is 15.';
+    } else if (validatePassword(req.body.Password)) {
+      message = validatePassword(req.body.Password);
+    } else if (req.body.Team && req.body.Team.length > 9) {
+      message = 'Team is too long. Maximum number of characters is 9.';
+    } else if (!validKuski(req.body.Kuski)) {
+      message = kuskiCharsMessage;
+    } else if (req.body.Team && !validTeam(req.body.Team)) {
+      message = teamCharsMessage;
+    } else if (req.body.Email.length > 255) {
+      message = 'Email is too long. Maximum number of characters is 255.';
+    } else if (!validateEmail(req.body.Email)) {
+      message = 'Invalid email address.';
     }
+    if (!message) {
+      const country = await Country.findByPk(req.body.Country);
+      if (!country) {
+        message = 'Invalid country.';
+      }
+    }
+    if (!message) {
+      const kuskiData = await getKuskiData(req.body.Kuski);
+      if (kuskiData.length > 0) {
+        message = 'Nickname is already taken.';
+      }
+    }
+    if (!message) {
+      const emails = await checkEmail(req.body.Email);
+      if (emails.length > 0) {
+        message = 'Email is already taken.';
+      }
+    }
+    // team is created last so a failed registration doesn't leave a new team behind
     if (!message && req.body.Team) {
       const teamData = await getTeamData(req.body.Team);
       if (teamData.length > 0) {
@@ -202,17 +257,6 @@ router
         TeamIndex = addTeam.TeamIndex;
       }
     }
-    if (!message) {
-      if (!validateEmail(req.body.Email)) {
-        message = 'Invalid email address.';
-      }
-    }
-    if (!message) {
-      const emails = await checkEmail(req.body.Email);
-      if (emails.length > 0) {
-        message = 'Email is already taken.';
-      }
-    }
     if (message !== '') {
       res.json({
         success: false,
@@ -221,12 +265,9 @@ router
     } else {
       const ConfirmCode = uuid();
       const Salt = uuid(32);
-      const data = await addKuski({
+      await addKuski({
         Kuski: req.body.Kuski,
-        Password2: crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Password}${Salt}`)
-          .digest('hex'),
+        Password2: hashPassword(req.body.Password, Salt),
         Salt,
         Email: req.body.Email,
         Country: req.body.Country,
@@ -234,11 +275,16 @@ router
         ConfirmCode,
       });
       await confirmMail(req.body.Kuski, req.body.Email, ConfirmCode);
-      res.json({ success: true, data });
+      // don't return the new row, it has the password hash and confirm code
+      res.json({ success: true });
     }
   })
   .use('/discord', Discord)
-  .post('/confirm', async (req, res) => {
+  .post('/confirm', codeLimit, async (req, res) => {
+    if (!validConfirmCode(req.body.confirmCode)) {
+      res.json({ success: false });
+      return;
+    }
     const confirmed = await updateConfirm(req.body.confirmCode);
     if (confirmed) {
       res.json({ success: true });
@@ -246,7 +292,11 @@ router
       res.json({ success: false });
     }
   })
-  .post('/resetconfirm', async (req, res) => {
+  .post('/resetconfirm', resetRequestLimit, async (req, res) => {
+    if (!validateEmail(req.body.Email)) {
+      res.json({ success: false, message: 'Email not found' });
+      return;
+    }
     const resetCode = `rez${uuid(7)}`;
     const reset = await ResetPasswordConfirm(req.body.Email, resetCode);
     if (reset) {
@@ -256,7 +306,11 @@ router
       res.json({ success: false, message: 'Email not found' });
     }
   })
-  .post('/reset', async (req, res) => {
+  .post('/reset', codeLimit, async (req, res) => {
+    if (!validResetCode(req.body.confirmCode)) {
+      res.json({ success: false });
+      return;
+    }
     const reset = await UpdatePasswordConfirm(req.body.confirmCode);
     if (reset) {
       res.json({ success: true, newPassword: reset });
@@ -271,11 +325,17 @@ router
       let error = false;
       // nick
       if (req.body.Field === 'Kuski') {
-        const kuskiData = await getKuskiData(req.body.Value[0]);
-        if (req.body.Value[0].length > 15) {
+        const nick = req.body.Value?.[0];
+        if (typeof nick !== 'string' || nick.trim() === '') {
+          message = 'Invalid nick.';
+          error = true;
+        } else if (nick.length > 15) {
           message = 'Nick is too long. Maximum number of characters is 15.';
           error = true;
-        } else if (kuskiData.length > 0) {
+        } else if (!validKuski(nick)) {
+          message = kuskiCharsMessage;
+          error = true;
+        } else if ((await getKuskiData(nick)).length > 0) {
           message = 'Nickname is already taken.';
           error = true;
         } else {
@@ -286,7 +346,16 @@ router
         // team
       } else if (req.body.Field === 'Team') {
         let TeamIndex = 0;
-        if (req.body.Value[0] !== '') {
+        if (typeof req.body.Value?.[0] !== 'string') {
+          message = 'Invalid team.';
+          error = true;
+        } else if (req.body.Value[0].length > 9) {
+          message = 'Team is too long. Maximum number of characters is 9.';
+          error = true;
+        } else if (!validTeam(req.body.Value[0])) {
+          message = teamCharsMessage;
+          error = true;
+        } else if (req.body.Value[0] !== '') {
           const teamData = await getTeamData(req.body.Value[0]);
           if (teamData.length > 0) {
             if (teamData[0].dataValues.Locked) {
@@ -328,32 +397,35 @@ router
         }
         // password
       } else if (req.body.Field === 'Password') {
-        const playerInfo = await Player(auth.userid);
+        const playerInfo = await PlayerPassword(auth.userid);
         let { Salt } = playerInfo;
         if (!Salt) {
           Salt = uuid(32);
         }
-        const oldpass = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[0]}${Salt}`)
-          .digest('hex');
-        const pass = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[1]}${Salt}`)
-          .digest('hex');
-        const passAgain = crypto
-          .createHash('RSA-SHA3-512')
-          .update(`${req.body.Value[2]}${Salt}`)
-          .digest('hex');
-        if (oldpass !== playerInfo.Password2) {
+        const [oldPassword, newPassword, newPasswordAgain] = Array.isArray(
+          req.body.Value,
+        )
+          ? req.body.Value
+          : [];
+        if (
+          typeof oldPassword !== 'string' ||
+          !hashesMatch(hashPassword(oldPassword, Salt), playerInfo.Password2)
+        ) {
           message = 'Old password does not match.';
           error = true;
-        } else if (pass !== passAgain) {
+        } else if (validatePassword(newPassword)) {
+          message = validatePassword(newPassword);
+          error = true;
+        } else if (newPassword !== newPasswordAgain) {
           message = 'Password again does not match.';
           error = true;
         }
         if (!error) {
-          await UpdatePassword(pass, auth.userid, Salt);
+          await UpdatePassword(
+            hashPassword(newPassword, Salt),
+            auth.userid,
+            Salt,
+          );
           message = 'Password has been updated.';
         }
         // team lock

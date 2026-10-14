@@ -61,6 +61,10 @@ export function searchLimit(limit) {
   return limitInt;
 }
 
+export function searchPageLimit(offset) {
+  return parseInt(offset, 10) < 0 ? 10000 : 25;
+}
+
 export function searchOffset(offset) {
   const offsetInt = parseInt(offset, 10);
   if (offsetInt < 0) {
@@ -79,6 +83,16 @@ export const formatLevelSearch = level => {
     }
   }
   return level;
+};
+
+export const levelNameSearch = query => {
+  const LevelName = formatLevelSearch(query);
+  if (LevelName !== query) {
+    return {
+      [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
+    };
+  }
+  return { [Op.like]: `${like(query)}%` };
 };
 
 export const fromTo = (from, to, column, format = 'ts') => {

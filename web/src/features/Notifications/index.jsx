@@ -12,6 +12,7 @@ import styled from '@emotion/styled';
 import Link from 'components/Link';
 import { useState } from 'react';
 import { Paper, TablePagination } from '@material-ui/core';
+import { stripRecExt } from 'utils/misc';
 
 const Notifications = ({
   defaultPage = 0,
@@ -87,12 +88,7 @@ const Notifications = ({
         return (
           <div>
             {meta.kuski} added a comment to your replay{' '}
-            <Link
-              to={`/r/${meta.replayUUID}/${meta.replayName.replace(
-                '.rec',
-                '',
-              )}`}
-            >
+            <Link to={`/r/${meta.replayUUID}/${stripRecExt(meta.replayName)}`}>
               {meta.replayName}
             </Link>{' '}
             <i>"{meta.Text}"</i>

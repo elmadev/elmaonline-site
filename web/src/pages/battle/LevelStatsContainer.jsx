@@ -74,16 +74,14 @@ const LevelStatsContainer = props => {
                 // note that battle.Results can contain more entries than runStats.
                 // it appears this happens if kuski joins for countdown but not for battle.
                 const runStatsForKuski = runStats && runStats[r.KuskiIndex];
+                const playReplay = openReplay(r);
 
                 const [kuskiRankingAll, kuskiRankingType] =
                   getKuskiRankingHistory(rankingHistory, r.KuskiIndex, battle);
 
                 return (
                   <Fragment key={r.KuskiIndex}>
-                    <Row
-                      showArrow={openReplay}
-                      onClick={openReplay ? () => openReplay(r) : null}
-                    >
+                    <Row showArrow={playReplay} onClick={playReplay}>
                       <ListCell width={30}>{i + 1}.</ListCell>
                       <ListCell width={battle.Multi === 1 ? 300 : 200}>
                         <Kuski kuskiData={r.KuskiData} flag team />
@@ -100,7 +98,7 @@ const LevelStatsContainer = props => {
                           apples={r.Apples}
                           battleType={battle.BattleType}
                         />
-                        {hasNoReplay ? null : (
+                        {hasNoReplay || !playReplay ? null : (
                           <>
                             <PlayArrow />
                             <GetApp

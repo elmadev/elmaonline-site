@@ -1,7 +1,6 @@
 import { create } from 'apisauce';
 import config from 'config';
-import { authToken } from 'utils/nick';
-import assert from 'assert';
+import { authToken, saveToken, checkSession } from 'utils/nick';
 import { isObjectLike, isArray, mapValues, meanBy } from 'lodash';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 
@@ -11,7 +10,6 @@ const api = create({
   headers: {
     Accept: 'application/json',
     'Cache-Control': 'no-cache',
-    Authorization: authToken(),
   },
   timeout: 10000,
 });
@@ -21,15 +19,34 @@ const apiUpload = create({
   headers: {
     Accept: '*/*',
     'Cache-Control': 'no-cache',
-    Authorization: authToken(),
     'Content-Type': 'multipart/form-data',
   },
   timeout: 60000,
 });
 
-export const setApiAuth = authToken => {
-  api.setHeader('Authorization', authToken);
+// read the token from the cookie on every request, so a token renewed in
+// another tab is picked up and an expired one is never sent
+const addAuthHeader = request => {
+  request.headers.Authorization = authToken();
 };
+
+// the api sends a renewed token when the current one is due, swap it in so
+// active users stay logged in. skipped if the user logged out meanwhile
+// a 401 may mean the token expired while the tab was open, so check that
+const handleAuthResponse = response => {
+  const token = response.headers?.['x-renewed-token'];
+  if (token && authToken()) {
+    saveToken(token);
+  }
+  if (response.status === 401) {
+    checkSession();
+  }
+};
+
+[api, apiUpload].forEach(instance => {
+  instance.addRequestTransform(addAuthHeader);
+  instance.addMonitor(handleAuthResponse);
+});
 
 // apisauce adapter
 // ie. useQueryAlt( 'key', async () => api.get('replay_comment/23') );
@@ -55,10 +72,11 @@ export const useQueryAlt = (
       const res = await queryFn(...args);
 
       if (arrayFormat) {
-        assert(
-          isArray(res) && res.length === 2,
-          'Expected an async queryFn that resolves to an array of length 2.',
-        );
+        if (!(isArray(res) && res.length === 2)) {
+          throw new Error(
+            'Expected an async queryFn that resolves to an array of length 2.',
+          );
+        }
 
         if (res[0]) {
           return res[1];
@@ -68,10 +86,11 @@ export const useQueryAlt = (
         console.error('Status not OK', queryKey, res[1]);
         throw new Error('Status not OK');
       } else {
-        assert(
-          isObjectLike(res),
-          'Expected an async queryFn that resolves to an object.',
-        );
+        if (!isObjectLike(res)) {
+          throw new Error(
+            'Expected an async queryFn that resolves to an object.',
+          );
+        }
 
         if (res.ok) {
           return res.data;

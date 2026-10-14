@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import { Row, Column } from 'components/Containers';
 import { padding, alignItems, justifyContent } from './controls';

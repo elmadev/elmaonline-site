@@ -25,6 +25,7 @@ const elmaGreenLight = {
   highlightColor: '#dddddd',
   borderColor: '#e2e3e4',
   errorColor: '#a20e2f',
+  paperBorder: 'none',
 
   // battles
   ongoing: '#bae1ff',
@@ -115,13 +116,47 @@ const oceanBlueLight = {
   linkColor: '#5472d3',
 };
 
-const themes = [elmaGreenLight, oceanBlueLight, powerPinkDark, oceanBlueDark];
+const elmastatsDark = {
+  ...powerPinkDark,
+  name: 'Elmastats (Dark)',
+  // colors
+  pageBackground: '#303030',
+  pageBackgroundDark: '#303030',
+  paperBackground: '#303030',
+  primary: '#1F1F1F',
+  primaryLight: '#63a4ff',
+  primaryDark: '#004ba0',
+  primaryAlpha: 'rgba(25, 118, 210, 0.1)',
+  primaryAlpha3: 'rgba(25, 118, 210, 0.3)',
+  secondary: '#f57c00',
+  secondaryLight: '#ffad42',
+  secondaryDark: '#bb4d00',
+  linkColor: '#4671D5',
+  linkHover: '#7AA2F7',
+  hoverColor: '#202020',
+  borderColor: '#000000',
+  errorColor: '#4671D5',
+  paperBorder: '1px solid #000',
+  //battles
+  ongoing: 'rgba(186, 225, 255, .2)',
+  inqueue: 'rgba(186, 255, 201, .2)',
+  aborted: 'rgba(255, 179, 186, .2)',
+};
+
+const themes = [
+  elmaGreenLight,
+  oceanBlueLight,
+  powerPinkDark,
+  oceanBlueDark,
+  elmastatsDark,
+];
 
 const previews = [
   'https://up.elma.online/u/w77aszpiki/ElmaGreenLight.png',
   'https://up.elma.online/u/84rwrjqcwe/OceanBlueLight.png',
   'https://up.elma.online/u/6zocp6lq8n/PowerPinkDark.png',
   'https://up.elma.online/u/8nm2weck7p/OceanBlueDark.png',
+  'https://up.elma.online/u/tie1z4w5ix/elmastatsDark.png',
 ];
 
 const muiTheme = themeId =>
@@ -146,6 +181,7 @@ const muiTheme = themeId =>
         root: {
           backgroundColor: themes[themeId].paperBackground,
           color: themes[themeId].fontColor,
+          border: themes[themeId].paperBorder || undefined,
         },
       },
       MuiButton: {

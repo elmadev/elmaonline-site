@@ -44,7 +44,14 @@ export const checksumFile = (hashName, path) =>
 
 const getReplaysByMd5 = async MD5 => {
   const replays = await ReplayDB.findAll({
-    attributes: ['MD5', 'ReplayIndex', 'Unlisted', 'UUID', 'RecFileName'],
+    attributes: [
+      'MD5',
+      'ReplayIndex',
+      'Unlisted',
+      'UUID',
+      'RecFileName',
+      'UploadedBy',
+    ],
     where: { MD5 },
   });
   return replays;

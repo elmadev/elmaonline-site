@@ -22,6 +22,7 @@ import { useQueryAlt, LevelPackLevelStats } from '../../api';
 import Menus from './Menus';
 import RecordHistory from './RecordHistory';
 import PlayStats from './PlayStats';
+import FavStar from '../levels/FavStar';
 
 const LevelPack = () => {
   const { name, tab, subTab } = useParams({ strict: false });
@@ -41,6 +42,11 @@ const LevelPack = () => {
     getStats,
     getRecordsOnly,
   } = useStoreActions(actions => actions.LevelPack);
+  const { loggedIn } = useStoreState(state => state.Login);
+  const { favs } = useStoreState(state => state.Levels);
+  const { getFavs, addFav, removeFav } = useStoreActions(
+    actions => actions.Levels,
+  );
   const lastShowLegacy = useRef(showLegacy);
   const navigate = useNavigate();
 
@@ -67,6 +73,12 @@ const LevelPack = () => {
   }, [name]);
 
   useEffect(() => {
+    if (loggedIn) {
+      getFavs(false);
+    }
+  }, [loggedIn]);
+
+  useEffect(() => {
     if (lastShowLegacy.current !== showLegacy) {
       lastShowLegacy.current = showLegacy;
       getRecordsOnly({ name, eolOnly: showLegacy ? 0 : 1 });
@@ -89,6 +101,9 @@ const LevelPack = () => {
     );
 
   const adminAuth = nickId() === levelPackInfo.KuskiIndex || mod();
+  const isFav = favs.some(
+    f => f.LevelPackIndex === levelPackInfo.LevelPackIndex,
+  );
 
   return (
     <Layout edge t={`Level pack - ${levelPackInfo.LevelPackName}`}>
@@ -125,6 +140,15 @@ const LevelPack = () => {
             <LevelPackName>
               <ShortNameStyled>{levelPackInfo.LevelPackName}</ShortNameStyled>{' '}
               <LongNameStyled>{levelPackInfo.LevelPackLongName}</LongNameStyled>
+              <FavWrapper>
+                <FavStar
+                  pack={{
+                    LevelPackIndex: levelPackInfo.LevelPackIndex,
+                    Fav: isFav,
+                  }}
+                  {...{ loggedIn, addFav, removeFav }}
+                />
+              </FavWrapper>
               <Download href={`pack/${levelPackInfo.LevelPackName}`}>
                 <DownloadText>Download</DownloadText>
               </Download>
@@ -212,6 +236,14 @@ const ShortNameStyled = styled.span`
 
 const LongNameStyled = styled.span`
   color: #8c8c8c;
+`;
+
+const FavWrapper = styled.span`
+  cursor: pointer;
+  padding-left: 8px;
+  svg {
+    vertical-align: middle;
+  }
 `;
 
 const DescriptionStyle = styled.div`

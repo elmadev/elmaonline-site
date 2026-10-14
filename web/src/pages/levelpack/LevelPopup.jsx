@@ -79,7 +79,7 @@ const LevelPopup = ({
                 {longName}
               </Title>
               <Header h2 mLeft>
-                Top-{timesLimit.toLocaleString()} times
+                Top {timesLimit.toLocaleString()} times
               </Header>
             </Column>
             <LevelMap LevelIndex={levelId} width="50%" />
@@ -245,9 +245,16 @@ const ShowMore = styled.span`
   cursor: pointer;
 `;
 
+// pinned to the popup bottom so a stale list height can't push it out of view
 const ShowMoreCon = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
   padding: 10px;
   font-size: 14px;
+  background: ${p => p.theme.paperBackground};
 `;
 
 const LevelPopUpCon = styled.div`

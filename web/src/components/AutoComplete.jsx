@@ -157,11 +157,13 @@ const ListboxComponent = React.forwardRef(
       return itemSize;
     };
 
+    const totalSize = itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+
     const getHeight = () => {
       if (itemCount > 8) {
         return 8 * itemSize;
       }
-      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+      return totalSize;
     };
 
     const gridRef = useResetCache(itemCount);
@@ -177,6 +179,7 @@ const ListboxComponent = React.forwardRef(
             outerElementType={OuterElementType}
             innerElementType="ul"
             itemSize={index => getChildSize(itemData[index])}
+            estimatedItemSize={itemCount ? totalSize / itemCount : itemSize}
             overscanCount={5}
             itemCount={itemCount}
           >

@@ -19,7 +19,7 @@ const ForgotPassword = () => {
   const clickReset = () => {
     setError('');
     if (!validateEmail(email)) {
-      setError('Invalid email adresse.');
+      setError('Invalid email address.');
     } else {
       resetPassword({
         Email: email,

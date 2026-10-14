@@ -1,6 +1,6 @@
 import React, { useEffect, Fragment, useState } from 'react';
 import styled from '@emotion/styled';
-import { nickId } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 import { forEach } from 'lodash';
 import { format } from 'date-fns';
 import {
@@ -20,6 +20,7 @@ import Recplayer from 'components/Recplayer';
 import { getPrivateCupRecUri } from 'utils/cups';
 import PreviewRecButton from 'components/PreviewRecButton';
 import config from 'config';
+import { shirtBmpUrl } from 'utils/misc';
 import FieldBoolean from 'components/FieldBoolean';
 import Preview from '../kuski/Preview';
 import { PlayArrow } from '@material-ui/icons';
@@ -164,7 +165,7 @@ const Personal = () => {
                             replay.Time,
                           )}
                           lev={`${config.dlUrl}level/${e.LevelIndex}`}
-                          shirt={[`${config.dlUrl}shirt/${replay.KuskiIndex}`]}
+                          shirt={[shirtBmpUrl(replay.KuskiIndex)]}
                           height={400}
                           controls
                         />
@@ -238,6 +239,7 @@ const Personal = () => {
                               key={t.TimeIndex}
                               TimeIndex={t.TimeIndex}
                               LevelIndex={e.LevelIndex}
+                              LevelData={e.Level}
                               setPreviewRec={setPreviewRec}
                             />
                           ))}
@@ -248,6 +250,7 @@ const Personal = () => {
                               key={t.TimeFileData?.TimeIndex}
                               TimeIndex={t.TimeFileData?.TimeIndex}
                               LevelIndex={e.LevelIndex}
+                              LevelData={e.Level}
                               setPreviewRec={setPreviewRec}
                             />
                           ))}
@@ -261,13 +264,17 @@ const Personal = () => {
         </Grid>
       )}
       {previewRec && (
-        <Preview previewRec={previewRec} setPreviewRec={setPreviewRec} />
+        <Preview
+          previewRec={previewRec}
+          setPreviewRec={setPreviewRec}
+          kuskiName={nick()}
+        />
       )}
     </Container>
   );
 };
 
-const TimeRow = ({ time, TimeIndex, LevelIndex, setPreviewRec }) => {
+const TimeRow = ({ time, TimeIndex, LevelIndex, LevelData, setPreviewRec }) => {
   return (
     <>
       <ReplayCon key={time.TimeIndex}>
@@ -290,6 +297,7 @@ const TimeRow = ({ time, TimeIndex, LevelIndex, setPreviewRec }) => {
                 ...time,
                 TimeIndex,
                 LevelIndex,
+                LevelData,
               })
             }
           >

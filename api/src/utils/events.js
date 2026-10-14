@@ -15,9 +15,10 @@ import { uploadTimeFile } from '#utils/upload';
 import { updateRanking } from '#utils/ranking';
 import { updateLeague } from './league.js';
 import config from '../config.js';
+import { secretMatches } from '#utils/auth';
 
 const checkAuth = (req, res, callback) => {
-  if (req.header('Authorization') === config.discord.apiAuth) {
+  if (secretMatches(req.header('Authorization'), config.discord.apiAuth)) {
     callback();
   } else {
     res.sendStatus(401);

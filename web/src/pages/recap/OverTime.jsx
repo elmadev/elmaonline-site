@@ -3,7 +3,7 @@ import { Section, HeadlineNick, RecapHeadline, Img, Text } from './';
 import { nick, nickId } from 'utils/nick';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Loading from 'components/Loading';
-import { groupBy, map } from 'lodash-es';
+import { groupBy, map } from 'lodash';
 import { ChartLine } from 'components/Chart';
 
 import graphs from 'images/recap/graphs.jpg';

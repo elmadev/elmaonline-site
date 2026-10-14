@@ -32,7 +32,7 @@ const groups = [
   'x',
   'y',
   'z',
-  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'],
+  '…',
 ];
 
 const Kuskis = ({ playerList }) => {
@@ -67,13 +67,15 @@ const Kuskis = ({ playerList }) => {
               placeholder="Filter"
             />
           </Filter>
-          <KuskiList>
+          <div>
             {groups.map(g => {
-              const kuskis = filteredKuskis.filter(k =>
-                Array.isArray(g)
-                  ? g.includes(k.Kuski[0].toLowerCase())
-                  : g === k.Kuski[0].toLowerCase(),
-              );
+              const kuskis = filteredKuskis.filter(k => {
+                const firstChar = k.Kuski[0]
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                  .toLowerCase();
+                return g === '…' ? !/^[a-z]$/.test(firstChar) : g === firstChar;
+              });
               if (kuskis.length < 1) return null;
               return (
                 <div key={g}>
@@ -83,7 +85,7 @@ const Kuskis = ({ playerList }) => {
                     role="button"
                     tabIndex="0"
                   >
-                    <GroupChar>{Array.isArray(g) ? '…' : g}</GroupChar>
+                    <GroupChar>{g}</GroupChar>
                     <GroupItemCount>{kuskis.length}</GroupItemCount>
                   </GroupTitle>
                   {(filter.length > 0 || expanded.includes(g)) && (
@@ -98,7 +100,7 @@ const Kuskis = ({ playerList }) => {
                 </div>
               );
             })}
-          </KuskiList>
+          </div>
         </KuskisContainer>
       )}
     </div>
@@ -128,9 +130,9 @@ const GroupContent = styled.div`
 
 const Filter = styled.div`
   background: ${p => p.theme.pageBackground};
-  position: fixed;
-  width: 100%;
-  z-index: 5;
+  position: sticky;
+  top: 100px;
+  z-index: 9;
 
   input {
     color: ${p => p.theme.fontColor};
@@ -144,10 +146,6 @@ const Filter = styled.div`
     display: block;
     box-sizing: border-box;
   }
-`;
-
-const KuskiList = styled.div`
-  padding-top: 46px;
 `;
 
 const KuskiRow = styled(Link)`

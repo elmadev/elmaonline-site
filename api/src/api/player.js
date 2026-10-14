@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchLimit, searchOffset } from '#utils/database';
+import { like, searchPageLimit, searchOffset } from '#utils/database';
 import { authContext } from '#utils/auth';
 import { pick, omit } from 'lodash-es';
 import {
@@ -17,9 +17,12 @@ const router = express.Router();
 
 const PlayersSearch = async (query, offset) => {
   const get = await Kuski.findAll({
-    where: { Kuski: { [Op.like]: `${like(query)}%` } },
+    where: {
+      Kuski: { [Op.like]: `${like(query)}%` },
+      Confirmed: 1,
+    },
     attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['Kuski', 'ASC']],
     offset: searchOffset(offset),
     include: [
@@ -66,7 +69,7 @@ const Players = async () => {
 const TeamsSearch = async (query, offset) => {
   const get = await Team.findAll({
     where: { Team: { [Op.like]: `${like(query)}%` } },
-    limit: searchLimit(offset),
+    limit: searchPageLimit(offset),
     order: [['Team', 'ASC']],
     offset: searchOffset(offset),
   });

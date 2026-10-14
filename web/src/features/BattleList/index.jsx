@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import LocalTime from 'components/LocalTime';
 import { BattleTime } from 'components/Time';
@@ -8,9 +8,22 @@ import { useTheme } from '@emotion/react';
 import { formatISO } from 'date-fns';
 import { Level, BattleType } from 'components/Names';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { sortResults, battleStatus, battleStatusBgColor } from 'utils/battle';
+import {
+  sortResults,
+  battleStatus,
+  battleStatusBgColor,
+  battleRemaining,
+} from 'utils/battle';
+import { useInterval } from 'utils/useInterval';
+import { formattedTime } from 'components/LinearProgressWithLabel';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'components/List';
 import { estimateBattleStarts } from './estimateStarts';
+
+const TimeLeft = ({ battle }) => {
+  const [seconds, setSeconds] = useState(() => battleRemaining(battle).seconds);
+  useInterval(() => setSeconds(battleRemaining(battle).seconds), 1000);
+  return <> ({formattedTime(seconds)} left)</>;
+};
 
 const BattleList = ({
   start = null,
@@ -135,6 +148,9 @@ export const BattleListTable = ({
                   ) : (
                     <ListCell width={150} to={`/battles/${b.BattleIndex}`}>
                       {battleStatus(b)}
+                      {battleStatus(b) === 'Ongoing' && b.Started && (
+                        <TimeLeft battle={b} />
+                      )}
                     </ListCell>
                   )}
                   <ListCell
