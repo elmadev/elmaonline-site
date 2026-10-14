@@ -117,6 +117,7 @@ const Recplayer = props => {
 
   return (
     <RecPlayer
+      className="RecPlayer"
       key={forceRefresh ? `${rec}${shirt}` : undefined}
       recUrls={recUrls}
       levUrl={lev}

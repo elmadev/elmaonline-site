@@ -11,9 +11,17 @@ const apiOrigin = new URL(
     .trim(),
 ).origin;
 
-// Calls whose presence depends on render timing (eg. level thumbnails loaded
-// when scrolled into view) rather than on the data fetching code.
-const ignored = [/\/api\/level\/leveldata\//];
+// Calls whose presence depends on render timing rather than on the data
+// fetching code.
+const ignored = [
+  // level thumbnails, loaded when scrolled into view
+  /\/api\/level\/leveldata\//,
+  // the replay player loads the lgr after parsing the level, which can land
+  // in either phase or after the page has settled
+  /\/api\/lgr\/get\//,
+  // sent 1s after the notifications popover opens, if it's still open
+  /\/api\/notification\/markSeen/,
+];
 
 const isWrite = request => request.method() !== 'GET';
 

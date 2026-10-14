@@ -51,7 +51,8 @@ const popupOptions =
 const skipText = /^log ?out$/i;
 
 // third party widgets whose controls don't talk to the api, but disturb the
-// rest of the exploration (the replay player's fullscreen covers the page)
+// rest of the exploration (the replay player's fullscreen covers the page).
+// The player gets its RecPlayer class in components/Recplayer.jsx
 const skipWithin = '[class*=RecPlayer]';
 
 const fixtures = new URL('./fixtures/', import.meta.url).pathname;
