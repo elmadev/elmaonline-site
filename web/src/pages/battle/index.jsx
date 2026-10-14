@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { groupBy, mapValues, sumBy, filter } from 'lodash';
 import Layout from 'components/Layout';
+import NotFound from 'pages/not-found';
 import styled from '@emotion/styled';
 import config from 'config';
 import Time from '../../components/Time';
@@ -60,7 +61,13 @@ const getWinnerData = battle => {
 
 const Battle = () => {
   const { BattleId } = useParams({ strict: false });
-  const BattleIndex = parseInt(BattleId, 10);
+
+  if (!/^[1-9]\d*$/.test(BattleId)) return <NotFound />;
+
+  return <BattlePage BattleIndex={parseInt(BattleId, 10)} />;
+};
+
+const BattlePage = ({ BattleIndex }) => {
   const [replayUrl, setReplayUrl] = useState('');
   const [winner, setWinner] = useState(null);
   let runStats = null;

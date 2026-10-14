@@ -4,6 +4,8 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { RecPlayer } from '@elmadev/react-rec-viewer';
 import config from 'config';
+import { isValidLevUrl, isValidRecUrl } from 'utils/recplayerUrls';
+import Loading from './Loading';
 
 const DEFAULT_LGR = 'https://space.elma.online/lgr/cr6m27a3t1/default.lgr';
 
@@ -101,7 +103,16 @@ const Recplayer = props => {
   const shirtUrls = recUrls.map((_, i) => (shirt && shirt[i]) || null);
   const recNames = recUrls.map((_, i) => (names && names[i]) || null);
 
-  if (!lev) return <span>Loading..</span>;
+  const urlsValid = useMemo(
+    () =>
+      isValidLevUrl(lev) &&
+      (rec ? rec.split(';').filter(Boolean) : []).every(isValidRecUrl),
+    [lev, rec],
+  );
+
+  if (!lev) return <Loading />;
+
+  if (!urlsValid) return <span>Invalid level or replay url</span>;
 
   return (
     <RecPlayer
