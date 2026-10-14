@@ -1,4 +1,3 @@
-GET lgr/get/default
 GET news/status
 GET notification/count
 GET replay/byLevelIndex/:n

@@ -1,1 +1,1 @@
-GET lgr/info
+

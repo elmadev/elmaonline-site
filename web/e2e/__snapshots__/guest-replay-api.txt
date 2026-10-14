@@ -1,4 +1,3 @@
-GET lgr/get/default
 GET news/status
 GET replay/byLevelIndex/:n
 GET replay/byUUID/qf37iupf5t?f=<hash>

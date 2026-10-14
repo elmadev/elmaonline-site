@@ -4,4 +4,3 @@ GET notification
 GET notification/count
 GET player/Kuski/playwright
 GET ranking/kuski/:n
-POST notification/markSeen {}

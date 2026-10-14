@@ -4,4 +4,3 @@ GET allfinished/leaderhistory/:n?BattleIndex=&KuskiIndex=&from=<timestamp>&to=<t
 GET cups/:n/myreplays
 GET cups/:n/teamreplays
 GET levelstats/collection/ids/:n
-GET lgr/get/default
