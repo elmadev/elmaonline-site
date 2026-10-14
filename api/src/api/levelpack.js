@@ -16,7 +16,7 @@ import {
 } from 'lodash-es';
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
-import { authContext } from '#utils/auth';
+import { authContext, authRights } from '#utils/auth';
 import { sortTimes } from '#utils/sort';
 import {
   like,
@@ -1433,7 +1433,7 @@ router
     }
   })
   .get('/searchLevel/:query/:offset/:showLocked', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     const levs = await getLevelsByQuery(
       req.params.query,
       req.params.offset,
@@ -1467,7 +1467,7 @@ router
     async (req, res) => {
       const pack = await getPackByIndex(req.params.index || 0);
 
-      const auth = authContext(req);
+      const auth = await authRights(req);
 
       if (!(auth.mod || (pack && pack.KuskiIndex === auth.userid))) {
         res.json({ error: 'Not authorized.' });

@@ -7,6 +7,7 @@ import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import { nickId } from 'utils/nick';
+import { sanitizeHtml } from 'utils/html';
 
 const Standings = props => {
   const { items, addEntry, cup, owner } = props;
@@ -76,7 +77,11 @@ const Standings = props => {
                 parse="X"
               />
             </SubHeadline>
-            <Text dangerouslySetInnerHTML={{ __html: addLinks(i.Text) }} />
+            <Text
+              dangerouslySetInnerHTML={{
+                __html: sanitizeHtml(addLinks(i.Text)),
+              }}
+            />
           </Paper>
         ))}
     </Container>

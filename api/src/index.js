@@ -1,14 +1,16 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import request from 'request';
 import fileUpload from 'express-fileupload';
 import config from './config.js';
 import './data/sequelize.js';
-import { auth } from '#utils/auth';
+import { auth, secretMatches } from '#utils/auth';
+import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
+import { loginLimit } from '#middlewares/rateLimit';
+import securityHeaders from '#middlewares/securityHeaders';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api/index.js';
 import eventsRoutes from './events.js';
@@ -19,6 +21,9 @@ import { writeHeapSnapshot } from 'v8';
 import { unlink } from 'fs';
 
 const app = express();
+
+// headers first, so static files get them too
+app.use(securityHeaders);
 
 // ----------------------------------------------------------
 // public/static folder
@@ -36,12 +41,12 @@ app.use(
 // ----------------------------------------------------------
 // express middleware
 // ----------------------------------------------------------
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ exposedHeaders: [renewedTokenHeader] }));
 app.use(fileUpload());
 app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10mb' }));
+app.use(renewToken);
 
 // ----------------------------------------------------------
 // development settings
@@ -75,8 +80,10 @@ app.use(async (req, res, next) => {
 // ----------------------------------------------------------
 
 // login
-app.post('/token', async (req, res) => {
+app.post('/token', loginLimit, async (req, res) => {
   const authResponse = await auth(req.body);
+  // only failed logins count towards the rate limit
+  res.locals.success = authResponse.success;
   res.json({ Response: authResponse });
 });
 
@@ -112,7 +119,7 @@ app.get('/u/:uuid/:filename', async (req, res) => {
 
 // memory dump
 app.get('/heapdump', (req, res) => {
-  if (req.header('Authorization') !== config.run.ranking) {
+  if (!secretMatches(req.header('Authorization'), config.run.ranking)) {
     res.status(401).send('Unauthorized');
     return;
   }

@@ -1,5 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
+import { sanitizeHtml } from '#utils/html';
 
 const SiteCupBlog = Model.define(
   'sitecupblog',
@@ -29,6 +30,9 @@ const SiteCupBlog = Model.define(
       type: DataType.STRING,
       allowNull: false,
       defaultValue: false,
+      set(val) {
+        this.setDataValue('Text', sanitizeHtml(val));
+      },
     },
     Written: {
       type: DataType.INTEGER,

@@ -179,20 +179,6 @@ const Info = ({ kuskiInfo }) => {
                 title="RStop"
               />
             )}
-            {kuskiInfo.RBan === 0 && admin() === 1 && (
-              <GiveImg
-                onClick={() =>
-                  giveRights({
-                    Right: 'RBan',
-                    KuskiIndex: kuskiInfo.KuskiIndex,
-                    name: kuskiInfo.Kuski,
-                  })
-                }
-                src={RBan}
-                alt="RBan"
-                title="RBan"
-              />
-            )}
             {kuskiInfo.RMod === 0 && admin() === 1 && (
               <GiveImg
                 onClick={() =>

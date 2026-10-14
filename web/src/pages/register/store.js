@@ -32,12 +32,10 @@ export default {
   }),
   resetPassword: thunk(async (actions, payload) => {
     const attemptReset = await ResetPasswordConfirm(payload);
-    if (attemptReset.ok) {
-      if (attemptReset.data.success) {
-        actions.setResetSuccess(true);
-      } else {
-        actions.setResetMessage(attemptReset.data.message);
-      }
+    if (attemptReset.ok && attemptReset.data.success) {
+      actions.setResetSuccess(true);
+    } else if (attemptReset.data?.message) {
+      actions.setResetMessage(attemptReset.data.message);
     }
   }),
   registerMessage: '',
@@ -50,12 +48,10 @@ export default {
   }),
   register: thunk(async (actions, payload) => {
     const attemptReg = await Register(payload);
-    if (attemptReg.ok) {
-      if (attemptReg.data.success) {
-        actions.setRegisterSuccess(true);
-      } else {
-        actions.setRegisterMessage(attemptReg.data.message);
-      }
+    if (attemptReg.ok && attemptReg.data.success) {
+      actions.setRegisterSuccess(true);
+    } else if (attemptReg.data?.message) {
+      actions.setRegisterMessage(attemptReg.data.message);
     }
   }),
   confirmSuccess: 0,

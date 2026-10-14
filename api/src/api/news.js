@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
+import requireMod from '#middlewares/requireMod';
 import { createNewNewsNotification } from '#utils/notifications';
 import { News, Kuski, SiteSetting } from '#data/models';
 import { fn } from 'sequelize';
@@ -56,18 +56,13 @@ router
     const data = await getNews(JSON.parse(req.params.amount));
     res.json(data);
   })
-  .post('/', async (req, res) => {
-    const auth = authContext(req);
-    if (auth.auth && auth.mod) {
-      const insert = await addNews({
-        ...req.body,
-        KuskiIndex: auth.userid,
-        Written: fn('NOW'),
-      });
-      res.json(insert);
-    } else {
-      res.sendStatus(401);
-    }
+  .post('/', requireMod, async (req, res) => {
+    const insert = await addNews({
+      ...req.body,
+      KuskiIndex: req.auth.userid,
+      Written: fn('NOW'),
+    });
+    res.json(insert);
   });
 
 export default router;

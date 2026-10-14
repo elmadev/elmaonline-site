@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { authContext } from '#utils/auth';
+import { authContext, authRights } from '#utils/auth';
 import { like } from '#utils/database';
 import {
   Kuski,
@@ -116,7 +116,7 @@ router
     res.json(packs);
   })
   .post('/addpack', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       const add = await AddPack({
         ...req.body,
@@ -133,7 +133,7 @@ router
     }
   })
   .post('/deletepack', async (req, res) => {
-    const auth = authContext(req);
+    const auth = await authRights(req);
     if (auth.auth) {
       const del = await DeletePack({
         ...req.body,
