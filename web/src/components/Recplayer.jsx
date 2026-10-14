@@ -41,6 +41,7 @@ const Recplayer = props => {
       translucentGhosts = false,
       timer = true,
       minimap = false,
+      lastAppleTime = true,
       animatedObjects = true,
       stillObjects = false,
       fancyboost = true,
@@ -146,6 +147,10 @@ const Recplayer = props => {
       onTimerChange={value => setSetting({ name: 'timer', value })}
       minimap={minimap}
       onMinimapChange={value => setSetting({ name: 'minimap', value })}
+      lastAppleTime={lastAppleTime}
+      onLastAppleTimeChange={value =>
+        setSetting({ name: 'lastAppleTime', value })
+      }
       picturesInBackground={picturesInBackground}
       onPicturesInBackgroundChange={value =>
         setSetting({ name: 'picturesInBackground', value })
