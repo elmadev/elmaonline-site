@@ -1,0 +1,7 @@
+GET battle/allBattleTimes/:n
+GET battle/allRuns/:n
+GET battle/byBattleIndex/:n
+GET battle/replays/:n
+GET chatlog?params={"start":<timestamp>,"end":<timestamp>,"limit":1000,"order":"ASC","count":false,"offset":0}
+GET news/status
+GET ranking/battle/:n

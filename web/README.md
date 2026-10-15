@@ -99,6 +99,10 @@ Use `yarn commit` or follow [guidelines](https://github.com/elmadev/elmaonline-s
 - Type name of component in CamelCase
 - Import in relevant screens/features
 
+## Smoke tests
+
+Playwright smoke tests that check every page renders and makes the same api calls, see [e2e/README.md](e2e/README.md).
+
 ## Setting up editor
 
 The project is configured to use eslint and prettier to ensure good coding practices. Make sure you install relevant plugins for your editor.

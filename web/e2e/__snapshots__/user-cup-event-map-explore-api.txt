@@ -1,0 +1,4 @@
+GET allfinished/leaderhistory/:n?BattleIndex=&KuskiIndex=&from=<timestamp>&to=<timestamp>
+GET cups/:n/myreplays
+GET cups/:n/teamreplays
+GET levelstats/collection/ids/:ids

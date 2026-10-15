@@ -1,0 +1,10 @@
+GET cups/:n/myreplays
+GET cups/:n/teamreplays
+GET cups/eventByTimeIndex/:n
+GET levelstats/collection/ids/:ids
+GET replay/byLevelIndex/:n
+GET replay/byUUID/c-62990-FAE24Markku?f=<hash>
+GET replay_comment/c-62990
+GET replay_rating/c-62990
+GET tag?type=replay
+POST upload/cupreplay <multipart>

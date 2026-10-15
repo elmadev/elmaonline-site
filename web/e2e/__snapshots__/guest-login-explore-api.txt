@@ -1,0 +1,1 @@
+POST token {"kuski":"test","password":"e2etest123"}

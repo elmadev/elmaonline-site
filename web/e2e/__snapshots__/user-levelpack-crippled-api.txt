@@ -1,0 +1,10 @@
+GET allfinished/highlight
+GET crippled/levelPackPersonalRecords/Int/:n
+GET levelpack/Int/personalwithmulti/playwright/:n
+GET levelpack/Int/records/:n
+GET levelpack/Int/stats/:n
+GET levelpack/Int?levels=1
+GET levelpack/favourite
+GET levelpack/level-stats/:n/Int
+GET news/status
+GET notification/count

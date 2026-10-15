@@ -1,0 +1,2 @@
+GET player/settings
+POST register/update {"Field":"Kuski","Value":["test"]}

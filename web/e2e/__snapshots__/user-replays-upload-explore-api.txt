@@ -1,0 +1,8 @@
+GET battle/replays?limit=200
+GET player/Kuski/test
+GET replay/random
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET replay_comment/?limit=20&offset=0
+GET tag
+POST replay {"Bug":0,"Comment":"test","DrivenBy":0,"DrivenByText":"test","Finished":1,"Hide":0,"LevelIndex":2,"MD5":"e2e","Nitro":0,"RecFileName":"replay.rec","ReplayTime":12345,"TAS":0,"Tags":[{"Hidden":0,"Name":"Across","TagIndex":13,"Type":"replay"},{"Hidden":0,"Name":"Always Throttle","TagIndex":10,"Type":"replay"},{"Hidden":0,"Name":"Bug","TagIndex":2,"Type":"replay"},{"Hidden":0,"Name":"Cup","TagIndex":52,"Type":"replay"},{"Hidden":0,"Name":"Drunk","TagIndex":12,"Type":"replay"},{"Hidden":0,"Name":"FALp","TagIndex":83,"Type":"replay"}],"UUID":"e2etest01","Unlisted":1,"Uploaded":<timestamp>,"UploadedBy":0}
+POST upload/replay <multipart>

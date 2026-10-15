@@ -1,0 +1,6 @@
+GET battle/byPlayer/:n?page=0&pageSize=25
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET notification/count
+GET player/Kuski/playwright
+GET ranking/kuski/:n

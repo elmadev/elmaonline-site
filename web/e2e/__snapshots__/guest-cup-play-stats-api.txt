@@ -1,0 +1,5 @@
+GET cups/FAE
+GET cups/events/:n
+GET levelstats/collection/ids/
+GET levelstats/collection/ids/:ids
+GET news/status

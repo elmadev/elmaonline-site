@@ -1,0 +1,6 @@
+GET allfinished/:n/:n?from=&level=&to=
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET player/Kuski/Zero
+GET ranking/kuski/:n
+GET tag?type=replay

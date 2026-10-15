@@ -1,0 +1,5 @@
+GET battle/byPeriod/<datetime>/<datetime>/:n
+GET battle/search/generic?BattleType=SP&DurationMax=31&Kuski=test&page=0&pageSize=200&sort=ASC
+GET battle/search/generic?BattleType=SP&DurationMax=31&Kuski=test&page=0&pageSize=200&sort=DESC
+GET battle/search/generic?BattleType=SP&DurationMax=31&Kuski=test&page=0&pageSize=25&sort=DESC
+GET battle/search/generic?Kuski=test&page=0&pageSize=25&sort=DESC

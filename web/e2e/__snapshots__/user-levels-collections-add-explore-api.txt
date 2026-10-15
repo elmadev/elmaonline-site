@@ -1,0 +1,1 @@
+POST levelpack/collections/add {"CollectionLongName":"test","CollectionName":"test"}

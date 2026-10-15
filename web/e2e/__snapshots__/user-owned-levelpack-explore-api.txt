@@ -1,0 +1,11 @@
+GET crippled/levelPackPersonalRecords/e2e/:n
+GET crippled/levelPackRecords/e2e/noVolt
+GET levelpack/e2e/multirecords
+GET levelpack/e2e/records/:n/kuski/
+GET levelpack/e2e/stats/:n/kuski/
+GET levelpack/record-history/e2e?limit=50&sort=desc
+GET levelstats/collection/ids/
+GET replay?levelPack=412&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=levelpack
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":412}

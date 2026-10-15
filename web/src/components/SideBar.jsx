@@ -72,7 +72,7 @@ const SideBar = () => {
   };
   if (!isRehydrated) return null;
   return (
-    <Root expanded={+sideBarVisible}>
+    <Root aria-label="Main menu" expanded={+sideBarVisible}>
       <Container>
         <Title>
           <Burger
@@ -123,7 +123,7 @@ const SideBar = () => {
   );
 };
 
-const Root = styled.div`
+const Root = styled.nav`
   color: black;
   position: fixed;
   width: 250px;

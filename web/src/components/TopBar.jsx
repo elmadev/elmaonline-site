@@ -66,7 +66,7 @@ const TopBar = () => {
   );
 };
 
-const Root = styled.div`
+const Root = styled.header`
   top: 0;
   left: 0;
   background: ${p => p.theme.primary};

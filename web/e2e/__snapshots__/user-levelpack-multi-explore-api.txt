@@ -1,0 +1,13 @@
+GET battle/byPlayer/:n?page=0&pageSize=25
+GET besttime/multi/:n/:n
+GET crippled/levelPackPersonalRecords/Int/:n
+GET crippled/levelPackRecords/Int/noVolt
+GET levelpack/internals/besttimes/:n
+GET levelpack/record-history/Int?limit=50&sort=desc
+GET levelstats/collection/ids/:ids
+GET player/Kuski/b0ne
+GET ranking/kuski/:n
+GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=levelpack
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":84}

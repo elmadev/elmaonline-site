@@ -1,0 +1,4 @@
+GET lgr/info/default
+GET lgr_comment/get/:n
+GET news/status
+GET replay/byUUID/b-154860?f=undefined

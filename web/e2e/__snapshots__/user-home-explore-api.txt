@@ -1,0 +1,7 @@
+GET battle/byPeriod/<datetime>/<datetime>/:n
+GET cups/FAE
+GET cups/events/:n
+GET donate/
+GET levelpack
+GET levelpack/favourite
+GET levelpack/stats

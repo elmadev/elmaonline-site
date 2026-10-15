@@ -7,7 +7,14 @@ const SideBarSubItem = ({ name, expanded, children }) => {
   const { setExpanded } = useStoreActions(actions => actions.Page);
   return (
     <Container>
-      <Row onClick={() => setExpanded(name)}>
+      <Row
+        role="button"
+        tabIndex="0"
+        onKeyUp={e => {
+          if (e.key === 'Enter') setExpanded(name);
+        }}
+        onClick={() => setExpanded(name)}
+      >
         <Header>{name}</Header>
         <Arrow>{expanded ? <>&or;</> : <>&and;</>}</Arrow>
       </Row>

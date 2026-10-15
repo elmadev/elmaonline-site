@@ -1,0 +1,12 @@
+GET crippled/levelPackPersonalRecords/Int/:n
+GET crippled/levelPackRecords/Int/noVolt
+GET levelpack/Int/multirecords
+GET levelpack/Int/personalwithmulti/-Tony-/:n
+GET levelpack/Int/personalwithmulti/0mega/:n
+GET levelpack/Int/records/:n/team/:n
+GET levelpack/record-history/Int?limit=50&sort=desc
+GET levelstats/collection/ids/:ids
+GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=levelpack
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":84}

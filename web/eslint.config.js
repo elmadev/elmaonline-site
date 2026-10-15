@@ -43,12 +43,19 @@ export default [
     },
   },
   {
+    files: ['e2e/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     ignores: [
       '.storybook',
       'build',
       'public',
       'templates',
       'storybook-static',
+      'test-results',
+      'playwright-report',
+      'coverage',
       '**/test/*',
       '**/stories/*',
     ],

@@ -1,0 +1,7 @@
+GET allfinished/:n/:n/:n
+GET allfinished/appleruns/:n/:n
+GET cups/:n/myreplays
+GET cups/:n/teamreplays
+GET levelpack/searchLevel/test/:n
+GET levelstats/collection/ids/:n
+POST cups/:n/event/:n/delete {"AppleBugs":0,"AppleResults":0,"CupGroupIndex":27,"CupIndex":258,"CupTimes":[],"Designer":51,"DesignerInterview":null,"EndTime":"<timestamp>","FirstPlaceInterview":null,"KuskiData":{"BmpCRC":134214422,"Country":"SE","Kuski":"igge","KuskiIndex":51,"TeamData":null},"Level":{"LevelName":"VSK001"},"LevelIndex":6102,"Multiplier":0,"SecondPlaceInterview":null,"ShowResults":0,"ShownTimes":0,"StartTime":"<timestamp>","Started":0,"ThirdPlaceInterview":null,"Updated":0}

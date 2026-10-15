@@ -1,0 +1,11 @@
+GET besttime/best-records/:n/:n/:n/:n?daysPast=14
+GET level?addedBy=137&battled=all&excludedTags[]=17&excludedTags[]=33&finished=all&levelPack=383&order=desc&page=0&pageSize=25&q=test
+GET level?addedBy=815&battled=all&excludedTags[]=17&excludedTags[]=33&finished=all&levelPack=383&order=desc&page=0&pageSize=25&q=test
+GET level?addedBy=815&battled=false&excludedTags[]=17&excludedTags[]=33&finished=all&levelPack=383&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&excludedTags[]=17&excludedTags[]=33&finished=all&levelPack=383&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&excludedTags[]=17&excludedTags[]=33&finished=all&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&excludedTags[]=33&finished=all&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=test&tags[]=17&tags[]=33
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=test&tags[]=33
+GET levelpack/collections

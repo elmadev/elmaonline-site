@@ -1,0 +1,10 @@
+GET battle/byLevel/:n
+GET besttime/:n/:n/:n
+GET cups/byLevel/:n
+GET level/:n?stats=1
+GET levelpack/byLevel/:n
+GET news/status
+GET notification/count
+GET replay/byLevelIndex/:n
+GET tag?type=level
+GET tag?type=replay

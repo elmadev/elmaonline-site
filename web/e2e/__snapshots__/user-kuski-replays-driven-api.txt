@@ -1,0 +1,7 @@
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET notification/count
+GET player/Kuski/Zero
+GET ranking/kuski/:n
+GET replay/driven_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=replay

@@ -1,0 +1,4 @@
+GET lgr/info
+GET news/status
+GET notification/count
+GET tag?type=lgr
