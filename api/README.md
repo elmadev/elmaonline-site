@@ -19,7 +19,7 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
    - If you install node using nvm you might need to install corepack manually
      `npm install -g corepack`
 
-2. run `corepack enable` to enable yarn v3
+2. run `corepack enable` to enable yarn (v4 is selected automatically via `packageManager`)
 3. Clone this repo
 4. Run `yarn` in terminal to install depedencies
 5. Run `yarn start` in terminal to start development server
