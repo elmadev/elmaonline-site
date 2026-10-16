@@ -78,12 +78,14 @@ const LGR = () => {
           <PreviewContainer theater={theater}>
             {replayData && (
               <>
-                <Recplayer
-                  rec={getReplayLink(replayData).link}
-                  lev={`${config.dlUrl}level/${replayData.LevelIndex}`}
-                  lgr={getLgrLink(lgr)}
-                  controls
-                />
+                <Player>
+                  <Recplayer
+                    rec={getReplayLink(replayData).link}
+                    lev={`${config.dlUrl}level/${replayData.LevelIndex}`}
+                    lgr={getLgrLink(lgr)}
+                    controls
+                  />
+                </Player>
                 <ReplaySettings />
               </>
             )}
@@ -246,6 +248,14 @@ const PreviewContainer = styled.div`
     float: none;
     width: 100%;
   }
+`;
+
+const Player = styled.div`
+  background: ${p => p.theme.pageBackground};
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const RightBarContainer = styled.div`

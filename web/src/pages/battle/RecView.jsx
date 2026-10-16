@@ -100,16 +100,10 @@ const PlayerContainer = styled.div`
   box-sizing: border-box;
   .player {
     background: ${p => p.theme.pageBackground};
-    height: 550px;
+    aspect-ratio: 16 / 9;
     display: flex;
     align-items: center;
     justify-content: center;
-    @media screen and (max-width: 1650px) {
-      height: 450px;
-    }
-    @media screen and (max-width: 500px) {
-      height: 400px;
-    }
   }
   @media screen and (max-width: 1100px) {
     float: none;

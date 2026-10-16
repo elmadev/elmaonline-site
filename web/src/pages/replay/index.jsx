@@ -558,14 +558,10 @@ const PlayerContainer = styled.div`
 
 const Player = styled.div`
   background: ${p => p.theme.pageBackground};
-  height: 600px;
+  aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
-  @media screen and (max-width: 1100px) {
-    height: 56vw;
-    min-height: 450px;
-  }
 `;
 
 const RightBarContainer = styled.div`
