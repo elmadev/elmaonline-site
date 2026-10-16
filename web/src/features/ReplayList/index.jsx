@@ -89,8 +89,8 @@ export default function ReplayList({
   const columns = ['Uploaded', 'Replay', 'Level', 'Time', 'By'];
   const personal = Boolean(
     loggedIn &&
-      ((drivenBy && userid === drivenBy) ||
-        (uploadedBy && userid === uploadedBy)),
+    ((drivenBy && userid === drivenBy) ||
+      (uploadedBy && userid === uploadedBy)),
   );
   if (personal) {
     columns.push('Unlisted');

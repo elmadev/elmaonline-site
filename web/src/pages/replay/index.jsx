@@ -107,12 +107,14 @@ const Replay = () => {
     }
   }, [ReplayUuid, merge]);
 
-  if (!RecFileName && replay && replay.UUID === ReplayUuid) {
-    navigate({
-      to: `/r/${ReplayUuid}/${stripRecExt(replay.RecFileName)}`,
-      replace: true,
-    });
-  }
+  useEffect(() => {
+    if (!RecFileName && replay && replay.UUID === ReplayUuid) {
+      navigate({
+        to: `/r/${ReplayUuid}/${stripRecExt(replay.RecFileName)}`,
+        replace: true,
+      });
+    }
+  }, [RecFileName, replay, ReplayUuid]);
 
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
