@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "add": "^2.0.6",
-    "axios": "^1.7.7",
+    "axios": "^1.20.0",
     "bbcode-to-markdown": "^1.0.3",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
