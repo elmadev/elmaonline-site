@@ -16,10 +16,15 @@ React based frontend for the [elmaonline site](https://elma.online). The backend
 
 ## Get started
 
-1. Install if needed nodejs (18+) and yarn (1.x)
-2. Clone this repo
-3. Run `yarn` in terminal to install depedencies
-4. Run `yarn start` in terminal to start development server
+1. Install if needed nodejs (v18 or later, tested with up to v22)
+
+   - If you install node using nvm you might need to install corepack manually
+     `npm install -g corepack`
+
+2. run `corepack enable` to enable yarn (v4 is selected automatically via `packageManager`)
+3. Clone this repo
+4. Run `yarn` in terminal to install depedencies
+5. Run `yarn start` in terminal to start development server
 
 - Instead of connecting to the test server backend, if you want to run [elmaonline-site](https://github.com/elmadev/elmaonline-site/tree/dev/api) locally, run `yarn start:dev` instead.
 

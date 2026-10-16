@@ -29,3 +29,11 @@ yarn-error.log*
 
 # jetbrains ide's
 .idea
+
+# yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
