@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { RecPlayer } from '@elmadev/react-rec-viewer';
 import config from 'config';
 import { isValidLevUrl, isValidRecUrl } from 'utils/recplayerUrls';
+import useRecplayerKeys from '../hooks/use-recplayer-keys';
 import Loading from './Loading';
 
 const DEFAULT_LGR = 'https://space.elma.online/lgr/cr6m27a3t1/default.lgr';
@@ -58,6 +59,7 @@ const Recplayer = props => {
     () => lgrs.map(l => ({ value: l.LGRName, label: l.LGRName })),
     [lgrs],
   );
+  useRecplayerKeys();
 
   let defaultZoom = 1;
 
