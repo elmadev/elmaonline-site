@@ -52,6 +52,7 @@ export default defineConfig(() => {
         theme: '/src/theme',
         config: '/src/config',
         features: '/src/features',
+        types: '/src/types',
       },
     },
     optimizeDeps: {
