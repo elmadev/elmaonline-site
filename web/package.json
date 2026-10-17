@@ -50,6 +50,7 @@
   "scripts": {
     "start": "vite --mode test",
     "start:dev": "vite",
+    "start:lan": "VITE_API_URL=http://$(hostname -I | cut -d' ' -f1):3003/ vite --host",
     "build": "vite build",
     "serve": "vite preview",
     "g": "plop",

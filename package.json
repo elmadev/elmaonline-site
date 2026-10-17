@@ -2,8 +2,10 @@
   "name": "elmaonline-site",
   "private": true,
   "scripts": {
-    "postinstall": "cd api && corepack yarn && cd ../web && corepack yarn && cd ../discord && corepack yarn",
-    "dev": "concurrently -k -n api,web -c blue,green \"yarn --cwd api start\" \"yarn --cwd web start:dev\""
+    "postinstall": "yarn install:all",
+    "install:all": "cd api && corepack yarn && cd ../web && corepack yarn && cd ../discord && corepack yarn",
+    "start": "concurrently -k -n api,web -c blue,green \"yarn --cwd api start\" \"yarn --cwd web start:dev\"",
+    "start:lan": "concurrently -k -n api,web -c blue,green \"yarn --cwd api start\" \"yarn --cwd web start:lan\""
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

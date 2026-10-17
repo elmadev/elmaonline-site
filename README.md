@@ -4,8 +4,10 @@ This is a monorepo for the [node backend](https://github.com/elmadev/elmaonline-
 
 ## Root commands
 
-- `yarn` installs the root deps and executes `yarn` in all sub projects
-- `yarn dev` starts web and api in the same terminal
+- `yarn` installs the root deps and on first install executes `yarn` in all sub projects
+- `yarn install:all` executes `yarn` in all sub projects
+- `yarn start` starts web and api in the same terminal
+- `yarn start:lan` starts frontend with local IP support and forwarding api calls to IP
 
 ## Communication
 

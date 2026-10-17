@@ -32,6 +32,8 @@ React based frontend for the [elmaonline site](https://elma.online). The backend
 
 - Run `yarn storybook` in terminal to run the storybook site
 
+- Run `yarn start:lan` to start frontend with local IP support and forwarding api calls to IP
+
 ## Tech stack
 
 - React 18 using [vitejs](https://vite.dev/)
