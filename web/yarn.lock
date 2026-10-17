@@ -561,12 +561,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elmadev/react-rec-viewer@npm:^0.1.8":
-  version: 0.1.8
-  resolution: "@elmadev/react-rec-viewer@npm:0.1.8"
+"@elmadev/react-rec-viewer@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@elmadev/react-rec-viewer@npm:0.2.1"
   peerDependencies:
     react: ">=18"
-  checksum: 10c0/f7b17e8834c9e4407ddbfaa3fdfaf3b70303e81e4adf2b51292a0b38ef559aa8761477c87292f96c696d772d9a4ecfdc065285636c37a775dc01c6cd06403089
+  checksum: 10c0/b6d1dd3597ab9aad5c210cbe0251d4239fce6c11d5215719825fe9c20a280ebd3fb09e98e0c5102cbb4e42f5a82193931055d941d0b60851a79fe5386314d792
   languageName: node
   linkType: hard
 
@@ -4823,7 +4823,7 @@ __metadata:
   dependencies:
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/sortable": "npm:^10.0.0"
-    "@elmadev/react-rec-viewer": "npm:^0.1.8"
+    "@elmadev/react-rec-viewer": "npm:^0.2.1"
     "@emotion/babel-plugin": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
