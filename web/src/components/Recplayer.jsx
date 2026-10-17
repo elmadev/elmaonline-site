@@ -45,6 +45,7 @@ const Recplayer = props => {
       timer = true,
       minimap = false,
       lastAppleTime = true,
+      zoomTextures = true,
       animatedObjects = true,
       stillObjects = false,
       fancyboost = true,
@@ -164,6 +165,10 @@ const Recplayer = props => {
       lastAppleTime={lastAppleTime}
       onLastAppleTimeChange={value =>
         setSetting({ name: 'lastAppleTime', value })
+      }
+      zoomTextures={zoomTextures}
+      onZoomTexturesChange={value =>
+        setSetting({ name: 'zoomTextures', value })
       }
       picturesInBackground={picturesInBackground}
       onPicturesInBackgroundChange={value =>
