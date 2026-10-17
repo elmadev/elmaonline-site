@@ -1,8 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 import Flag from 'components/Flag';
+import type { KuskiData } from 'types/kuski';
+
+type KuskiProps = {
+  kuskiData?: KuskiData | null;
+  team?: boolean;
+  flag?: boolean;
+  noLink?: boolean;
+  logo?: boolean;
+  customUrl?: string | null;
+};
 
 const Kuski = ({
   kuskiData = null,
@@ -11,10 +19,10 @@ const Kuski = ({
   noLink = false,
   logo = false,
   customUrl = null,
-}) => (
+}: KuskiProps) => (
   <>
     {kuskiData ? (
-      <Container flex={logo && kuskiData?.TeamData?.Logo}>
+      <Container flex={Boolean(logo && kuskiData?.TeamData?.Logo)}>
         {flag && kuskiData.Country && (
           <span>
             <Flag nationality={kuskiData.Country} />{' '}
@@ -71,21 +79,12 @@ const LogoImg = styled.img`
   object-fit: contain;
 `;
 
-const Container = styled.span`
+const Container = styled.span<{ flex?: boolean }>`
   white-space: nowrap;
   ${p =>
     p.flex
       ? `display: flex; align-items: center; gap: ${p.theme.padXXSmall}`
       : ''}
 `;
-
-Kuski.propTypes = {
-  kuskiData: PropTypes.shape({}),
-  team: PropTypes.bool,
-  flag: PropTypes.bool,
-  noLink: PropTypes.bool,
-  logo: PropTypes.bool,
-  customUrl: PropTypes.string,
-};
 
 export default Kuski;
