@@ -210,10 +210,16 @@ const muiTheme = themeId =>
         },
       },
       MuiButton: {
+        // v4 defaulted to color="default"; inherit is the v5 equivalent
+        defaultProps: {
+          color: 'inherit',
+        },
         styleOverrides: {
-          root: {
-            color: themes[themeId].fontColor,
-          },
+          // only uncolored buttons, so primary/secondary keep their palette colors
+          root: ({ ownerState }) =>
+            ownerState.color === 'inherit' && ownerState.variant !== 'contained'
+              ? { color: themes[themeId].fontColor }
+              : {},
         },
       },
       MuiTablePagination: {
