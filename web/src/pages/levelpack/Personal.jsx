@@ -348,6 +348,7 @@ const Personal = ({ name, player }) => {
             selected={kuskis.find(k => k.Kuski === kuski)}
             multiple={false}
             onChange={newValue => {
+              if (!newValue) return;
               getPersonalTimes({
                 PersonalKuskiIndex: newValue.Kuski,
                 name,
