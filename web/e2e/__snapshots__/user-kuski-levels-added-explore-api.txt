@@ -1,11 +1,11 @@
 GET allfinished/:n/:n?from=&level=&to=
 GET battle/byDesigner/:n?page=0&pageSize=25
 GET battle/byPlayer/:n?page=0&pageSize=25
-GET level?addedBy=116&battled=all&excludedTags[]=17&excludedTags[]=33&finished=all&order=desc&page=0&pageSize=25&q=Int
-GET level?addedBy=116&battled=all&excludedTags[]=33&finished=all&order=desc&page=0&pageSize=25&q=Int
 GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=Int
-GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=Int&tags[]=17&tags[]=33
-GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=Int&tags[]=33
+GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=Int&tags[]=59
+GET level?addedBy=116&battled=false&finished=all&order=desc&page=0&pageSize=25&q=Int
+GET level?addedBy=116&battled=false&finished=false&finishedBy=298&order=desc&page=0&pageSize=25&q=Int
+GET level?addedBy=116&battled=false&finished=true&finishedBy=298&order=desc&page=0&pageSize=25&q=Int
 GET mod/banlist/:n
 GET player/records/:n?limit=25&offset=0&reverse=
 GET replay/driven_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded

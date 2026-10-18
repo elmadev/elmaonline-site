@@ -3,8 +3,6 @@ GET crippled/levelPackRecords/Int/noVolt
 GET levelpack/Int/multirecords
 GET levelpack/record-history/Int?limit=50&sort=desc
 GET levelstats/collection/ids/:ids
-GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=1&tags[]=50&tags[]=51
-GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50
-GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50&tags[]=51
+GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=
 GET tag?type=levelpack
 POST levelpack/favourite/add {"LevelPackIndex":84}

@@ -1,4 +1,3 @@
-GET crippled/levelPackRecords/Int/noVolt
 GET levelpack/Int/multirecords
 GET levelpack/record-history/Int?limit=50&sort=desc
 GET levelstats/collection/ids/:ids
