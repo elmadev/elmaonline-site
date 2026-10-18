@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { useEffect, useState } from 'react';
+import LinearProgress from '@mui/material/LinearProgress';
 import { Column } from 'components/Containers';
 import styled from '@emotion/styled';
 import { Text } from 'components/Containers';
 import { addSeconds, format } from 'date-fns';
 
-export function formattedTime(seconds) {
+export function formattedTime(seconds: number) {
   const helperDate = addSeconds(new Date(0), seconds);
   if (seconds >= 3600) {
     return `1:${format(helperDate, 'mm:ss')}`;
@@ -13,7 +13,7 @@ export function formattedTime(seconds) {
   return format(helperDate, 'mm:ss');
 }
 
-function perc2color(perc) {
+function perc2color(perc: number) {
   let r;
   let g;
   const b = 0;
@@ -28,17 +28,27 @@ function perc2color(perc) {
   return `#${`000000${h.toString(16)}`.slice(-6)}`;
 }
 
-const StyledLinearProgress = styled(LinearProgress)`
+const StyledLinearProgress = styled(LinearProgress, {
+  shouldForwardProp: prop => prop !== 'lineColor',
+})<{ lineColor: string }>`
   &.MuiLinearProgress-colorPrimary {
     background-color: #f1f1f1;
 
     .MuiLinearProgress-barColorPrimary {
-      background-color: ${p => p.linecolor};
+      background-color: ${p => p.lineColor};
     }
   }
 `;
 
-export default function LinearProgressWithLabel({ value, remainingSeconds }) {
+type LinearProgressWithLabelProps = {
+  value: number;
+  remainingSeconds: number;
+};
+
+export default function LinearProgressWithLabel({
+  value,
+  remainingSeconds,
+}: LinearProgressWithLabelProps) {
   const [lineColor, setLineColor] = useState(perc2color(value));
 
   useEffect(() => {
@@ -52,7 +62,7 @@ export default function LinearProgressWithLabel({ value, remainingSeconds }) {
           <StyledLinearProgress
             value={value}
             variant="determinate"
-            linecolor={lineColor}
+            lineColor={lineColor}
           />
         </div>
         <Text light>{formattedTime(remainingSeconds)} left</Text>

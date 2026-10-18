@@ -1,6 +1,28 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ListCell, ListContainer, ListHeader } from 'components/List';
-import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+
+type Order = 'asc' | 'desc';
+
+type SortableHeader = {
+  name: string;
+  sort?: boolean;
+  right?: boolean;
+  width?: number;
+  minWidth?: number;
+};
+
+type SortableListProps = {
+  children?: React.ReactNode;
+  chin?: boolean;
+  horizontalMargin?: string;
+  width?: string;
+  flex?: boolean;
+  headers: SortableHeader[];
+  sort?: (sorting: { header: string; sort: Order }) => void;
+  ascFirst?: boolean;
+  defaultSort?: string;
+};
 
 export const SortableList = ({
   children,
@@ -12,13 +34,13 @@ export const SortableList = ({
   sort,
   ascFirst,
   defaultSort,
-}) => {
+}: SortableListProps) => {
   const [sortHeader, setSortHeader] = useState(defaultSort || '');
-  const [order, setOrder] = useState(ascFirst ? 'asc' : 'desc');
+  const [order, setOrder] = useState<Order>(ascFirst ? 'asc' : 'desc');
 
-  const doSort = h => {
+  const doSort = (h: string) => {
     if (sort) {
-      let newOrder = ascFirst ? 'asc' : 'desc';
+      let newOrder: Order = ascFirst ? 'asc' : 'desc';
       if (h === sortHeader) {
         newOrder = order === 'asc' ? 'desc' : 'asc';
       }
@@ -41,7 +63,7 @@ export const SortableList = ({
             <ListCell
               key={h.name}
               whiteSpace="nowrap"
-              right={h.right || null}
+              right={Boolean(h.right)}
               width={h.width || null}
               minWidth={h.minWidth || undefined}
               onClick={() => h.sort && doSort(h.name)}

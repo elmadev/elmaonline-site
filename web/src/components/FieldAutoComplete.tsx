@@ -1,6 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useState, useEffect } from 'react';
+import { TextField, CircularProgress } from '@mui/material';
+import type { TextFieldProps } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+
+type OptionValue = string | number;
+
+export type FieldAutoCompleteOption = {
+  name: string;
+  value: OptionValue;
+};
+
+type FieldAutoCompleteProps = {
+  label: string;
+  error?: string;
+  list: FieldAutoCompleteOption[];
+  getOptions: (search: string) => void;
+  valueSelected: (value: OptionValue) => void;
+  margin?: TextFieldProps['margin'];
+};
 
 export default function FieldAutoComplete({
   label,
@@ -8,15 +25,11 @@ export default function FieldAutoComplete({
   list,
   getOptions,
   valueSelected,
-  margin,
-}) {
+  margin = 'normal',
+}: FieldAutoCompleteProps) {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<FieldAutoCompleteOption[]>([]);
   const loading = open && options.length === 0;
-  let isError = false;
-  if (error) {
-    isError = true;
-  }
 
   useEffect(() => {
     if (!open) {
@@ -30,7 +43,7 @@ export default function FieldAutoComplete({
     }
   }, [list]);
 
-  const onEnter = async v => {
+  const onEnter = (v: string) => {
     if (v === '') {
       setOptions([]);
     } else {
@@ -50,12 +63,12 @@ export default function FieldAutoComplete({
         onClose={() => {
           setOpen(false);
         }}
-        getOptionSelected={(option, v) => option.name === v.name}
+        isOptionEqualToValue={(option, v) => option.name === v.name}
         getOptionLabel={option => option.name}
         options={options}
         loading={loading}
-        onChange={(e, v, r) => {
-          if (r === 'select-option') {
+        onChange={(_e, v, r) => {
+          if (r === 'selectOption' && v) {
             valueSelected(v.value);
           }
         }}
@@ -64,14 +77,14 @@ export default function FieldAutoComplete({
             {...params}
             label={label}
             onKeyPress={ev => {
-              if (ev.key === 'Enter') {
+              if (ev.key === 'Enter' && ev.target instanceof HTMLInputElement) {
                 onEnter(ev.target.value);
               }
             }}
             variant="outlined"
-            margin={margin || 'normal'}
+            margin={margin}
             fullWidth
-            error={isError}
+            error={Boolean(error)}
             helperText={error}
             InputProps={{
               ...params.InputProps,

@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
-import { Button, Drawer, IconButton } from '@material-ui/core';
-import { Info, Cancel } from '@material-ui/icons';
+import { Button, Drawer, IconButton } from '@mui/material';
+import { Info, Cancel } from '@mui/icons-material';
 
-const SearchBar = props => {
-  const { hidePlaceholder } = props;
+type SearchBarProps = {
+  hidePlaceholder?: boolean;
+};
+
+const SearchBar = ({ hidePlaceholder = false }: SearchBarProps) => {
   const navigate = useNavigate();
   const [searchType, setType] = useState('');
   const [value, setValue] = useState('');
@@ -31,13 +34,11 @@ const SearchBar = props => {
             placeholder={`Search ${searchType}`}
             onKeyUp={e => {
               if (e.key === 'Enter') {
-                if (e.target.value === '') {
+                if (value === '') {
                   setType('');
                 } else {
                   navigate({
-                    to: `/search?q=${encodeURIComponent(
-                      e.target.value,
-                    )}&t=${searchType}`,
+                    to: `/search?q=${encodeURIComponent(value)}&t=${searchType}`,
                   });
                 }
               }
@@ -54,6 +55,7 @@ const SearchBar = props => {
                 setValue('');
                 setType('');
               }}
+              size="large"
             >
               <Cancel />
             </IconButton>
@@ -89,12 +91,9 @@ const Container = styled.div`
     display: block;
     padding: 3px 6px;
     margin: 0 2px;
+    font-size: 13px;
     &:hover {
       background-color: rgba(0, 0, 0, 0.2);
-    }
-    .MuiButton-label {
-      display: block;
-      font-size: 13px;
     }
   }
 `;

@@ -1,10 +1,16 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
-import { StarBorder } from '@material-ui/icons';
-import Rating from '@material-ui/lab/Rating';
+import { StarBorder } from '@mui/icons-material';
+import Rating from '@mui/material/Rating';
 
-const Stars = ({ voted, average, vote, clickable, amount = 0 }) => (
+type StarsProps = {
+  voted: number;
+  average: number;
+  vote: (value: number | null) => void;
+  clickable: boolean;
+  amount?: number;
+};
+
+const Stars = ({ voted, average, vote, clickable, amount = 0 }: StarsProps) => (
   <Container>
     <Rating
       name="replay-rating"
@@ -17,7 +23,7 @@ const Stars = ({ voted, average, vote, clickable, amount = 0 }) => (
       max={10}
     />
     <AverageRating title="Vote average">
-      {Number(average)?.toFixed(2)}
+      {Number(average).toFixed(2)}
     </AverageRating>
     {amount !== 0 && (
       <AverageRating title="Amount of votes">({amount})</AverageRating>
@@ -37,12 +43,5 @@ const AverageRating = styled.div`
   margin-left: 0.35em;
   font-weight: bold;
 `;
-
-Stars.propTypes = {
-  voted: PropTypes.number.isRequired,
-  average: PropTypes.number.isRequired,
-  vote: PropTypes.func.isRequired,
-  clickable: PropTypes.bool.isRequired,
-};
 
 export default Stars;

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import PictureInPictureIcon from '@material-ui/icons/PictureInPicture';
+import { useState } from 'react';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import LevelMap from 'features/LevelMap';
 import { Level } from 'components/Names';
 import Kuski from 'components/Kuski';
@@ -15,8 +15,17 @@ import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
 import { stripRecExt, shirtUrl } from 'utils/misc';
+import type { Replay } from 'types/replay';
 
-export default function ReplayCard({ replay, onPreviewClick }) {
+type ReplayCardProps = {
+  replay: Replay;
+  onPreviewClick: () => void;
+};
+
+export default function ReplayCard({
+  replay,
+  onPreviewClick,
+}: ReplayCardProps) {
   const [picExists, setPicExists] = useState(true);
   const [raised, setRaised] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +36,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
     });
   };
 
-  const handlePreviewClick = event => {
+  const handlePreviewClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     onPreviewClick();
   };
@@ -43,7 +52,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
         avatar={
           replay.DrivenByData?.BmpCRC && picExists ? (
             <img
-              src={shirtUrl(replay.DrivenByData.KuskiIndex)}
+              src={shirtUrl(replay.DrivenByData.KuskiIndex) ?? undefined}
               onError={() => setPicExists(false)}
               height="40"
               alt="shirt"
@@ -56,6 +65,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
           <IconButton
             aria-label="Open replay view"
             onClick={handlePreviewClick}
+            size="large"
           >
             <PictureInPictureIcon />
           </IconButton>
@@ -71,7 +81,7 @@ export default function ReplayCard({ replay, onPreviewClick }) {
           addSuffix: true,
         })}
       />
-      <ReplayCardMedia title={replay.RecFileName} height="160">
+      <ReplayCardMedia title={replay.RecFileName}>
         <LevelMap
           LevelIndex={replay.LevelIndex}
           interaction={false}

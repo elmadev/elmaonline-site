@@ -1,11 +1,15 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 import LocalTime from 'components/LocalTime';
-import { Divider as MuiDivider } from '@material-ui/core';
+import { Divider as MuiDivider } from '@mui/material';
 import { sanitizeHtml } from 'utils/html';
 
-const TimeRange = ({ start, end }) => {
+type TimeRangeProps = {
+  start?: number;
+  end?: number;
+};
+
+const TimeRange = ({ start, end }: TimeRangeProps) => {
   if (!start) {
     return null;
   }
@@ -18,7 +22,21 @@ const TimeRange = ({ start, end }) => {
   );
 };
 
-const LinkWithDesc = ({ link, name, desc, start, end, divider }) => {
+type LinkWithDescProps = TimeRangeProps & {
+  link: string;
+  name: React.ReactNode;
+  desc: string;
+  divider?: boolean;
+};
+
+const LinkWithDesc = ({
+  link,
+  name,
+  desc,
+  start,
+  end,
+  divider = false,
+}: LinkWithDescProps) => {
   return (
     <>
       <Link to={link}>
@@ -49,9 +67,9 @@ const CupName = styled.div`
   color: ${p => p.theme.linkColor};
 `;
 
-const Description = styled.div`
+const Description = styled.div<{ paddingBottom: boolean }>`
   font-size: 13px;
-  padding-bottom: ${props => props.paddingBottom && '12px'};
+  ${p => p.paddingBottom && 'padding-bottom: 12px;'}
 `;
 
 export default LinkWithDesc;

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { ListCell, ListRow } from 'components/List';
 import { Level } from 'components/Names';
@@ -7,33 +6,52 @@ import Kuski from 'components/Kuski';
 import Time from 'components/Time';
 import Link from 'components/Link';
 import Tags from 'components/Tags';
-import { AddBox, IndeterminateCheckBox } from '@material-ui/icons';
+import { AddBox, IndeterminateCheckBox } from '@mui/icons-material';
 import { useLocation } from '@tanstack/react-router';
 import { formatDistanceStrict } from 'date-fns';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { stripRecExt } from 'utils/misc';
+import type { Replay } from 'types/replay';
+
+type Column =
+  | 'Uploaded'
+  | 'Replay'
+  | 'Level'
+  | 'Time'
+  | 'By'
+  | 'Unlisted'
+  | 'Rating'
+  | 'Views'
+  | 'Tags';
+
+type RecListItemProps = {
+  replay: Replay;
+  selected?: boolean;
+  columns?: Column[];
+  mergable?: boolean;
+};
 
 const RecListItem = ({
   replay,
   selected = false,
   columns = ['Replay', 'Level', 'Time', 'By'],
   mergable = false,
-}) => {
+}: RecListItemProps) => {
   const [isHover, setHover] = useState(false);
   const location = useLocation();
-  const { merge } = location.search;
+  const merge: unknown = location.search.merge;
 
   const url = `/r/${replay.UUID}/${stripRecExt(replay.RecFileName)}`;
 
   const updateUrl = (unmerge = false) => {
     if (unmerge) {
-      return merge?.includes(';')
+      return typeof merge === 'string' && merge.includes(';')
         ? merge.startsWith(`${replay.UUID};`)
           ? `${location.pathname}?merge=${merge.replace(`${replay.UUID};`, '')}`
           : `${location.pathname}?merge=${merge.replace(`;${replay.UUID}`, '')}`
         : location.pathname;
     }
-    return merge
+    return typeof merge === 'string' && merge
       ? `${location.pathname}?merge=${merge};${replay.UUID}`
       : `${location.pathname}?merge=${replay.UUID}`;
   };
@@ -103,7 +121,7 @@ const RecListItem = ({
         <MergeContainer title={selected ? 'Unmerge replay' : 'Merge replay'}>
           {selected ? (
             <>
-              {merge?.includes(replay.UUID) && (
+              {typeof merge === 'string' && merge.includes(replay.UUID) && (
                 <Link to={updateUrl(true)}>
                   <IndeterminateCheckBox />
                 </Link>
@@ -127,23 +145,5 @@ export const MergeContainer = styled.div`
   background: white;
   border-radius: 4px;
 `;
-
-RecListItem.propTypes = {
-  replay: PropTypes.shape({
-    ReplayIndex: PropTypes.number.isRequired,
-    LevelIndex: PropTypes.number.isRequired,
-    UploadedBy: PropTypes.number.isRequired,
-    ReplayTime: PropTypes.number,
-    TAS: PropTypes.number,
-    Bug: PropTypes.number,
-    Nitro: PropTypes.number,
-    Finished: PropTypes.number,
-    DrivenBy: PropTypes.number,
-    DrivenByText: PropTypes.string,
-  }).isRequired,
-  selected: PropTypes.bool,
-  columns: PropTypes.arrayOf(PropTypes.string),
-  mergable: PropTypes.bool,
-};
 
 export default RecListItem;

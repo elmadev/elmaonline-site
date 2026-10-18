@@ -1,4 +1,3 @@
-import React from 'react';
 import Recplayer from 'components/Recplayer';
 import { Level } from 'components/Names';
 import Kuski from 'components/Kuski';
@@ -7,21 +6,29 @@ import Header from 'components/Header';
 import Link from 'components/Link';
 import Tags from 'components/Tags';
 import LocalTime from 'components/LocalTime';
-import CloseIcon from '@material-ui/icons/HighlightOffOutlined';
-import { Grid, Typography, Backdrop } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/HighlightOffOutlined';
+import { Grid, Typography, Backdrop } from '@mui/material';
 import config from 'config';
 import { shirtBmpUrl } from 'utils/misc';
 import styled from '@emotion/styled';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Column, Row } from 'components/Containers';
+import type { Replay } from 'types/replay';
+
+type PreviewProps = {
+  previewRec: Replay;
+  setPreviewRec: (replay: Replay | null) => void;
+  nextReplay: () => void;
+  previousReplay: () => void;
+};
 
 export default function Preview({
   previewRec,
   setPreviewRec,
   nextReplay,
   previousReplay,
-}) {
+}: PreviewProps) {
   const getRecUri = () => {
     if (previewRec.UUID.substring(0, 5) === 'local') {
       return `${config.url}temp/${previewRec.UUID}-${previewRec.RecFileName}`;

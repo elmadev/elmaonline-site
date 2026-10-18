@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
+import { useState } from 'react';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
 import LevelMap from 'features/LevelMap';
 import Kuski from 'components/Kuski';
 import { formatDistanceStrict, isValid } from 'date-fns';
@@ -12,8 +12,13 @@ import { shirtUrl } from 'utils/misc';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
+import type { LevelData } from 'types/level';
 
-export default function LevelCard({ level, tags }) {
+type LevelCardProps = {
+  level: LevelData;
+};
+
+export default function LevelCard({ level }: LevelCardProps) {
   const [picExists, setPicExists] = useState(true);
   const [raised, setRaised] = useState(false);
   const navigate = useNavigate();
@@ -35,7 +40,7 @@ export default function LevelCard({ level, tags }) {
         avatar={
           picExists && level.KuskiData?.KuskiIndex ? (
             <img
-              src={shirtUrl(level.KuskiData.KuskiIndex)}
+              src={shirtUrl(level.KuskiData.KuskiIndex) ?? undefined}
               onError={() => setPicExists(false)}
               height="40"
               alt="shirt"
@@ -52,19 +57,15 @@ export default function LevelCard({ level, tags }) {
           )
         }
         subheader={
-          isValid(level.Added * 1000)
+          level.Added && isValid(level.Added * 1000)
             ? formatDistanceStrict(level.Added * 1000, Date.now(), {
                 addSuffix: true,
               })
             : 'Unknown date'
         }
       />
-      <LevelCardMedia title={level.LevelName} height="160">
-        <LevelMap
-          LevelIndex={level.LevelIndex}
-          interaction={false}
-          tags={tags}
-        />
+      <LevelCardMedia title={level.LevelName}>
+        <LevelMap LevelIndex={level.LevelIndex} interaction={false} />
       </LevelCardMedia>
       <CardContent title={level.LongName}>
         <Typography variant="body2" color="textSecondary" component="p">

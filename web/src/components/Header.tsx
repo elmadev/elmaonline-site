@@ -1,6 +1,16 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
+
+type HeaderProps = {
+  h1?: boolean;
+  h2?: boolean;
+  h3?: boolean;
+  children?: React.ReactNode;
+  nomargin?: boolean;
+  right?: boolean;
+  top?: boolean;
+  onClick?: (() => void) | null;
+  mLeft?: boolean;
+};
 
 const Header = ({
   h1 = true,
@@ -12,50 +22,35 @@ const Header = ({
   top = false,
   onClick = null,
   mLeft = false,
-}) => {
+}: HeaderProps) => {
+  const containerProps = {
+    link: Boolean(onClick),
+    onClick: () => onClick && onClick(),
+    right,
+    top,
+    nomargin,
+    mLeft,
+  };
   return (
     <>
       {h1 && !h2 && !h3 && (
-        <Container1
-          link={onClick}
-          onClick={() => onClick && onClick()}
-          right={right}
-          top={top}
-          nomargin={nomargin}
-          mLeft={mLeft}
-        >
-          {children}
-        </Container1>
+        <Container1 {...containerProps}>{children}</Container1>
       )}
-      {h2 && (
-        <Container2
-          link={onClick}
-          onClick={() => onClick && onClick()}
-          right={right}
-          top={top}
-          nomargin={nomargin}
-          mLeft={mLeft}
-        >
-          {children}
-        </Container2>
-      )}
-      {h3 && (
-        <Container3
-          link={onClick}
-          onClick={() => onClick && onClick()}
-          right={right}
-          top={top}
-          nomargin={nomargin}
-          mLeft={mLeft}
-        >
-          {children}
-        </Container3>
-      )}
+      {h2 && <Container2 {...containerProps}>{children}</Container2>}
+      {h3 && <Container3 {...containerProps}>{children}</Container3>}
     </>
   );
 };
 
-const Container1 = styled.h1`
+type ContainerProps = {
+  link: boolean;
+  right: boolean;
+  top: boolean;
+  nomargin: boolean;
+  mLeft: boolean;
+};
+
+const Container1 = styled.h1<ContainerProps>`
   margin: ${p => (p.nomargin ? '0' : p.theme.padSmall)};
   margin-left: ${p => (p.mLeft ? p.theme.padSmall : 0)};
   margin-bottom: ${p => p.theme.padMedium};
@@ -69,7 +64,7 @@ const Container1 = styled.h1`
   text-align: ${p => (p.right ? 'right' : 'left')};
 `;
 
-const Container2 = styled.h2`
+const Container2 = styled.h2<ContainerProps>`
   margin: ${p => (p.nomargin ? '0' : p.theme.padSmall)};
   margin-left: ${p => (p.mLeft ? p.theme.padSmall : 0)};
   margin-bottom: ${p => p.theme.padSmall};
@@ -83,7 +78,7 @@ const Container2 = styled.h2`
   text-align: ${p => (p.right ? 'right' : 'left')};
 `;
 
-const Container3 = styled.h3`
+const Container3 = styled.h3<ContainerProps>`
   margin: ${p => (p.nomargin ? '0' : p.theme.padSmall)};
   margin-left: ${p => (p.mLeft ? p.theme.padSmall : 0)};
   margin-bottom: 0px;
@@ -96,17 +91,5 @@ const Container3 = styled.h3`
   letter-spacing: 0.5px;
   text-align: ${p => (p.right ? 'right' : 'left')};
 `;
-
-Header.propTypes = {
-  h1: PropTypes.bool,
-  h2: PropTypes.bool,
-  h3: PropTypes.bool,
-  children: PropTypes.node,
-  nomargin: PropTypes.bool,
-  top: PropTypes.bool,
-  onClick: PropTypes.func,
-  right: PropTypes.bool,
-  mLeft: PropTypes.bool,
-};
 
 export default Header;

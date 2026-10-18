@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { formatDistanceStrict } from 'date-fns';
 import styled from '@emotion/styled';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import Link from 'components/Link';
 import Tags from 'components/Tags';
 import { getLgrPreviewLink } from 'utils/link';
 import config from 'config';
+import type { LGR } from 'types/lgr';
 
-const LGRListCard = ({ lgr }) => {
+type LGRListCardProps = {
+  lgr: LGR;
+};
+
+const LGRListCard = ({ lgr }: LGRListCardProps) => {
   const [raised, setRaised] = useState(false);
 
-  const download = event => {
+  const download = (event: React.MouseEvent) => {
     event.stopPropagation();
   };
 
@@ -34,7 +39,11 @@ const LGRListCard = ({ lgr }) => {
           })}
           action={
             <a href={`${config.api}lgr/get/${lgr.LGRName}?dl`}>
-              <IconButton aria-label="Download LGR" onClick={download}>
+              <IconButton
+                aria-label="Download LGR"
+                onClick={download}
+                size="large"
+              >
                 <GetAppIcon />
               </IconButton>
             </a>
@@ -50,12 +59,7 @@ const LGRListCard = ({ lgr }) => {
           </TagsContainer>
         </CardContent>
         <CardContent>
-          <Desc
-            variant="body2"
-            color="textSecondary"
-            component="p"
-            title={lgr.LGRDesc}
-          >
+          <Desc variant="body2" color="textSecondary" title={lgr.LGRDesc}>
             {lgr.LGRDesc}
           </Desc>
         </CardContent>

@@ -74,7 +74,7 @@ const Dashboard = props => {
             </Content>
             {standings.player && (
               <DerpTable
-                headers={['#', 'Player', { t: 'Points', r: true, w: 'auto' }]}
+                headers={['#', 'Player', { t: 'Points', r: true }]}
                 length={standings.player.length}
               >
                 {standings.player.slice(0, 5).map((r, no) => (

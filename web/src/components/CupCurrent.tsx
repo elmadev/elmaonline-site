@@ -1,24 +1,28 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import { format, formatDistance } from 'date-fns';
 import LocalTime from 'components/LocalTime';
 import Kuski from 'components/Kuski';
 import Download from 'components/Download';
 import { Paper } from 'components/Paper';
-import { Timer } from '@material-ui/icons';
+import { Timer } from '@mui/icons-material';
 import Link from 'components/Link';
+import type { CupEvent } from 'types/cup';
 
-const eventSort = (a, b) => a.CupIndex - b.CupIndex;
+const eventSort = (a: CupEvent, b: CupEvent) => a.CupIndex - b.CupIndex;
 
-const CupCurrent = props => {
-  const { events, ShortName } = props;
+type CupCurrentProps = {
+  events: CupEvent[];
+  ShortName: string;
+};
+
+const CupCurrent = ({ events, ShortName }: CupCurrentProps) => {
   const currentEvents = events.filter(
     e =>
       e.EndTime > format(new Date(), 't') &&
       e.StartTime < format(new Date(), 't'),
   );
 
-  const getEventNumber = event => {
+  const getEventNumber = (event: CupEvent) => {
     const index = events
       .sort(eventSort)
       .findIndex(e => e.CupIndex === event.CupIndex);
@@ -79,7 +83,7 @@ const CupCurrent = props => {
             </EventInfo>
             <EventInfo>
               <Timer />{' '}
-              {formatDistance(new Date(c.EndTime * 1000), new Date(), {
+              {formatDistance(new Date(Number(c.EndTime) * 1000), new Date(), {
                 addSuffix: true,
               })}
             </EventInfo>

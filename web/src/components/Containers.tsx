@@ -1,7 +1,26 @@
-import React from 'react';
 import styled from '@emotion/styled';
 
-export const Row = styled.div`
+type Pad =
+  'XXSmall' | 'XSmall' | 'Small' | 'Medium' | 'Large' | 'XLarge' | 'XXLarge';
+
+type SpacingProps = {
+  t?: Pad;
+  b?: Pad;
+  l?: Pad;
+  r?: Pad;
+};
+
+type FlexProps = SpacingProps & {
+  center?: boolean;
+  width?: string;
+  height?: string;
+  ai?: React.CSSProperties['alignItems'];
+  jc?: React.CSSProperties['justifyContent'];
+  p?: Pad;
+  m?: Pad;
+};
+
+export const Row = styled.div<FlexProps>`
   display: flex;
   flex-direction: row;
   ${p => p.center && `justify-content: center; align-items: center;`}
@@ -17,7 +36,7 @@ export const Row = styled.div`
   ${p => p.m && `margin: ${p.theme[`pad${p.m}`]};`}
 `;
 
-export const Column = styled.div`
+export const Column = styled.div<FlexProps>`
   display: flex;
   flex-direction: column;
   ${p => p.center && `justify-content: center; align-items: center;`}
@@ -33,7 +52,13 @@ export const Column = styled.div`
   ${p => p.m && `margin: ${p.theme[`pad${p.m}`]};`}
 `;
 
-export const Text = styled.div`
+type TextProps = SpacingProps & {
+  noPad?: boolean;
+  light?: boolean;
+  small?: boolean;
+};
+
+export const Text = styled.div<TextProps>`
   padding-bottom: ${p => (p.noPad ? 0 : '16px')};
   color: ${p => (p.light ? p.theme.lightTextColor : p.theme.fontColor)};
   font-size: ${p => (p.small ? p.theme.smallFont : p.theme.fontSize)};

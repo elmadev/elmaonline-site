@@ -1,7 +1,20 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { Today, CheckBox, Timer } from '@material-ui/icons';
-import { formatDistance, format } from 'date-fns';
+import { Today, CheckBox, Timer } from '@mui/icons-material';
+import { formatDistance, getUnixTime } from 'date-fns';
+
+type EventItemProps = {
+  i: number;
+  selected: number;
+  onClick?: () => void;
+  level: React.ReactNode;
+  by: React.ReactNode;
+  eventTime: React.ReactNode;
+  /** unix timestamp */
+  start: number | string;
+  /** unix timestamp, 0 if unknown */
+  end: number | string;
+  winner?: React.ReactNode;
+};
 
 const EventItem = ({
   i,
@@ -13,7 +26,10 @@ const EventItem = ({
   start,
   end,
   winner = '',
-}) => {
+}: EventItemProps) => {
+  const now = getUnixTime(new Date());
+  const startTime = Number(start);
+  const endTime = Number(end);
   return (
     <EventContainer
       highlight={i === selected}
@@ -29,25 +45,23 @@ const EventItem = ({
         </div>
         {end !== 0 && (
           <div>
-            {end > format(new Date(), 't') &&
-              start < format(new Date(), 't') && (
-                <>
-                  <Timer /> Deadline{' '}
-                  {formatDistance(new Date(end * 1000), new Date(), {
-                    addSuffix: true,
-                  })}
-                </>
-              )}
-            {end > format(new Date(), 't') &&
-              start > format(new Date(), 't') && (
-                <>
-                  <Timer /> Starts{' '}
-                  {formatDistance(new Date(start * 1000), new Date(), {
-                    addSuffix: true,
-                  })}
-                </>
-              )}
-            {end < format(new Date(), 't') && (
+            {endTime > now && startTime < now && (
+              <>
+                <Timer /> Deadline{' '}
+                {formatDistance(new Date(endTime * 1000), new Date(), {
+                  addSuffix: true,
+                })}
+              </>
+            )}
+            {endTime > now && startTime > now && (
+              <>
+                <Timer /> Starts{' '}
+                {formatDistance(new Date(startTime * 1000), new Date(), {
+                  addSuffix: true,
+                })}
+              </>
+            )}
+            {endTime < now && (
               <>
                 <CheckBox />
                 {winner}
@@ -60,7 +74,13 @@ const EventItem = ({
   );
 };
 
-export const SeasonItem = ({ name, selected, onClick }) => {
+type SeasonItemProps = {
+  name: string;
+  selected: string;
+  onClick?: (name: string) => void;
+};
+
+export const SeasonItem = ({ name, selected, onClick }: SeasonItemProps) => {
   return (
     <EventContainer
       highlight={selected === name}
@@ -75,7 +95,7 @@ const By = styled.div`
   font-weight: bold;
 `;
 
-const EventContainer = styled.div`
+const EventContainer = styled.div<{ highlight: boolean }>`
   display: flex;
   flex-direction: row;
   height: 100px;

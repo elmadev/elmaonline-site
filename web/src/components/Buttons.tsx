@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button as MuiButton } from '@material-ui/core';
+import { Button as MuiButton } from '@mui/material';
+import type { ButtonProps as MuiButtonProps } from '@mui/material';
 import styled from '@emotion/styled';
 import { Link } from '@tanstack/react-router';
 import {
@@ -9,21 +9,32 @@ import {
   FilterList,
   Close,
   Refresh,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
-const StyledButton = styled(MuiButton)`
+type StyledButtonProps = {
+  margin?: string;
+  little: boolean;
+  right: boolean;
+  isLink: boolean;
+};
+
+const styledProps = ['margin', 'little', 'right', 'isLink'];
+
+const StyledButton = styled(MuiButton, {
+  shouldForwardProp: prop => !styledProps.includes(prop),
+})<StyledButtonProps>`
   && {
     ${p => p.margin && `margin: ${p.margin};`}
-    ${p => p.little === 1 && 'font-size: 0.8125rem;'}
-    ${p => p.right === 1 && `margin-right: ${p.theme.padXXSmall};`}
+    ${p => p.little && 'font-size: 0.8125rem;'}
+    ${p => p.right && `margin-right: ${p.theme.padXXSmall};`}
     padding: ${p =>
-      p.little === 1
-        ? `${p.to ? 0 : p.theme.padXXSmall} ${p.to ? 0 : p.theme.padXXSmall}`
-        : `${p.to ? 0 : p.theme.padXSmall} ${p.to ? 0 : p.theme.padMedium}`};
+      p.little
+        ? `${p.isLink ? 0 : p.theme.padXXSmall} ${p.isLink ? 0 : p.theme.padXXSmall}`
+        : `${p.isLink ? 0 : p.theme.padXSmall} ${p.isLink ? 0 : p.theme.padMedium}`};
     a {
       display: block;
       padding: ${p =>
-        p.little === 1
+        p.little
           ? `${p.theme.padXXSmall} ${p.theme.padXXSmall}`
           : `${p.theme.padXSmall} ${p.theme.padMedium}`};
     }
@@ -42,43 +53,50 @@ const icons = {
   refresh: Refresh,
 };
 
+type ButtonProps = {
+  children: React.ReactNode;
+  /** use this to execute some js function */
+  onClick?: () => void;
+  margin?: string;
+  disabled?: boolean;
+  secondary?: boolean;
+  naked?: boolean;
+  little?: boolean;
+  /** use this to create a normal link */
+  to?: string;
+  right?: boolean;
+  icon?: keyof typeof icons;
+};
+
 const Button = ({
   children,
-  onClick, // use this to execute some js function
+  onClick,
   margin,
   disabled,
-  secondary,
-  naked,
-  little,
-  to, // use this to create a normal link
-  right,
+  secondary = false,
+  naked = false,
+  little = false,
+  to,
+  right = false,
   icon,
-}) => {
-  let color = 'primary';
-  let variant = 'contained';
-  if (secondary) {
-    color = 'secondary';
-  }
+}: ButtonProps) => {
+  let color: MuiButtonProps['color'] = secondary ? 'secondary' : 'primary';
+  let variant: MuiButtonProps['variant'] = 'contained';
   if (naked) {
-    color = 'default';
+    color = 'inherit';
     variant = 'text';
   }
-  let Icon = null;
-  if (icon) {
-    if (icons[icon]) {
-      Icon = icons[icon];
-    }
-  }
+  const Icon = icon ? icons[icon] : null;
   return (
     <StyledButton
-      right={right ? 1 : 0}
+      right={right}
       disabled={disabled}
       margin={margin}
       variant={variant}
       color={color}
-      little={little ? 1 : 0}
+      little={little}
       onClick={() => onClick && onClick()}
-      to={to}
+      isLink={Boolean(to)}
     >
       {to ? (
         <Link to={to}>{children}</Link>

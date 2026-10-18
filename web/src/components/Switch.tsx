@@ -1,6 +1,14 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { FormControlLabel, Switch as MUISwitch } from '@material-ui/core';
+import { FormControlLabel, Switch as MUISwitch } from '@mui/material';
+import type { SwitchProps as MUISwitchProps } from '@mui/material';
+
+type SwitchProps = {
+  className?: string;
+  children: React.ReactNode;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  color?: MUISwitchProps['color'];
+};
 
 const Switch = ({
   className,
@@ -8,7 +16,7 @@ const Switch = ({
   checked,
   onChange,
   color = 'primary',
-}) => {
+}: SwitchProps) => {
   return (
     <Root className={className}>
       <FormControlLabel

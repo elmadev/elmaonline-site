@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Field from 'components/Field';
 import FieldBoolean from 'components/FieldBoolean';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { nickId } from 'utils/nick';
 
 const schema = yup.object().shape({
@@ -14,16 +14,22 @@ const schema = yup.object().shape({
   Events: yup.number().required().min(1).max(99),
 });
 
-const AddCup = props => {
-  const { add } = props;
+type CupForm = Partial<yup.InferType<typeof schema>>;
+
+export type NewCup = CupForm & { AppleResults: boolean };
+
+type AddCupProps = {
+  add: (cup: NewCup) => void;
+};
+
+const initialValues: CupForm = {};
+
+const AddCup = ({ add }: AddCupProps) => {
   const [AppleResults, setAppleResults] = useState(false);
-  const formal = useFormal(
-    {},
-    {
-      schema,
-      onSubmit: values => add({ ...values, AppleResults }),
-    },
-  );
+  const formal = useFormal(initialValues, {
+    schema,
+    onSubmit: values => add({ ...values, AppleResults }),
+  });
   return (
     <>
       {nickId() > 0 ? (

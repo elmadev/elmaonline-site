@@ -1,8 +1,7 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 import Video from 'components/Video';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 export const Install = () => {
   return (

@@ -1,18 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
-import { Close as CloseIcon } from '@material-ui/icons';
+import { useState, useEffect } from 'react';
+import { Snackbar, SnackbarContent, IconButton } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 
-const Feedback = ({ open, text, type, close, autoHide = true }) => {
+const colors = {
+  success: '#43a047',
+  error: '#d32f2f',
+  info: '#1976d2',
+  warning: '#ffa000',
+};
+
+type FeedbackProps = {
+  open: boolean;
+  text: React.ReactNode;
+  type: keyof typeof colors;
+  close?: () => void;
+  autoHide?: boolean;
+};
+
+const Feedback = ({
+  open,
+  text,
+  type,
+  close,
+  autoHide = true,
+}: FeedbackProps) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
     setShow(open);
   }, [open]);
-  const colors = {
-    success: '#43a047',
-    error: '#d32f2f',
-    info: '#1976d2',
-    warning: '#ffa000',
-  };
   return (
     <Snackbar
       anchorOrigin={{
@@ -38,6 +53,7 @@ const Feedback = ({ open, text, type, close, autoHide = true }) => {
             aria-label="Close"
             color="inherit"
             onClick={() => close && close()}
+            size="large"
           >
             <CloseIcon />
           </IconButton>,

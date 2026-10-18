@@ -1,10 +1,14 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import { Paper } from 'components/Paper';
-import { PlayArrow } from '@material-ui/icons';
+import { PlayArrow } from '@mui/icons-material';
 import Sky from '../images/sky.png';
 
-const Play = ({ onClick, type }) => {
+type PlayProps = {
+  onClick?: () => void;
+  type: 'replay' | 'map';
+};
+
+const Play = ({ onClick, type }: PlayProps) => {
   return (
     <Paper onClick={() => onClick && onClick()}>
       <Container>

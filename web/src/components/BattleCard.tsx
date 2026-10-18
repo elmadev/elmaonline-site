@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Card, CardContent, Grid } from '@material-ui/core';
+import { useState } from 'react';
+import { Card, CardContent, Grid } from '@mui/material';
 import { Level, BattleType } from 'components/Names';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
@@ -8,27 +7,36 @@ import LocalTime from 'components/LocalTime';
 import LevelMap from 'features/LevelMap';
 import styled from '@emotion/styled';
 import { toLocalTime } from 'utils/time';
-import { format, addMinutes } from 'date-fns';
+import { addMinutes, getUnixTime } from 'date-fns';
+import type { Battle } from 'types/battle';
 import { useInterval } from 'utils/useInterval';
 import LinearProgressWithLabel from 'components/LinearProgressWithLabel';
 
-const BattleCard = ({ battle = null }) => {
+type BattleCardProps = {
+  battle?: Battle | null;
+};
+
+const BattleCard = ({ battle = null }: BattleCardProps) => {
   const [remainingPercent, setRemainingPercent] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
-  const getStart = started => {
-    return format(toLocalTime(started, 't'), 't');
+  const getStart = (started: number) => {
+    return getUnixTime(toLocalTime(started, 't'));
   };
 
-  const getEnd = (started, duration) => {
-    return format(addMinutes(toLocalTime(started, 't'), duration), 't');
+  const getEnd = (started: number, duration: number) => {
+    return getUnixTime(addMinutes(toLocalTime(started, 't'), duration));
   };
 
   const getNow = () => {
-    return format(new Date(), 't');
+    return getUnixTime(new Date());
   };
 
-  const getRemainingPercent = (started, duration, countdown) => {
+  const getRemainingPercent = (
+    started: string,
+    duration: number,
+    countdown: number,
+  ) => {
     const now = getNow();
     const start = getStart(parseInt(started) + countdown);
     const end = getEnd(parseInt(started) + countdown, duration);
@@ -41,10 +49,14 @@ const BattleCard = ({ battle = null }) => {
       return 0;
     }
 
-    return Math.round(((end - now) / (end - start)) * 100, 2);
+    return Math.round(((end - now) / (end - start)) * 100);
   };
 
-  const getRemainingSeconds = (started, duration, countdown) => {
+  const getRemainingSeconds = (
+    started: string,
+    duration: number,
+    countdown: number,
+  ) => {
     const seconds = getEnd(parseInt(started) + countdown, duration) - getNow();
     return seconds > 0 ? seconds : 0;
   };
@@ -138,9 +150,5 @@ const Text = styled.div`
   color: ${p => p.theme.lightTextColor};
   font-size: 14px;
 `;
-
-BattleCard.propTypes = {
-  battle: PropTypes.shape(),
-};
 
 export default BattleCard;

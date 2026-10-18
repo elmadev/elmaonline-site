@@ -1,18 +1,20 @@
-import React from 'react';
 import { useTheme } from '@emotion/react';
-import {
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Icon,
-} from '@material-ui/core';
+import { Select, MenuItem, InputLabel, FormControl, Icon } from '@mui/material';
 import { stripSpace } from 'utils/misc';
 
-const Selector = ({ label, options, selected, onChange }) => {
+type SelectorValue = string | number;
+
+type SelectorProps = {
+  label: string;
+  options: { id: SelectorValue; name: React.ReactNode }[];
+  selected: SelectorValue;
+  onChange: (value: SelectorValue) => void;
+};
+
+const Selector = ({ label, options, selected, onChange }: SelectorProps) => {
   const theme = useTheme();
 
-  const update = s => {
+  const update = (s: SelectorValue) => {
     let newSelected = s;
     const currentIndex = options.findIndex(o => o.id === selected);
     if (s === 'prev') {
@@ -44,9 +46,10 @@ const Selector = ({ label, options, selected, onChange }) => {
       >
         chevron_left
       </Icon>
-      <FormControl>
+      <FormControl variant="standard">
         <InputLabel htmlFor="type-simple">{label}</InputLabel>
         <Select
+          variant="standard"
           value={selected}
           onChange={e => update(e.target.value)}
           inputProps={{

@@ -1,8 +1,15 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import config from 'config';
 
-const Video = ({ width, height, poster, video, formats = [] }) => {
+type VideoProps = {
+  width: string;
+  height: string;
+  poster: string;
+  video: string;
+  formats?: string[];
+};
+
+const Video = ({ width, height, poster, video, formats = [] }: VideoProps) => {
   return (
     <Container>
       <video

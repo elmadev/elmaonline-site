@@ -1,9 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 
-const formatLevel = level => {
+type LevelName = {
+  LevelName: string;
+  LongName?: string;
+};
+
+const formatLevel = (level: string) => {
   if (
     level.substring(0, 6).toUpperCase() === 'QWQUU0' &&
     parseInt(level.substring(6, 8), 10) <= 55
@@ -13,7 +16,12 @@ const formatLevel = level => {
   return level;
 };
 
-const LevelNameFormatted = ({ long, LevelData }) => {
+type LevelNameFormattedProps = {
+  long: boolean;
+  LevelData?: LevelName | null;
+};
+
+const LevelNameFormatted = ({ long, LevelData }: LevelNameFormattedProps) => {
   return (
     <>
       {long && LevelData && LevelData.LongName}
@@ -23,12 +31,19 @@ const LevelNameFormatted = ({ long, LevelData }) => {
   );
 };
 
+type LevelProps = {
+  LevelIndex?: number | null;
+  long?: boolean;
+  LevelData?: LevelName | null;
+  noLink?: boolean;
+};
+
 const Level = ({
   LevelIndex = null,
   long = false,
   LevelData = null,
   noLink = false,
-}) => {
+}: LevelProps) => {
   return (
     <>
       {noLink ? (
@@ -42,49 +57,43 @@ const Level = ({
   );
 };
 
-Level.propTypes = {
-  LevelIndex: PropTypes.number,
-  long: PropTypes.bool,
-  LevelData: PropTypes.shape({
-    LevelName: PropTypes.string,
-    LongName: PropTypes.string,
-  }),
-  noLink: PropTypes.bool,
+const types: Record<string, string> = {
+  NM: 'Normal',
+  FF: 'First Finish',
+  OL: 'One Life',
+  SL: 'Slowness',
+  SR: 'Survivor',
+  FT: 'Flag Tag',
+  AP: 'Apple',
+  SP: 'Speed',
+  LC: 'Last Counts',
+  FC: 'Finish Count',
+  HT: '1 Hour TT',
 };
 
-class BattleType extends React.Component {
-  static propTypes = {
-    type: PropTypes.string.isRequired,
-    lower: PropTypes.bool,
-    small: PropTypes.bool,
-    upper: PropTypes.bool,
-  };
+type BattleTypeProps = {
+  type: string;
+  lower?: boolean;
+  small?: boolean;
+  upper?: boolean;
+};
 
-  render() {
-    const types = {
-      NM: 'Normal',
-      FF: 'First Finish',
-      OL: 'One Life',
-      SL: 'Slowness',
-      SR: 'Survivor',
-      FT: 'Flag Tag',
-      AP: 'Apple',
-      SP: 'Speed',
-      LC: 'Last Counts',
-      FC: 'Finish Count',
-      HT: '1 Hour TT',
-    };
+const BattleType = ({
+  type,
+  lower = false,
+  small = false,
+  upper = false,
+}: BattleTypeProps) => (
+  <TypeSpan small={small} lower={lower} upper={upper}>
+    {types[type]}
+  </TypeSpan>
+);
 
-    const { type, lower = false, small = false, upper = false } = this.props;
-    return (
-      <TypeSpan small={small} lower={lower} upper={upper}>
-        {types[type]}
-      </TypeSpan>
-    );
-  }
-}
-
-const TypeSpan = styled.span`
+const TypeSpan = styled.span<{
+  small: boolean;
+  lower: boolean;
+  upper: boolean;
+}>`
   text-transform: ${p =>
     p.upper ? 'uppercase' : p.lower ? 'lowercase' : 'none'};
   font-size: ${p => (p.small ? '10px' : 'inherit')};

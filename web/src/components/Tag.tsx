@@ -1,9 +1,7 @@
-import React from 'react';
-import Chip from '@material-ui/core/Chip';
-import PropTypes from 'prop-types';
+import Chip from '@mui/material/Chip';
 import styled from '@emotion/styled';
 
-const colors = {
+const colors: Record<string, string> = {
   // replay +- level/levelpack:
   TAS: 'red',
   DNF: 'gray',
@@ -18,17 +16,17 @@ const colors = {
 
 const StyledTag = styled(Chip)`
   &.MuiChip-root {
-    ${p => p.label && `color: ${colors[p.label]}`};
-    ${p => p.label && `border-color: ${colors[p.label]}`};
+    ${p => typeof p.label === 'string' && `color: ${colors[p.label]}`};
+    ${p => typeof p.label === 'string' && `border-color: ${colors[p.label]}`};
   }
 `;
 
-const Tag = ({ tag }) => (
+type TagProps = {
+  tag: string;
+};
+
+const Tag = ({ tag }: TagProps) => (
   <StyledTag size="small" label={tag} variant="outlined" />
 );
-
-Tag.propTypes = {
-  tag: PropTypes.string.isRequired,
-};
 
 export default Tag;

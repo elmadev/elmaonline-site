@@ -1,7 +1,21 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { TextField } from '@material-ui/core';
+import Autocomplete from '@mui/material/Autocomplete';
+import { TextField } from '@mui/material';
+
+export type TagOption = {
+  TagIndex: number;
+  Name: string;
+};
+
+type TagChange = (event: React.SyntheticEvent, tags: TagOption[]) => void;
+
+type TagFilterProps = {
+  tagOptions: TagOption[];
+  selectedTags: TagOption[];
+  onSelectedTagsChange: TagChange;
+  excludedTags: TagOption[];
+  onExcludedTagsChange: TagChange;
+};
 
 const TagFilter = ({
   tagOptions,
@@ -9,7 +23,7 @@ const TagFilter = ({
   onSelectedTagsChange,
   excludedTags,
   onExcludedTagsChange,
-}) => (
+}: TagFilterProps) => (
   <>
     <Filter
       value={selectedTags}
@@ -22,10 +36,10 @@ const TagFilter = ({
         tag => !excludedTags.find(t => t.TagIndex === tag.TagIndex),
       )}
       getOptionLabel={option => option.Name}
-      getOptionSelected={(option, value) => option.Name === value.Name}
+      isOptionEqualToValue={(option, value) => option.Name === value.Name}
       filterSelectedOptions
       renderInput={params => (
-        <TextField {...params} placeholder="Included tags" />
+        <TextField variant="standard" {...params} placeholder="Included tags" />
       )}
       ChipProps={{ color: 'primary' }}
     />
@@ -40,17 +54,17 @@ const TagFilter = ({
         tag => !selectedTags.find(t => t.TagIndex === tag.TagIndex),
       )}
       getOptionLabel={option => option.Name}
-      getOptionSelected={(option, value) => option.Name === value.Name}
+      isOptionEqualToValue={(option, value) => option.Name === value.Name}
       filterSelectedOptions
       renderInput={params => (
-        <TextField {...params} placeholder="Excluded tags" />
+        <TextField variant="standard" {...params} placeholder="Excluded tags" />
       )}
       ChipProps={{ color: 'secondary' }}
     />
   </>
 );
 
-const Filter = styled(Autocomplete)`
+const Filter = styled(Autocomplete<TagOption, true, false, false>)`
   background: ${p => p.theme.pageBackground};
   padding: 0.7rem 1rem 0.5rem 1rem;
   flex: 1 0 0;

@@ -1,10 +1,13 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { Add as AddIcon } from '@material-ui/icons';
-import { Fab as MuiFab } from '@material-ui/core';
+import { Add as AddIcon } from '@mui/icons-material';
+import { Fab as MuiFab } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
-const Fab = ({ url }) => {
+type FabProps = {
+  url: string;
+};
+
+const Fab = ({ url }: FabProps) => {
   const navigate = useNavigate();
   return (
     <FabCon>

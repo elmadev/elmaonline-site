@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { TextField } from '@material-ui/core';
+import { useState } from 'react';
+import { ClickAwayListener, TextField } from '@mui/material';
 import styled from '@emotion/styled';
-import OutsideClickHandler from 'react-outside-click-handler';
 
-const ClickToEdit = props => {
-  const { children, value, update, allowEmpty } = props;
+type ClickToEditProps = {
+  children: React.ReactNode;
+  value: string;
+  update: (value: string) => void;
+  allowEmpty?: boolean;
+};
+
+const ClickToEdit = ({
+  children,
+  value,
+  update,
+  allowEmpty = false,
+}: ClickToEditProps) => {
   const [editMode, setEditMode] = useState(false);
   const [inputValue, setInputValue] = useState(value);
 
@@ -27,16 +37,18 @@ const ClickToEdit = props => {
           {children}
         </Clickable>
       ) : (
-        <OutsideClickHandler onOutsideClick={() => sendValue()}>
-          <TextField
-            margin="none"
-            variant="outlined"
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            size="small"
-            onKeyDown={e => e.key === 'Enter' && sendValue()}
-          />
-        </OutsideClickHandler>
+        <ClickAwayListener onClickAway={() => sendValue()}>
+          <div>
+            <TextField
+              margin="none"
+              variant="outlined"
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              size="small"
+              onKeyDown={e => e.key === 'Enter' && sendValue()}
+            />
+          </div>
+        </ClickAwayListener>
       )}
     </>
   );

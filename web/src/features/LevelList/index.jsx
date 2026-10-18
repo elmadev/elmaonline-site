@@ -485,11 +485,7 @@ export default function LevelList({
                 <Loading />
               ) : (
                 levels.rows.map(level => (
-                  <LevelCard
-                    key={level.LevelIndex}
-                    level={level}
-                    tags={getTags(level)}
-                  />
+                  <LevelCard key={level.LevelIndex} level={level} />
                 ))
               )}
             </CardGrid>

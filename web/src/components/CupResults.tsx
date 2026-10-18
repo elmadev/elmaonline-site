@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
@@ -6,17 +5,31 @@ import DerpTable from 'components/Table/DerpTable';
 import { zeroPad } from 'utils/time';
 import { useNavigate } from '@tanstack/react-router';
 import { ListRow, ListCell } from 'components/List';
-import { PlayArrow } from '@material-ui/icons';
-import { Button } from '@material-ui/core';
+import { PlayArrow } from '@mui/icons-material';
+import { Button } from '@mui/material';
 import config from 'config';
 import { downloadWithAuth } from 'utils/misc';
 import { pts } from 'utils/cups';
+import type { Cup, CupResult } from 'types/cup';
 
-const CupResults = props => {
+type CupResultsProps = {
+  results: CupResult[];
+  cup: Cup;
+  eventNo: number;
+  CupIndex: number;
+  pasteFriendly?: boolean;
+};
+
+const CupResults = ({
+  results,
+  cup,
+  eventNo,
+  CupIndex,
+  pasteFriendly = false,
+}: CupResultsProps) => {
   const navigate = useNavigate();
-  const { results, cup, eventNo, CupIndex, pasteFriendly } = props;
 
-  const goToReplay = (index, filename) => {
+  const goToReplay = (index: number, filename: string) => {
     navigate({ to: `/r/c-${index}/${filename}` });
   };
 
@@ -24,7 +37,7 @@ const CupResults = props => {
     return (
       <Container>
         {results.map((r, no) => (
-          <div>
+          <div key={r.KuskiIndex}>
             {r.Position ? r.Position : no + 1}.{' '}
             {r.KuskiData.Country
               ? `:flag_${r.KuskiData.Country.toLowerCase()}: `
@@ -51,12 +64,7 @@ const CupResults = props => {
   return (
     <Container>
       <DerpTable
-        headers={[
-          '#',
-          'Player',
-          'Time/Rec',
-          { t: 'Points', r: true, w: 'auto' },
-        ]}
+        headers={['#', 'Player', 'Time/Rec', { t: 'Points', r: true }]}
         length={results.length}
       >
         {results.map((r, no) => (

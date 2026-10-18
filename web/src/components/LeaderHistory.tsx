@@ -1,10 +1,20 @@
-import React from 'react';
 import Time from 'components/Time';
 import LocalTime from 'components/LocalTime';
-import { PlayArrow } from '@material-ui/icons';
+import { PlayArrow } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import Loading from 'components/Loading';
 import { formatDistanceStrict } from 'date-fns';
+import type { KuskiData } from 'types/kuski';
+
+export type FinishedTime = {
+  TimeIndex: number;
+  /** hundredths */
+  Time: number;
+  /** unix timestamp */
+  Driven: number;
+  KuskiData: KuskiData;
+  TimeFileData?: { UUID?: string; MD5?: string } | null;
+};
 
 const TimelineLine = styled.span`
   position: absolute;
@@ -22,7 +32,7 @@ const TimeDevelopment = styled.div`
   display: table;
 `;
 
-const TimeDevelopmentRow = styled.div`
+const TimeDevelopmentRow = styled.div<{ pointer: boolean }>`
   display: table-row;
   vertical-align: middle;
   position: relative;
@@ -101,16 +111,25 @@ const Container = styled.div`
   padding: 20px;
 `;
 
+type LeaderHistoryProps = {
+  allFinished?: FinishedTime[] | null;
+  loading?: boolean;
+  openReplay?: ((time: FinishedTime) => void) | null;
+  /** unix timestamp, shows times relative to this instead of dates */
+  started?: number;
+  personal?: boolean;
+};
+
 export default function LeaderHistory({
   allFinished,
-  loading,
+  loading = false,
   openReplay,
   started,
   personal = false,
-}) {
+}: LeaderHistoryProps) {
   if (loading) return <Loading />;
 
-  const replayAvailable = replay => {
+  const replayAvailable = (replay: FinishedTime) => {
     if (!openReplay) {
       return false;
     }
@@ -119,14 +138,14 @@ export default function LeaderHistory({
       return true;
     }
 
-    return replay?.TimeFileData?.UUID && replay?.TimeFileData?.MD5;
+    return Boolean(replay.TimeFileData?.UUID && replay.TimeFileData?.MD5);
   };
 
   return (
     <Container>
       <TimeDevelopment>
         {[...(allFinished || [])]
-          .reduce((acc, cur) => {
+          .reduce<FinishedTime[]>((acc, cur) => {
             if (acc.length < 1 || acc[acc.length - 1].Time > cur.Time)
               acc.push(cur);
             return acc;
@@ -134,7 +153,11 @@ export default function LeaderHistory({
           .map((b, i, a) => (
             <TimeDevelopmentRow
               pointer={replayAvailable(b)}
-              onClick={replayAvailable(b) ? () => openReplay(b) : null}
+              onClick={
+                openReplay && replayAvailable(b)
+                  ? () => openReplay(b)
+                  : undefined
+              }
               key={b.TimeIndex}
             >
               <TimeDiff>
@@ -146,8 +169,8 @@ export default function LeaderHistory({
                   </span>
                 )}
                 {a.length > 1 && !a[i - 1] && 'First finish'}
-                {a.length === 1 && allFinished.length !== 1 && 'First finish'}
-                {a.length === 1 && allFinished.length === 1 && 'Only finish'}
+                {a.length === 1 && allFinished?.length !== 1 && 'First finish'}
+                {a.length === 1 && allFinished?.length === 1 && 'Only finish'}
               </TimeDiff>
               <TimelineCell>
                 <TimelineMarker />
@@ -170,7 +193,7 @@ export default function LeaderHistory({
                   />
                 )}
               </TimeDevelopmentLocalTime>
-              {replayAvailable(b) && <PlayArrow title="View" />}
+              {replayAvailable(b) && <PlayArrow titleAccess="View" />}
             </TimeDevelopmentRow>
           ))}
       </TimeDevelopment>

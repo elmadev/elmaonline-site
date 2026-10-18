@@ -1,11 +1,19 @@
-import React from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 
-export default function Field({ date, label, error, value, ...props }) {
-  let isError = false;
-  if (error) {
-    isError = true;
-  }
+type FieldProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> & {
+  label: string;
+  date?: boolean;
+  error?: string;
+  value?: string | number;
+};
+
+export default function Field({
+  date,
+  label,
+  error,
+  value,
+  ...props
+}: FieldProps) {
   return (
     <div>
       <TextField
@@ -15,10 +23,10 @@ export default function Field({ date, label, error, value, ...props }) {
         variant="outlined"
         fullWidth
         inputProps={{ ...props }}
-        error={isError}
+        error={Boolean(error)}
         helperText={error}
         value={value}
-        InputLabelProps={{ shrink: value === '' ? false : true }}
+        InputLabelProps={{ shrink: value !== '' }}
         type={date ? 'date' : 'text'}
       />
     </div>

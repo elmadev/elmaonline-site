@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import {
   Select,
@@ -6,14 +5,31 @@ import {
   InputLabel,
   FormControl,
   TextField as MuiTextField,
-} from '@material-ui/core';
+} from '@mui/material';
 
-const Container = styled.div`
+const Container = styled.div<{ width?: number }>`
   min-width: 100px;
   margin-left: 10px;
   margin-right: 10px;
   ${p => p.width && `width: ${p.width}px;`}
 `;
+
+type OptionValue = string | number;
+
+type DropdownOption =
+  | string
+  | [OptionValue, React.ReactNode]
+  | { id: OptionValue; name: React.ReactNode };
+
+type DropdownProps = {
+  name: string;
+  options: DropdownOption[];
+  selected: OptionValue | OptionValue[];
+  update: (value: OptionValue | OptionValue[]) => void;
+  className?: string;
+  multiple?: boolean;
+  width?: number;
+};
 
 export const Dropdown = ({
   name,
@@ -23,13 +39,14 @@ export const Dropdown = ({
   className,
   multiple,
   width,
-}) => {
+}: DropdownProps) => {
   const id = name.replace(/\s/g, '');
   return (
     <Container width={width} className={className}>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <InputLabel htmlFor={id}>{name}</InputLabel>
         <Select
+          variant="standard"
           value={selected}
           onChange={e => update(e.target.value)}
           inputProps={{
@@ -39,8 +56,6 @@ export const Dropdown = ({
           multiple={!!multiple}
         >
           {options.map(y => {
-            const val = y;
-            const text = y;
             if (Array.isArray(y)) {
               return (
                 <MenuItem key={y[0]} value={y[0]}>
@@ -49,11 +64,15 @@ export const Dropdown = ({
               );
             }
             if (typeof y === 'string') {
-              return <MenuItem key={val} value={val}>{`${text}`}</MenuItem>;
+              return (
+                <MenuItem key={y} value={y}>
+                  {y}
+                </MenuItem>
+              );
             }
             return (
-              <MenuItem key={val.id} value={val.id}>
-                {text.name}
+              <MenuItem key={y.id} value={y.id}>
+                {y.name}
               </MenuItem>
             );
           })}
@@ -61,6 +80,16 @@ export const Dropdown = ({
       </FormControl>
     </Container>
   );
+};
+
+type TextFieldProps = {
+  name: string;
+  error?: string;
+  date?: boolean;
+  value: string;
+  onChange: (value: string) => void;
+  multiline?: boolean;
+  className?: string;
 };
 
 export const TextField = ({
@@ -71,12 +100,8 @@ export const TextField = ({
   onChange,
   multiline = false,
   className,
-}) => {
+}: TextFieldProps) => {
   const id = name.replace(/\s/g, '');
-  let isError = false;
-  if (error) {
-    isError = true;
-  }
 
   return (
     <Container className={className}>
@@ -86,7 +111,7 @@ export const TextField = ({
         margin="normal"
         variant="outlined"
         fullWidth
-        error={isError}
+        error={Boolean(error)}
         helperText={error}
         type={date ? 'date' : 'text'}
         onChange={e => onChange(e.target.value)}
