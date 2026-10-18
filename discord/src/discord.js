@@ -175,22 +175,31 @@ export const discordChatline = content => {
   );
 };
 
+const besttimeToString = (content, multi) => {
+  let text = '';
+
+  if (levelIsInternal(content.level)) {
+    text += `**${formatLevel(content.level)}**:`;
+  } else {
+    text += `${formatLevel(content.level)}:`;
+  }
+
+  if (multi) {
+    text += ` ${content.time} (M) by ${content.kuski1} & ${
+      content.kuski2} (${content.position}.)`;
+  } else {
+    text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
+  }
+
+  if (content.position === 1) {
+    text += ' :first_place:';
+  }
+  return text;
+};
+
 export const discordBesttime = content => {
   if (!content.battleIndex) {
-    let text = '';
-
-    if (levelIsInternal(content.level)) {
-      text += `**${formatLevel(content.level)}**:`;
-    } else {
-      text += `${formatLevel(content.level)}:`;
-    }
-
-    text += ` ${content.time} by ${content.kuski} (${content.position}.)`;
-
-    if (content.position === 1) {
-      text += ' :first_place:';
-    }
-
+    const text = besttimeToString(content, false);
     sendMessage(config.discord.channels.times, text);
 
     if (
@@ -210,12 +219,22 @@ export const discordBesttime = content => {
 
 export const discordBestmultitime = content => {
   if (!content.battleIndex) {
-    sendMessage(
-      config.discord.channels.times,
-      `${formatLevel(content.level)}: ${content.time} (M) by ${
-        content.kuski1
-      } & ${content.kuski2} (${content.position}.)`,
-    );
+    const text = besttimeToString(content, true);
+    sendMessage(config.discord.channels.times, text);
+
+    if (
+      levelIsInternal(content.level) &&
+      content.position === 1 &&
+      config.discord.channels.announcements
+    ) {
+      sendMessage(
+        config.discord.channels.announcements,
+        `:tada: New multi WR by **${content.kuski1} & ${
+          content.kuski2}** in ${formatLevel(
+          content.level,
+        )} with ${content.time}! :trophy:`,
+      );
+    }
   }
 };
 
