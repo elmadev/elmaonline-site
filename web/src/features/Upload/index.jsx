@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import {
   TextField,
@@ -490,10 +489,5 @@ const UploadCard = styled(Card)`
 const UploadButtonContainer = styled(Grid)`
   margin-top: 8px;
 `;
-
-Upload.propTypes = {
-  onUpload: PropTypes.func,
-  filetype: PropTypes.string.isRequired,
-};
 
 export default Upload;

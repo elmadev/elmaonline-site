@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStoreState } from 'easy-peasy';
 import { TablePagination } from '@mui/material';
-import PropTypes from 'prop-types';
 
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';
@@ -111,10 +110,6 @@ const PlayedBattles = ({ KuskiIndex }) => {
       />
     </>
   );
-};
-
-PlayedBattles.propTypes = {
-  KuskiIndex: PropTypes.number.isRequired,
 };
 
 export default PlayedBattles;

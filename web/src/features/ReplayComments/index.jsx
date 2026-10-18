@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import PropTypes from 'prop-types';
 
 import Comments from 'components/Comments';
 
@@ -24,10 +23,6 @@ const ReplayComments = props => {
   }, [ReplayIndex, lastReplayIndex]);
 
   return <Comments comments={commentlist} loading={false} />;
-};
-
-ReplayComments.propTypes = {
-  ReplayIndex: PropTypes.number.isRequired,
 };
 
 export default ReplayComments;

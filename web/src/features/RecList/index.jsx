@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { sortBy, filter, intersectionBy } from 'lodash';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
@@ -92,13 +91,6 @@ const RecList = ({
       </ListContainer>
     </>
   );
-};
-
-RecList.propTypes = {
-  currentUUID: PropTypes.arrayOf(PropTypes.string),
-  columns: PropTypes.arrayOf(PropTypes.string),
-  horizontalMargin: PropTypes.number,
-  LevelIndex: PropTypes.number.isRequired,
 };
 
 export default RecList;

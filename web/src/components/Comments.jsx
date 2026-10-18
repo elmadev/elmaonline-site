@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
 import LocalTime from 'components/LocalTime';
 import { Column, Row } from 'components/Containers';
 
@@ -81,16 +80,5 @@ const Timestamp = styled.div`
   white-space: nowrap;
   margin-right: ${p => p.theme.padSmall};
 `;
-
-Comments.propTypes = {
-  comments: PropTypes.arrayOf(
-    PropTypes.shape({
-      KuskiIndex: PropTypes.number,
-      Entered: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      Text: PropTypes.string,
-    }),
-  ),
-  loading: PropTypes.bool,
-};
 
 export default Comments;

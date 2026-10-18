@@ -1,6 +1,5 @@
 import React, { lazy, Suspense } from 'react';
 import { StoreProvider, createStore } from 'easy-peasy';
-import { HelmetProvider } from 'react-helmet-async';
 import Router, { router } from './router';
 import { watchSession } from 'utils/nick';
 import model from './easypeasy';
@@ -28,9 +27,7 @@ function App() {
   return (
     <StoreProvider store={easyPeasyStore}>
       <QueryClientProvider client={queryClient}>
-        <HelmetProvider>
-          <Router />
-        </HelmetProvider>
+        <Router />
         <Suspense>
           <ReactQueryDevtools initialIsOpen={false} />
         </Suspense>

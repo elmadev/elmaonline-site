@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
 import LocalTime from 'components/LocalTime';
 import { BattleTime } from 'components/Time';
 import Kuski from 'components/Kuski';
@@ -224,10 +223,5 @@ const CondensedType = styled.div`
 const CondensedDuration = styled.div`
   white-space: nowrap;
 `;
-
-BattleList.propTypes = {
-  start: PropTypes.shape({}),
-  end: PropTypes.shape({}),
-};
 
 export default BattleList;

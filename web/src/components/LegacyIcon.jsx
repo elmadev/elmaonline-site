@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
 import moposite from '../images/legacy/moposite.png';
 import kopasite from '../images/legacy/kopasite.png';
 import skintatious from '../images/legacy/skintatious.png';
@@ -47,10 +46,5 @@ const LegacyIcon = ({ source, show = true }) => {
 const Container = styled.span`
   text-align: right;
 `;
-
-LegacyIcon.propTypes = {
-  source: PropTypes.number.isRequired,
-  show: PropTypes.bool,
-};
 
 export default LegacyIcon;

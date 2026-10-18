@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import PropTypes from 'prop-types';
 import { nick, nickId } from 'utils/nick';
 
 import Stars from 'components/Stars';
@@ -48,11 +47,6 @@ const ReplayRating = ({ ReplayIndex }) => {
       amount={amount}
     />
   );
-};
-
-ReplayRating.propTypes = {
-  ReplayIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired,
 };
 
 export default ReplayRating;
