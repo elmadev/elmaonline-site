@@ -56,9 +56,10 @@
     "g": "plop",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prettier": "prettier --check src/**/*.js",
+    "prettier": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
     "commit": "git-cz",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test --config e2e/playwright.config.js",
     "test:e2e:guest": "playwright test --config e2e/playwright.config.js --project=guest",
     "test:e2e:user": "playwright test --config e2e/playwright.config.js --project=user",
@@ -89,6 +90,9 @@
     "@storybook/addon-themes": "^10.6.1",
     "@storybook/react-vite": "^10.6.1",
     "@tanstack/react-router-devtools": "^1.167.2",
+    "@types/lodash": "^4.17.25",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.3",
     "commitizen": "^4.3.2",
     "cz-customizable": "^7.2.1",
@@ -105,6 +109,8 @@
     "prettier": "^3.9.9",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "storybook": "^10.6.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
     "vite": "^5.4.10"
   },
   "config": {
@@ -121,6 +127,6 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint ."
+    "*.{js,jsx,ts,tsx}": "eslint ."
   }
 }
