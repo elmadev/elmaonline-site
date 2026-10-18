@@ -39,8 +39,8 @@ export const Dropdown = ({
           multiple={!!multiple}
         >
           {options.map(y => {
-            let val = y;
-            let text = y;
+            const val = y;
+            const text = y;
             if (Array.isArray(y)) {
               return (
                 <MenuItem key={y[0]} value={y[0]}>
