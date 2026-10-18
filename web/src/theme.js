@@ -172,6 +172,10 @@ const muiTheme = themeId =>
       secondary: {
         main: themes[themeId].secondary,
       },
+      // v5 components like ListSubheader read this instead of the Paper override
+      background: {
+        paper: themes[themeId].paperBackground,
+      },
     },
     // keep v4 breakpoints and default colors so layouts and visuals stay the same
     breakpoints: {
