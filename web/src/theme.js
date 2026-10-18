@@ -244,13 +244,16 @@ const muiTheme = themeId =>
         },
       },
       MuiChip: {
+        // only uncolored chips, so primary/secondary keep their contrast text
         styleOverrides: {
-          root: {
-            color: themes[themeId].lightTextColor,
-          },
-          outlined: {
-            border: `1px solid ${themes[themeId].lightTextColor}`,
-          },
+          root: ({ ownerState }) =>
+            ownerState.color === 'default'
+              ? { color: themes[themeId].lightTextColor }
+              : {},
+          outlined: ({ ownerState }) =>
+            ownerState.color === 'default'
+              ? { border: `1px solid ${themes[themeId].lightTextColor}` }
+              : {},
         },
       },
       MuiCheckbox: {
