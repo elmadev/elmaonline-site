@@ -42,20 +42,16 @@ const getAllShirtData = async () => {
   return kuskiData;
 };
 
-export function getReplayByBattleId(battleId) {
-  return new Promise((resolve, reject) => {
-    getReplayDataByBattleId(battleId).then(data => {
-      if (data !== null) {
-        resolve({
-          file: data.dataValues.RecData,
-          filename: `${data.dataValues.RecFileName}.rec`,
-        });
-      } else {
-        reject(new Error('replay not found'));
-      }
-    });
-  });
-}
+export const getReplayByBattleId = async battleId => {
+  const data = await getReplayDataByBattleId(battleId);
+  if (!data?.RecData?.length) {
+    return null;
+  }
+  return {
+    file: data.RecData,
+    filename: `${data.RecFileName}.rec`,
+  };
+};
 
 const getReplayDataByCupTimeId = async CupTimeIndex => {
   const replayData = await SiteCupTime.findOne({
@@ -72,48 +68,29 @@ const getReplayDataByCupTimeId = async CupTimeIndex => {
   return replayData;
 };
 
-export function getReplayByCupTimeId(cupTimeId, filename, code = '') {
-  return new Promise((resolve, reject) => {
-    getReplayDataByCupTimeId(cupTimeId).then(data => {
-      if (data !== null) {
-        if (
-          isAfter(new Date(data.dataValues.CupData.EndTime * 1000), new Date())
-        ) {
-          if (code === data.dataValues.Code) {
-            resolve({
-              file: data.dataValues.RecData,
-              filename: `${filename}.rec`,
-            });
-          } else {
-            reject(new Error('Event not over'));
-          }
-        } else if (!data.dataValues.CupData.ShowResults) {
-          reject(new Error('Event not public'));
-        } else if (
-          data.dataValues.MD5 &&
-          data.dataValues.UUID &&
-          data.dataValues.TimeIndex
-        ) {
-          resolve({
-            UUID: data.dataValues.UUID,
-            MD5: data.dataValues.MD5,
-            TimeIndex: data.dataValues.TimeIndex,
-            filename: `${filename}.rec`,
-          });
-        } else if (data.dataValues.RecData) {
-          resolve({
-            file: data.dataValues.RecData,
-            filename: `${filename}.rec`,
-          });
-        } else {
-          reject(new Error('Replay data not found'));
-        }
-      } else {
-        reject(new Error('Replay not found'));
-      }
-    });
-  });
-}
+export const getReplayByCupTimeId = async (cupTimeId, filename, code = '') => {
+  const data = await getReplayDataByCupTimeId(cupTimeId);
+  if (!data) {
+    throw new Error('Replay not found');
+  }
+  const { RecData, Code, UUID, MD5, TimeIndex, CupData } = data;
+  if (isAfter(new Date(CupData.EndTime * 1000), new Date())) {
+    if (code !== Code) {
+      throw new Error('Event not over');
+    }
+    return { file: RecData, filename: `${filename}.rec` };
+  }
+  if (!CupData.ShowResults) {
+    throw new Error('Event not public');
+  }
+  if (MD5 && UUID && TimeIndex) {
+    return { UUID, MD5, TimeIndex, filename: `${filename}.rec` };
+  }
+  if (RecData) {
+    return { file: RecData, filename: `${filename}.rec` };
+  }
+  throw new Error('Replay data not found');
+};
 
 const getLevelData = async id => {
   const levelData = await Level.findOne({
@@ -140,39 +117,20 @@ const getLevels = async LevelPackName => {
   return levelData;
 };
 
-export function getLevel(id) {
-  return new Promise((resolve, reject) => {
-    getLevelData(id).then(data => {
-      const { Locked, LevelName, LevelData } = data.level.dataValues;
-      if (!data.battle) {
-        if (data.level !== null && Locked === 0) {
-          resolve({
-            file: LevelData,
-            filename: `${LevelName}.lev`,
-          });
-        } else {
-          reject(new Error('level not found'));
-        }
-      } else {
-        const { Finished, Aborted, InQueue } = data.battle.dataValues;
-        if (
-          data.level !== null &&
-          Locked === 0 &&
-          (Finished === 1 ||
-            Aborted === 1 ||
-            (Finished === 0 && InQueue === 0 && Aborted === 0)) // meaning ongoing
-        ) {
-          resolve({
-            file: LevelData,
-            filename: `${LevelName}.lev`,
-          });
-        } else {
-          reject(new Error('level not found'));
-        }
-      }
-    });
-  });
-}
+export const getLevel = async id => {
+  const { level, battle } = await getLevelData(id);
+  if (!level || level.Locked !== 0) {
+    return null;
+  }
+  if (battle) {
+    const { Finished, Aborted, InQueue } = battle;
+    const ongoing = Finished === 0 && InQueue === 0 && Aborted === 0;
+    if (Finished !== 1 && Aborted !== 1 && !ongoing) {
+      return null;
+    }
+  }
+  return { file: level.LevelData, filename: `${level.LevelName}.lev` };
+};
 
 export const zipFiles = files => {
   return new Promise((resolve, reject) => {
@@ -207,8 +165,16 @@ const zipLevelPack = levels => {
   return new Promise(resolve => {
     const levelData = [];
     const levelDataIterator = async (level, done) => {
-      const data = await getLevel(level.dataValues.LevelIndex);
-      levelData.push(data);
+      // locked levels and levels in queued battles are left out of the zip
+      try {
+        const data = await getLevel(level.dataValues.LevelIndex);
+        if (data) {
+          levelData.push(data);
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
       done();
     };
     eachSeries(levels, levelDataIterator, async () => {

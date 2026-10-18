@@ -104,8 +104,8 @@ const getLevel = async (LevelIndex, withStats = false) => {
 
 const getLevelData = async LevelIndex => {
   try {
-    const { file } = await getLevelSecure(LevelIndex);
-    return { LevelIndex, LevelData: file };
+    const level = await getLevelSecure(LevelIndex);
+    return { LevelIndex, LevelData: level?.file ?? null };
   } catch (e) {
     return { LevelIndex, LevelData: null };
   }
