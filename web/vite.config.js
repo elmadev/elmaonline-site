@@ -53,6 +53,7 @@ export default defineConfig(() => {
         config: '/src/config',
         features: '/src/features',
         types: '/src/types',
+        fs: '/src/shims/fs.js',
       },
     },
     optimizeDeps: {
