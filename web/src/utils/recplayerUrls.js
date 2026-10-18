@@ -60,5 +60,7 @@ export const isValidRecUrl = url => {
   const parsed = parseUrl(url);
   if (!parsed) return false;
   if (!isInternal(parsed)) return true;
-  return matchesPattern(parsed, REC_PATTERNS) && isValidQuery(parsed);
+  return (
+    matchesPattern(parsed, REC_PATTERNS) && isValidQuery(parsed, { v: /^\d+$/ })
+  );
 };

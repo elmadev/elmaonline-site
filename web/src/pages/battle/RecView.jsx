@@ -42,7 +42,7 @@ const RecView = props => {
                     !hasReplay
                       ? undefined
                       : replayUrl ||
-                        `${config.dlUrl}battlereplay/${BattleIndex}`
+                        `${config.dlUrl}battlereplay/${BattleIndex}?v=2`
                   }
                   lev={`${config.dlUrl}level/${levelIndex}`}
                   shirt={[shirtBmpUrl(player?.Kuski?.KuskiIndex)]}
@@ -60,7 +60,8 @@ const RecView = props => {
                 <Download
                   onClick={() =>
                     downloadRec(
-                      replayUrl || `${config.dlUrl}battlereplay/${BattleIndex}`,
+                      replayUrl ||
+                        `${config.dlUrl}battlereplay/${BattleIndex}?v=2`,
                       levelName,
                       player.Kuski.Kuski,
                       player.Time,

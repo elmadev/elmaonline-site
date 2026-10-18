@@ -116,7 +116,7 @@ const RightBarContainer = props => {
               />
             )}
             <div className="timeStamp">
-              <Download href={`battlereplay/${battle.BattleIndex}`}>
+              <Download href={`battlereplay/${battle.BattleIndex}?v=2`}>
                 Download replay
               </Download>
             </div>
