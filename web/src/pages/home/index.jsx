@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Grid, Card as MuiCard } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { Grid, Card as MuiCard } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import CardContent from '@material-ui/core/CardContent';
+import CardContent from '@mui/material/CardContent';
 import News from 'features/News';
 import Layout from 'components/Layout';
 import Button from 'components/Buttons';

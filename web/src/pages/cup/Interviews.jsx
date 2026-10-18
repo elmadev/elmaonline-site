@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Paper } from 'components/Paper';
-import { Button, TextField } from '@material-ui/core';
+import { Button, TextField } from '@mui/material';
 import { useStoreActions } from 'easy-peasy';
 import { nickId } from 'utils/nick';
 

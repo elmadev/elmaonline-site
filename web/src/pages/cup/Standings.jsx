@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'components/List';
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton } from '@mui/material';
 import Header from 'components/Header';
 import Kuski from 'components/Kuski';
 import FieldBoolean from 'components/FieldBoolean';
@@ -10,7 +10,7 @@ import { calculateStandings, pts, admins } from 'utils/cups';
 import { nickId } from 'utils/nick';
 import Flag from 'components/Flag';
 import { Paper, Content } from 'components/Paper';
-import { AddCircleOutlineRounded } from '@material-ui/icons';
+import { AddCircleOutlineRounded } from '@mui/icons-material';
 import StandingsDetailedPopup from './StandingsDetailedPopup';
 import { TriangleUp, TriangleDown } from 'components/Symbols';
 

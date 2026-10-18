@@ -1,7 +1,7 @@
 import React from 'react';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Button from '@mui/material/Button';
 import ReplayList from 'features/ReplayList';
 import Link from 'components/Link';
 import { useStoreActions } from 'easy-peasy';

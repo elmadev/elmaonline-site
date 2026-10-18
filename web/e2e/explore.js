@@ -271,6 +271,9 @@ const describe = locator =>
 const inputKind = locator =>
   locator.evaluate(el => {
     if (el.tagName === 'TEXTAREA') return 'textarea';
+    // MUI v5 autocompletes put role=combobox on the input itself
+    if (el.tagName === 'INPUT' && el.getAttribute('role') === 'combobox')
+      return 'combobox';
     if (
       el.tagName === 'INPUT' &&
       ['text', 'search', ''].includes(el.getAttribute('type') || '')
@@ -281,7 +284,20 @@ const inputKind = locator =>
 
 const interact = async (element, text) => {
   const kind = await inputKind(element);
-  if (kind) {
+  if (kind === 'combobox') {
+    // open the popup so an option gets picked, autocompletes that only
+    // search on enter have no options yet, so type in those instead
+    await element.click({ timeout: 2000 });
+    const options = element.page().locator(popupOptions).first();
+    const opened = await options
+      .waitFor({ state: 'visible', timeout: 500 })
+      .then(() => true)
+      .catch(() => false);
+    if (!opened) {
+      await element.fill(text, { timeout: 2000 });
+      await element.press('Enter', { timeout: 2000 });
+    }
+  } else if (kind) {
     await element.fill(text, { timeout: 2000 });
     // inputs like the search bar only act on enter
     if (kind === 'input') await element.press('Enter', { timeout: 2000 });

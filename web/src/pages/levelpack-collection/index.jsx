@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Layout, { Content } from 'components/Layout';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import Header from 'components/Header';
 import Kuski from 'components/Kuski';
-import { Delete as DeleteIcon, PlaylistAdd } from '@material-ui/icons';
-import { Grid, TextField } from '@material-ui/core';
+import { Delete as DeleteIcon, PlaylistAdd } from '@mui/icons-material';
+import { Grid, TextField } from '@mui/material';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'components/List';
 import Link from 'components/Link';
 import styled from '@emotion/styled';

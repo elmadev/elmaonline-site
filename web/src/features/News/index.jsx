@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LocalTime from 'components/LocalTime';
 import styled from '@emotion/styled';
-import { CardContent } from '@material-ui/core';
+import { CardContent } from '@mui/material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { ListRow, ListCell, ListContainer } from 'components/List';
 import { Parser } from 'react-tiny-bbcode';

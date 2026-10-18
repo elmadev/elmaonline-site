@@ -2,7 +2,7 @@ import React, { useEffect, Fragment, useState } from 'react';
 import styled from '@emotion/styled';
 import { nickId } from 'utils/nick';
 import { Paper } from 'components/Paper';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid } from '@mui/material';
 import Header from 'components/Header';
 import Time from 'components/Time';
 import { useStoreState, useStoreActions, useStoreRehydrated } from 'easy-peasy';
@@ -14,7 +14,7 @@ import { CupUpload } from './Dashboard';
 import config from 'config';
 import { shirtBmpUrl } from 'utils/misc';
 import Link from '../../components/Link';
-import { Share, AddBox, IndeterminateCheckBox } from '@material-ui/icons';
+import { Share, AddBox, IndeterminateCheckBox } from '@mui/icons-material';
 
 const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 

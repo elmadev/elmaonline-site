@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import styled from '@emotion/styled';
-import { Tabs, Tab, Grid } from '@material-ui/core';
+import { Tabs, Tab, Grid } from '@mui/material';
 import Layout from 'components/Layout';
 import Header from 'components/Header';
 import RankingTable from 'features/RankingTable';

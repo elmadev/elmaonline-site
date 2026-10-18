@@ -9,7 +9,7 @@ import LocalTime from 'components/LocalTime';
 import { Level } from '../../components/Names';
 import { Dropdown } from '../../components/Inputs';
 import Switch from 'components/Switch';
-import { SportsMotorsports } from '@material-ui/icons';
+import { SportsMotorsports } from '@mui/icons-material';
 import Link from 'components/Link';
 
 const Date = ({ driven }) => {

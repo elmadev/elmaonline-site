@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { TextField } from 'components/Inputs';
 import { Paper, Content } from 'components/Paper';
 import { useStoreState, useStoreActions } from 'easy-peasy';

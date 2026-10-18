@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import CardContent from '@material-ui/core/CardContent';
-import { Tabs, Tab } from '@material-ui/core';
+import CardContent from '@mui/material/CardContent';
+import { Tabs, Tab } from '@mui/material';
 import { Install } from 'components/Welcome';
 import Links from 'pages/help/tabs/Links';
 import Programs from 'pages/help/tabs/Programs';

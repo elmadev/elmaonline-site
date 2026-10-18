@@ -9,7 +9,7 @@ import {
   Typography,
   Grid,
   Switch,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import ChatView from 'features/ChatView';
@@ -154,6 +154,7 @@ const ChatLog = () => {
 
           <Grid item xs>
             <TextField
+              variant="standard"
               id="datetime-start"
               label="Start"
               type="datetime-local"
@@ -170,6 +171,7 @@ const ChatLog = () => {
 
           <Grid item xs>
             <TextField
+              variant="standard"
               id="datetime-end"
               label="End"
               type="datetime-local"

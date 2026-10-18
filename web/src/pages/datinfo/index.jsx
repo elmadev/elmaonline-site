@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Column } from 'components/Containers';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid } from '@mui/material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
 import Dropzone from 'components/Dropzone';

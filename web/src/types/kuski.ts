@@ -10,4 +10,5 @@ export type KuskiData = {
   Country?: string;
   TeamIndex?: number;
   TeamData?: TeamData | null;
+  BmpCRC?: number;
 };

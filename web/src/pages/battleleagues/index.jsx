@@ -3,7 +3,7 @@ import Layout from 'components/Layout';
 import Loading from 'components/Loading';
 import Header from 'components/Header';
 import LinkWithDesc from 'components/LinkWithDesc';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import Button from 'components/Buttons';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Paper } from 'components/Paper';

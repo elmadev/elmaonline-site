@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import Layout from 'components/Layout';
 import styled from '@emotion/styled';
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs } from '@mui/material';
 import LGRGuide from 'features/LGRGuide';
 import LGRUpload from 'features/LGRUpload';
 import LGRList from 'features/LGRList';

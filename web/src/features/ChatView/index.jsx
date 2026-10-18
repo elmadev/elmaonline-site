@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Typography, CircularProgress, Tooltip } from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+import { Typography, CircularProgress, Tooltip } from '@mui/material';
+import { Pagination } from '@mui/material';
 import styled from '@emotion/styled';
 import LocalTime from 'components/LocalTime';
 import { CHAT_API_LIMIT } from 'constants/api';

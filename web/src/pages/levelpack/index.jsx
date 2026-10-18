@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions, useStoreRehydrated } from 'easy-peasy';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import Layout from 'components/Layout';
 import Tags from 'components/Tags';
 import { nick, nickId, mod } from 'utils/nick';

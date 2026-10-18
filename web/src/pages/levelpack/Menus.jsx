@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { ExpandLess as CloseIcon } from '@material-ui/icons';
+import { ExpandLess as CloseIcon } from '@mui/icons-material';
 import {
   ClickAwayListener,
   RadioGroup,
   FormControlLabel,
   Radio,
   FormControl,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Paper } from 'components/Paper';
 import Button from 'components/Buttons';
 import FieldBoolean from 'components/FieldBoolean';
@@ -165,7 +165,11 @@ const Menus = ({ name, hideFilter }) => {
                   <ClickCloseIcon />
                   <SettingsHeadline>Settings</SettingsHeadline>
                 </SettingsHeader>
-                <FormControl component="fieldset" focused={false}>
+                <FormControl
+                  variant="standard"
+                  component="fieldset"
+                  focused={false}
+                >
                   <RadioButtonContainer>
                     <RadioButtonItem>
                       <FormLabel component="legend">

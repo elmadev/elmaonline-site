@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useParams, useNavigate } from '@tanstack/react-router';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import Layout from 'components/Layout';
 import {
   Accordion,
@@ -10,7 +10,7 @@ import {
   Typography,
   TextField,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
@@ -26,7 +26,7 @@ import { mod, nickId } from 'utils/nick';
 import { getReplayLink, getLgrPreviewLink, getLgrLink } from 'utils/link';
 import { DeleteLGR, ReplayByUUID } from 'api';
 import config from 'config';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import { Row } from 'components/Containers';
 import Portal from 'components/Portal';
 
@@ -167,6 +167,7 @@ const LGR = () => {
                   </Text>
                   {modDelete !== 'delete' ? (
                     <TextField
+                      variant="standard"
                       fullWidth
                       id="Delete"
                       multiline

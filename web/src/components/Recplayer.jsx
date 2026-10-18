@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { RecPlayer } from '@elmadev/react-rec-viewer';
 import config from 'config';
 import { isValidLevUrl, isValidRecUrl } from 'utils/recplayerUrls';

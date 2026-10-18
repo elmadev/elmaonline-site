@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import Kuski from 'components/Kuski';
 import Loading from 'components/Loading';
 import { ListContainer, ListRow, ListHeader, ListCell } from 'components/List';
@@ -14,7 +14,7 @@ import {
   Select,
   Switch,
   FormControlLabel,
-} from '@material-ui/core';
+} from '@mui/material';
 import { find, orderBy } from 'lodash';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import Header from 'components/Header';
@@ -144,9 +144,10 @@ const ByCountry = ({ playersByCountry }) => {
   return (
     <Root>
       <Grid container justifyContent="flex-end" className="controls">
-        <FormControl style={{ minWidth: 175 }}>
+        <FormControl variant="standard" style={{ minWidth: 175 }}>
           <InputLabel id="country-sort">Sort Countries</InputLabel>
           <Select
+            variant="standard"
             id="country-sort"
             value={countrySort}
             onChange={e => {
@@ -162,9 +163,10 @@ const ByCountry = ({ playersByCountry }) => {
             </MenuItem>
           </Select>
         </FormControl>
-        <FormControl style={{ minWidth: 175 }}>
+        <FormControl variant="standard" style={{ minWidth: 175 }}>
           <InputLabel id="player-sort">Sort Players</InputLabel>
           <Select
+            variant="standard"
             id="player-sort"
             value={playerSort}
             onChange={e => {
@@ -177,9 +179,10 @@ const ByCountry = ({ playersByCountry }) => {
             <MenuItem value="designed">Battles Designed</MenuItem>
           </Select>
         </FormControl>
-        <FormControl style={{ minWidth: 175 }}>
+        <FormControl variant="standard" style={{ minWidth: 175 }}>
           <InputLabel id="player-count"># Players/Country</InputLabel>
           <Select
+            variant="standard"
             id="player-count"
             value={showCount}
             onChange={e => setShowCount(e.target.value)}

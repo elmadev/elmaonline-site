@@ -8,7 +8,7 @@ import {
   InputLabel,
   Button,
   Container,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'components/Link';
@@ -176,7 +176,7 @@ const Register = () => {
                   onChange={e => setCountry(e.target.value)}
                   input={
                     <OutlinedInput
-                      labelWidth={72}
+                      label="Country *"
                       name="country"
                       id="country"
                     />

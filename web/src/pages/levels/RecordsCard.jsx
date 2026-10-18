@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Header from 'components/Header';
 import RecentRecords from 'components/RecentRecords';
-import CardActions from '@material-ui/core/CardActions';
+import CardActions from '@mui/material/CardActions';
 import Button from 'components/Buttons';
 import { RecentBestRecords, useQueryAlt } from 'api';
 import Loading from 'components/Loading';

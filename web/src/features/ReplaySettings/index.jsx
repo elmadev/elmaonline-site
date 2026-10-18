@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
-import { CropLandscape, Crop75 } from '@material-ui/icons';
+import { CropLandscape, Crop75 } from '@mui/icons-material';
 import { Row } from 'components/Containers';
 
 const ReplaySettings = () => {

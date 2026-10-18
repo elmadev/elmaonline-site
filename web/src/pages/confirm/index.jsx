@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import { Grid, CircularProgress } from '@material-ui/core';
+import { Grid, CircularProgress } from '@mui/material';
 import { Paper } from 'components/Paper';
 import Link from 'components/Link';
 import Layout from 'components/Layout';

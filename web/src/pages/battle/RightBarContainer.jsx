@@ -6,14 +6,14 @@ import {
   AccordionDetails,
   Button,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   ExpandMore,
   KeyboardArrowLeft,
   KeyboardArrowRight,
   CropOriginal,
   PlayArrow,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { BattleType } from 'components/Names';
 import Link from 'components/Link';
 import Download from 'components/Download';
@@ -27,7 +27,7 @@ import { pluralize } from 'utils/misc';
 import { useInterval } from 'utils/useInterval';
 import { useNavigate } from '@tanstack/react-router';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 
 const crippleOptions = battle => {
   let crippleString = '';

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button } from '@mui/material';
 import { Paper } from 'components/Paper';
 import Header from 'components/Header';
 

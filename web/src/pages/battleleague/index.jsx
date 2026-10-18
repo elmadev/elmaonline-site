@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
-import { Grid, Tabs, Tab } from '@material-ui/core';
+import { Grid, Tabs, Tab } from '@mui/material';
 import Header from 'components/Header';
 import Time from 'components/Time';
 import LocalTime from 'components/LocalTime';

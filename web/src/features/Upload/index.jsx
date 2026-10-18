@@ -11,7 +11,7 @@ import {
   Button,
   Grid,
   Chip,
-} from '@material-ui/core';
+} from '@mui/material';
 import Header from 'components/Header';
 import Dropzone from 'components/Dropzone';
 import { useStoreState, useStoreActions } from 'easy-peasy';
@@ -347,6 +347,7 @@ const Upload = ({ onUpload = null, filetype }) => {
                         <Grid item xs={12} sm={6}>
                           <div>
                             <TextField
+                              variant="standard"
                               id="DrivenBy"
                               label="Driven by"
                               value={fileInfo[rec.name].drivenBy}
@@ -359,6 +360,7 @@ const Upload = ({ onUpload = null, filetype }) => {
                         <Grid item xs={12} sm={6}>
                           <div>
                             <TextField
+                              variant="standard"
                               id="Description"
                               multiline
                               label="Description"

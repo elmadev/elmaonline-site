@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DerpTable from 'components/Table/DerpTable';
 import { ListRow, ListCell } from 'components/List';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import styled from '@emotion/styled';
 import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';

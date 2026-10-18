@@ -8,7 +8,5 @@ GET mod/banlist/:n
 GET player/records/:n?limit=25&offset=0&reverse=
 GET replay/driven_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded
 GET replay/uploaded_by/:n?order=desc&page=0&pageSize=25&sortBy=
-GET replay/uploaded_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=1&tags[]=50&tags[]=51
-GET replay/uploaded_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50
-GET replay/uploaded_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded&tags[]=50&tags[]=51
+GET replay/uploaded_by/:n?order=desc&page=1&pageSize=25&sortBy=
 GET tag?type=level

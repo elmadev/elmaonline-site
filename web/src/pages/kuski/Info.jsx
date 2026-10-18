@@ -15,7 +15,7 @@ import {
   Select,
   MenuItem,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import RPlay from '../../images/rights/RPlay.png';
 import RStartBattle from '../../images/rights/RStartBattle.png';
 import RSpecialBattle from '../../images/rights/RSpecialBattle.png';
@@ -297,9 +297,10 @@ const Info = ({ kuskiInfo }) => {
           </Paper>
           <Paper padding top>
             <Header h3>Give Ban</Header>
-            <FormControl>
+            <FormControl variant="standard">
               <InputLabel htmlFor="type-simple">Ban Type</InputLabel>
               <Select
+                variant="standard"
                 value={banType}
                 onChange={e => setBanType(e.target.value)}
                 inputProps={{
@@ -313,9 +314,10 @@ const Info = ({ kuskiInfo }) => {
                 <MenuItem value="StartBan">Start</MenuItem>
               </Select>
             </FormControl>
-            <FormControl>
+            <FormControl variant="standard">
               <InputLabel htmlFor="severity-simple">Severity</InputLabel>
               <Select
+                variant="standard"
                 value={severity}
                 onChange={e => setSeverity(e.target.value)}
                 inputProps={{

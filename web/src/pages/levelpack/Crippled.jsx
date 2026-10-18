@@ -2,7 +2,7 @@ import React from 'react';
 import { useStoreState } from 'easy-peasy';
 import styled from '@emotion/styled';
 import { useNavigate } from '@tanstack/react-router';
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'components/List';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
@@ -214,6 +214,7 @@ const Crippled = ({ LevelPack, crippleType, highlightWeeks }) => {
         <CrippleSelect>
           <InputLabel id="cripple">Cripple</InputLabel>
           <Select
+            variant="standard"
             id="cripple"
             value={crippleType}
             onChange={e => {

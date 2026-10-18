@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { nick, nickId } from 'utils/nick';
 import Loading from 'components/Loading';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import {
   ResponsiveContainer,
   BarChart,

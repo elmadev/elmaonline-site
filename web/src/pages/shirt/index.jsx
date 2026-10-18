@@ -13,7 +13,7 @@ import styled from '@emotion/styled';
 import { Paper } from 'components/Paper';
 import Button from 'components/Buttons';
 import Feedback from 'components/Feedback';
-import { Radio, RadioGroup, FormControlLabel } from '@material-ui/core';
+import { Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import Sky from 'images/sky.png';
 import OutlineGradient from 'images/outline-gradient.png';
 import OutlineBlack from 'images/outline-black.png';

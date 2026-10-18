@@ -1,7 +1,7 @@
 import React from 'react';
-import CardContent from '@material-ui/core/CardContent';
+import CardContent from '@mui/material/CardContent';
 import BattleList from 'features/BattleList';
-import CardActions from '@material-ui/core/CardActions';
+import CardActions from '@mui/material/CardActions';
 import Header from 'components/Header';
 import Button from 'components/Buttons';
 import { useStoreActions } from 'easy-peasy';

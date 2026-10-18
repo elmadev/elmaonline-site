@@ -5,13 +5,13 @@ import {
   AccordionDetails,
   Chip,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   ExpandMore,
   IndeterminateCheckBox,
   AddBox,
   Visibility,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { xor } from 'lodash';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import styled from '@emotion/styled';
@@ -40,7 +40,7 @@ import FieldBoolean from 'components/FieldBoolean';
 import Button from 'components/Buttons';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'components/List';
 import { MergeContainer } from 'components/RecListItem';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';

@@ -4,7 +4,7 @@ import { themes, previews } from 'theme';
 import Header from 'components/Header';
 import { Column, Row } from 'components/Containers';
 import styled from '@emotion/styled';
-import { Radio, Grid } from '@material-ui/core';
+import { Radio, Grid } from '@mui/material';
 import { alphaNumeric } from 'utils/misc';
 import { Paper } from 'components/Paper';
 

@@ -1,5 +1,8 @@
 import { ThemeProvider } from '@emotion/react';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeProvider as MuiThemeProvider,
+  THEME_ID,
+} from '@mui/material/styles';
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 import {
   RouterContextProvider,
@@ -23,7 +26,9 @@ const router = createRouter({
 
 // decorators call Story() directly, rendering <Story /> breaks storybook hooks
 const withMuiTheme = (Story, context) => (
-  <MuiThemeProvider theme={muiTheme(context.globals.theme || defaultTheme)}>
+  <MuiThemeProvider
+    theme={{ [THEME_ID]: muiTheme(context.globals.theme || defaultTheme) }}
+  >
     {Story()}
   </MuiThemeProvider>
 );
