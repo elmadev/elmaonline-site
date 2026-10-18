@@ -1,4 +1,4 @@
-import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const pad = 4;
 
@@ -160,9 +160,9 @@ const previews = [
 ];
 
 const muiTheme = themeId =>
-  createMuiTheme({
+  createTheme({
     palette: {
-      type: themes[themeId].type,
+      mode: themes[themeId].type,
       primary: {
         light: themes[themeId].primaryLight,
         main: themes[themeId].primary,
@@ -173,48 +173,84 @@ const muiTheme = themeId =>
         main: themes[themeId].secondary,
       },
     },
-    typography: {
-      useNextVariants: true,
+    // keep v4 breakpoints and default colors so layouts and visuals stay the same
+    breakpoints: {
+      values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
     },
-    overrides: {
+    components: {
+      MuiTabs: {
+        defaultProps: {
+          indicatorColor: 'secondary',
+          textColor: 'inherit',
+        },
+      },
+      MuiRadio: {
+        defaultProps: {
+          color: 'secondary',
+        },
+      },
+      MuiSwitch: {
+        defaultProps: {
+          color: 'secondary',
+        },
+      },
       MuiPaper: {
-        root: {
-          backgroundColor: themes[themeId].paperBackground,
-          color: themes[themeId].fontColor,
-          border: themes[themeId].paperBorder || undefined,
+        styleOverrides: {
+          root: {
+            backgroundColor: themes[themeId].paperBackground,
+            color: themes[themeId].fontColor,
+            border: themes[themeId].paperBorder || undefined,
+            // v5 adds a lightening gradient to elevated paper in dark mode
+            backgroundImage: 'none',
+          },
         },
       },
       MuiButton: {
-        root: {
-          color: themes[themeId].fontColor,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].fontColor,
+          },
         },
       },
       MuiTablePagination: {
-        root: {
-          color: themes[themeId].fontColor,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].fontColor,
+          },
         },
       },
       MuiSelect: {
-        icon: {
-          color: themes[themeId].lightTextColor,
+        styleOverrides: {
+          icon: {
+            color: themes[themeId].lightTextColor,
+          },
         },
       },
       MuiMenuItem: {
-        root: {
-          color: themes[themeId].linkColor,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].linkColor,
+          },
         },
       },
       MuiChip: {
-        root: {
-          color: themes[themeId].lightTextColor,
-        },
-        outlined: {
-          border: `1px solid ${themes[themeId].lightTextColor}`,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].lightTextColor,
+          },
+          outlined: {
+            border: `1px solid ${themes[themeId].lightTextColor}`,
+          },
         },
       },
       MuiCheckbox: {
-        root: {
-          color: 'inherit',
+        defaultProps: {
+          color: 'secondary',
+        },
+        styleOverrides: {
+          root: {
+            color: 'inherit',
+          },
         },
       },
     },

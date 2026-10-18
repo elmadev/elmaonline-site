@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Grid, Tabs, Tab } from '@material-ui/core';
+import { Grid, Tabs, Tab } from '@mui/material';
 import { Paper } from 'components/Paper';
 import { ListRow, ListCell, ListHeader } from 'components/List';
 import { mod } from 'utils/nick';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Kuski from 'components/Kuski';
 import Header from 'components/Header';
-import { Check, Clear } from '@material-ui/icons';
+import { Check, Clear } from '@mui/icons-material';
 import Layout from 'components/Layout';
 import Bans from './Bans';
 import ErrorLog from './ErrorLog';

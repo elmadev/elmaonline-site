@@ -4,7 +4,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import Kuski from 'components/Kuski';
 import React from 'react';
 import styled from '@emotion/styled';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStoreState } from 'easy-peasy';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { CupCover } from 'pages/cup';
 import Link from 'components/Link';
 

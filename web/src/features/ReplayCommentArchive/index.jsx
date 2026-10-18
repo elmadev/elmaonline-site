@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from '@mui/material/Pagination';
 import {
   ListContainer,
   ListCell,
@@ -12,7 +12,7 @@ import { formatDistanceStrict } from 'date-fns';
 import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import Time from 'components/Time';
-import { useMediaQuery } from '@material-ui/core';
+import { useMediaQuery } from '@mui/material';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 
 const ReplayCommentArchive = () => {

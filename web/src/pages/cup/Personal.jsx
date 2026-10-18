@@ -10,7 +10,7 @@ import {
   FormControlLabel,
   Radio,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Paper } from 'components/Paper';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
@@ -23,7 +23,7 @@ import config from 'config';
 import { shirtBmpUrl } from 'utils/misc';
 import FieldBoolean from 'components/FieldBoolean';
 import Preview from '../kuski/Preview';
-import { PlayArrow } from '@material-ui/icons';
+import { PlayArrow } from '@mui/icons-material';
 
 const eventSort = (a, b) => a.CupIndex - b.CupIndex;
 

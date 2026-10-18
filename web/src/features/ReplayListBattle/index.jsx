@@ -3,7 +3,7 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import ReplayCard from 'components/ReplayCard';
 import Preview from 'components/Preview';
 import styled from '@emotion/styled';
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from '@mui/material/Pagination';
 import { findIndex } from 'lodash';
 
 export default function ReplayListBattle({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStoreState } from 'easy-peasy';
-import { TablePagination } from '@material-ui/core';
+import { TablePagination } from '@mui/material';
 import PropTypes from 'prop-types';
 
 import Time from 'components/Time';

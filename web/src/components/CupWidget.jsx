@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import CupCurrent from 'components/CupCurrent';
 import Header from 'components/Header';
-import { CardContent, Grid } from '@material-ui/core';
+import { CardContent, Grid } from '@mui/material';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useNavigate } from '@tanstack/react-router';

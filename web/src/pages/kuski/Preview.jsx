@@ -5,13 +5,13 @@ import Time from 'components/Time';
 import { has } from 'lodash';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
-import CloseIcon from '@material-ui/icons/HighlightOffOutlined';
-import { Grid, Typography, Backdrop } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/HighlightOffOutlined';
+import { Grid, Typography, Backdrop } from '@mui/material';
 import config from 'config';
 import { downloadRec, shirtBmpUrl } from 'utils/misc';
 import styled from '@emotion/styled';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Column, Row } from 'components/Containers';
 import { parseTimeHundreds, parsedTimeToString } from 'utils/recTime';
 

@@ -7,7 +7,7 @@ import {
   DialogContentText,
   Button,
   DialogTitle,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   MapContainer,
   TileLayer,

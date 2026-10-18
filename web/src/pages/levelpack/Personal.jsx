@@ -365,7 +365,7 @@ const Personal = ({ name, player }) => {
             label="Compare"
             onChange={value => updateCompare(value)}
             value={compares}
-            getOptionSelected={(o, v) => o.key === v.key}
+            isOptionEqualToValue={(o, v) => o.key === v.key}
             renderOption={option => {
               if (option.KuskiIndex) {
                 return <Kuski kuskiData={option} flag team noLink />;

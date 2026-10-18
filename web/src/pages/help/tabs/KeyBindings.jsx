@@ -8,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const createRow = (button, action, action2, action3) => {
   return { button, action, action2, action3 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { nickId } from 'utils/nick';
-import { TextField, Button, Grid } from '@material-ui/core';
+import { TextField, Button, Grid } from '@mui/material';
 import { Paper } from 'components/Paper';
 import DerpTable from 'components/Table/DerpTable';
 import Header from 'components/Header';

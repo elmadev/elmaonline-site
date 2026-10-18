@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 

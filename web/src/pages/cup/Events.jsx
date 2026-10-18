@@ -6,7 +6,7 @@ import LocalTime from 'components/LocalTime';
 import Time from 'components/Time';
 import CupResults from 'components/CupResults';
 import Kuski from 'components/Kuski';
-import { Tabs, Tab, Grid } from '@material-ui/core';
+import { Tabs, Tab, Grid } from '@mui/material';
 import Recplayer from 'components/Recplayer';
 import Download from 'components/Download';
 import EventItem from 'components/EventItem';

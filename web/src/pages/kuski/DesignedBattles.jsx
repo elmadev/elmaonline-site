@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { TablePagination } from '@material-ui/core';
+import { TablePagination } from '@mui/material';
 
 import Time from 'components/Time';
 import Kuski from 'components/Kuski';

@@ -9,9 +9,9 @@ import {
   TablePagination,
   Paper,
   useMediaQuery,
-} from '@material-ui/core';
+} from '@mui/material';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import styled from '@emotion/styled';
 import { Level } from 'components/Names';
 import Kuski from 'components/Kuski';
@@ -21,10 +21,10 @@ import Time from 'components/Time';
 import { KuskiAutoComplete } from 'components/AutoComplete';
 import Loading from 'components/Loading';
 import LevelCard from 'components/LevelCard';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import ListIcon from '@material-ui/icons/List';
-import AppsIcon from '@material-ui/icons/Apps';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ListIcon from '@mui/icons-material/List';
+import AppsIcon from '@mui/icons-material/Apps';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import Switch from 'components/Switch';
 import Button from 'components/Buttons';
@@ -170,6 +170,7 @@ export default function LevelList({
               collapsed={filtersVisible ? 0 : 1}
             >
               <TextField
+                variant="standard"
                 label="Search query"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
@@ -209,7 +210,7 @@ export default function LevelList({
                       tag => !excludedTags?.includes(tag.TagIndex),
                     )}
                     getOptionLabel={option => option.Name}
-                    getOptionSelected={(option, value) =>
+                    isOptionEqualToValue={(option, value) =>
                       option.Name === value.Name
                     }
                     filterSelectedOptions
@@ -236,7 +237,7 @@ export default function LevelList({
                       tag => !selectedTags?.includes(tag.TagIndex),
                     )}
                     getOptionLabel={option => option.Name}
-                    getOptionSelected={(option, value) =>
+                    isOptionEqualToValue={(option, value) =>
                       option.Name === value.Name
                     }
                     filterSelectedOptions
@@ -262,7 +263,7 @@ export default function LevelList({
                     size="small"
                     options={levelpacksSorted}
                     getOptionLabel={option => option.LevelPackName}
-                    getOptionSelected={(option, value) =>
+                    isOptionEqualToValue={(option, value) =>
                       option.LevelPackName === value?.LevelPackName
                     }
                     filterSelectedOptions
@@ -288,9 +289,10 @@ export default function LevelList({
                       variant="standard"
                     />
                   )}
-                  <FormControl>
+                  <FormControl variant="standard">
                     <InputLabel id="battled">Battled</InputLabel>
                     <Select
+                      variant="standard"
                       labelId="battled"
                       value={battled}
                       displayEmpty
@@ -301,9 +303,10 @@ export default function LevelList({
                       <MenuItem value={false}>Unbattled</MenuItem>
                     </Select>
                   </FormControl>
-                  <FormControl>
+                  <FormControl variant="standard">
                     <InputLabel id="finished">Finished</InputLabel>
                     <Select
+                      variant="standard"
                       labelId="finished"
                       value={finished}
                       displayEmpty

@@ -16,7 +16,7 @@ import {
   Typography,
   TextField,
   Chip,
-} from '@material-ui/core';
+} from '@mui/material';
 import { NewLGR, EditLGR } from 'api';
 import { xor } from 'lodash';
 import { mod, nick } from 'utils/nick';
@@ -376,6 +376,7 @@ const LGRUpload = ({ lgrToEdit }) => {
                     </Typography>
                   ) : (
                     <TextField
+                      variant="standard"
                       fullWidth
                       id="Filename"
                       label="Change Filename (use with caution - mod-exclusive feature)"
@@ -386,6 +387,7 @@ const LGRUpload = ({ lgrToEdit }) => {
                   )}
                   {modPrivileges && (
                     <TextField
+                      variant="standard"
                       fullWidth
                       id="KuskiName"
                       label="Change LGR Ownership (use with caution - mod-exclusive feature)"
@@ -395,6 +397,7 @@ const LGRUpload = ({ lgrToEdit }) => {
                     />
                   )}
                   <TextField
+                    variant="standard"
                     fullWidth
                     id="Description"
                     multiline
@@ -431,6 +434,7 @@ const LGRUpload = ({ lgrToEdit }) => {
                 </CardContent>
                 <CardContent>
                   <TextField
+                    variant="standard"
                     fullWidth
                     id="Replay"
                     label="Replay UUID"

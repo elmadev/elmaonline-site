@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStoreRehydrated } from 'easy-peasy';
-import { useMediaQuery } from '@material-ui/core';
+import { useMediaQuery } from '@mui/material';
 import { useStoreState } from 'easy-peasy';
 import Recplayer from 'components/Recplayer';
 import styled from '@emotion/styled';

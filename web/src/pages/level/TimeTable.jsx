@@ -7,8 +7,8 @@ import Kuski from 'components/Kuski';
 import LegacyIcon from 'components/LegacyIcon';
 import LocalTime from 'components/LocalTime';
 import { FixedSizeList as List } from 'react-window';
-import { PlayArrow } from '@material-ui/icons';
-import { Button } from '@material-ui/core';
+import { PlayArrow } from '@mui/icons-material';
+import { Button } from '@mui/material';
 
 const TimeTable = ({ data, latestBattle, loading, height, openReplay }) => {
   if (loading) return <Loading />;

@@ -1,4 +1,4 @@
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Paper } from 'components/Paper';

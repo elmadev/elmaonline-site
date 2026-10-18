@@ -51,7 +51,10 @@ import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
 import { useStoreState, useStoreRehydrated } from 'easy-peasy';
 import { themes, muiTheme } from './theme';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeProvider as MuiThemeProvider,
+  THEME_ID,
+} from '@mui/material/styles';
 
 const TanStackRouterDevtools =
   // eslint-disable-next-line no-undef
@@ -539,7 +542,7 @@ const Routes = () => {
   } = useStoreState(state => state.Settings);
   if (!isRehydrated) return null;
   return (
-    <MuiThemeProvider theme={muiTheme(siteTheme)}>
+    <MuiThemeProvider theme={{ [THEME_ID]: muiTheme(siteTheme) }}>
       <ThemeProvider theme={themes[siteTheme]}>
         <RouterProvider router={router} />
       </ThemeProvider>

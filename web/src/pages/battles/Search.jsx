@@ -6,20 +6,16 @@ import { Dropdown, TextField } from 'components/Inputs';
 import { useNavigate, useLocation } from '@tanstack/react-router';
 import { getBattleTypes } from 'utils/eol';
 import { forceInt } from 'utils/calcs';
-import Slider from '@material-ui/core/Slider';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from '@material-ui/core';
+import Slider from '@mui/material/Slider';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { parseDateRange, getTypeAndDate } from 'utils/parseDateRange';
 import { format, endOfDay, addDays } from 'date-fns';
 import { BattleListTable } from 'features/BattleList';
-import { Button } from '@material-ui/core';
-import { TablePagination } from '@material-ui/core';
+import { Button } from '@mui/material';
+import { TablePagination } from '@mui/material';
 import Switch from 'components/Switch';
 import { BattlesSearch, useQueryAlt } from 'api';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import Header from 'components/Header';
 import { Paper } from 'components/Paper';
 import { getOrderedValues } from 'utils/misc';

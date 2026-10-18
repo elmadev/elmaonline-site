@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'components/List';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Header from 'components/Header';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@material-ui/icons';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import Field from 'components/Field';
 import FieldBoolean from 'components/FieldBoolean';
-import { Button } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Button } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 const initialForm = { Name: '', Hidden: false, Type: '' };
 

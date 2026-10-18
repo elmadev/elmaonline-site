@@ -1,9 +1,9 @@
 import React from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Column } from 'components/Containers';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { Paper } from 'components/Paper';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 
 const SetZoomScale = () => {
   const { zoomScale } = useStoreState(

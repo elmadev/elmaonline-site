@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import styled from '@emotion/styled';
-import { Select, MenuItem } from '@material-ui/core';
-import { PlayArrow, GetApp } from '@material-ui/icons';
+import { Select, MenuItem } from '@mui/material';
+import { PlayArrow, GetApp } from '@mui/icons-material';
 import { Paper } from 'components/Paper';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
 import { isEmpty } from 'lodash';
@@ -58,6 +58,7 @@ const LevelStatsContainer = props => {
               <ListCell right>Apples Taken</ListCell>
               <ListCell right>
                 <Select
+                  variant="standard"
                   value={rankingSelect}
                   onChange={e => setRankingSelect(e.target.value)}
                   name="extra"

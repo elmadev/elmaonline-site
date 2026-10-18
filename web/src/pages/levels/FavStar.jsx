@@ -1,4 +1,4 @@
-import { Star, StarBorder } from '@material-ui/icons';
+import { Star, StarBorder } from '@mui/icons-material';
 import React from 'react';
 import styled from '@emotion/styled';
 

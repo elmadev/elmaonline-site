@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { useStoreActions } from 'easy-peasy';
 import { format } from 'date-fns';
 import Button from 'components/Buttons';

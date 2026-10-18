@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import Header from 'components/Header';
 
 const Links = ({ hideHeader = false }) => {

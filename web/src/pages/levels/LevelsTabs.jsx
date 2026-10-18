@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 const LevelsTabs = ({ tab }) => {

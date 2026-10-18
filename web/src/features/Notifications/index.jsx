@@ -2,16 +2,16 @@ import React, { useEffect, Fragment } from 'react';
 import LocalTime from 'components/LocalTime';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { ListRow, ListCell, ListContainer } from 'components/List';
-import Avatar from '@material-ui/core/Avatar';
-import CommentIcon from '@material-ui/icons/Comment';
-import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';
-import LooksOneIcon from '@material-ui/icons/LooksOne';
-import Badge from '@material-ui/core/Badge';
+import Avatar from '@mui/material/Avatar';
+import CommentIcon from '@mui/icons-material/Comment';
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import LooksOneIcon from '@mui/icons-material/LooksOne';
+import Badge from '@mui/material/Badge';
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 import { useState } from 'react';
-import { Paper, TablePagination } from '@material-ui/core';
+import { Paper, TablePagination } from '@mui/material';
 import { stripRecExt } from 'utils/misc';
 
 const Notifications = ({

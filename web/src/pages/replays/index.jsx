@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs } from '@mui/material';
 import ReplayList from 'features/ReplayList';
 import ReplayListBattle from 'features/ReplayListBattle';
 import ReplayCommentArchive from 'features/ReplayCommentArchive';
