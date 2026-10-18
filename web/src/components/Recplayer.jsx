@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { RecPlayer } from '@elmadev/react-rec-viewer';
@@ -199,23 +198,6 @@ const Recplayer = props => {
       style={{ width: size(width), height: size(height) }}
     />
   );
-};
-
-Recplayer.propTypes = {
-  rec: PropTypes.string,
-  lev: PropTypes.string.isRequired,
-  shirt: PropTypes.arrayOf(PropTypes.string),
-  names: PropTypes.arrayOf(PropTypes.string),
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  zoom: PropTypes.number,
-  controls: PropTypes.bool,
-  autoPlay: PropTypes.oneOf(['if-visible', 'yes', 'no']),
-  merge: PropTypes.bool,
-  forceRefresh: PropTypes.bool,
-  lgr: PropTypes.string,
-  onEnd: PropTypes.func,
-  onError: PropTypes.func,
 };
 
 export default Recplayer;

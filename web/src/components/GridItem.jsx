@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
 import Link from 'components/Link';
 
 const GridItem = ({
@@ -82,13 +81,5 @@ const Container = styled.div`
     height: unset;
   }
 `;
-
-GridItem.propTypes = {
-  name: PropTypes.string,
-  longname: PropTypes.string,
-  to: PropTypes.string,
-  children: PropTypes.node,
-  promote: PropTypes.bool,
-};
 
 export default GridItem;

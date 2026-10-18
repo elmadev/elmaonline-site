@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import Tag from 'components/Tag';
 
@@ -20,9 +19,5 @@ const Tags = ({ tags }) => (
       })}
   </TagsContainer>
 );
-
-Tags.propTypes = {
-  tags: PropTypes.array.isRequired,
-};
 
 export default Tags;

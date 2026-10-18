@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { ListContainer, ListHeader, ListRow, ListCell } from 'components/List';
 import Kuski from 'components/Kuski';
@@ -139,13 +138,5 @@ const Position = styled.span`
   color: #fff;
   background: #2e7d32;
 `;
-
-Detailed.propTypes = {
-  battles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  standings: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  pointSystem: PropTypes.number,
-  pointsEnum: PropTypes.arrayOf(PropTypes.number),
-  referenceResultCount: PropTypes.number,
-};
 
 export default Detailed;

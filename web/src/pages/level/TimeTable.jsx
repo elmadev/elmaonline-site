@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
@@ -85,10 +84,6 @@ const TimeTable = ({ data, latestBattle, loading, height, openReplay }) => {
         )}
     </div>
   );
-};
-
-TimeTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default TimeTable;

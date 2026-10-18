@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
 import Time from 'components/Time';
@@ -57,10 +56,6 @@ const KuskiHeader = ({ KuskiIndex, Kuski }) => {
       </StatsContainer>
     </Container>
   );
-};
-
-KuskiHeader.propTypes = {
-  KuskiIndex: PropTypes.number.isRequired,
 };
 
 const Container = styled.div`

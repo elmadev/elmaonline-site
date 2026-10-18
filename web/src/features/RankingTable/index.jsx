@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { ListRow, ListCell, ListContainer } from 'components/List';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Kuski from 'components/Kuski';
@@ -149,13 +148,5 @@ const Amount = styled.div`
   padding-top: ${p => p.theme.padLarge};
   height: 20px;
 `;
-
-RankingTable.propTypes = {
-  battleType: PropTypes.string.isRequired,
-  minPlayed: PropTypes.number,
-  period: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  tableIndex: PropTypes.string.isRequired,
-  periodType: PropTypes.string.isRequired,
-};
 
 export default RankingTable;
