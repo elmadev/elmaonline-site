@@ -4,7 +4,7 @@ import {
   Notifications,
   AccountCircle,
   PlayCircleOutline,
-  Timer,
+  TimerOutlined,
   ExitToApp,
   Settings,
   FastRewind,
@@ -51,7 +51,7 @@ const ReplayIcon = styled(PlayCircleOutline)`
   margin-right: 4px;
 `;
 
-const TimesIcon = styled(Timer)`
+const TimesIcon = styled(TimerOutlined)`
   margin-right: 4px;
 `;
 

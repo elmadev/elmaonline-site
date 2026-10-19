@@ -68,10 +68,9 @@ const Records = ({ kuski, sort }) => {
             </tr>
           </tbody>
         </table>
-        <StyledFormControl>
+        <StyledFormControl variant="standard">
           <InputLabel id="records-sort">Sort By</InputLabel>
           <Select
-            variant="standard"
             id="records-sort"
             value={sort}
             onChange={e => {

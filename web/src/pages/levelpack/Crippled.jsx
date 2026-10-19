@@ -211,10 +211,9 @@ const Crippled = ({ LevelPack, crippleType, highlightWeeks }) => {
   return (
     <Root>
       <Controls>
-        <CrippleSelect>
+        <CrippleSelect variant="standard">
           <InputLabel id="cripple">Cripple</InputLabel>
           <Select
-            variant="standard"
             id="cripple"
             value={crippleType}
             onChange={e => {
