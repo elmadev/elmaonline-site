@@ -1,13 +1,33 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { RecPlayer } from '@elmadev/react-rec-viewer';
+import { RecPlayer, preload } from '@elmadev/react-rec-viewer';
 import config from 'config';
 import { isValidLevUrl, isValidRecUrl } from 'utils/recplayerUrls';
 import useRecplayerKeys from '../hooks/use-recplayer-keys';
 import Loading from './Loading';
 
 const DEFAULT_LGR = 'https://space.elma.online/lgr/cr6m27a3t1/default.lgr';
+
+const lgrUrl = name => `${config.url}api/lgr/get/${encodeURIComponent(name)}`;
+
+const lgrFileUrlFor = (lgr, { lgrOverride, lgrUrl: lgrOverrideUrl }) => {
+  if (lgr) return lgr;
+  if (lgrOverride && lgrOverride !== 'legacy' && lgrOverrideUrl) {
+    return `${config.s3Url}lgr/${lgrOverrideUrl}`;
+  }
+  return undefined;
+};
+
+export const usePreloadRecplayer = lev => {
+  const { settings } = useStoreState(state => state.ReplaySettings);
+  const lgrFileUrl = lgrFileUrlFor(undefined, settings);
+  useEffect(() => {
+    if (lev) {
+      preload({ levUrl: lev, lgrUrl, lgrFileUrl, defaultLgrUrl: DEFAULT_LGR });
+    }
+  }, [lev, lgrFileUrl]);
+};
 
 const size = value =>
   value === 'auto' || value === undefined ? '100%' : Number(value) || value;
@@ -95,12 +115,10 @@ const Recplayer = props => {
     shouldAutoPlay = true;
   }
 
-  let lgrFileUrl;
-  if (lgr) {
-    lgrFileUrl = lgr;
-  } else if (lgrOverride && lgrOverride !== 'legacy' && lgrOverrideUrl) {
-    lgrFileUrl = `${config.s3Url}lgr/${lgrOverrideUrl}`;
-  }
+  const lgrFileUrl = lgrFileUrlFor(lgr, {
+    lgrOverride,
+    lgrUrl: lgrOverrideUrl,
+  });
 
   const recUrls = rec ? rec.split(';').filter(Boolean) : [];
   const shirtUrls = recUrls.map((_, i) => (shirt && shirt[i]) || null);
@@ -125,7 +143,7 @@ const Recplayer = props => {
       levUrl={lev}
       shirtUrls={shirtUrls}
       recNames={recNames}
-      lgrUrl={name => `${config.url}api/lgr/get/${encodeURIComponent(name)}`}
+      lgrUrl={lgrUrl}
       lgrFileUrl={lgrFileUrl}
       defaultLgrUrl={DEFAULT_LGR}
       acrossPackUrl={`${config.s3Url}across/across.res`}
