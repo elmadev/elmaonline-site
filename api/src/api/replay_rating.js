@@ -1,5 +1,5 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 import { omit } from 'lodash-es';
 import { ReplayRating } from '#data/models';
 

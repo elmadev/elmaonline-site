@@ -1,4 +1,4 @@
-import { log } from '#utils/database';
+import { log } from '#utils/database.js';
 import { isEmpty } from 'lodash-es';
 import sequelize from '../data/sequelize.js';
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import { format } from 'date-fns';
-import { authContext } from '#utils/auth';
-import { createNewLGRCommentNotification } from '#utils/notifications';
+import { authContext } from '#utils/auth.js';
+import { createNewLGRCommentNotification } from '#utils/notifications.js';
 import { LGRComment, Kuski } from '#data/models';
 import { getLGRByIndex } from './lgr.js';
 
@@ -30,7 +30,7 @@ export const deleteLGRComments = async LGRIndex => {
 };
 
 const addLGRComment = async commentData => {
-  const lgr = await getLGRByIndex(commentData.LGRIndex)
+  const lgr = await getLGRByIndex(commentData.LGRIndex);
   if (!lgr) {
     return { error: 'LGR not found!' };
   }

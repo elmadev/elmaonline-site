@@ -1,7 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { like, searchPageLimit, searchOffset } from '#utils/database';
-import { authContext } from '#utils/auth';
+import { like, searchPageLimit, searchOffset } from '#utils/database.js';
+import { authContext } from '#utils/auth.js';
 import { pick, omit } from 'lodash-es';
 import {
   Team,

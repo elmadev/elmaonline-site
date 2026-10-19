@@ -16,8 +16,8 @@ import {
 } from 'lodash-es';
 import { frequencies } from 'lodash-contrib';
 import { format } from 'date-fns';
-import { authContext, authRights } from '#utils/auth';
-import { sortTimes } from '#utils/sort';
+import { authContext, authRights } from '#utils/auth.js';
+import { sortTimes } from '#utils/sort.js';
 import {
   like,
   searchPageLimit,
@@ -25,7 +25,7 @@ import {
   log,
   formatLevelSearch,
   levelNameSearch,
-} from '#utils/database';
+} from '#utils/database.js';
 import { Op } from 'sequelize';
 import {
   Besttime,
@@ -42,10 +42,10 @@ import {
 import Admin from './levelpack_admin.js';
 import Favourite from './levelpack_favourite.js';
 import Collection from './levelpack_collection.js';
-import { checkSchemaAndBail } from '#middlewares/validate';
-import sequelize, { dbquery } from '#data/sequelize';
-import { query as sqlQuery } from '#utils/sequelize';
-import { parseTimeDriven } from '#data/models/PlayStats';
+import { checkSchemaAndBail } from '#middlewares/validate.js';
+import sequelize, { dbquery } from '#data/sequelize.js';
+import { query as sqlQuery } from '#utils/sequelize.js';
+import { parseTimeDriven } from '#data/models/PlayStats.js';
 
 const router = express.Router();
 

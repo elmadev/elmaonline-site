@@ -3,8 +3,8 @@ import { Op } from 'sequelize';
 import moment from 'moment';
 
 import { Chat, Kuski } from '#data/models';
-import { like, searchOffset } from '#utils/database';
-import { CHAT_API_LIMIT } from '#constants/api';
+import { like, searchOffset } from '#utils/database.js';
+import { CHAT_API_LIMIT } from '#constants/api.js';
 
 const router = express.Router();
 

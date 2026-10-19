@@ -1,5 +1,5 @@
 import { LevelPack, LevelPackStats } from '#data/models';
-import { getTimes, totalTimes, kinglist } from '#api/levelpack';
+import { getTimes, totalTimes, kinglist } from '#api/levelpack.js';
 
 /**
  * Populates levelpack_stats table for a single levelpack

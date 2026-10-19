@@ -1,5 +1,5 @@
 import express from 'express';
-import { authRights } from '#utils/auth';
+import { authRights } from '#utils/auth.js';
 import { LevelPackLevel, LevelPack, Level } from '#data/models';
 
 const router = express.Router();

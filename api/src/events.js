@@ -8,7 +8,7 @@ import {
   battleend,
   battleresults,
   eventsFile,
-} from '#utils/events';
+} from '#utils/events.js';
 
 const app = express.Router();
 

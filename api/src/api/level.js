@@ -1,9 +1,9 @@
 import express from 'express';
 import sequelize from 'sequelize';
-import { authContext, authRights } from '#utils/auth';
-import requireMod from '#middlewares/requireMod';
+import { authContext, authRights } from '#utils/auth.js';
+import requireMod from '#middlewares/requireMod.js';
 import { has, intersection } from 'lodash-es';
-import { getLevel as getLevelSecure } from '#utils/download';
+import { getLevel as getLevelSecure } from '#utils/download.js';
 import {
   Level,
   Time,
@@ -13,8 +13,13 @@ import {
   LevelPackLevel,
   Kuski,
 } from '#data/models';
-import connection from '#data/sequelize';
-import { fromToTime, searchLimit, searchOffset, like } from '#utils/database';
+import connection from '#data/sequelize.js';
+import {
+  fromToTime,
+  searchLimit,
+  searchOffset,
+  like,
+} from '#utils/database.js';
 import { levToSvg } from 'elma-js';
 import sharp from 'sharp';
 

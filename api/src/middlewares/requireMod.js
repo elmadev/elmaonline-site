@@ -1,4 +1,4 @@
-import { authRights } from '#utils/auth';
+import { authRights } from '#utils/auth.js';
 
 // only lets mods through, rights are checked against the database
 // the auth context with mod and admin rights is available as req.auth

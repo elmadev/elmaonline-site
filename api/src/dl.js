@@ -1,6 +1,6 @@
 import express from 'express';
 import stream from 'stream';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 import request from 'request';
 import config from './config.js';
 import {
@@ -12,7 +12,7 @@ import {
   getAllShirts,
   getShirtByKuskiId,
   getShirtBmpByKuskiId,
-} from '#utils/download';
+} from '#utils/download.js';
 
 const app = express.Router();
 

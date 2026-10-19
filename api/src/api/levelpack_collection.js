@@ -1,7 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { authContext, authRights } from '#utils/auth';
-import { like } from '#utils/database';
+import { authContext, authRights } from '#utils/auth.js';
+import { like } from '#utils/database.js';
 import {
   Kuski,
   LevelPackCollection,

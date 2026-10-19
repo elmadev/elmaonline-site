@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import sequelize from '#data/sequelize';
+import sequelize from '#data/sequelize.js';
 import { LevelPackStats, Kuski, Team } from '#data/models';
 
 const router = express.Router();

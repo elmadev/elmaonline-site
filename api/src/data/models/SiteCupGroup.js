@@ -1,6 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize.js';
-import { sanitizeHtml } from '#utils/html';
+import { sanitizeHtml } from '#utils/html.js';
 
 const SiteCupGroup = Model.define(
   'sitecupgroup',

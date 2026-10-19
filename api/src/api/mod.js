@@ -1,11 +1,11 @@
 import express from 'express';
 import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
-import { acceptNickMail } from '#utils/email';
-import requireMod from '#middlewares/requireMod';
-import { secretMatches } from '#utils/auth';
-import { sendMessage } from '#utils/discord';
-import { validKuski } from '#utils/names';
+import { acceptNickMail } from '#utils/email.js';
+import requireMod from '#middlewares/requireMod.js';
+import { secretMatches } from '#utils/auth.js';
+import { sendMessage } from '#utils/discord.js';
+import { validKuski } from '#utils/names.js';
 import { format, addDays } from 'date-fns';
 import { Op, fn } from 'sequelize';
 import {

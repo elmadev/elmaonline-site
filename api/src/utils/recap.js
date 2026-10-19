@@ -1,5 +1,5 @@
-import sequelize from '#data/sequelize';
-import { log } from '#utils/database';
+import sequelize from '#data/sequelize.js';
+import { log } from '#utils/database.js';
 import { forEach } from 'lodash-es';
 import { Recap } from '#data/models';
 

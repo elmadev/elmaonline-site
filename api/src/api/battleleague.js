@@ -1,6 +1,6 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
-import { zeroPad } from '#utils/calcs';
+import { authContext } from '#utils/auth.js';
+import { zeroPad } from '#utils/calcs.js';
 import {
   BattleLeague,
   BattleLeagueBattle,
