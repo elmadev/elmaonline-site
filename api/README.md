@@ -14,7 +14,7 @@ Node JS based backend for the [elmaonline site](https://elma.online). The fronte
 
 ## Get started
 
-1. Install if needed nodejs (v18 or later, tested with up to v22)
+1. Install if needed nodejs (v24 or later, see `.nvmrc`; with nvm run `nvm use`)
 
    - If you install node using nvm you might need to install corepack manually
      `npm install -g corepack`
@@ -67,7 +67,8 @@ Be aware of newer nodejs versions requiring imports done with file extensions.
 
 - Importing a relative path should always have the extensions: `import { func } from '../utils/funcs.js'`
 - index files have to be written explicitly: `import { func } from '../utils/index.js`
-- Imports done using aliases doesn't require this as the file extension is added in the alias: `import { func } from '#utils/funcs'`
+- Imports done using aliases also need the extension: `import { func } from '#utils/funcs.js'` (the only exception is `#data/models`)
+- The codebase is being migrated to TypeScript, which Node runs natively (no build step). In `.ts` files import other `.ts` files with the `.ts` extension, and use `import type` for types. Run `yarn typecheck` to check types.
 - See and add aliases in `package.json`
 
 ## Setup editor
