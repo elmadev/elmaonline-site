@@ -1,7 +1,7 @@
 import { forEach, groupBy, values } from 'lodash-es';
 import moment from 'moment';
-import connection from '#data/sequelize';
-import * as PlayStats from '#data/models/PlayStats';
+import connection from '#data/sequelize.js';
+import * as PlayStats from '#data/models/PlayStats.js';
 import { LevelStats, LevelStatsUpdate } from '#data/models';
 import { aggregateTrackers, getPerfTracker } from './perf.js';
 

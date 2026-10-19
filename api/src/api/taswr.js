@@ -5,11 +5,11 @@ import util from 'util';
 import { readChunkSync } from 'read-chunk';
 
 import config from '../config.js';
-import { authContext } from '#utils/auth';
-import { uuid } from '#utils/calcs';
+import { authContext } from '#utils/auth.js';
+import { uuid } from '#utils/calcs.js';
 import { Level } from '#data/models';
 
-import { PIG_LEV_FNAME_LEN, getPigData } from '#okevalidator/okevalidator';
+import { PIG_LEV_FNAME_LEN, getPigData } from '#okevalidator/okevalidator.js';
 
 const router = express.Router();
 

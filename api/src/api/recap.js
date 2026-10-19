@@ -1,7 +1,7 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 import { Recap, RankingYearly, Kuski, Battle, Replay } from '#data/models';
-import { types } from '#utils/recap';
+import { types } from '#utils/recap.js';
 import { Op } from 'sequelize';
 
 const router = express.Router();

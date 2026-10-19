@@ -1,9 +1,9 @@
 import express from 'express';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 import { format, addDays } from 'date-fns';
-import { fromTo } from '#utils/database';
+import { fromTo } from '#utils/database.js';
 import { Upload } from '#data/models';
-import { deleteObject } from '#utils/upload';
+import { deleteObject } from '#utils/upload.js';
 
 const router = express.Router();
 

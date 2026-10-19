@@ -1,6 +1,10 @@
 import express from 'express';
-import { uploadReplayS3, uploadCupReplay, uploadFileS3 } from '#utils/upload';
-import { authContext } from '#utils/auth';
+import {
+  uploadReplayS3,
+  uploadCupReplay,
+  uploadFileS3,
+} from '#utils/upload.js';
+import { authContext } from '#utils/auth.js';
 
 const app = express.Router();
 

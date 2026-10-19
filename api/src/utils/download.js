@@ -14,11 +14,11 @@ import stream from 'stream';
 import { forEach } from 'lodash-es';
 import request from 'request';
 import { Op } from 'sequelize';
-import { uuid } from '#utils/calcs';
+import { uuid } from '#utils/calcs.js';
 import fs from 'fs';
 import archiver from 'archiver';
 import { isAfter } from 'date-fns';
-import { filterResults, admins } from '#utils/cups';
+import { filterResults, admins } from '#utils/cups.js';
 import { Jimp, intToRGBA, JimpMime } from 'jimp';
 import config from '../config.js';
 

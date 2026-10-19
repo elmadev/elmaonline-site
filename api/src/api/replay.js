@@ -5,13 +5,13 @@ import {
   searchLimit,
   searchPageLimit,
   searchOffset,
-} from '#utils/database';
-import { authContext, authRights } from '#utils/auth';
+} from '#utils/database.js';
+import { authContext, authRights } from '#utils/auth.js';
 import { format } from 'date-fns';
 import { forEach, groupBy } from 'lodash-es';
 import crypto from 'crypto';
-import { sortResults } from '#utils/battle';
-import { shareTimeFile } from '#utils/upload';
+import { sortResults } from '#utils/battle.js';
+import { shareTimeFile } from '#utils/upload.js';
 import {
   Replay,
   Level,

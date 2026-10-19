@@ -3,12 +3,12 @@ import neoAsync from 'neo-async';
 const { eachSeries } = neoAsync;
 import { forEach } from 'lodash-es';
 import { dbquery } from '../data/sequelize.js';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 import { format } from 'date-fns';
 import moment from 'moment';
-import { filterResults, generateEvent, admins } from '#utils/cups';
-import { zeroPad } from '#utils/calcs';
-import { sendMessage } from '#utils/discord';
+import { filterResults, generateEvent, admins } from '#utils/cups.js';
+import { zeroPad } from '#utils/calcs.js';
+import { sendMessage } from '#utils/discord.js';
 import config from '../config.js';
 import {
   SiteCupGroup,
@@ -19,8 +19,8 @@ import {
   SiteCupBlog,
   Team,
 } from '#data/models';
-import sequelize from '#data/sequelize';
-import { log } from '#utils/database';
+import sequelize from '#data/sequelize.js';
+import { log } from '#utils/database.js';
 
 const router = express.Router();
 

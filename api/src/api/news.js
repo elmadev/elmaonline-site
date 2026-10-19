@@ -1,6 +1,6 @@
 import express from 'express';
-import requireMod from '#middlewares/requireMod';
-import { createNewNewsNotification } from '#utils/notifications';
+import requireMod from '#middlewares/requireMod.js';
+import { createNewNewsNotification } from '#utils/notifications.js';
 import { News, Kuski, SiteSetting } from '#data/models';
 import { fn } from 'sequelize';
 

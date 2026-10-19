@@ -3,10 +3,10 @@ const { Replay } = elmajs;
 import { readChunkSync } from 'read-chunk';
 import fs from 'fs';
 import crypto from 'crypto';
-import { uuid } from '#utils/calcs';
+import { uuid } from '#utils/calcs.js';
 import AWS from 'aws-sdk';
 import util from 'util';
-import { MIMETYPES } from '#constants/lists';
+import { MIMETYPES } from '#constants/lists.js';
 import { format, addDays, isAfter } from 'date-fns';
 
 import {

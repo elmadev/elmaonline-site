@@ -1,20 +1,20 @@
 import express from 'express';
 import config from './config.js';
-import { secretMatches } from '#utils/auth';
+import { secretMatches } from '#utils/auth.js';
 import {
   doAll as doAllLevelStats,
   doNext as doNextLevelStats,
-} from '#utils/levelstats';
+} from '#utils/levelstats.js';
 import { LevelStats, LevelStatsUpdate, Kuski, Team } from '#data/models';
-import { validKuski, validTeam } from '#utils/names';
-import { updateRanking, deleteRanking } from '#utils/ranking';
-import { email, legacyTimes, orderLevels } from '#utils/dataImports';
-import { recapGenerate } from '#utils/recap';
-import { coldStorage, recoverRecFiles } from '#utils/timefile';
+import { validKuski, validTeam } from '#utils/names.js';
+import { updateRanking, deleteRanking } from '#utils/ranking.js';
+import { email, legacyTimes, orderLevels } from '#utils/dataImports.js';
+import { recapGenerate } from '#utils/recap.js';
+import { coldStorage, recoverRecFiles } from '#utils/timefile.js';
 import {
   populateLevelPackStats,
   populateAllLevelPackStats,
-} from '#utils/levelpackstats';
+} from '#utils/levelpackstats.js';
 
 const app = express.Router();
 

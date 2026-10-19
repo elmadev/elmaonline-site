@@ -1,9 +1,9 @@
 import express from 'express';
 import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
-import { authContext } from '#utils/auth';
-import { levelNameSearch, fromTo } from '#utils/database';
-import { allRunsLimit } from '#middlewares/rateLimit';
+import { authContext } from '#utils/auth.js';
+import { levelNameSearch, fromTo } from '#utils/database.js';
+import { allRunsLimit } from '#middlewares/rateLimit.js';
 import {
   AllFinished,
   Kuski,

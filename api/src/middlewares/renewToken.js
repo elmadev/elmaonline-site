@@ -1,4 +1,4 @@
-import { renewedToken } from '#utils/auth';
+import { renewedToken } from '#utils/auth.js';
 
 export const renewedTokenHeader = 'X-Renewed-Token';
 

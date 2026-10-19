@@ -4,11 +4,11 @@ import fs from 'fs';
 import util from 'util';
 import { Op } from 'sequelize';
 import { differenceInYears } from 'date-fns';
-import { zipFiles } from '#utils/download';
-import { dbquery } from '#data/sequelize';
-import { uuid } from '#utils/calcs';
+import { zipFiles } from '#utils/download.js';
+import { dbquery } from '#data/sequelize.js';
+import { uuid } from '#utils/calcs.js';
 import config from '../config.js';
-import { checksumFile, s3Params, putObject } from '#utils/upload';
+import { checksumFile, s3Params, putObject } from '#utils/upload.js';
 
 const deleteFile = util.promisify(fs.unlink);
 

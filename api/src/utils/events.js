@@ -6,16 +6,16 @@ import {
   discordBattlequeue,
   discordBattleresults,
   discordBattleEnd,
-} from '#utils/discord';
+} from '#utils/discord.js';
 import {
   createTimeBeatenNotification,
   createBestTimeNotification,
-} from '#utils/notifications';
-import { uploadTimeFile } from '#utils/upload';
-import { updateRanking } from '#utils/ranking';
+} from '#utils/notifications.js';
+import { uploadTimeFile } from '#utils/upload.js';
+import { updateRanking } from '#utils/ranking.js';
 import { updateLeague } from './league.js';
 import config from '../config.js';
-import { secretMatches } from '#utils/auth';
+import { secretMatches } from '#utils/auth.js';
 
 const checkAuth = (req, res, callback) => {
   if (secretMatches(req.header('Authorization'), config.discord.apiAuth)) {

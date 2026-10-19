@@ -1,7 +1,7 @@
 import express from 'express';
-import connection from '#data/sequelize';
-import { authContext } from '#utils/auth';
-import { levelNameSearch, fromTo, log } from '#utils/database';
+import connection from '#data/sequelize.js';
+import { authContext } from '#utils/auth.js';
+import { levelNameSearch, fromTo, log } from '#utils/database.js';
 import { groupBy, orderBy, uniqBy } from 'lodash-es';
 import {
   Besttime,

@@ -1,7 +1,7 @@
 import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize';
 import express from 'express';
 import { Tag } from '#data/models';
-import requireMod from '#middlewares/requireMod';
+import requireMod from '#middlewares/requireMod.js';
 
 const router = express.Router();
 

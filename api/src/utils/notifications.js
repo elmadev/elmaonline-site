@@ -1,10 +1,10 @@
 import DataType, { Op } from 'sequelize';
 import { groupBy, chunk } from 'lodash-es';
-import { notificationMail } from '#utils/email';
-import { discordNotification } from '#utils/discord';
-import { getTimes } from '#api/besttime';
-import { getTimes as getAllTimes } from '#api/allfinished';
-import { getFavouritedBy } from '#api/level';
+import { notificationMail } from '#utils/email.js';
+import { discordNotification } from '#utils/discord.js';
+import { getTimes } from '#api/besttime.js';
+import { getTimes as getAllTimes } from '#api/allfinished.js';
+import { getFavouritedBy } from '#api/level.js';
 import { Notification, Setting, Kuski } from '#data/models';
 
 const NotifSetting = async (KuskiIndex, type) => {

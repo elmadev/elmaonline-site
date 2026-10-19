@@ -1,26 +1,26 @@
 import express from 'express';
-import { uuid } from '#utils/calcs';
+import { uuid } from '#utils/calcs.js';
 import { format } from 'date-fns';
 import { Team, Kuski, SiteSetting, Country } from '#data/models';
-import { confirmMail, resetMail } from '#utils/email';
+import { confirmMail, resetMail } from '#utils/email.js';
 import {
   authContext,
   hashPassword,
   hashesMatch,
   validatePassword,
-} from '#utils/auth';
-import { sendMessage } from '#utils/discord';
+} from '#utils/auth.js';
+import { sendMessage } from '#utils/discord.js';
 import {
   validKuski,
   validTeam,
   kuskiCharsMessage,
   teamCharsMessage,
-} from '#utils/names';
+} from '#utils/names.js';
 import {
   registerLimit,
   resetRequestLimit,
   codeLimit,
-} from '#middlewares/rateLimit';
+} from '#middlewares/rateLimit.js';
 import Discord from './register_discord.js';
 import config from '../config.js';
 
