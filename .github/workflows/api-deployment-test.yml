@@ -28,9 +28,11 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+            set -e
             corepack enable
             cd ${{ secrets.SSH_PATH }}
             git restore yarn.lock
             git pull
             yarn install --immutable
+            yarn typecheck
             pm2 restart api

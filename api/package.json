@@ -5,11 +5,12 @@
   "packageManager": "yarn@4.18.1+sha512.b2e1e7524f654f2749d32b4ebcb4622473cb5bcbc485df2007e12a154e50162a4d795526768bc5f5b8f81717bfd79deb2472813d86fb5ae2eb551fa9c872b08f",
   "main": "src/index.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24"
   },
   "scripts": {
     "start": "nodemon --no-warnings",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "commit": "git-cz"
   },
   "dependencies": {
@@ -46,23 +47,33 @@
     "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.25.9",
+    "@types/archiver": "^8.0.0",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/jws": "^3.2.11",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^24.19.2",
+    "@types/request": "^2.48.13",
+    "@types/sanitize-html": "^2.16.2",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.12.0",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2"
   },
   "imports": {
-    "#api/*": "./src/api/*.js",
-    "#constants/*": "./src/constants/*.js",
-    "#data/*": "./src/data/*.js",
+    "#api/*": "./src/api/*",
+    "#constants/*": "./src/constants/*",
+    "#data/*": "./src/data/*",
     "#data/models": "./src/data/models/index.js",
-    "#middlewares/*": "./src/middlewares/*.js",
-    "#utils/*": "./src/utils/*.js",
-    "#okevalidator/*": "./src/okevalidator/*.js"
+    "#middlewares/*": "./src/middlewares/*",
+    "#utils/*": "./src/utils/*",
+    "#okevalidator/*": "./src/okevalidator/*"
   },
   "config": {
     "commitizen": {
@@ -78,9 +89,10 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint . --cache --fix"
+    "*.{js,ts}": "eslint . --cache --fix"
   },
   "nodemonConfig": {
+    "ext": "js,ts,json",
     "env": {
       "NODE_ENV": "development"
     }
