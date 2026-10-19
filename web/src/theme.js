@@ -124,6 +124,8 @@ const elmastatsDark = {
   pageBackgroundDark: '#303030',
   paperBackground: '#303030',
   primary: '#1F1F1F',
+  // mui controls need a visible accent, primary is too dark on this background
+  muiPrimary: '#1976d2',
   primaryLight: '#63a4ff',
   primaryDark: '#004ba0',
   primaryAlpha: 'rgba(25, 118, 210, 0.1)',
@@ -165,7 +167,7 @@ const muiTheme = themeId =>
       mode: themes[themeId].type,
       primary: {
         light: themes[themeId].primaryLight,
-        main: themes[themeId].primary,
+        main: themes[themeId].muiPrimary || themes[themeId].primary,
         dark: themes[themeId].primaryDark,
         contrastText: themes[themeId].buttonFontColor,
       },
@@ -184,18 +186,20 @@ const muiTheme = themeId =>
     components: {
       MuiTabs: {
         defaultProps: {
-          indicatorColor: 'secondary',
           textColor: 'inherit',
         },
       },
-      MuiRadio: {
-        defaultProps: {
-          color: 'secondary',
-        },
-      },
-      MuiSwitch: {
-        defaultProps: {
-          color: 'secondary',
+      // v4 tab sizing, v5 tabs shrink to fit their label
+      MuiTab: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            maxWidth: 264,
+            minWidth: 72,
+            padding: '6px 12px',
+            [theme.breakpoints.up('sm')]: {
+              minWidth: 160,
+            },
+          }),
         },
       },
       MuiPaper: {
@@ -257,12 +261,13 @@ const muiTheme = themeId =>
         },
       },
       MuiCheckbox: {
-        defaultProps: {
-          color: 'secondary',
-        },
         styleOverrides: {
+          // unchecked only, so checked boxes keep the primary color
           root: {
-            color: 'inherit',
+            '&:not(.Mui-checked):not(.MuiCheckbox-indeterminate):not(.Mui-disabled)':
+              {
+                color: 'inherit',
+              },
           },
         },
       },
