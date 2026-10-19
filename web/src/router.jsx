@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useMemo } from 'react';
 import {
   Outlet,
   RouterProvider,
@@ -55,6 +55,7 @@ import {
   ThemeProvider as MuiThemeProvider,
   THEME_ID,
 } from '@mui/material/styles';
+import DefaultPropsProvider from '@mui/material/DefaultPropsProvider';
 
 const TanStackRouterDevtools =
   // eslint-disable-next-line no-undef
@@ -540,12 +541,16 @@ const Routes = () => {
   const {
     settings: { siteTheme },
   } = useStoreState(state => state.Settings);
+  const theme = useMemo(() => muiTheme(siteTheme), [siteTheme]);
   if (!isRehydrated) return null;
   return (
-    <MuiThemeProvider theme={{ [THEME_ID]: muiTheme(siteTheme) }}>
-      <ThemeProvider theme={themes[siteTheme]}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+    <MuiThemeProvider theme={{ [THEME_ID]: theme }}>
+      {/* mui v5 skips theme defaultProps when the theme is scoped with THEME_ID */}
+      <DefaultPropsProvider value={theme.components}>
+        <ThemeProvider theme={themes[siteTheme]}>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </DefaultPropsProvider>
     </MuiThemeProvider>
   );
 };
