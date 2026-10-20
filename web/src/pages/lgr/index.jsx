@@ -245,6 +245,7 @@ const PreviewContainer = styled.div`
   padding: 7px;
   box-sizing: border-box;
   text-align: center;
+  container-type: inline-size;
   @media (max-width: 1100px) {
     float: none;
     width: 100%;
@@ -253,7 +254,7 @@ const PreviewContainer = styled.div`
 
 const Player = styled.div`
   background: ${p => p.theme.pageBackground};
-  aspect-ratio: 16 / 9;
+  height: max(420px, 100cqw * 9 / 16);
   display: flex;
   align-items: center;
   justify-content: center;

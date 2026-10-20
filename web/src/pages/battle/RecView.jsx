@@ -99,9 +99,10 @@ const PlayerContainer = styled.div`
   float: left;
   padding: 7px;
   box-sizing: border-box;
+  container-type: inline-size;
   .player {
     background: ${p => p.theme.pageBackground};
-    aspect-ratio: 16 / 9;
+    height: max(420px, 100cqw * 9 / 16);
     display: flex;
     align-items: center;
     justify-content: center;
