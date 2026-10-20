@@ -41,20 +41,27 @@ export default defineConfig(() => {
       },
     ],
     resolve: {
-      alias: {
-        components: '/src/components',
-        images: '/src/images',
-        pages: '/src/pages',
-        utils: '/src/utils',
-        constants: '/src/constants',
-        api: '/src/api',
-        globalStyle: '/src/globalStyle',
-        theme: '/src/theme',
-        config: '/src/config',
-        features: '/src/features',
-        types: '/src/types',
-        fs: '/src/shims/fs.js',
-      },
+      alias: [
+        // @mui/system, @mui/utils and @mui/icons-material ship CJS at the package
+        // root and ESM in esm/. Deep imports otherwise resolve to CJS, which makes
+        // esbuild's dep prebundling leave MUI's `styled` uninitialized in dev.
+        {
+          find: /^@mui\/(system|utils|icons-material)\/(?!esm\/)(.+)$/,
+          replacement: '@mui/$1/esm/$2',
+        },
+        { find: 'components', replacement: '/src/components' },
+        { find: 'images', replacement: '/src/images' },
+        { find: 'pages', replacement: '/src/pages' },
+        { find: 'utils', replacement: '/src/utils' },
+        { find: 'constants', replacement: '/src/constants' },
+        { find: 'api', replacement: '/src/api' },
+        { find: 'globalStyle', replacement: '/src/globalStyle' },
+        { find: 'theme', replacement: '/src/theme' },
+        { find: 'config', replacement: '/src/config' },
+        { find: 'features', replacement: '/src/features' },
+        { find: 'types', replacement: '/src/types' },
+        { find: 'fs', replacement: '/src/shims/fs.js' },
+      ],
     },
     optimizeDeps: {
       exclude: ['@elmadev/react-rec-viewer'],

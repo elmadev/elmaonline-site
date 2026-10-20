@@ -18,8 +18,8 @@ import styled from '@emotion/styled';
 import Badge from '@mui/material/Badge';
 
 const StyledButton = styled(Button)`
-  a {
-    color: #f1f1f1;
+  && {
+    color: inherit;
   }
 `;
 
