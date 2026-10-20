@@ -220,10 +220,16 @@ const muiTheme = themeId =>
         },
         styleOverrides: {
           // only uncolored buttons, so primary/secondary keep their palette colors
-          root: ({ ownerState }) =>
-            ownerState.color === 'inherit' && ownerState.variant !== 'contained'
-              ? { color: themes[themeId].fontColor }
-              : {},
+          root: ({ ownerState, theme }) => {
+            if (ownerState.color !== 'inherit') return {};
+            if (ownerState.variant !== 'contained') {
+              return { color: themes[themeId].fontColor };
+            }
+            // v5 hovers grey buttons with grey.A100 (#f5f5f5), v4's A100 was #d5d5d5
+            return theme.palette.mode === 'light'
+              ? { '&:hover': { backgroundColor: '#d5d5d5' } }
+              : {};
+          },
         },
       },
       MuiTablePagination: {
