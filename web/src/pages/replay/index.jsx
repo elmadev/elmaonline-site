@@ -5,13 +5,13 @@ import {
   AccordionDetails,
   Chip,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   ExpandMore,
   IndeterminateCheckBox,
   AddBox,
   Visibility,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { xor } from 'lodash';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import styled from '@emotion/styled';
@@ -40,7 +40,7 @@ import FieldBoolean from 'components/FieldBoolean';
 import Button from 'components/Buttons';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'components/List';
 import { MergeContainer } from 'components/RecListItem';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Row, Column } from 'components/Containers';
 import { pts } from 'utils/cups';
 import { mod } from 'utils/nick';
@@ -107,12 +107,14 @@ const Replay = () => {
     }
   }, [ReplayUuid, merge]);
 
-  if (!RecFileName && replay && replay.UUID === ReplayUuid) {
-    navigate({
-      to: `/r/${ReplayUuid}/${stripRecExt(replay.RecFileName)}`,
-      replace: true,
-    });
-  }
+  useEffect(() => {
+    if (!RecFileName && replay && replay.UUID === ReplayUuid) {
+      navigate({
+        to: `/r/${ReplayUuid}/${stripRecExt(replay.RecFileName)}`,
+        replace: true,
+      });
+    }
+  }, [RecFileName, replay, ReplayUuid]);
 
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
@@ -550,6 +552,7 @@ const PlayerContainer = styled.div`
   float: left;
   padding: 7px;
   box-sizing: border-box;
+  container-type: inline-size;
   @media (max-width: 1100px) {
     float: none;
     width: 100%;
@@ -558,14 +561,10 @@ const PlayerContainer = styled.div`
 
 const Player = styled.div`
   background: ${p => p.theme.pageBackground};
-  height: 600px;
+  height: max(420px, 100cqw * 9 / 16);
   display: flex;
   align-items: center;
   justify-content: center;
-  @media screen and (max-width: 1100px) {
-    height: 56vw;
-    min-height: 450px;
-  }
 `;
 
 const RightBarContainer = styled.div`

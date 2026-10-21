@@ -8,7 +8,7 @@ import {
   MenuItem,
   Select,
   TablePagination,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import Loading from 'components/Loading';
 import Time from 'components/Time';
@@ -68,7 +68,7 @@ const Records = ({ kuski, sort }) => {
             </tr>
           </tbody>
         </table>
-        <StyledFormControl>
+        <StyledFormControl variant="standard">
           <InputLabel id="records-sort">Sort By</InputLabel>
           <Select
             id="records-sort"

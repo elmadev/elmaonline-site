@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Chip, Typography } from '@material-ui/core';
+import { Button, Chip, Typography } from '@mui/material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import FormResponse from 'components/FormResponse';
 import Field from 'components/Field';

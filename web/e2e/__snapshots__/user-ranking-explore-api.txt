@@ -1,0 +1,4 @@
+GET ranking/day/:n
+GET ranking/month/:n
+GET ranking/week/:n
+GET ranking/year/:n

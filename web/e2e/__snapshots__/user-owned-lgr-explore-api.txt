@@ -1,0 +1,2 @@
+POST lgr/info/black <multipart>
+POST lgr_comment/add {"LGRIndex":73,"Text":"test"}

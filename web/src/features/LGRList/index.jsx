@@ -6,14 +6,14 @@ import LGRListCard from 'components/LGRListCard';
 import TagFilter from 'components/TagFilter';
 import Loading from 'components/Loading';
 import { ListContainer, ListHeader, ListCell } from 'components/List';
-import ListIcon from '@material-ui/icons/List';
-import AppsIcon from '@material-ui/icons/Apps';
-import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
-import SortByAlphaOutlinedIcon from '@material-ui/icons/SortByAlphaOutlined';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import GetAppOutlinedIcon from '@material-ui/icons/GetAppOutlined';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ListIcon from '@mui/icons-material/List';
+import AppsIcon from '@mui/icons-material/Apps';
+import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
+import SortByAlphaOutlinedIcon from '@mui/icons-material/SortByAlphaOutlined';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const LGRList = () => {
   const {

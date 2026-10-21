@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import {
   Notifications,
   AccountCircle,
   PlayCircleOutline,
-  Timer,
+  TimerOutlined,
   ExitToApp,
   Settings,
   FastRewind,
-} from '@material-ui/icons';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Button from '@material-ui/core/Button';
+} from '@mui/icons-material';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Button from '@mui/material/Button';
 import { useNavigate } from '@tanstack/react-router';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
-import Badge from '@material-ui/core/Badge';
+import Badge from '@mui/material/Badge';
 
 const StyledButton = styled(Button)`
-  a {
-    color: #f1f1f1;
+  && {
+    color: inherit;
   }
 `;
 
@@ -51,7 +51,7 @@ const ReplayIcon = styled(PlayCircleOutline)`
   margin-right: 4px;
 `;
 
-const TimesIcon = styled(Timer)`
+const TimesIcon = styled(TimerOutlined)`
   margin-right: 4px;
 `;
 
@@ -131,6 +131,7 @@ export default function TopBarActions() {
             aria-haspopup="true"
             onClick={handleNotificationsClick}
             color="inherit"
+            size="large"
           >
             <Badge
               badgeContent={notificationsCount}
@@ -146,6 +147,7 @@ export default function TopBarActions() {
             aria-haspopup="true"
             onClick={handleMenu}
             color="inherit"
+            size="large"
           >
             <AccountCircle />
           </IconButton>

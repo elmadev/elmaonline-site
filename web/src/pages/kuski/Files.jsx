@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Backdrop, Button as MuiButton } from '@material-ui/core';
+import { Backdrop, Button as MuiButton } from '@mui/material';
 import Button from 'components/Buttons';
 import { Dropdown, TextField } from 'components/Inputs';
-import { Edit, HighlightOffOutlined as CloseIcon } from '@material-ui/icons';
+import { Edit, HighlightOffOutlined as CloseIcon } from '@mui/icons-material';
 import Fab from 'components/Fab';
 import { Row } from 'components/Containers';
 import LocalTime from 'components/LocalTime';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Button, Checkbox, Grid } from '@material-ui/core';
+import { Button, Checkbox, Grid } from '@mui/material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Paper } from 'components/Paper';
 import Field from 'components/Field';

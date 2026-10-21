@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, CardContent, CardActions, Button } from '@material-ui/core';
+import { Grid, CardContent, CardActions, Button } from '@mui/material';
 import LevelPackList from 'features/LevelPackList';
 import Link from 'components/Link';
 import Header from 'components/Header';

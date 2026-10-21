@@ -1,13 +1,14 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import styled from '@emotion/styled';
 
 const CrippledSelect = ({ level, cripple, setCripple, tab, setTab }) => {
   return (
     <CrippledSelectWrapper topMargin={level.Locked}>
-      <FormControl>
+      <FormControl variant="standard">
         <InputLabel id="cripple">Crippled Condition</InputLabel>
         <Select
+          variant="standard"
           id="cripple"
           value={cripple || 'none'}
           onChange={e => {

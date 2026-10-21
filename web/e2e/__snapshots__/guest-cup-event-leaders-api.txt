@@ -1,0 +1,4 @@
+GET allfinished/leaderhistory/:n?BattleIndex=&KuskiIndex=&from=<timestamp>&to=<timestamp>
+GET cups/FAE
+GET cups/events/:n
+GET news/status

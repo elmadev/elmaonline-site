@@ -1,0 +1,6 @@
+GET besttime/best-records/:n/:n/:n/:n?daysPast=14
+GET level?addedBy=137&battled=all&finished=all&order=desc&page=0&pageSize=25&q=test
+GET level?addedBy=137&battled=false&finished=all&order=asc&page=0&pageSize=25&q=test
+GET level?addedBy=137&battled=false&finished=all&order=desc&page=0&pageSize=25&q=test
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=test
+GET levelpack/collections

@@ -1,0 +1,7 @@
+GET besttime/best-records/:n/:n/:n/:n?daysPast=14
+GET level/kuskis
+GET level?battled=all&finished=all&order=desc&page=0&pageSize=25&q=
+GET levelpack/collections
+GET levelpackstats/kuski/:n
+GET tag?type=level
+POST levelpack/favourite/add {"LevelPackIndex":84}

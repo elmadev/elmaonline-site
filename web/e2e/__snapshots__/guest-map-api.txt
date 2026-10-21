@@ -1,0 +1,2 @@
+GET kuskimap
+GET news/status

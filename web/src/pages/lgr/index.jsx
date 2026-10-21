@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useParams, useNavigate } from '@tanstack/react-router';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import Layout from 'components/Layout';
 import {
   Accordion,
@@ -10,7 +10,7 @@ import {
   Typography,
   TextField,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import Header from 'components/Header';
 import LocalTime from 'components/LocalTime';
@@ -26,7 +26,7 @@ import { mod, nickId } from 'utils/nick';
 import { getReplayLink, getLgrPreviewLink, getLgrLink } from 'utils/link';
 import { DeleteLGR, ReplayByUUID } from 'api';
 import config from 'config';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import { Row } from 'components/Containers';
 import Portal from 'components/Portal';
 
@@ -78,12 +78,14 @@ const LGR = () => {
           <PreviewContainer theater={theater}>
             {replayData && (
               <>
-                <Recplayer
-                  rec={getReplayLink(replayData).link}
-                  lev={`${config.dlUrl}level/${replayData.LevelIndex}`}
-                  lgr={getLgrLink(lgr)}
-                  controls
-                />
+                <Player>
+                  <Recplayer
+                    rec={getReplayLink(replayData).link}
+                    lev={`${config.dlUrl}level/${replayData.LevelIndex}`}
+                    lgr={getLgrLink(lgr)}
+                    controls
+                  />
+                </Player>
                 <ReplaySettings />
               </>
             )}
@@ -165,6 +167,7 @@ const LGR = () => {
                   </Text>
                   {modDelete !== 'delete' ? (
                     <TextField
+                      variant="standard"
                       fullWidth
                       id="Delete"
                       multiline
@@ -242,10 +245,19 @@ const PreviewContainer = styled.div`
   padding: 7px;
   box-sizing: border-box;
   text-align: center;
+  container-type: inline-size;
   @media (max-width: 1100px) {
     float: none;
     width: 100%;
   }
+`;
+
+const Player = styled.div`
+  background: ${p => p.theme.pageBackground};
+  height: max(420px, 100cqw * 9 / 16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const RightBarContainer = styled.div`

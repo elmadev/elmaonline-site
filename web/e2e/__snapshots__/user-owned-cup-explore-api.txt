@@ -1,0 +1,5 @@
+GET allfinished/:n/:n/:n
+GET allfinished/appleruns/:n/:n
+GET cups/:n/myreplays
+GET cups/:n/teamreplays
+GET levelstats/collection/ids/:n

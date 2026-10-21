@@ -7,7 +7,7 @@ import styled from '@emotion/styled';
 import config from 'config';
 import Time from '../../components/Time';
 import Kuski from '../../components/Kuski';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { battleStatus } from 'utils/battle';
 import RecView from './RecView';
 import RightBarContainer from './RightBarContainer';

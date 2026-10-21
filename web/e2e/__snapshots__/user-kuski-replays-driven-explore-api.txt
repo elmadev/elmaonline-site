@@ -1,0 +1,11 @@
+GET allfinished/:n/:n?from=&level=&to=
+GET battle/byDesigner/:n?page=0&pageSize=25
+GET battle/byPlayer/:n?page=0&pageSize=25
+GET level/kuskis
+GET level?addedBy=116&battled=all&finished=all&order=desc&page=0&pageSize=25&q=
+GET levelpack
+GET mod/banlist/:n
+GET player/records/:n?limit=25&offset=0&reverse=
+GET replay/driven_by/:n?order=desc&page=0&pageSize=25&sortBy=
+GET replay/uploaded_by/:n?order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=level

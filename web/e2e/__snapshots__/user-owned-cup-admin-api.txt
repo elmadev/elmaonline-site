@@ -1,0 +1,4 @@
+GET cups/e2e
+GET cups/events/:n
+GET news/status
+GET notification/count

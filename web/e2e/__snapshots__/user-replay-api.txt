@@ -1,0 +1,7 @@
+GET news/status
+GET notification/count
+GET replay/byLevelIndex/:n
+GET replay/byUUID/qf37iupf5t?f=<hash>
+GET replay_comment/:n
+GET replay_rating/:n
+GET tag?type=replay

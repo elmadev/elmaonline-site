@@ -1,0 +1,3 @@
+GET news/status
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=replay

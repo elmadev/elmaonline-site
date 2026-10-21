@@ -1,0 +1,5 @@
+GET replay/random
+GET replay?levelPack=0&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET replay_comment/?limit=20&offset=0
+GET tag
+GET tag?type=replay

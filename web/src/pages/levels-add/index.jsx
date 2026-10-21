@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button } from '@mui/material';
 import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import Field from 'components/Field';

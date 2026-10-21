@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Grid, Tabs, Tab, Checkbox, Drawer } from '@material-ui/core';
+import { Grid, Tabs, Tab, Checkbox, Drawer } from '@mui/material';
 import { Paper } from 'components/Paper';
-import { RemoveCircle, Info } from '@material-ui/icons';
+import { RemoveCircle, Info } from '@mui/icons-material';
 import Header from 'components/Header';
 import Feedback from 'components/Feedback';
 import { nickId } from 'utils/nick';

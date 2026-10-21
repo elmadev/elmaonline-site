@@ -1,0 +1,5 @@
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET player/Kuski/Zero
+GET player/records/:n?limit=25&offset=0&reverse=
+GET ranking/kuski/:n

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { useMediaQuery, Grid, Switch } from '@material-ui/core';
+import { useMediaQuery, Grid, Switch } from '@mui/material';
 import LocalTime from 'components/LocalTime';
 import Link from 'components/Link';
 import SearchBar from 'components/SearchBar';

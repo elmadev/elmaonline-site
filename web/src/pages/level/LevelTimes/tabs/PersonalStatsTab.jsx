@@ -6,7 +6,7 @@ import StatsTable from '../../StatsTable';
 import LeaderHistory from 'components/LeaderHistory';
 import { Row } from 'components/Containers';
 import Button from 'components/Buttons';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import TimeTable from '../../TimeTable.jsx';
 
 const PersonalStatsTab = ({

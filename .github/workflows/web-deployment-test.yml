@@ -18,16 +18,25 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Enable corepack
+        run: corepack enable
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: yarn
+          cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
         working-directory: ./web
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
+
+      - name: Typecheck
+        working-directory: ./web
+        run: yarn typecheck
 
       - name: Build project
         working-directory: ./web

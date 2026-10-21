@@ -1,0 +1,2 @@
+GET player/settings
+POST player/ignore/test {}

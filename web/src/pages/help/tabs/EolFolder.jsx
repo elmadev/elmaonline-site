@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import Header from 'components/Header';
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableRow } from '@mui/material';
 import config from 'config';
 
 const MakeTab = ({ components }) => {

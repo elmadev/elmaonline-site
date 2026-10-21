@@ -1,0 +1,3 @@
+GET battle/search/generic?page=0&pageSize=25&sort=DESC
+GET news/status
+GET notification/count

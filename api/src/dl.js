@@ -18,7 +18,13 @@ const app = express.Router();
 
 app.get('/battlereplay/:id', async (req, res, next) => {
   try {
-    const { file, filename } = await getReplayByBattleId(req.params.id);
+    const replay = await getReplayByBattleId(req.params.id);
+    if (!replay) {
+      res.set({ 'Cache-Control': 'no-store' });
+      res.status(404).send('replay not found');
+      return;
+    }
+    const { file, filename } = replay;
     const readStream = new stream.PassThrough();
     readStream.end(file);
     res.set({
@@ -103,6 +109,14 @@ app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
         .get(
           `https://eol.ams3.digitaloceanspaces.com/${config.s3SubFolder}time/${UUID}-${MD5}/${TimeIndex}.rec`,
         )
+        .on('response', s3Res => {
+          // runs before the s3 status and headers are copied to res
+          if (s3Res.statusCode !== 200) {
+            res.removeHeader('Content-disposition');
+            res.set({ 'Cache-Control': 'no-store' });
+          }
+        })
+        .on('error', e => next({ status: 500, msg: e.message }))
         .pipe(res);
       return;
     }
@@ -128,7 +142,14 @@ app.get('/cupreplay/:id/:filename/:code?', async (req, res, next) => {
 
 app.get('/level/:id', async (req, res, next) => {
   try {
-    const { file, filename } = await getLevel(req.params.id);
+    const level = await getLevel(req.params.id);
+    if (!level) {
+      // don't cache as it may be available later
+      res.set({ 'Cache-Control': 'no-store' });
+      res.status(404).send('level not found');
+      return;
+    }
+    const { file, filename } = level;
     const readStream = new stream.PassThrough();
     readStream.end(file);
     res.set({

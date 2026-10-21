@@ -1,0 +1,3 @@
+GET battle/byPeriod/<datetime>/<datetime>/:n
+GET news/status
+GET notification/count

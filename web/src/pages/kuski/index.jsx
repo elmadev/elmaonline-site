@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useNavigate, useParams } from '@tanstack/react-router';
-import { Tabs, Tab } from '@material-ui/core';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { Tabs, Tab } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import Loading from 'components/Loading';

@@ -1,11 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-} from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import Popularity from 'components/Popularity';
 import styled from '@emotion/styled';
@@ -33,9 +27,13 @@ const Controls = ({ detailed, sort }) => {
         </div>
       )}
       {
-        <FormControl style={{ minWidth: 170, marginRight: 22 }}>
+        <FormControl
+          variant="standard"
+          style={{ minWidth: 170, marginRight: 22 }}
+        >
           <InputLabel id="levelpack-sort">Sort By</InputLabel>
           <Select
+            variant="standard"
             id="levelpack-sort"
             value={sort || 'default'}
             onChange={e => {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import AddCup from 'components/AddCup';
 import Header from 'components/Header';
 import Layout from 'components/Layout';

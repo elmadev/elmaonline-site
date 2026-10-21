@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ListContainer, ListHeader, ListCell, ListRow } from 'components/List';
 import Time from 'components/Time';
 import Loading from 'components/Loading';
@@ -127,10 +126,6 @@ const StatsTable = ({ data, loading }) => {
       </FirstLast>
     </>
   );
-};
-
-StatsTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 const Container = styled.div`

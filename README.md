@@ -2,6 +2,13 @@
 
 This is a monorepo for the [node backend](https://github.com/elmadev/elmaonline-site/tree/dev/api), [react frontend](https://github.com/elmadev/elmaonline-site/tree/dev/web) and [discord bot](https://github.com/elmadev/elmaonline-site/tree/dev/discord) for the elma online site. See the readme's in the individual folders for more information on each project.
 
+## Root commands
+
+- `yarn` installs the root deps and on first install executes `yarn` in all sub projects
+- `yarn install:all` executes `yarn` in all sub projects
+- `yarn start` starts web and api in the same terminal
+- `yarn start:lan` starts frontend with local IP support and forwarding api calls to IP
+
 ## Communication
 
 Feel free to create issues/discussions here on github in order to discuss things related to the project. You can also join the [elma discord](https://discord.gg/j5WMFC6) #developers channel to chat.

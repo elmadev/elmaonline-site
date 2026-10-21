@@ -1,0 +1,7 @@
+GET levelpack/Int/multirecords
+GET levelpack/record-history/Int?limit=50&sort=desc
+GET levelstats/collection/ids/:ids
+GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=levelpack
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":84}

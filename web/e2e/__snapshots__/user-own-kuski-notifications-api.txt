@@ -1,0 +1,6 @@
+GET levelpack/internals/besttimes/:n
+GET news/status
+GET notification
+GET notification/count
+GET player/Kuski/playwright
+GET ranking/kuski/:n

@@ -4,10 +4,11 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -17,7 +18,7 @@ export default [
         sourceType: 'module',
       },
     },
-    settings: { react: { version: '17.0' } },
+    settings: { react: { version: 'detect' } },
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -42,6 +43,30 @@ export default [
       ],
     },
   },
+  ...tseslint.configs.recommended.map(config => ({
+    ...config,
+    files: ['**/*.{ts,tsx}'],
+  })),
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: 'React',
+        },
+      ],
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        { assertionStyle: 'never' },
+      ],
+    },
+  },
+  {
+    files: ['e2e/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
   {
     ignores: [
       '.storybook',
@@ -49,6 +74,9 @@ export default [
       'public',
       'templates',
       'storybook-static',
+      'test-results',
+      'playwright-report',
+      'coverage',
       '**/test/*',
       '**/stories/*',
     ],

@@ -1,4 +1,4 @@
-import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const pad = 4;
 
@@ -124,6 +124,8 @@ const elmastatsDark = {
   pageBackgroundDark: '#303030',
   paperBackground: '#303030',
   primary: '#1F1F1F',
+  // mui controls need a visible accent, primary is too dark on this background
+  muiPrimary: '#1976d2',
   primaryLight: '#63a4ff',
   primaryDark: '#004ba0',
   primaryAlpha: 'rgba(25, 118, 210, 0.1)',
@@ -160,61 +162,119 @@ const previews = [
 ];
 
 const muiTheme = themeId =>
-  createMuiTheme({
+  createTheme({
     palette: {
-      type: themes[themeId].type,
+      mode: themes[themeId].type,
       primary: {
         light: themes[themeId].primaryLight,
-        main: themes[themeId].primary,
+        main: themes[themeId].muiPrimary || themes[themeId].primary,
         dark: themes[themeId].primaryDark,
         contrastText: themes[themeId].buttonFontColor,
       },
       secondary: {
         main: themes[themeId].secondary,
       },
+      // v5 components like ListSubheader read this instead of the Paper override
+      background: {
+        paper: themes[themeId].paperBackground,
+      },
     },
-    typography: {
-      useNextVariants: true,
+    // keep v4 breakpoints and default colors so layouts and visuals stay the same
+    breakpoints: {
+      values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
     },
-    overrides: {
+    components: {
+      MuiTabs: {
+        defaultProps: {
+          textColor: 'inherit',
+        },
+      },
+      // v4 tab sizing, v5 tabs shrink to fit their label
+      MuiTab: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            maxWidth: 264,
+            minWidth: 72,
+            padding: '6px 12px',
+            [theme.breakpoints.up('sm')]: {
+              minWidth: 160,
+            },
+          }),
+        },
+      },
       MuiPaper: {
-        root: {
-          backgroundColor: themes[themeId].paperBackground,
-          color: themes[themeId].fontColor,
-          border: themes[themeId].paperBorder || undefined,
+        styleOverrides: {
+          root: {
+            backgroundColor: themes[themeId].paperBackground,
+            color: themes[themeId].fontColor,
+            border: themes[themeId].paperBorder || undefined,
+            // v5 adds a lightening gradient to elevated paper in dark mode
+            backgroundImage: 'none',
+          },
         },
       },
       MuiButton: {
-        root: {
-          color: themes[themeId].fontColor,
+        // v4 defaulted to color="default"; inherit is the v5 equivalent
+        defaultProps: {
+          color: 'inherit',
+        },
+        styleOverrides: {
+          // only uncolored buttons, so primary/secondary keep their palette colors
+          root: ({ ownerState, theme }) => {
+            if (ownerState.color !== 'inherit') return {};
+            if (ownerState.variant !== 'contained') {
+              return { color: themes[themeId].fontColor };
+            }
+            // v5 hovers grey buttons with grey.A100 (#f5f5f5), v4's A100 was #d5d5d5
+            return theme.palette.mode === 'light'
+              ? { '&:hover': { backgroundColor: '#d5d5d5' } }
+              : {};
+          },
         },
       },
       MuiTablePagination: {
-        root: {
-          color: themes[themeId].fontColor,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].fontColor,
+          },
         },
       },
       MuiSelect: {
-        icon: {
-          color: themes[themeId].lightTextColor,
+        styleOverrides: {
+          icon: {
+            color: themes[themeId].lightTextColor,
+          },
         },
       },
       MuiMenuItem: {
-        root: {
-          color: themes[themeId].linkColor,
+        styleOverrides: {
+          root: {
+            color: themes[themeId].linkColor,
+          },
         },
       },
       MuiChip: {
-        root: {
-          color: themes[themeId].lightTextColor,
-        },
-        outlined: {
-          border: `1px solid ${themes[themeId].lightTextColor}`,
+        // only uncolored chips, so primary/secondary keep their contrast text
+        styleOverrides: {
+          root: ({ ownerState }) =>
+            ownerState.color === 'default'
+              ? { color: themes[themeId].lightTextColor }
+              : {},
+          outlined: ({ ownerState }) =>
+            ownerState.color === 'default'
+              ? { border: `1px solid ${themes[themeId].lightTextColor}` }
+              : {},
         },
       },
       MuiCheckbox: {
-        root: {
-          color: 'inherit',
+        styleOverrides: {
+          // unchecked only, so checked boxes keep the primary color
+          root: {
+            '&:not(.Mui-checked):not(.MuiCheckbox-indeterminate):not(.Mui-disabled)':
+              {
+                color: 'inherit',
+              },
+          },
         },
       },
     },

@@ -1,0 +1,2 @@
+GET cups
+GET news/status

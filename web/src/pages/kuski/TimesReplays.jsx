@@ -10,7 +10,7 @@ import {
   Chip,
   RadioGroup,
   Radio,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Row } from 'components/Containers';
 import Time from 'components/Time';
 import LocalTime from 'components/LocalTime';
@@ -19,7 +19,7 @@ import {
   PlayArrow,
   Share,
   HighlightOffOutlined as CloseIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import styled from '@emotion/styled';
 import config from 'config';
 import { FixedSizeList as List } from 'react-window';
@@ -36,7 +36,7 @@ import { nick, nickId } from 'utils/nick';
 import Button from 'components/Buttons';
 import { xor } from 'lodash';
 import Preview from './Preview';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { downloadRec } from 'utils/misc';
 import Feedback from 'components/Feedback';
 
@@ -374,6 +374,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             </Row>
             <div>
               <TextField
+                variant="standard"
                 id="Description"
                 multiline
                 label="Description"

@@ -3,10 +3,10 @@ import useFormal from '@kevinwolf/formal-web';
 import * as yup from 'yup';
 import styled from '@emotion/styled';
 import { useStoreActions } from 'easy-peasy';
-import { Button, Container } from '@material-ui/core';
+import { Button, Container } from '@mui/material';
 import Field from 'components/Field';
 import { useNavigate } from '@tanstack/react-router';
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@mui/material/Alert';
 import Link from 'components/Link';
 import Layout from 'components/Layout';
 

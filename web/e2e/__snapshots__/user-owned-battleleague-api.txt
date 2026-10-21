@@ -1,0 +1,4 @@
+GET battle/:n
+GET battleleague/e2e
+GET news/status
+GET notification/count

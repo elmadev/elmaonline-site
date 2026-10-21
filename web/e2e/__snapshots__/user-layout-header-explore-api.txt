@@ -1,0 +1,15 @@
+GET battle/search/byDesigner/test/:n
+GET battle/search/byFilename/test/:n
+GET levelpack/internals/besttimes/:n
+GET levelpack/search/test
+GET levelpack/searchLevel/test/:n/:n
+GET notification
+GET player/:n
+GET player/Kuski/playwright
+GET player/ignored
+GET player/search/test/:n
+GET player/searchTeam/test/:n
+GET ranking/kuski/:n
+GET replay/search/byDriven/test/:n
+GET replay/search/byFilename/test/:n
+GET replay/search/byLevel/test/:n

@@ -1,0 +1,3 @@
+GET battle/search/byFilename/test/:n
+POST battleleague/update/break {"BattleLeagueIndex":15,"break":0}
+POST battleleague/update/whitelist {"BattleLeagueIndex":15,"whitelist":[]}

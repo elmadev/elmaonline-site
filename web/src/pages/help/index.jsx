@@ -3,7 +3,7 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import Header from 'components/Header';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import GettingStarted from './tabs/GettingStarted';
 import HowToInstall from './tabs/HowToInstall';
 import RegisterAndConnect from './tabs/RegisterAndConnect';

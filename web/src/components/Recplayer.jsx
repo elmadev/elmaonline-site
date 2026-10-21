@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { RecPlayer } from '@elmadev/react-rec-viewer';
 import config from 'config';
 import { isValidLevUrl, isValidRecUrl } from 'utils/recplayerUrls';
+import useRecplayerKeys from '../hooks/use-recplayer-keys';
 import Loading from './Loading';
 
 const DEFAULT_LGR = 'https://space.elma.online/lgr/cr6m27a3t1/default.lgr';
@@ -44,6 +44,7 @@ const Recplayer = props => {
       timer = true,
       minimap = false,
       lastAppleTime = true,
+      zoomTextures = true,
       animatedObjects = true,
       stillObjects = false,
       fancyboost = true,
@@ -58,6 +59,7 @@ const Recplayer = props => {
     () => lgrs.map(l => ({ value: l.LGRName, label: l.LGRName })),
     [lgrs],
   );
+  useRecplayerKeys();
 
   let defaultZoom = 1;
 
@@ -117,6 +119,7 @@ const Recplayer = props => {
 
   return (
     <RecPlayer
+      className="RecPlayer"
       key={forceRefresh ? `${rec}${shirt}` : undefined}
       recUrls={recUrls}
       levUrl={lev}
@@ -162,6 +165,10 @@ const Recplayer = props => {
       onLastAppleTimeChange={value =>
         setSetting({ name: 'lastAppleTime', value })
       }
+      zoomTextures={zoomTextures}
+      onZoomTexturesChange={value =>
+        setSetting({ name: 'zoomTextures', value })
+      }
       picturesInBackground={picturesInBackground}
       onPicturesInBackgroundChange={value =>
         setSetting({ name: 'picturesInBackground', value })
@@ -191,23 +198,6 @@ const Recplayer = props => {
       style={{ width: size(width), height: size(height) }}
     />
   );
-};
-
-Recplayer.propTypes = {
-  rec: PropTypes.string,
-  lev: PropTypes.string.isRequired,
-  shirt: PropTypes.arrayOf(PropTypes.string),
-  names: PropTypes.arrayOf(PropTypes.string),
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  zoom: PropTypes.number,
-  controls: PropTypes.bool,
-  autoPlay: PropTypes.oneOf(['if-visible', 'yes', 'no']),
-  merge: PropTypes.bool,
-  forceRefresh: PropTypes.bool,
-  lgr: PropTypes.string,
-  onEnd: PropTypes.func,
-  onError: PropTypes.func,
 };
 
 export default Recplayer;

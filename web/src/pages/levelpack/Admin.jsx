@@ -6,14 +6,14 @@ import {
   AccordionSummary,
   AccordionDetails,
   Checkbox,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import {
   Delete as DeleteIcon,
   PlaylistAdd,
   DragHandle,
   ExpandMore,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Link from 'components/Link';
 import Header from 'components/Header';

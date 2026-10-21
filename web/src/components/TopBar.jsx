@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import Link from 'components/Link';
 import SearchBar from 'components/SearchBar';
-import { useMediaQuery, Chip } from '@material-ui/core';
-import { Error } from '@material-ui/icons';
+import { useMediaQuery, Chip } from '@mui/material';
+import { Error } from '@mui/icons-material';
 import { useNavigate } from '@tanstack/react-router';
 import TopBarActions from 'components/TopBarActions';
 import { useStoreState, useStoreActions } from 'easy-peasy';
@@ -66,7 +66,7 @@ const TopBar = () => {
   );
 };
 
-const Root = styled.div`
+const Root = styled.header`
   top: 0;
   left: 0;
   background: ${p => p.theme.primary};

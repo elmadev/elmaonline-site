@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import Loading from 'components/Loading';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import React from 'react';
 import LevelMap from 'features/LevelMap';
 import config from 'config';
@@ -37,16 +37,18 @@ const LevelPlayer = ({ loading, level, battles }) => {
 
   return (
     <>
-      <Player>
-        {showFancyMap() ? (
-          <Recplayer
-            lev={`${config.dlUrl}level/${level.LevelIndex}`}
-            controls
-          />
-        ) : (
-          <LevelMap LevelIndex={level.LevelIndex} />
-        )}
-      </Player>
+      <PlayerContainer>
+        <Player fancy={showFancyMap()}>
+          {showFancyMap() ? (
+            <Recplayer
+              lev={`${config.dlUrl}level/${level.LevelIndex}`}
+              controls
+            />
+          ) : (
+            <LevelMap LevelIndex={level.LevelIndex} />
+          )}
+        </Player>
+      </PlayerContainer>
       <StyledFormControlLabel
         control={
           <Checkbox
@@ -75,15 +77,16 @@ const LevelPlayer = ({ loading, level, battles }) => {
   );
 };
 
+const PlayerContainer = styled.div`
+  container-type: inline-size;
+`;
+
 const Player = styled.div`
   background: ${p => p.theme.pageBackground};
-  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
-  @media screen and (max-width: 640px) {
-    height: 350px;
-  }
+  ${p => p.fancy && 'height: max(320px, 100cqw * 9 / 16);'}
 `;
 
 const StyledFormControlLabel = styled(FormControlLabel)`

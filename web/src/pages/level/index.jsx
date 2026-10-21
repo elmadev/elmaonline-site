@@ -4,11 +4,11 @@ import {
   AccordionSummary,
   AccordionDetails,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import NotFound from 'pages/not-found';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import RecList from 'features/RecList';
 import Header from 'components/Header';

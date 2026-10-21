@@ -1,0 +1,2 @@
+GET country
+GET news/status

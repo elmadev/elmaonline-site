@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import pedestal from 'images/recap/pedestal-long.jpg';
 import tracks from 'images/recap/tracks.jpg';
 import { Row, Column } from 'components/Containers';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Link from 'components/Link';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import Loading from 'components/Loading';

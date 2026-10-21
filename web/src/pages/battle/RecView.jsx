@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStoreRehydrated } from 'easy-peasy';
-import { useMediaQuery } from '@material-ui/core';
+import { useMediaQuery } from '@mui/material';
 import { useStoreState } from 'easy-peasy';
 import Recplayer from 'components/Recplayer';
 import styled from '@emotion/styled';
@@ -42,7 +42,7 @@ const RecView = props => {
                     !hasReplay
                       ? undefined
                       : replayUrl ||
-                        `${config.dlUrl}battlereplay/${BattleIndex}`
+                        `${config.dlUrl}battlereplay/${BattleIndex}?v=2`
                   }
                   lev={`${config.dlUrl}level/${levelIndex}`}
                   shirt={[shirtBmpUrl(player?.Kuski?.KuskiIndex)]}
@@ -60,7 +60,8 @@ const RecView = props => {
                 <Download
                   onClick={() =>
                     downloadRec(
-                      replayUrl || `${config.dlUrl}battlereplay/${BattleIndex}`,
+                      replayUrl ||
+                        `${config.dlUrl}battlereplay/${BattleIndex}?v=2`,
                       levelName,
                       player.Kuski.Kuski,
                       player.Time,
@@ -98,18 +99,13 @@ const PlayerContainer = styled.div`
   float: left;
   padding: 7px;
   box-sizing: border-box;
+  container-type: inline-size;
   .player {
     background: ${p => p.theme.pageBackground};
-    height: 550px;
+    height: max(420px, 100cqw * 9 / 16);
     display: flex;
     align-items: center;
     justify-content: center;
-    @media screen and (max-width: 1650px) {
-      height: 450px;
-    }
-    @media screen and (max-width: 500px) {
-      height: 400px;
-    }
   }
   @media screen and (max-width: 1100px) {
     float: none;

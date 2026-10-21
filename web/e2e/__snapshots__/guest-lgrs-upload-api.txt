@@ -1,0 +1,2 @@
+GET news/status
+GET tag?type=lgr

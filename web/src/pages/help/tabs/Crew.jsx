@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Grid, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { Grid, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import Link from 'components/Link';
 import Flag from 'components/Flag';
 import Header from 'components/Header';

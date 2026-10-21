@@ -1,0 +1,2 @@
+GET battle/replays?limit=200
+GET news/status

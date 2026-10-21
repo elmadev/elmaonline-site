@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { Paper } from 'components/Paper';
@@ -151,11 +150,5 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-
-BattleStatus.propTypes = {
-  battles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  breakMinutes: PropTypes.number,
-  onBattleEnd: PropTypes.func,
-};
 
 export default BattleStatus;

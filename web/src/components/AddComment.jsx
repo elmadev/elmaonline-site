@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { useStoreActions } from 'easy-peasy';
 import { format } from 'date-fns';
 import Button from 'components/Buttons';
@@ -80,10 +79,5 @@ const Buttons = styled.div`
   flex-direction: row;
   justify-content: flex-end;
 `;
-
-AddComment.propTypes = {
-  type: PropTypes.string.isRequired,
-  index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-};
 
 export default AddComment;

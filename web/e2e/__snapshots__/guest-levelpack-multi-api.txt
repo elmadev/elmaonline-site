@@ -1,0 +1,7 @@
+GET allfinished/highlight
+GET levelpack/Int/multirecords
+GET levelpack/Int/records/:n
+GET levelpack/Int/stats/:n
+GET levelpack/Int?levels=1
+GET levelpack/level-stats/:n/Int
+GET news/status

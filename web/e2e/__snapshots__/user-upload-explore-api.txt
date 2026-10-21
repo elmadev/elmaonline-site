@@ -1,0 +1,2 @@
+POST upload {"Filename":"replay.rec","Uuid":"e2etest01","expire":"Never","maxDownloads":""}
+POST upload/file <multipart>

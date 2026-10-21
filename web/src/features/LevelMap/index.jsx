@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import Loading from 'components/Loading';
@@ -9,6 +8,16 @@ import Time from 'components/Time';
 
 import { levToSvg } from 'elma-js';
 
+/**
+ * @param {{
+ *   LevelIndex?: number | null,
+ *   width?: string,
+ *   height?: string,
+ *   interaction?: boolean,
+ *   time?: number,
+ *   rating?: number,
+ * }} props
+ */
 const LevelMap = ({
   LevelIndex = null,
   width = '100%',
@@ -209,11 +218,5 @@ const RatingContainer = styled.span`
   background: yellow;
   color: #222;
 `;
-
-LevelMap.propTypes = {
-  LevelIndex: PropTypes.number.isRequired,
-  width: PropTypes.string,
-  height: PropTypes.string,
-};
 
 export default LevelMap;

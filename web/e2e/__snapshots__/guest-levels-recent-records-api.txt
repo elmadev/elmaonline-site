@@ -1,0 +1,4 @@
+GET besttime/best-records/:n/:n/:n/:n?daysPast=14
+GET levelpack
+GET levelpack/stats
+GET news/status

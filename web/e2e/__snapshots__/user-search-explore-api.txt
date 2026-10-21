@@ -1,0 +1,3 @@
+GET levelpack/search/test
+GET levelpack/searchLevel/test/-50/:n
+GET levelpack/searchLevel/test/:n/:n

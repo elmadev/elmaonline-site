@@ -1,10 +1,10 @@
 import React from 'react';
 import Layout from 'components/Layout';
 import { useNavigate } from '@tanstack/react-router';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import ByDate from './ByDate';
 import Search from './Search';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 const Battles = ({ tab = '' }) => {
   const navigate = useNavigate();

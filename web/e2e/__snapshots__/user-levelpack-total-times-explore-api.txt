@@ -1,0 +1,13 @@
+GET crippled/levelPackPersonalRecords/Int/:n
+GET crippled/levelPackRecords/Int/noVolt
+GET levelpack/Int/multirecords
+GET levelpack/Int/records/:n/country/ZW
+GET levelpack/Int/records/:n/kuski/
+GET levelpack/Int/stats/:n/country/ZW
+GET levelpack/Int/stats/:n/kuski/
+GET levelpack/record-history/Int?limit=50&sort=desc
+GET levelstats/collection/ids/:ids
+GET replay?levelPack=84&order=desc&page=0&pageSize=25&sortBy=uploaded
+GET tag?type=levelpack
+GET tag?type=replay
+POST levelpack/favourite/add {"LevelPackIndex":84}

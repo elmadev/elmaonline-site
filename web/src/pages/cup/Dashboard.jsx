@@ -3,7 +3,7 @@ import { forEach } from 'lodash';
 import { format } from 'date-fns';
 import Link from 'components/Link';
 import styled from '@emotion/styled';
-import { Grid, Checkbox, Button, TextField } from '@material-ui/core';
+import { Grid, Checkbox, Button, TextField } from '@mui/material';
 import Header from 'components/Header';
 import DerpTable from 'components/Table/DerpTable';
 import { calculateStandings, pts } from 'utils/cups';
@@ -74,7 +74,7 @@ const Dashboard = props => {
             </Content>
             {standings.player && (
               <DerpTable
-                headers={['#', 'Player', { t: 'Points', r: true, w: 'auto' }]}
+                headers={['#', 'Player', { t: 'Points', r: true }]}
                 length={standings.player.length}
               >
                 {standings.player.slice(0, 5).map((r, no) => (
@@ -188,6 +188,7 @@ export const CupUpload = ({ onUpload, top = false }) => {
             </UploadInput>
             <UploadInput>
               <TextField
+                variant="standard"
                 id="Comment"
                 label="Comment"
                 margin="normal"
