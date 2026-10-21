@@ -11,6 +11,7 @@
     "start": "nodemon --no-warnings",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "importscheck": "node scripts/importscheck.js",
     "commit": "git-cz"
   },
   "dependencies": {
