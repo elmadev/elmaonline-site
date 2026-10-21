@@ -13,7 +13,8 @@
     "commit": "git-cz",
     "compare": "node compare/compare.ts",
     "compare:baseline": "sh scripts/compare-baseline.sh",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "importscheck": "node scripts/importscheck.js"
   },
   "dependencies": {
     "apisauce": "^3.1.0",
