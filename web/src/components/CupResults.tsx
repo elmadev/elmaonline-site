@@ -10,7 +10,7 @@ import { Button } from '@mui/material';
 import config from 'config';
 import { downloadWithAuth } from 'utils/misc';
 import { pts } from 'utils/cups';
-import type { Cup, CupResult } from 'types/cup';
+import type { Cup, CupResult } from 'contract/cup.ts';
 
 type CupResultsProps = {
   results: CupResult[];

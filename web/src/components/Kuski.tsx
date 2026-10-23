@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import Link from 'components/Link';
 import Flag from 'components/Flag';
-import type { KuskiData } from 'types/kuski';
+import type { KuskiData } from 'contract/kuski.ts';
 
 type KuskiProps = {
   kuskiData?: KuskiData | null;

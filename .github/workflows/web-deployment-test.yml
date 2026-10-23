@@ -6,6 +6,7 @@ on:
       - dev
     paths:
       - "web/**"
+      - "contract/**"
   workflow_dispatch:
 
 concurrency:

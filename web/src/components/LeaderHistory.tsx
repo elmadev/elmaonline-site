@@ -4,7 +4,7 @@ import { PlayArrow } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import Loading from 'components/Loading';
 import { formatDistanceStrict } from 'date-fns';
-import type { KuskiData } from 'types/kuski';
+import type { KuskiData } from 'contract/kuski.ts';
 
 export type FinishedTime = {
   TimeIndex: number;

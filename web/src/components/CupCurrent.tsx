@@ -6,7 +6,7 @@ import Download from 'components/Download';
 import { Paper } from 'components/Paper';
 import { Timer } from '@mui/icons-material';
 import Link from 'components/Link';
-import type { CupEvent } from 'types/cup';
+import type { CupEvent } from 'contract/cup.ts';
 
 const eventSort = (a: CupEvent, b: CupEvent) => a.CupIndex - b.CupIndex;
 

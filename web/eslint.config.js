@@ -6,6 +6,17 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import tseslint from 'typescript-eslint';
 
+// the contract is types only and must never reach the bundle, so it's only
+// imported with `import type`
+const contractImports = {
+  patterns: [
+    {
+      group: ['contract/*'],
+      message: 'Import the contract with `import type`.',
+    },
+  ],
+};
+
 export default [
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -41,6 +52,7 @@ export default [
           varsIgnorePattern: 'React',
         },
       ],
+      'no-restricted-imports': ['error', contractImports],
     },
   },
   ...tseslint.configs.recommended.map(config => ({
@@ -55,6 +67,16 @@ export default [
         'error',
         {
           varsIgnorePattern: 'React',
+        },
+      ],
+      'no-restricted-imports': 'off',
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: contractImports.patterns.map(pattern => ({
+            ...pattern,
+            allowTypeImports: true,
+          })),
         },
       ],
       '@typescript-eslint/consistent-type-assertions': [

@@ -15,7 +15,7 @@ import AutocompleteMui from '@mui/material/Autocomplete';
 import Kuski from 'components/Kuski';
 import { VariableSizeList } from 'react-window';
 import type { ListChildComponentProps } from 'react-window';
-import type { KuskiData } from 'types/kuski';
+import type { KuskiData } from 'contract/kuski.ts';
 
 type Value<T> = AutocompleteValue<T, boolean, false, false>;
 

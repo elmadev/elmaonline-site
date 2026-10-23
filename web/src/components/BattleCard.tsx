@@ -8,7 +8,7 @@ import LevelMap from 'features/LevelMap';
 import styled from '@emotion/styled';
 import { toLocalTime } from 'utils/time';
 import { addMinutes, getUnixTime } from 'date-fns';
-import type { Battle } from 'types/battle';
+import type { Battle } from 'contract/battle.ts';
 import { useInterval } from 'utils/useInterval';
 import LinearProgressWithLabel from 'components/LinearProgressWithLabel';
 

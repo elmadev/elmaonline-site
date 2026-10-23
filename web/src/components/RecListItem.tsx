@@ -11,7 +11,7 @@ import { useLocation } from '@tanstack/react-router';
 import { formatDistanceStrict } from 'date-fns';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { stripRecExt } from 'utils/misc';
-import type { Replay } from 'types/replay';
+import type { ReplayData } from 'contract/replay.ts';
 
 type Column =
   | 'Uploaded'
@@ -25,7 +25,7 @@ type Column =
   | 'Tags';
 
 type RecListItemProps = {
-  replay: Replay;
+  replay: ReplayData;
   selected?: boolean;
   columns?: Column[];
   mergable?: boolean;
@@ -41,7 +41,7 @@ const RecListItem = ({
   const location = useLocation();
   const merge: unknown = location.search.merge;
 
-  const url = `/r/${replay.UUID}/${stripRecExt(replay.RecFileName)}`;
+  const url = `/r/${replay.UUID}/${stripRecExt(replay.RecFileName ?? '')}`;
 
   const updateUrl = (unmerge = false) => {
     if (unmerge) {
@@ -59,7 +59,7 @@ const RecListItem = ({
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
   const getTags = () => {
-    return replay.Tags.map(tag => tag.Name);
+    return (replay.Tags ?? []).map(tag => tag.Name);
   };
 
   return (
@@ -88,9 +88,9 @@ const RecListItem = ({
       {columns.indexOf('Time') !== -1 && (
         <ListCell right to={url}>
           {replay.BattleIndex ? (
-            <Time time={replay.ReplayTime / 10} apples={replay.Apples} />
+            <Time time={(replay.ReplayTime ?? 0) / 10} apples={replay.Apples} />
           ) : (
-            <Time thousands time={replay.ReplayTime} />
+            <Time thousands time={replay.ReplayTime ?? 0} />
           )}
         </ListCell>
       )}
@@ -121,11 +121,13 @@ const RecListItem = ({
         <MergeContainer title={selected ? 'Unmerge replay' : 'Merge replay'}>
           {selected ? (
             <>
-              {typeof merge === 'string' && merge.includes(replay.UUID) && (
-                <Link to={updateUrl(true)}>
-                  <IndeterminateCheckBox />
-                </Link>
-              )}
+              {typeof merge === 'string' &&
+                replay.UUID &&
+                merge.includes(replay.UUID) && (
+                  <Link to={updateUrl(true)}>
+                    <IndeterminateCheckBox />
+                  </Link>
+                )}
             </>
           ) : (
             <Link to={updateUrl()}>

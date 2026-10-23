@@ -1,27 +1,32 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import { DataTypes } from 'sequelize';
+import type { Model } from 'sequelize';
+import type { CountryData } from '#contract/country.ts';
+import sequelize from '../sequelize.js';
 
-const Country = Model.define('country', {
+// all columns are public, so the contract entity is the full row
+interface CountryInstance extends Model<CountryData>, CountryData {}
+
+const Country = sequelize.define<CountryInstance>('country', {
   Iso: {
-    type: DataType.STRING(2),
+    type: DataTypes.STRING(2),
     allowNull: false,
     primaryKey: true,
   },
   NameUppercase: {
-    type: DataType.STRING(80),
+    type: DataTypes.STRING(80),
     allowNull: false,
   },
   Name: {
-    type: DataType.STRING(80),
+    type: DataTypes.STRING(80),
     allowNull: false,
   },
   Iso3: {
-    type: DataType.CHAR(3),
+    type: DataTypes.CHAR(3),
     allowNull: true,
     defaultValue: null,
   },
   Numcode: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     allowNull: true,
     defaultValue: null,
   },

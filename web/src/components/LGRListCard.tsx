@@ -12,7 +12,7 @@ import Link from 'components/Link';
 import Tags from 'components/Tags';
 import { getLgrPreviewLink } from 'utils/link';
 import config from 'config';
-import type { LGR } from 'types/lgr';
+import type { LGR } from 'contract/lgr.ts';
 
 type LGRListCardProps = {
   lgr: LGR;

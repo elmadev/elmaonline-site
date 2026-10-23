@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-// Lists which endpoints in src/api.js show up in the api snapshots, to find
+// Lists which endpoints in src/api.ts show up in the api snapshots, to find
 // calls the smoke tests don't reach yet. Run with `yarn test:e2e:coverage`,
 // add --uncovered to only list the missing ones.
 import { readFileSync, readdirSync } from 'node:fs';
@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const source = readFileSync(join(root, 'src/api.js'), 'utf8');
+const source = readFileSync(join(root, 'src/api.ts'), 'utf8');
 const snapshotDir = join(root, 'e2e/__snapshots__');
 
 const WILDCARD = '<<param>>';
@@ -45,17 +45,30 @@ const parseEndpoints = () => {
       .slice(match.index, exports[index + 1]?.index ?? source.length)
       // usage examples in comments aren't calls
       .replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
-    const call = body.match(
-      /\b(api|apiUpload)\.(get|post|put|delete|patch)\(\s*/,
+    // typed calls name the endpoint, ie. get('GET /replay/byUUID/:UUID', ...)
+    const keyed = body.match(
+      /\b(?:get|post|put|delete|patch)\(\s*'([A-Z]+) \/([^']*)'/,
     );
-    if (!call) return;
-    const literalStart = call.index + call[0].length;
-    if (!['`', "'", '"'].includes(body[literalStart])) return;
-    const path = readLiteral(body, literalStart)
-      .split('?')[0]
-      .replace(/^\/+/, '')
-      // apiUpload is based on the site root, normalize to the same form as api
-      .replace(/^api\//, '');
+    const call = body.match(
+      // optional type argument, ie. api.get<EndpointResponse<'GET /x'>>(
+      /\b(api|apiUpload)\.(get|post|put|delete|patch)(?:<[^(]*>)?\(\s*/,
+    );
+    if (!keyed && !call) return;
+    let method;
+    let path;
+    if (keyed) {
+      method = keyed[1];
+      path = keyed[2].replace(/:\w+/g, WILDCARD);
+    } else {
+      const literalStart = call.index + call[0].length;
+      if (!['`', "'", '"'].includes(body[literalStart])) return;
+      method = call[2].toUpperCase();
+      path = readLiteral(body, literalStart)
+        .split('?')[0]
+        .replace(/^\/+/, '')
+        // apiUpload is based on the site root, normalize to the same form as api
+        .replace(/^api\//, '');
+    }
     const escaped = path
       .split(WILDCARD)
       .map(part =>
@@ -67,7 +80,7 @@ const parseEndpoints = () => {
       .join('[^/]+');
     endpoints.push({
       name: match[1],
-      method: call[2].toUpperCase(),
+      method,
       path: path.split(WILDCARD).join('*'),
       regex: new RegExp(`^${escaped}/?$`),
     });
@@ -99,7 +112,7 @@ const isUsed = name => {
       if (entry.isDirectory()) return walk(path);
       return (
         /\.(js|jsx|ts|tsx)$/.test(entry.name) &&
-        path !== join(root, 'src/api.js') &&
+        path !== join(root, 'src/api.ts') &&
         usage.test(readFileSync(path, 'utf8'))
       );
     });

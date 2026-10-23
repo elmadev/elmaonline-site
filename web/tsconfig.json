@@ -7,6 +7,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
@@ -26,8 +27,8 @@
       "globalStyle": ["./src/globalStyle"],
       "theme": ["./src/theme"],
       "config": ["./src/config"],
-      "types/*": ["./src/types/*"]
+      "contract/*": ["../contract/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../contract"]
 }

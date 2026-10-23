@@ -1,5 +1,5 @@
-import type { KuskiData } from 'types/kuski';
-import type { LevelData } from 'types/level';
+import type { KuskiData } from './kuski.ts';
+import type { LevelData } from './level.ts';
 
 export type Battle = {
   BattleIndex: number;

@@ -14,11 +14,11 @@ import styled from '@emotion/styled';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Column, Row } from 'components/Containers';
-import type { Replay } from 'types/replay';
+import type { ReplayData } from 'contract/replay.ts';
 
 type PreviewProps = {
-  previewRec: Replay;
-  setPreviewRec: (replay: Replay | null) => void;
+  previewRec: ReplayData;
+  setPreviewRec: (replay: ReplayData | null) => void;
   nextReplay: () => void;
   previousReplay: () => void;
 };
@@ -30,12 +30,13 @@ export default function Preview({
   previousReplay,
 }: PreviewProps) {
   const getRecUri = () => {
-    if (previewRec.UUID.substring(0, 5) === 'local') {
-      return `${config.url}temp/${previewRec.UUID}-${previewRec.RecFileName}`;
-    } else if (previewRec.UUID.substring(0, 2) === 'b-') {
-      return `${config.dlUrl}battlereplay/${previewRec.UUID.split('-')[1]}`;
+    const uuid = previewRec.UUID ?? '';
+    if (uuid.substring(0, 5) === 'local') {
+      return `${config.url}temp/${uuid}-${previewRec.RecFileName}`;
+    } else if (uuid.substring(0, 2) === 'b-') {
+      return `${config.dlUrl}battlereplay/${uuid.split('-')[1]}`;
     }
-    return `${config.s3Url}replays/${previewRec.UUID}/${previewRec.RecFileName}`;
+    return `${config.s3Url}replays/${uuid}/${previewRec.RecFileName}`;
   };
 
   return (
@@ -81,7 +82,7 @@ export default function Preview({
                   LevelIndex={previewRec.LevelIndex}
                 />
               </p>
-              <Tags tags={previewRec.Tags.map(tag => tag.Name)} />
+              <Tags tags={(previewRec.Tags ?? []).map(tag => tag.Name)} />
               {previewRec.Comment && <Comment>{previewRec.Comment}</Comment>}
             </div>
 

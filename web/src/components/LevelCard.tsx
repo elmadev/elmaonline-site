@@ -12,7 +12,7 @@ import { shirtUrl } from 'utils/misc';
 import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
-import type { LevelData } from 'types/level';
+import type { LevelData } from 'contract/level.ts';
 
 type LevelCardProps = {
   level: LevelData;
