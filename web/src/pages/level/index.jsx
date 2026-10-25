@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
+import { usePreloadRecplayer } from 'components/Recplayer';
+import config from 'config';
 import NotFound from 'pages/not-found';
 import { ExpandMore } from '@mui/icons-material';
 import { useStoreState, useStoreActions } from 'easy-peasy';
@@ -33,8 +35,10 @@ const Level = () => {
 const LevelPage = ({ LevelIndex }) => {
   const [previewRec, setPreviewRec] = useState(null);
 
-  const { level, battlesForLevel, loading, levelpacks, cups } = useStoreState(
-    state => state.Level,
+  const { level, battlesForLevel, loading, levelpacks, cups, settings } =
+    useStoreState(state => state.Level);
+  usePreloadRecplayer(
+    settings.fancyMap ? `${config.dlUrl}level/${LevelIndex}` : undefined,
   );
 
   const { getLevel } = useStoreActions(actions => actions.Level);
