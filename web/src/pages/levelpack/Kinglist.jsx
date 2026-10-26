@@ -63,7 +63,36 @@ const Kinglist = ({ highlight, highlightWeeks, name }) => {
         Points are awarded for the top 20 times on each level (levels excluded
         from total times are not counted):
         <br />
-        {pointList.map((p, i) => `${i + 1}: ${p}`).join(' -- ')}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateRows: 'repeat(5, auto)',
+            gridAutoFlow: 'column',
+            columnGap: '2.5vw',
+            width: 'fit-content',
+          }}
+        >
+          {pointList.map((p, i) => {
+            const n = i + 1;
+            const suffix = { 1: 'st', 2: 'nd', 3: 'rd' }[n] || 'th';
+            return (
+              <div
+                key={n}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '75px',
+                }}
+              >
+                <span>
+                  {n}
+                  {suffix}:
+                </span>
+                <span>{p} pts</span>
+              </div>
+            );
+          })}
+        </div>
         <br />
         Records = number of 1st places.
       </Text>
