@@ -1,125 +1,129 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { KuskiRow } from '#contract/kuski.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 import Team from './Team.js';
 
-const Kuski = Model.define(
+export type KuskiInstance = ModelInstance<KuskiRow>;
+
+const Kuski = sequelize.define<KuskiInstance>(
   'kuski',
   {
     KuskiIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     Kuski: {
-      type: DataType.STRING(15),
+      type: DataTypes.STRING(15),
       allowNull: false,
     },
     TeamIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Country: {
-      type: DataType.STRING(2),
+      type: DataTypes.STRING(2),
       allowNull: false,
     },
     Password: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       allowNull: false,
       defaultValue: '',
     },
     Password2: {
-      type: DataType.STRING(128),
+      type: DataTypes.STRING(128),
       allowNull: false,
       defaultValue: '',
     },
     Salt: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       allowNull: false,
       defaultValue: '',
     },
     Rights: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BmpCRC: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BmpData: {
-      type: DataType.BLOB,
+      type: DataTypes.BLOB,
       allowNull: true,
     },
     RPlay: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RStartBattle: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RSpecialBattle: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RStartCup: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RStart24htt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RStop: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RMultiPlay: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RChat: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RBan: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RMod: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RAdmin: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Confirmed: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     ConfirmCode: {
-      type: DataType.STRING(10),
+      type: DataTypes.STRING(10),
       allowNull: false,
       defaultValue: '',
     },
     Email: {
-      type: DataType.STRING,
+      type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
     },
@@ -132,7 +136,7 @@ const Kuski = Model.define(
         {
           model: Team,
           as: 'TeamData',
-          attributes: { exclude: 'Locked' },
+          attributes: { exclude: ['Locked'] },
         },
       ],
     },

@@ -1,57 +1,61 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { ReplayLogRow } from '#contract/replaylog.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const ReplayLog = Model.define(
+export type ReplayLogInstance = ModelInstance<ReplayLogRow>;
+
+const ReplayLog = sequelize.define<ReplayLogInstance>(
   'replay_log',
   {
     ReplayLogIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     KuskiIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     ReplayIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BattleIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     CupTimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     UUID: {
-      type: DataType.STRING(54),
+      type: DataTypes.STRING(54),
       defaultValue: null,
       allowNull: true,
     },
     Fingerprint: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       defaultValue: null,
       allowNull: true,
     },
     Day: {
-      type: DataType.STRING(8),
+      type: DataTypes.STRING(8),
       defaultValue: null,
       allowNull: true,
     },
     Timestamp: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

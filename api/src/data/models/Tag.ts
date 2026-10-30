@@ -1,24 +1,28 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { TagRow } from '#contract/tag.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const Tag = Model.define('tag', {
+export type TagInstance = ModelInstance<TagRow>;
+
+const Tag = sequelize.define<TagInstance>('tag', {
   TagIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
   Name: {
-    type: DataType.STRING(255),
+    type: DataTypes.STRING(255),
     allowNull: false,
   },
   Hidden: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
   },
   Type: {
-    type: DataType.ENUM,
+    type: DataTypes.ENUM,
     values: ['replay', 'level', 'levelpack', 'lgr'],
     allowNull: false,
   },

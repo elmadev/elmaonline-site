@@ -1,102 +1,126 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type {
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
+} from 'sequelize';
+import type { ReplayRow } from '#contract/replay.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
+import type { KuskiInstance } from './Kuski.ts';
+import type { LevelInstance } from './Level.ts';
+import type { ReplayRatingInstance } from './ReplayRating.ts';
+import type { TagInstance } from './Tag.ts';
 
-const Replay = Model.define(
+export type ReplayInstance = ModelInstance<
+  ReplayRow,
+  {
+    getTags: BelongsToManyGetAssociationsMixin<TagInstance>;
+    setTags: BelongsToManySetAssociationsMixin<TagInstance, number>;
+    // sequelize sets an unmatched belongsTo include to null
+    LevelData?: LevelInstance | null;
+    UploadedByData?: KuskiInstance | null;
+    DrivenByData?: KuskiInstance | null;
+    Tags?: TagInstance[];
+    Rating?: ReplayRatingInstance[];
+  }
+>;
+
+const Replay = sequelize.define<ReplayInstance>(
   'replay',
   {
     ReplayIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     DrivenBy: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: 0,
     },
     DrivenByText: {
-      type: DataType.STRING(255),
+      type: DataTypes.STRING(255),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     UploadedBy: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     ReplayTime: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Finished: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Uploaded: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Unlisted: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Hide: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     TAS: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Bug: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Nitro: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Comment: {
-      type: DataType.STRING(255),
+      type: DataTypes.STRING(255),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     UUID: {
-      type: DataType.STRING(10),
+      type: DataTypes.STRING(10),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     RecFileName: {
-      type: DataType.STRING(19),
+      type: DataTypes.STRING(19),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     MD5: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Views: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
