@@ -61,6 +61,7 @@ const LevelPage = ({ LevelIndex }) => {
         <Grid container item xs={12} md={7} alignContent="flex-start">
           <Grid item xs={12}>
             <LevelPlayer
+              LevelIndex={LevelIndex}
               level={level}
               battles={battlesForLevel}
               loading={loading}

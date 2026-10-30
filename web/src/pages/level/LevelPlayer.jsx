@@ -1,14 +1,16 @@
 import styled from '@emotion/styled';
 import Loading from 'components/Loading';
 import { Checkbox, FormControlLabel } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import LevelMap from 'features/LevelMap';
 import config from 'config';
 import Recplayer from 'components/Recplayer';
 import { battleStatus } from 'utils/battle';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 
-const LevelPlayer = ({ loading, level, battles }) => {
+const LevelPlayer = ({ LevelIndex, loading, level, battles }) => {
+  const [failedLevel, setFailedLevel] = useState(null);
+  const failed = failedLevel === LevelIndex;
   const {
     settings: { fancyMap, showGravityApples },
   } = useStoreState(state => state.Level);
@@ -17,23 +19,22 @@ const LevelPlayer = ({ loading, level, battles }) => {
     actions => actions.Level,
   );
 
-  if (loading) {
-    return <Loading />;
-  }
-
-  if (level.Locked) {
-    return <>Can't show map. Level locked.</>;
-  }
-
-  // Don't show map if queued battles
-  if (battles.length > 0 && battleStatus(battles[0]) === 'Queued') {
-    return <>Can't show map. Queued battle.</>;
-  }
-
   const showFancyMap = () => {
     const isWindow = typeof window !== 'undefined';
     return isWindow && fancyMap;
   };
+
+  if (loading && (!showFancyMap() || failed)) {
+    return <Loading />;
+  }
+
+  if (!loading && level.Locked) {
+    return <>Can't show map. Level locked.</>;
+  }
+
+  if (!loading && battles.length > 0 && battleStatus(battles[0]) === 'Queued') {
+    return <>Can't show map. Queued battle.</>;
+  }
 
   return (
     <>
@@ -41,8 +42,9 @@ const LevelPlayer = ({ loading, level, battles }) => {
         <Player fancy={showFancyMap()}>
           {showFancyMap() ? (
             <Recplayer
-              lev={`${config.dlUrl}level/${level.LevelIndex}`}
+              lev={`${config.dlUrl}level/${LevelIndex}`}
               controls
+              onError={() => setFailedLevel(LevelIndex)}
             />
           ) : (
             <LevelMap LevelIndex={level.LevelIndex} />
