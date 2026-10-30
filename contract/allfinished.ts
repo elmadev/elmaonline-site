@@ -1,0 +1,21 @@
+export type AllFinishedRow = {
+  AllFinishedIndex: number;
+  TimeIndex: number;
+  KuskiIndex: number;
+  LevelIndex: number;
+  Time: number;
+  Apples: number;
+  Driven: number;
+  Finished: string;
+  BattleIndex: number;
+  '24httIndex': number;
+  MaxSpeed: number;
+  ThrottleTime: number;
+  BrakeTime: number;
+  LeftVolt: number;
+  RightVolt: number;
+  SuperVolt: number;
+  Turn: number;
+  OneWheel: number;
+  FPSLimit: number;
+};
