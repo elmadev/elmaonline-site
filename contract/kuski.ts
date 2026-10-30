@@ -1,0 +1,26 @@
+export type KuskiRow = {
+  KuskiIndex: number;
+  Kuski: string;
+  TeamIndex: number;
+  Country: string;
+  Password: string;
+  Password2: string;
+  Salt: string;
+  Rights: number;
+  BmpCRC: number;
+  BmpData: Uint8Array | null;
+  RPlay: number;
+  RStartBattle: number;
+  RSpecialBattle: number;
+  RStartCup: number;
+  RStart24htt: number;
+  RStop: number;
+  RMultiPlay: number;
+  RChat: number;
+  RBan: number;
+  RMod: number;
+  RAdmin: number;
+  Confirmed: number;
+  ConfirmCode: string;
+  Email: string | null;
+};
