@@ -1,88 +1,90 @@
-import DataType from 'sequelize';
-import moment from 'moment';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { LevelRow } from '#contract/level.ts';
+import { unixSeconds } from '../columns.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const Level = Model.define(
+export type LevelInstance = ModelInstance<LevelRow>;
+
+const Level = sequelize.define<LevelInstance>(
   'level',
   {
     LevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     LevelName: {
-      type: DataType.STRING(8),
+      type: DataTypes.STRING(8),
       allowNull: false,
       defaultValue: '',
     },
     CRC: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LongName: {
-      type: DataType.STRING(50),
+      type: DataTypes.STRING(50),
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Apples: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Killers: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     Flowers: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: DataType.NULL,
+      defaultValue: null,
     },
     LevelData: {
-      type: DataType.BLOB,
+      type: DataTypes.BLOB,
       allowNull: true,
       defaultValue: '',
     },
     Locked: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     HardLocked: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Hidden: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Legacy: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     ForceHide: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     AcceptBugs: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Added: {
-      type: DataType.STRING(19),
+      type: DataTypes.STRING(19),
       defaultValue: '0000-00-00 00:00:00',
       allowNull: false,
-      get() {
-        return moment(this.getDataValue('Added')).format('X');
-      },
+      ...unixSeconds('Added'),
     },
   },
   {

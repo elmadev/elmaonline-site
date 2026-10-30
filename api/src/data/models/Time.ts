@@ -1,101 +1,105 @@
-import DataType from 'sequelize';
+import DataTypes from 'sequelize';
 import moment from 'moment';
-import Model from '../sequelize.js';
+import type { TimeRow } from '#contract/time.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const Time = Model.define(
+export type TimeInstance = ModelInstance<TimeRow>;
+
+const Time = sequelize.define<TimeInstance>(
   'time',
   {
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
     KuskiIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Time: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Apples: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Driven: {
-      type: DataType.STRING(19),
+      type: DataTypes.STRING(19),
       defaultValue: '0000-00-00 00:00:00',
       allowNull: false,
-      get() {
+      get(this: TimeInstance) {
         return moment(this.getDataValue('Driven')).format('X');
       },
     },
     Finished: {
-      type: DataType.STRING(1),
+      type: DataTypes.STRING(1),
       allowNull: false,
       defaultValue: '',
     },
     BattleIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     '24httIndex': {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     MaxSpeed: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     ThrottleTime: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BrakeTime: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LeftVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RightVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     SuperVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Turn: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     OneWheel: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     FPSLimit: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

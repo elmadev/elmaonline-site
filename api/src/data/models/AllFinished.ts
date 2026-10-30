@@ -1,102 +1,106 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { AllFinishedRow } from '#contract/allfinished.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const AllFinished = Model.define(
+export type AllFinishedInstance = ModelInstance<AllFinishedRow>;
+
+const AllFinished = sequelize.define<AllFinishedInstance>(
   'allfinished',
   {
     AllFinishedIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
     KuskiIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Time: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Apples: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Driven: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Finished: {
-      type: DataType.STRING(1),
+      type: DataTypes.STRING(1),
       allowNull: false,
       defaultValue: '',
     },
     BattleIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     '24httIndex': {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     MaxSpeed: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     ThrottleTime: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BrakeTime: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LeftVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     RightVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     SuperVolt: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Turn: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     OneWheel: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     FPSLimit: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

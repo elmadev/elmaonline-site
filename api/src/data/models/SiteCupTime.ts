@@ -1,82 +1,95 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { SiteCupTimeRow } from '#contract/sitecuptime.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
+import type { TimeInstance } from './Time.ts';
+import type { LevelInstance } from './Level.ts';
+import type { KuskiInstance } from './Kuski.ts';
 
-const SiteCupTime = Model.define(
+export type SiteCupTimeInstance = ModelInstance<
+  SiteCupTimeRow,
+  {
+    TimeData?: TimeInstance & { LevelData?: LevelInstance };
+    KuskiData?: KuskiInstance;
+  }
+>;
+
+const SiteCupTime = sequelize.define<SiteCupTimeInstance>(
   'sitecuptime',
   {
     CupTimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     CupIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: false,
     },
     KuskiIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: false,
     },
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Time: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: false,
     },
     TimeExists: {
-      type: DataType.INTEGER(1),
+      type: DataTypes.INTEGER({ length: 1 }),
       allowNull: false,
       defaultValue: 0,
     },
     RecData: {
-      type: DataType.BLOB,
+      type: DataTypes.BLOB,
       allowNull: true,
       defaultValue: false,
     },
     Replay: {
-      type: DataType.INTEGER(1),
+      type: DataTypes.INTEGER({ length: 1 }),
       allowNull: false,
       defaultValue: 0,
     },
     Code: {
-      type: DataType.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: false,
     },
     ShareReplay: {
-      type: DataType.INTEGER(1),
+      type: DataTypes.INTEGER({ length: 1 }),
       allowNull: false,
       defaultValue: 0,
     },
     Comment: {
-      type: DataType.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: false,
     },
     TeamIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     UUID: {
-      type: DataType.STRING(10),
+      type: DataTypes.STRING(10),
       allowNull: true,
       defaultValue: null,
     },
     MD5: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       allowNull: true,
       defaultValue: null,
     },
     Views: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

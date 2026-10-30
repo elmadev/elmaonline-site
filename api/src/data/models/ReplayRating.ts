@@ -1,40 +1,44 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { ReplayRatingRow } from '#contract/replayrating.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const ReplayRating = Model.define('replay_rating', {
+export type ReplayRatingInstance = ModelInstance<ReplayRatingRow>;
+
+const ReplayRating = sequelize.define<ReplayRatingInstance>('replay_rating', {
   ReplayRatingIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
   KuskiIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     defaultValue: 0,
     allowNull: false,
   },
   ReplayIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     defaultValue: 0,
     allowNull: false,
   },
   Vote: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     defaultValue: 0,
     allowNull: false,
   },
   BattleIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     defaultValue: 0,
     allowNull: false,
   },
   CupTimeIndex: {
-    type: DataType.INTEGER,
+    type: DataTypes.INTEGER,
     defaultValue: 0,
     allowNull: false,
   },
   UUID: {
-    type: DataType.STRING(54),
+    type: DataTypes.STRING(54),
     defaultValue: null,
     allowNull: true,
   },

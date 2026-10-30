@@ -1,42 +1,46 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { TimeFileRow } from '#contract/timefile.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const TimeFile = Model.define(
+export type TimeFileInstance = ModelInstance<TimeFileRow>;
+
+const TimeFile = sequelize.define<TimeFileInstance>(
   'timefile',
   {
     TimeFileIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
     TimeIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     BattleIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     UUID: {
-      type: DataType.STRING(10),
+      type: DataTypes.STRING(10),
       allowNull: true,
       defaultValue: null,
     },
     MD5: {
-      type: DataType.STRING(32),
+      type: DataTypes.STRING(32),
       allowNull: true,
       defaultValue: null,
     },
     Shared: {
-      type: DataType.INTEGER(1),
+      type: DataTypes.INTEGER({ length: 1 }),
       allowNull: false,
       defaultValue: 0,
     },
     Views: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

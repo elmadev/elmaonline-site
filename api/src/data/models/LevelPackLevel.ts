@@ -1,47 +1,51 @@
-import DataType from 'sequelize';
-import Model from '../sequelize.js';
+import DataTypes from 'sequelize';
+import type { LevelPackLevelRow } from '#contract/levelpacklevel.ts';
+import type { ModelInstance } from '../columns.ts';
+import sequelize from '../sequelize.js';
 
-const LevelPackLevel = Model.define(
+export type LevelPackLevelInstance = ModelInstance<LevelPackLevelRow>;
+
+const LevelPackLevel = sequelize.define<LevelPackLevelInstance>(
   'levelpack_level',
   {
     LevelPackLevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     LevelPackIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LevelIndex: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     LevelName: {
-      type: DataType.STRING(8),
+      type: DataTypes.STRING(8),
       defaultValue: '',
       allowNull: false,
     },
     Sort: {
-      type: DataType.STRING(255),
+      type: DataTypes.STRING(255),
       defaultValue: '',
       allowNull: true,
     },
     Targets: {
-      type: DataType.STRING(255),
+      type: DataTypes.STRING(255),
       defaultValue: '',
       allowNull: true,
     },
     ExcludeFromTotal: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
     Order: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
