@@ -13,7 +13,10 @@
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "#contract/*": ["../contract/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../contract"]
 }
