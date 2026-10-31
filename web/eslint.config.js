@@ -61,6 +61,11 @@ export default [
         'error',
         { assertionStyle: 'never' },
       ],
+      // the contract is types only, a value import would end up in the bundle
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        { patterns: [{ group: ['contract/*'], allowTypeImports: true }] },
+      ],
     },
   },
   {

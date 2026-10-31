@@ -9,6 +9,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "resolveJsonModule": true,
@@ -26,8 +27,9 @@
       "globalStyle": ["./src/globalStyle"],
       "theme": ["./src/theme"],
       "config": ["./src/config"],
-      "types/*": ["./src/types/*"]
+      "types/*": ["./src/types/*"],
+      "contract/*": ["../contract/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../contract"]
 }

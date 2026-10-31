@@ -15,10 +15,10 @@ import { useNavigate } from '@tanstack/react-router';
 import styled from '@emotion/styled';
 import { Row } from 'components/Containers';
 import { stripRecExt, shirtUrl } from 'utils/misc';
-import type { Replay } from 'types/replay';
+import type { ReplayItem } from 'contract/replay.ts';
 
 type ReplayCardProps = {
-  replay: Replay;
+  replay: ReplayItem;
   onPreviewClick: () => void;
 };
 
@@ -81,7 +81,7 @@ export default function ReplayCard({
           addSuffix: true,
         })}
       />
-      <ReplayCardMedia title={replay.RecFileName}>
+      <ReplayCardMedia title={replay.RecFileName ?? undefined}>
         <LevelMap
           LevelIndex={replay.LevelIndex}
           interaction={false}
@@ -89,7 +89,7 @@ export default function ReplayCard({
           rating={replay.ratingAvg}
         />
       </ReplayCardMedia>
-      <CardContent title={replay.Comment}>
+      <CardContent title={replay.Comment ?? undefined}>
         <Typography variant="body2" color="textSecondary" component="p">
           <Row jc="space-between">
             <Level LevelData={replay.LevelData} noLink />

@@ -36,6 +36,11 @@ export default [
         'error',
         { assertionStyle: 'never' },
       ],
+      // #contract only resolves through tsconfig paths, so imports from it
+      // must be erased. An inline `import { type X }` leaves a bare import
+      // behind, which Node would try to resolve
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-import-type-side-effects': 'error',
     },
   },
   {

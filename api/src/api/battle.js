@@ -13,7 +13,7 @@ import {
   Time,
   TimeFile,
 } from '#data/models';
-import { battle2Rec } from './replay.js';
+import { battle2Rec } from './replay.ts';
 
 const router = express.Router();
 

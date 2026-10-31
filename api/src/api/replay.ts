@@ -31,7 +31,9 @@ import {
 import sequelize from '../data/sequelize.js';
 import { toUnixSeconds } from '#data/columns.ts';
 import type {
+  ReplayByUUIDResponse,
   ReplayCreateBody,
+  ReplayCreateResponse,
   ReplayItem,
   ReplayListQuery,
   ReplayPublishBody,
@@ -562,7 +564,7 @@ const getReplayByUUID = async (
   replayUUID: string,
   Fingerprint: string | undefined,
   KuskiIndex: number,
-): Promise<ReplayItem | (ReplayItem | null)[] | null> => {
+): Promise<ReplayByUUIDResponse> => {
   const replays = replayUUID.split(';');
   const { cuprecs, winners, timefiles, uploaded } = splitReplayTypes(replays);
   const combined: (ReplayItem | null)[] = [];
@@ -1078,15 +1080,18 @@ router
       res.json(data);
     },
   )
-  .post('/', async (req: Req<ReplayCreateBody>, res: Res<ReplayItem>) => {
-    const auth = authContext(req);
-    if (auth.auth) {
-      const insert = await InsertReplay(req.body, auth.userid);
-      res.json(insert);
-    } else {
-      res.sendStatus(401);
-    }
-  })
+  .post(
+    '/',
+    async (req: Req<ReplayCreateBody>, res: Res<ReplayCreateResponse>) => {
+      const auth = authContext(req);
+      if (auth.auth) {
+        const insert = await InsertReplay(req.body, auth.userid);
+        res.json(insert);
+      } else {
+        res.sendStatus(401);
+      }
+    },
+  )
   .post(
     '/update',
     async (req: Req<ReplayPublishBody>, res: Res<ReplayPublishResponse>) => {
@@ -1198,22 +1203,19 @@ router
     },
   )
 
-  .get(
-    '/byUUID/:UUID',
-    async (req, res: Res<ReplayItem | (ReplayItem | null)[] | null>) => {
-      let KuskiIndex = 0;
-      const auth = authContext(req);
-      if (auth.auth) {
-        KuskiIndex = auth.userid;
-      }
-      const data = await getReplayByUUID(
-        req.params.UUID,
-        queryString(req.query.f),
-        KuskiIndex,
-      );
-      res.json(data);
-    },
-  )
+  .get('/byUUID/:UUID', async (req, res: Res<ReplayByUUIDResponse>) => {
+    let KuskiIndex = 0;
+    const auth = authContext(req);
+    if (auth.auth) {
+      KuskiIndex = auth.userid;
+    }
+    const data = await getReplayByUUID(
+      req.params.UUID,
+      queryString(req.query.f),
+      KuskiIndex,
+    );
+    res.json(data);
+  })
 
   .get('/byLevelIndex/:LevelIndex', async (req, res: Res<ReplayItem[]>) => {
     const LevelIndex = queryInt(req.params.LevelIndex);
