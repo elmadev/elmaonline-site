@@ -5,6 +5,18 @@ import { authToken, saveToken, checkSession } from 'utils/nick';
 import { isObjectLike, isArray, mapValues, meanBy } from 'lodash';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import type {
+  ReplayByUUIDResponse,
+  ReplayCreateBody,
+  ReplayCreateResponse,
+  ReplayItem,
+  ReplayListQuery,
+  ReplayPublishBody,
+  ReplayPublishResponse,
+  ReplayShareBody,
+  ReplayShareResponse,
+  ReplayUpdateBody,
+} from 'contract/replay.ts';
+import type {
   QueryFunctionContext,
   QueryKey,
   UseQueryOptions,
@@ -69,7 +81,7 @@ export const useQueryAlt = <TQueryFnData, TData = TQueryFnData>(
   queryKey: QueryKey,
   queryFn: (
     context: QueryFunctionContext,
-  ) => Promise<ApiResponse<TQueryFnData>>,
+  ) => Promise<ApiResponse<TQueryFnData, unknown>>,
   queryOpts: Omit<
     UseQueryOptions<TQueryFnData, Error, TData>,
     'queryKey' | 'queryFn'
@@ -117,23 +129,39 @@ export const ReplayRating = (replayIndex: Untyped) =>
   api.get(`replay_rating/${replayIndex}`);
 export const AddReplayRating = (data: Untyped) =>
   api.post(`replay_rating/add`, data);
-export const ReplayDrivenBy = (kuskiIndex: Untyped, query = {}) =>
-  api.get(`replay/driven_by/${kuskiIndex}`, query);
-export const ReplayUploadedBy = (kuskiIndex: Untyped, query = {}) =>
-  api.get(`replay/uploaded_by/${kuskiIndex}`, query);
-export const ReplayByUUID = (UUID: Untyped, Fingerprint: Untyped) =>
-  api.get(`replay/byUUID/${UUID}?f=${Fingerprint}`);
-export const RandomReplay = () => api.get('replay/random');
-export const ReplaysSearchByDriven = (data: Untyped) =>
-  api.get(`replay/search/byDriven/${data.q}/${data.offset}`);
-export const ReplaysSearchByLevel = (data: Untyped) =>
-  api.get(`replay/search/byLevel/${data.q}/${data.offset}`);
-export const ReplaysSearchByFilename = (data: Untyped) =>
-  api.get(`replay/search/byFilename/${data.q}/${data.offset}`);
-export const ReplaysByLevelIndex = (LevelIndex: Untyped) =>
-  api.get(`replay/byLevelIndex/${LevelIndex}`);
-export const InsertReplay = (data: Untyped) => api.post('replay', data);
-export const UpdateReplay = (data: Untyped) => api.post('replay/update', data);
+export const ReplayDrivenBy = (
+  kuskiIndex: number,
+  query: ReplayListQuery = {},
+) => api.get<ReplayItem[], unknown>(`replay/driven_by/${kuskiIndex}`, query);
+export const ReplayUploadedBy = (
+  kuskiIndex: number,
+  query: ReplayListQuery = {},
+) => api.get<ReplayItem[], unknown>(`replay/uploaded_by/${kuskiIndex}`, query);
+export const ReplayByUUID = (UUID: string, Fingerprint?: string) =>
+  api.get<ReplayByUUIDResponse, unknown>(`replay/byUUID/${UUID}`, {
+    f: Fingerprint,
+  });
+export const RandomReplay = () =>
+  api.get<ReplayItem[], unknown>('replay/random');
+type ReplaySearch = { q: string; offset: number };
+export const ReplaysSearchByDriven = (data: ReplaySearch) =>
+  api.get<ReplayItem[], unknown>(
+    `replay/search/byDriven/${data.q}/${data.offset}`,
+  );
+export const ReplaysSearchByLevel = (data: ReplaySearch) =>
+  api.get<ReplayItem[], unknown>(
+    `replay/search/byLevel/${data.q}/${data.offset}`,
+  );
+export const ReplaysSearchByFilename = (data: ReplaySearch) =>
+  api.get<ReplayItem[], unknown>(
+    `replay/search/byFilename/${data.q}/${data.offset}`,
+  );
+export const ReplaysByLevelIndex = (LevelIndex: number) =>
+  api.get<ReplayItem[], unknown>(`replay/byLevelIndex/${LevelIndex}`);
+export const InsertReplay = (data: ReplayCreateBody) =>
+  api.post<ReplayCreateResponse, unknown>('replay', data);
+export const UpdateReplay = (data: ReplayPublishBody) =>
+  api.post<ReplayPublishResponse, unknown>('replay/update', data);
 export const Replays = ({
   page,
   pageSize,
@@ -142,8 +170,8 @@ export const Replays = ({
   order,
   levelPack,
   excludedTags,
-}: Untyped) => {
-  return api.get(`replay`, {
+}: ReplayListQuery) => {
+  return api.get<ReplayItem[], unknown>(`replay`, {
     page,
     pageSize,
     tags,
@@ -159,8 +187,8 @@ export const AllMyReplays = ({
   tags,
   sortBy,
   order,
-}: Untyped) => {
-  return api.get(`replay/my`, {
+}: ReplayListQuery) => {
+  return api.get<ReplayItem[], unknown>(`replay/my`, {
     page,
     pageSize,
     tags,
@@ -168,8 +196,11 @@ export const AllMyReplays = ({
     order,
   });
 };
-export const ShareTimeFile = (data: Untyped) => api.post('replay/share', data);
-export const EditReplay = (data: Untyped) => api.post('replay/edit', data);
+export const ShareTimeFile = (data: ReplayShareBody) =>
+  api.post<ReplayShareResponse, unknown>('replay/share', data);
+// only answers with a status code
+export const EditReplay = (data: ReplayUpdateBody) =>
+  api.post<string, unknown>('replay/edit', data);
 
 // country
 export const Country = () => api.get('country');

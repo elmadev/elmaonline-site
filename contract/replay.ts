@@ -1,7 +1,7 @@
 import type { KuskiRow } from './kuski.ts';
 import type { LevelRow } from './level.ts';
 import type { ReplayRatingRow } from './replayrating.ts';
-import type { ApiResult } from './response.ts';
+import type { ApiError, ApiResult } from './response.ts';
 import type { TagRow } from './tag.ts';
 
 export type ReplayRow = {
@@ -75,6 +75,12 @@ export type ReplayListQuery = {
   level?: number;
 };
 
+/**
+ * GET /replay/byUUID/:UUID. One replay for a single UUID, or one entry per
+ * UUID (null when not found) when several are joined with `;` to merge them
+ */
+export type ReplayByUUIDResponse = ReplayItem | (ReplayItem | null)[] | null;
+
 // the tag columns the replay endpoints read from the client
 export type ReplayTag = Pick<TagRow, 'TagIndex' | 'Hidden'>;
 
@@ -101,6 +107,11 @@ export type ReplayCreateBody = Pick<
   > & {
     Tags: ReplayTag[];
   };
+
+/**
+ * POST /replay answers a duplicate upload with an error body and status 200
+ */
+export type ReplayCreateResponse = ReplayItem | ApiError;
 
 export type ReplayShareBody = {
   TimeIndex: number;

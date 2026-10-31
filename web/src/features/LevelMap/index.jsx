@@ -14,8 +14,8 @@ import { levToSvg } from 'elma-js';
  *   width?: string,
  *   height?: string,
  *   interaction?: boolean,
- *   time?: number,
- *   rating?: number,
+ *   time?: number | null,
+ *   rating?: number | null,
  * }} props
  */
 const LevelMap = ({
