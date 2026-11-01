@@ -1,6 +1,5 @@
 import { action, thunk } from 'easy-peasy';
 import { ReplayByUUID, EditReplay, CupEventByTimeIndex } from 'api';
-import { isRecName } from 'utils/misc';
 
 export default {
   replay: null,
@@ -21,34 +20,32 @@ export default {
   setLoading: action((state, payload) => {
     state.loading = payload;
   }),
-  replays: [],
-  setReplays: action((state, payload) => {
-    state.replays = payload;
-  }),
   getReplayByUUID: thunk(async (actions, payload) => {
-    actions.setReplays([]);
     actions.setLoading(true);
-    let uuids = payload.ReplayUuid;
-    if (uuids.substring(0, 2) === 'c-') {
-      uuids = `${uuids}-${payload.RecFileName}`;
+    let uuid = payload.ReplayUuid;
+    if (uuid.substring(0, 2) === 'c-') {
+      uuid = `${uuid}-${payload.RecFileName}`;
     }
-    if (payload.merge) {
-      uuids = `${uuids};${payload.merge}`;
-    }
-    const replays = await ReplayByUUID(uuids, payload.Fingerprint);
-    if (replays.ok) {
-      if (Array.isArray(replays.data)) {
-        actions.setReplays(replays.data);
-        actions.setReplayByUUID(
-          replays.data.filter(d =>
-            isRecName(payload.RecFileName || '', d.RecFileName),
-          )[0],
-        );
-      } else {
-        actions.setReplayByUUID(replays.data);
-      }
+    const replay = await ReplayByUUID(uuid, payload.Fingerprint);
+    if (replay.ok) {
+      actions.setReplayByUUID(replay.data);
     }
     actions.setLoading(false);
+  }),
+  merged: {},
+  addMerged: action((state, payload) => {
+    state.merged = { ...state.merged, ...payload };
+  }),
+  getMerged: thunk(async (actions, payload) => {
+    const replays = await ReplayByUUID(payload.join(';'));
+    if (replays.ok) {
+      const found = [replays.data].flat();
+      actions.addMerged(
+        Object.fromEntries(
+          payload.map((uuid, i) => [uuid, found[i]]).filter(([, r]) => r),
+        ),
+      );
+    }
   }),
   cupEvent: null,
   setCupEvent: action((state, payload) => {

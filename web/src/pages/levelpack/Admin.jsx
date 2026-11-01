@@ -180,9 +180,11 @@ const Admin = () => {
   return (
     <Grid container spacing={3} style={{ padding: '0 8px' }}>
       <Grid item xs={12} md={6}>
-        <Header h2 mLeft top>
-          Current levels
-        </Header>
+        <CurrentLevelsHeader>
+          <Header h2 mLeft top>
+            Current levels
+          </Header>
+        </CurrentLevelsHeader>
         {sortedLevels !== null && (
           <SortingModeContainer>
             You are currently sorting levels, continue sorting until you're
@@ -336,6 +338,10 @@ const DragCon = styled.span`
   &:active {
     cursor: grabbing;
   }
+`;
+
+const CurrentLevelsHeader = styled.div`
+  margin-top: -16px;
 `;
 
 const Overlay = styled.div`

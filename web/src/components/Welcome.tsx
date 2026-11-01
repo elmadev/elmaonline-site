@@ -30,7 +30,7 @@ export const Install = () => {
         </li>
         <li>Hostname: eol.elma.online</li>
       </List>
-      <Link to="help/howtoinstall">More</Link>
+      <Link to="/help/howtoinstall">More</Link>
     </>
   );
 };

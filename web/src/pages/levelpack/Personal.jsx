@@ -775,6 +775,7 @@ const ChoosePlayer = styled.div`
   display: inline-flex;
   flex-direction: row;
   align-items: center;
+  margin-top: -10px;
   div {
     padding-left: 6px;
   }

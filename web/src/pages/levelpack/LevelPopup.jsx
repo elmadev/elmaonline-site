@@ -71,18 +71,17 @@ const LevelPopup = ({
     <LevelPopUpCon>
       <LevelTimesContainer>
         <HeaderCon ref={HeaderConRef}>
-          <Row jc="space-between" r="XLarge">
+          <Row jc="space-between" r="XLarge" style={{ paddingBottom: 40 }}>
             <Column jc="space-between">
               <Title>
                 <Link to={`/levels/${levelId}`}>{levelName}.lev</Link>
                 <br />
                 {longName}
               </Title>
-              <Header h2 mLeft>
-                Top {timesLimit.toLocaleString()} times
-              </Header>
             </Column>
-            <LevelMap LevelIndex={levelId} width="50%" />
+            <LevelMapWrapper>
+              <LevelMap LevelIndex={levelId} />
+            </LevelMapWrapper>
             <ClosePopUp
               tabIndex="0"
               role="button"
@@ -92,6 +91,9 @@ const LevelPopup = ({
               &times;
             </ClosePopUp>
           </Row>
+          <Header h2 mLeft>
+            Top {timesLimit.toLocaleString()} times
+          </Header>
           <ListContainer>
             <ListHeader>
               <ListCell width={40}>#</ListCell>
@@ -238,6 +240,11 @@ const LevelPopup = ({
 const HeaderCon = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const LevelMapWrapper = styled.div`
+  width: 50%;
+  margin-top: 12px;
 `;
 
 const ShowMore = styled.span`

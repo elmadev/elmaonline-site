@@ -66,17 +66,15 @@ const Replay = () => {
   const isWindow = typeof window !== 'undefined';
   let link = '';
   let type = 'replay';
-  let linkArray = [];
-  let uuidarray = [];
   const location = useLocation();
   const { merge } = location.search;
 
-  const { getReplayByUUID, getCupEvent, setCupEvent } = useStoreActions(
+  const { getReplayByUUID, getCupEvent, setCupEvent, getMerged } =
+    useStoreActions(state => state.ReplayByUUID);
+  const { replay, loading, merged, cupEvent } = useStoreState(
     state => state.ReplayByUUID,
   );
-  const { replay, loading, replays, cupEvent } = useStoreState(
-    state => state.ReplayByUUID,
-  );
+  const levelReplays = useStoreState(state => state.RecList.replays);
   const {
     settings: { theater },
   } = useStoreState(state => state.ReplaySettings);
@@ -90,7 +88,6 @@ const Replay = () => {
     }
     getReplayByUUID({
       ReplayUuid,
-      merge,
       RecFileName,
       Fingerprint: fingerprint.current,
     });
@@ -98,14 +95,24 @@ const Replay = () => {
 
   useEffect(() => {
     if (ReplayUuid) {
-      getReplay({ ReplayUuid, merge, RecFileName });
+      getReplay();
       getTagOptions();
     }
     setCupEvent(null);
     if (ReplayUuid && ReplayUuid.includes('c-')) {
       getCupEvent(ReplayUuid.split('-')[1]);
     }
-  }, [ReplayUuid, merge]);
+  }, [ReplayUuid]);
+
+  const mergeUuids = merge ? merge.split(';') : [];
+  const findMerged = uuid =>
+    levelReplays.find(r => r.UUID === uuid) || merged[uuid];
+  useEffect(() => {
+    const missing = mergeUuids.filter(uuid => !findMerged(uuid));
+    if (missing.length > 0) {
+      getMerged(missing);
+    }
+  }, [merge]);
 
   useEffect(() => {
     if (!RecFileName && replay && replay.UUID === ReplayUuid) {
@@ -125,21 +132,13 @@ const Replay = () => {
       </Layout>
     );
 
-  const merged = replays.filter(Boolean);
+  const shown = [replay, ...mergeUuids.map(findMerged).filter(Boolean)];
+  const uuidarray = shown.map(r => r.UUID);
 
   if (isWindow) {
-    uuidarray.push(replay.UUID);
     const linkType = getReplayLink(replay);
-    link = linkType.link;
+    link = shown.map(r => getReplayLink(r).link).join(';');
     type = linkType.type;
-    if (merged.length > 0) {
-      uuidarray = [];
-      merged.forEach(r => {
-        linkArray.push(getReplayLink(r).link);
-        uuidarray.push(r.UUID);
-      });
-      link = linkArray.join(';');
-    }
   }
 
   const getTags = () => {
@@ -185,12 +184,9 @@ const Replay = () => {
 
   const dlLink = isWindow ? getReplayLink(replay).link : link;
 
-  const shirtUrls =
-    merged.length > 0
-      ? merged.map(r => shirtBmpUrl(r.DrivenByData?.KuskiIndex))
-      : [shirtBmpUrl(replay.DrivenByData?.KuskiIndex)];
+  const shirtUrls = shown.map(r => shirtBmpUrl(r.DrivenBy));
   const kuskiName = r => r.DrivenByData?.Kuski || r.DrivenByText || null;
-  const names = merged.length > 0 ? merged.map(kuskiName) : [kuskiName(replay)];
+  const names = shown.map(kuskiName);
 
   return (
     <Layout t={`rec - ${replay.RecFileName}`}>

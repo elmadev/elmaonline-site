@@ -69,7 +69,7 @@ const HowToInstall = () => {
           Gray square, non working editor, low fps: Try different
           resolution/zoom in eolconf (preferably native res of your monitor). Or
           try a different ddraw.dll file, find the different ones under{' '}
-          <Link to="help/programs">help/programs</Link>.
+          <Link to="/help/programs">help/programs</Link>.
         </li>
         <li>
           msvcr120.dll missing, vcruntime140 missing or similar error: You need
