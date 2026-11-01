@@ -392,7 +392,8 @@ router
     res.json(data);
   })
   .get('/runs/:KuskiIndex/:limit', async (req, res) => {
-    const auth = authContext(req);
+    res.sendStatus(503);
+    /* const auth = authContext(req);
     const data = await getLatestRuns(
       req.params.KuskiIndex,
       req.params.limit,
@@ -401,7 +402,7 @@ router
       req.query.to,
       auth.userid,
     );
-    res.json(data);
+    res.json(data); */
   })
   .get('/appleruns/:LevelIndex/:limit', async (req, res) => {
     const auth = authContext(req);
