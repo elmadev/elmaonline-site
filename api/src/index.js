@@ -11,6 +11,7 @@ import { auth, secretMatches } from '#utils/auth';
 import renewToken, { renewedTokenHeader } from '#middlewares/renewToken';
 import { loginLimit } from '#middlewares/rateLimit';
 import securityHeaders from '#middlewares/securityHeaders';
+import { enableCompareMode } from '#utils/compare';
 import { downloadFileS3 } from '#utils/upload';
 import apiRoutes from './api/index.js';
 import eventsRoutes from './events.js';
@@ -74,6 +75,13 @@ app.use(async (req, res, next) => {
 
   next();
 });
+
+// ----------------------------------------------------------
+// compare mode, rolls back every request, see compare/README.md
+// ----------------------------------------------------------
+if (process.env.COMPARE === '1') {
+  enableCompareMode(app);
+}
 
 // ----------------------------------------------------------
 // endpoints

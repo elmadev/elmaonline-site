@@ -3,6 +3,7 @@
 // and compared across refactors.
 
 import { readFileSync } from 'node:fs';
+import { recordCorpus } from './corpus';
 
 // the api the test build talks to, from the same env file vite uses for it
 const apiOrigin = new URL(
@@ -107,7 +108,10 @@ export const captureApi = async (page, mocks = {}) => {
   page.on('request', request => {
     if (!['fetch', 'xhr'].includes(request.resourceType())) return;
     pending.set(request, Date.now());
-    if (isApi(request)) calls.add(describeRequest(request));
+    if (isApi(request)) {
+      calls.add(describeRequest(request));
+      recordCorpus(request);
+    }
   });
   page.on('requestfinished', done);
   page.on('requestfailed', request => {
