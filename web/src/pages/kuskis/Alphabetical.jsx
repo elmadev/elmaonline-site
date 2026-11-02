@@ -5,35 +5,7 @@ import Link from 'components/Link';
 import Kuski from 'components/Kuski';
 import Loading from 'components/Loading';
 
-const groups = [
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j',
-  'k',
-  'l',
-  'm',
-  'n',
-  'o',
-  'p',
-  'q',
-  'r',
-  's',
-  't',
-  'u',
-  'v',
-  'w',
-  'x',
-  'y',
-  'z',
-  '…',
-];
+const groups = [...'abcdefghijklmnopqrstuvwxyz', '…'];
 
 const Kuskis = ({ playerList }) => {
   const [text, setText] = useState('');
@@ -46,10 +18,15 @@ const Kuskis = ({ playerList }) => {
     });
   };
 
+  const normalize = str =>
+    str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+  const normalizedFilter = normalize(filter);
   const filteredKuskis = playerList.filter(
-    k =>
-      filter.length < 1 ||
-      k.Kuski.toLowerCase().includes(filter.toLocaleLowerCase()),
+    k => filter.length < 1 || normalize(k.Kuski).includes(normalizedFilter),
   );
   return (
     <div>
@@ -70,10 +47,7 @@ const Kuskis = ({ playerList }) => {
           <div>
             {groups.map(g => {
               const kuskis = filteredKuskis.filter(k => {
-                const firstChar = k.Kuski[0]
-                  .normalize('NFD')
-                  .replace(/[\u0300-\u036f]/g, '')
-                  .toLowerCase();
+                const firstChar = normalize(k.Kuski[0]);
                 return g === '…' ? !/^[a-z]$/.test(firstChar) : g === firstChar;
               });
               if (kuskis.length < 1) return null;
