@@ -21,6 +21,8 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/__snapshots__/{arg}{ext}',
   timeout: 90000,
   retries: 1,
+  // dedupes the api/compare corpus when E2E_CORPUS is set
+  globalTeardown: './corpus.js',
   fullyParallel: true,
   // apitest gets slow under load, which makes pages time out and skip calls
   workers: 3,

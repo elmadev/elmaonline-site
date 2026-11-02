@@ -1,0 +1,25 @@
+# Requests the web rarely sends, mostly to check how query strings and route
+# params are read. Add cases for each area before converting it.
+# Format: guest|user METHOD /path[?query] [json body]
+
+# country
+guest GET /api/country
+guest GET /api/country?unused=1
+
+# replay
+guest GET /api/replay/abc
+guest GET /api/replay/-1
+guest GET /api/replay/999999999
+guest GET /api/replay/driven_by/abc
+guest GET /api/replay/driven_by/0
+guest GET /api/replay/uploaded_by/abc
+guest GET /api/replay/byUUID/doesnotexist
+guest GET /api/replay/byLevelIndex/abc
+# /search/*/:query/abc is left out: it sends LIMIT NaN and crashes the
+# process (async error with no catch)
+guest GET /api/replay/search/byDriven/a/-5
+guest GET /api/replay/search/byLevel/%25/0
+guest GET /api/replay/search/byFilename/'/0
+guest GET /api/replay?page=abc&pageSize=-1
+guest GET /api/replay?page=0&pageSize=100000
+guest GET /api/replay/my
