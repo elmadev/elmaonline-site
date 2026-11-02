@@ -19,6 +19,8 @@ import {
   PlayArrow,
   Share,
   HighlightOffOutlined as CloseIcon,
+  FilterAlt,
+  BackspaceOutlined,
 } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import config from 'config';
@@ -231,7 +233,6 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             value={search.from}
             onChange={value => {
               setSearch({ field: 'from', value });
-              fetch({ ...search, from: value });
             }}
           />
           <ListInput
@@ -240,9 +241,25 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             value={search.to}
             onChange={value => {
               setSearch({ field: 'to', value });
-              fetch({ ...search, to: value });
             }}
           />
+          <ListCell verticalAlign="middle">
+            <div style={{ display: 'flex' }}>
+              <MuiButton title="Apply date filter" onClick={() => fetch({})}>
+                <FilterAlt />
+              </MuiButton>
+              <MuiButton
+                title="Clear date filter"
+                onClick={() => {
+                  setSearch({ field: 'from', value: '' });
+                  setSearch({ field: 'to', value: '' });
+                  fetch({ from: '', to: '' });
+                }}
+              >
+                <BackspaceOutlined />
+              </MuiButton>
+            </div>
+          </ListCell>
           <ListCell />
           <ListCell />
           {type !== 'PRsAndReplays' ? <ListCell /> : null}
