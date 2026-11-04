@@ -1,11 +1,6 @@
 import { action, thunk } from 'easy-peasy';
 import { GetDatInfo } from 'api';
-
-const formatError = response => {
-  return `API ${
-    response.originalError.message
-  } - ${response.config.method.toUpperCase()} ${response.config.url}`;
-};
+import { formatError } from 'utils/easy-peasy';
 
 export default {
   datInfo: {},

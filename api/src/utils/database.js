@@ -85,12 +85,15 @@ export const formatLevelSearch = level => {
   return level;
 };
 
-export const levelNameSearch = query => {
+/**
+ * Level name matcher for a where clause.
+ * Internals (int/internal) resolve to an exact name
+ * Otherwise a prefix like is used, unless exact is set (heavy tables)
+ */
+export const levelNameSearch = (query, exact = false) => {
   const LevelName = formatLevelSearch(query);
-  if (LevelName !== query) {
-    return {
-      [Op.or]: [{ [Op.like]: `${like(query)}%` }, { [Op.eq]: LevelName }],
-    };
+  if (exact || LevelName !== query) {
+    return { [Op.eq]: LevelName };
   }
   return { [Op.like]: `${like(query)}%` };
 };

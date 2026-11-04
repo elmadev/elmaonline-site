@@ -34,7 +34,7 @@ import {
 } from 'components/List';
 import useElementSize from 'utils/useWindowSize';
 import Link from 'components/Link';
-import { nick /*, nickId*/ } from 'utils/nick';
+import { nick, nickId } from 'utils/nick';
 import Button from 'components/Buttons';
 import { xor } from 'lodash';
 import Preview from './Preview';
@@ -202,21 +202,25 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                 label="Only PRs"
                 control={<RadioThin size="small" />}
               />
-              {/*{KuskiIndex === nickId() ? (
+              {KuskiIndex === nickId() ? (
                 <FormControlLabel
                   value="runsAndReplays"
                   checked={type === 'runsAndReplays'}
                   label="All runs"
                   control={<RadioThin size="small" />}
                 />
-              ) : null}*/}
+              ) : null}
             </RadioGroup>
           </ListCell>
         </ListHeader>
         <ListRow>
           <ListInput
             label="Search level"
-            title="Level file name or start of it"
+            title={
+              type === 'runsAndReplays'
+                ? 'Exact level file name'
+                : 'Level file name or start of it'
+            }
             value={search.level}
             onChange={value => setSearch({ field: 'level', value })}
             maxLength={11}
@@ -227,40 +231,52 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
             }}
           />
           <ListCell />
-          <ListInput
-            label="Driven on or after"
-            date
-            value={search.from}
-            onChange={value => {
-              setSearch({ field: 'from', value });
-            }}
-          />
-          <ListInput
-            label="Driven on or before"
-            date
-            value={search.to}
-            onChange={value => {
-              setSearch({ field: 'to', value });
-            }}
-          />
-          <ListCell verticalAlign="middle">
-            <div style={{ display: 'flex' }}>
-              <MuiButton title="Apply date filter" onClick={() => fetch({})}>
-                <FilterAlt />
-              </MuiButton>
-              <MuiButton
-                title="Clear date filter"
-                onClick={() => {
-                  setSearch({ field: 'from', value: '' });
-                  setSearch({ field: 'to', value: '' });
-                  fetch({ from: '', to: '' });
+          {type === 'runsAndReplays' ? (
+            <>
+              <ListCell />
+              <ListCell />
+              <ListCell />
+            </>
+          ) : (
+            <>
+              <ListInput
+                label="Driven on or after"
+                date
+                value={search.from}
+                onChange={value => {
+                  setSearch({ field: 'from', value });
                 }}
-              >
-                <BackspaceOutlined />
-              </MuiButton>
-            </div>
-          </ListCell>
-          <ListCell />
+              />
+              <ListInput
+                label="Driven on or before"
+                date
+                value={search.to}
+                onChange={value => {
+                  setSearch({ field: 'to', value });
+                }}
+              />
+              <ListCell verticalAlign="middle">
+                <div style={{ display: 'flex' }}>
+                  <MuiButton
+                    title="Apply date filter"
+                    onClick={() => fetch({})}
+                  >
+                    <FilterAlt />
+                  </MuiButton>
+                  <MuiButton
+                    title="Clear date filter"
+                    onClick={() => {
+                      setSearch({ field: 'from', value: '' });
+                      setSearch({ field: 'to', value: '' });
+                      fetch({ from: '', to: '' });
+                    }}
+                  >
+                    <BackspaceOutlined />
+                  </MuiButton>
+                </div>
+              </ListCell>
+            </>
+          )}
           <ListCell />
           {type !== 'PRsAndReplays' ? <ListCell /> : null}
         </ListRow>
