@@ -13,10 +13,34 @@ export const getUpdater = () => {
   });
 };
 
-const formatError = response => {
-  return `API ${
-    response.originalError.message
-  } - ${response.config.method.toUpperCase()} ${response.config.url}`;
+// human readable message for a failed apisauce response
+export const formatError = response => {
+  switch (response.problem) {
+    case 'TIMEOUT_ERROR':
+      return 'The request took too long. Please try again, or narrow your search.';
+    case 'CONNECTION_ERROR':
+    case 'NETWORK_ERROR':
+      return 'Could not reach the server. Check your connection and try again.';
+    case 'CANCEL_ERROR':
+      return 'The request was cancelled.';
+    default:
+  }
+  switch (response.status) {
+    case 401:
+    case 403:
+      return 'You are not allowed to see this. Try logging in again.';
+    case 404:
+      return 'Nothing was found.';
+    case 429:
+      return 'Too many requests. Please wait a minute and try again.';
+    case 503:
+      return 'This is temporarily unavailable. Please try again later.';
+    default:
+  }
+  if (response.problem === 'SERVER_ERROR') {
+    return 'Something went wrong on the server. Please try again later.';
+  }
+  return 'Something went wrong. Please try again.';
 };
 
 export const model = (
@@ -39,6 +63,7 @@ export const model = (
   }),
   startLoading: action((state, payload) => {
     state.loading = true;
+    state.error = '';
     if (payload) {
       state.fetchPayload = payload;
     }

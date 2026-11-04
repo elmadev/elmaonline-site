@@ -52,7 +52,10 @@ const Feedback = ({
             key="close"
             aria-label="Close"
             color="inherit"
-            onClick={() => close && close()}
+            onClick={() => {
+              setShow(false);
+              close?.();
+            }}
             size="large"
           >
             <CloseIcon />

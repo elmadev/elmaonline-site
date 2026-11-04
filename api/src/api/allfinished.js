@@ -3,6 +3,7 @@ import sequelize, { Op } from 'sequelize';
 import { format, subWeeks } from 'date-fns';
 import { authContext } from '#utils/auth';
 import { levelNameSearch, fromTo } from '#utils/database';
+import { allRunsLimit } from '#middlewares/rateLimit';
 import {
   AllFinished,
   Kuski,
@@ -194,15 +195,22 @@ const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     return null;
   }
   let where = { KuskiIndex };
-  where = { ...where, ...fromTo(from, to, 'Driven', 'datetime') };
+  // where = { ...where, ...fromTo(from, to, 'Driven', 'datetime') };
+  if (lev) {
+    const levels = await Level.findAll({
+      where: { LevelName: levelNameSearch(lev, true) },
+      attributes: ['LevelIndex'],
+    });
+    if (levels.length === 0) {
+      return [];
+    }
+    where.LevelIndex = levels.map(l => l.LevelIndex);
+  }
   const include = [
     {
       model: Level,
       as: 'LevelData',
       attributes: ['LevelName', 'LongName'],
-      ...(lev
-        ? { where: { LevelName: levelNameSearch(lev) }, required: true }
-        : {}),
     },
     {
       model: TimeFile,
@@ -213,7 +221,7 @@ const getLatestRuns = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     where,
     order: [['TimeIndex', 'DESC']],
     include,
-    limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
+    limit: parseInt(limit, 10) > 100 ? 100 : parseInt(limit, 10),
   };
   const times = await Time.findAll(query);
   return times;
@@ -391,9 +399,8 @@ router
     const data = await getHighlights();
     res.json(data);
   })
-  .get('/runs/:KuskiIndex/:limit', async (req, res) => {
-    res.sendStatus(503);
-    /* const auth = authContext(req);
+  .get('/runs/:KuskiIndex/:limit', allRunsLimit, async (req, res) => {
+    const auth = authContext(req);
     const data = await getLatestRuns(
       req.params.KuskiIndex,
       req.params.limit,
@@ -402,7 +409,7 @@ router
       req.query.to,
       auth.userid,
     );
-    res.json(data); */
+    res.json(data);
   })
   .get('/appleruns/:LevelIndex/:limit', async (req, res) => {
     const auth = authContext(req);
