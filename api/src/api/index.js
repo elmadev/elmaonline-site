@@ -29,6 +29,7 @@ import Crippled from './crippled.js';
 import Recap from './recap.js';
 import LGR from './lgr.js';
 import LGRComment from './lgr_comment.js';
+import Message from './message.js';
 
 const router = express.Router();
 
@@ -65,6 +66,7 @@ router
   .use('/recap', Recap)
   .use('/taswr', TasWr)
   .use('/lgr', LGR)
-  .use('/lgr_comment', LGRComment);
+  .use('/lgr_comment', LGRComment)
+  .use('/message', Message);
 
 export default router;

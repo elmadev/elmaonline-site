@@ -41,6 +41,7 @@ import ReplayList from 'features/ReplayList/store';
 import LevelList from 'features/LevelList/store';
 import ReplaySettings from 'features/ReplaySettings/store';
 import Notifications from 'features/Notifications/store';
+import Messages from 'features/Messages/store';
 import ReplayCommentArchive from 'features/ReplayCommentArchive/store';
 import Recap from 'pages/recap/store';
 import DatInfo from 'pages/datinfo/store';
@@ -93,6 +94,7 @@ export default {
   FileUpload,
   Replays,
   Notifications,
+  Messages,
   Recap,
   GenericUpload,
   Page: {

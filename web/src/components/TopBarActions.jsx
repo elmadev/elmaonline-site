@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import {
   Notifications,
+  Chat,
   AccountCircle,
   PlayCircleOutline,
   TimerOutlined,
@@ -16,6 +17,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import styled from '@emotion/styled';
 import Badge from '@mui/material/Badge';
+import { useHeartbeat } from 'features/Messages/useMessages';
 
 const StyledButton = styled(Button)`
   && {
@@ -85,6 +87,9 @@ export default function TopBarActions() {
   const { logout, getNotificationsCount } = useStoreActions(
     actions => actions.Login,
   );
+  const { open: chatOpen } = useStoreState(state => state.Messages);
+  const { openChat, closeChat } = useStoreActions(actions => actions.Messages);
+  const { unread } = useHeartbeat();
 
   useEffect(() => {
     if (loggedIn) {
@@ -109,6 +114,14 @@ export default function TopBarActions() {
     navigate({ to: '/' });
   };
 
+  const handleMessagesClick = () => {
+    if (chatOpen) {
+      closeChat();
+    } else {
+      openChat();
+    }
+  };
+
   const handleNotificationsClick = () => {
     navigate({ to: `/kuskis/${username}/notifications` });
   };
@@ -125,6 +138,16 @@ export default function TopBarActions() {
       )}
       {loggedIn && (
         <div>
+          <IconButton
+            aria-label="messages"
+            onClick={handleMessagesClick}
+            color="inherit"
+            size="large"
+          >
+            <Badge badgeContent={unread} color="error" overlap="rectangular">
+              <Chat />
+            </Badge>
+          </IconButton>
           <IconButton
             aria-label="notifications"
             aria-controls="menu-appbar"

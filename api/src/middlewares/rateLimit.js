@@ -1,4 +1,5 @@
 import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
+import { authContext } from '#utils/auth';
 
 const minute = 60 * 1000;
 
@@ -17,6 +18,13 @@ const bodyKey = field => req => {
     return `${field}:${value.toLowerCase()}`;
   }
   return ipKey(req);
+};
+
+// keys on the logged in user so limits follow the account, falls back to the
+// ip for logged out requests
+const userKey = req => {
+  const auth = authContext(req);
+  return auth.auth ? `user:${auth.userid}` : ipKey(req);
 };
 
 const limiter = ({ minutes, limit, key = ipKey, onlyFailed, body }) =>
@@ -77,4 +85,14 @@ export const codeLimit = limiter({
   minutes: 15,
   limit: 20,
   body: registerBody,
+});
+
+const errorBody = message => ({ error: message });
+
+// messages sent per user
+export const messageLimit = limiter({
+  minutes: 1,
+  limit: 30,
+  key: userKey,
+  body: errorBody,
 });

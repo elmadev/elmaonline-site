@@ -90,6 +90,12 @@ type TextFieldProps = {
   onChange: (value: string) => void;
   multiline?: boolean;
   className?: string;
+  autoFocus?: boolean;
+  maxLength?: number;
+  maxRows?: number;
+  margin?: 'none' | 'dense' | 'normal';
+  size?: 'small' | 'medium';
+  onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
 };
 
 export const TextField = ({
@@ -100,6 +106,12 @@ export const TextField = ({
   onChange,
   multiline = false,
   className,
+  autoFocus,
+  maxLength,
+  maxRows,
+  margin = 'normal',
+  size,
+  onKeyDown,
 }: TextFieldProps) => {
   const id = name.replace(/\s/g, '');
 
@@ -108,7 +120,12 @@ export const TextField = ({
       <MuiTextField
         id={id}
         label={name}
-        margin="normal"
+        margin={margin}
+        size={size}
+        autoFocus={autoFocus}
+        inputProps={{ maxLength }}
+        maxRows={maxRows}
+        onKeyDown={onKeyDown}
         variant="outlined"
         fullWidth
         error={Boolean(error)}

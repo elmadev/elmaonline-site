@@ -10,6 +10,7 @@ import Flag from 'components/Flag';
 import Avatar from 'components/Avatar';
 import ReplayList from 'features/ReplayList';
 import Notifications from 'features/Notifications';
+import SendMessageButton from 'features/Messages/SendMessageButton';
 import PlayedBattles from './PlayedBattles';
 import DesignedBattles from './DesignedBattles';
 import KuskiHeader from './KuskiHeader';
@@ -48,9 +49,15 @@ const Kuski = () => {
                 <Flag nationality={kuski.Country} />
                 {kuski.Kuski}
               </Name>
-              <TeamNat>
-                {kuski.TeamData && `Team: ${kuski.TeamData.Team}`}
-              </TeamNat>
+              <TeamRow>
+                <TeamNat>
+                  {kuski.TeamData && `Team: ${kuski.TeamData.Team}`}
+                </TeamNat>
+                <SendMessageButton
+                  kuski={kuski}
+                  onlineStatus={kuski.OnlineStatus}
+                />
+              </TeamRow>
             </Profile>
             <KuskiHeader KuskiIndex={kuski.KuskiIndex} Kuski={kuski.Kuski} />
             <Expand>
@@ -164,6 +171,13 @@ const Name = styled.div`
 
 const TeamNat = styled.div`
   font-size: 16px;
+`;
+
+const TeamRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 `;
 
 const Head = styled.div`

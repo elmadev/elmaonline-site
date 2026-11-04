@@ -105,6 +105,16 @@ export const useQueryAlt = (
   });
 };
 
+// apisauce adapter for useQuery/useMutation, resolves to the payload or throws
+// with the api's error message
+export const apiData = async request => {
+  const res = await request;
+  if (res.ok) {
+    return res.data;
+  }
+  throw new Error(res.data?.error || 'Something went wrong, try again.');
+};
+
 export { keepPreviousData };
 
 // replays
@@ -599,6 +609,35 @@ export const GetNotifications = () => api.get(`notification`);
 export const GetNotificationsCount = () => api.get(`notification/count`);
 export const MarkNotificationsSeen = () =>
   api.post(`notification/markSeen`, {});
+
+// messages
+export const GetConversations = () => api.get('message');
+export const GetMessages = data =>
+  api.get(`message/${data.ConversationIndex}`, {
+    before: data.before,
+    limit: data.limit,
+  });
+export const StartConversation = data => api.post('message', data);
+export const SendMessage = data =>
+  api.post(`message/${data.ConversationIndex}`, {
+    Text: data.Text,
+    ExpireAfter: data.ExpireAfter,
+  });
+export const DeleteMessage = data =>
+  api.delete(`message/${data.ConversationIndex}/${data.MessageIndex}`);
+export const MarkConversationRead = data =>
+  api.post(`message/${data.ConversationIndex}/read`, {
+    MessageIndex: data.MessageIndex,
+  });
+export const AddConversationMembers = data =>
+  api.post(`message/${data.ConversationIndex}/members`, {
+    KuskiIndexes: data.KuskiIndexes,
+  });
+export const LeaveConversation = ConversationIndex =>
+  api.post(`message/${ConversationIndex}/leave`, {});
+export const RenameConversation = data =>
+  api.patch(`message/${data.ConversationIndex}`, { Name: data.Name });
+export const MessageHeartbeat = data => api.post('message/heartbeat', data);
 
 // status
 export const SystemStatus = () => api.get('news/status');
