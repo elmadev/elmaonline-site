@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { useStoreState } from './storeHooks';
+import { useStoreState, useStoreActions } from './storeHooks';
 import { useMediaQuery } from '@mui/material';
 import type { KuskiData } from 'types/kuski';
 import type { ActiveConversation } from 'types/message';
 import ConversationList from './ConversationList';
 import Thread from './Thread';
 import NewConversation from './NewConversation';
+import InfoPanel from './InfoPanel';
 import { useConversations } from './useMessages';
 
 type MessagesViewProps = {
@@ -24,9 +26,23 @@ const MessagesView = ({
   const { userid } = useStoreState(state => state.Login);
   const me = Number(userid);
   const { conversations, isLoading } = useConversations();
+  const { infoOpen } = useStoreState(state => state.Messages);
+  const { setInfoOpen } = useStoreActions(actions => actions.Messages);
+  const [introClosed, setIntroClosed] = useState(false);
+  const intro =
+    !introClosed && !isLoading && !conversations.length && active === null;
+  const showInfo = infoOpen || intro;
+  const closeInfo = () => {
+    setInfoOpen(false);
+    setIntroClosed(true);
+  };
+  const select = (selected: ActiveConversation) => {
+    setInfoOpen(false);
+    onSelect(selected);
+  };
   const narrow = useMediaQuery('(max-width: 600px)');
-  const showList = !narrow || active === null;
-  const showMain = !narrow || active !== null;
+  const showList = !narrow || (active === null && !showInfo);
+  const showMain = !narrow || active !== null || showInfo;
   const back = narrow ? () => onSelect(null) : undefined;
 
   return (
@@ -38,12 +54,14 @@ const MessagesView = ({
             isLoading={isLoading}
             active={active}
             userid={me}
-            onSelect={onSelect}
+            onSelect={select}
+            onInfo={compact ? undefined : () => setInfoOpen(!infoOpen)}
           />
         </ListPane>
       )}
       {showMain && (
         <MainPane>
+          {showInfo && <InfoPanel onClose={closeInfo} />}
           {active === 'new' && (
             <NewConversation
               key={recipient?.KuskiIndex || 'new'}
@@ -88,6 +106,7 @@ const ListPane = styled.div<{ compact: boolean; full: boolean }>`
 `;
 
 const MainPane = styled.div`
+  position: relative;
   flex: 1;
   min-width: 0;
 `;

@@ -14,6 +14,8 @@ export type MessagesModel = {
   active: ActiveConversation;
   recipient: KuskiData | null;
   drafts: Record<number, string>;
+  infoOpen: boolean;
+  setInfoOpen: Action<MessagesModel, boolean>;
   openChat: Action<MessagesModel, OpenChatPayload>;
   closeChat: Action<MessagesModel>;
   setMinimised: Action<MessagesModel, boolean>;
@@ -30,6 +32,10 @@ const store: MessagesModel = {
   active: null,
   recipient: null,
   drafts: {},
+  infoOpen: false,
+  setInfoOpen: action((state, payload) => {
+    state.infoOpen = payload;
+  }),
   openChat: action((state, payload) => {
     state.open = true;
     state.minimised = false;

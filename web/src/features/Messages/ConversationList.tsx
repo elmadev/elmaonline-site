@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { Badge } from '@mui/material';
-import { Group } from '@mui/icons-material';
+import { Badge, IconButton } from '@mui/material';
+import { Group, InfoOutlined } from '@mui/icons-material';
 import Button from 'components/Buttons';
 import Loading from 'components/Loading';
 import type { ConversationData, ActiveConversation } from 'types/message';
@@ -13,6 +13,7 @@ type ConversationListProps = {
   active: ActiveConversation;
   userid: number;
   onSelect: (active: ActiveConversation) => void;
+  onInfo?: () => void;
 };
 
 const preview = (conversation: ConversationData, userid: number) => {
@@ -35,12 +36,18 @@ const ConversationList = ({
   active,
   userid,
   onSelect,
+  onInfo,
 }: ConversationListProps) => (
   <Container>
     <NewButton>
       <Button icon="add" little onClick={() => onSelect('new')}>
         New message
       </Button>
+      {onInfo && (
+        <IconButton aria-label="about messages" size="small" onClick={onInfo}>
+          <InfoOutlined fontSize="small" />
+        </IconButton>
+      )}
     </NewButton>
     {isLoading && (
       <Empty>
@@ -80,6 +87,9 @@ const Container = styled.div`
 `;
 
 const NewButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: ${p => p.theme.padSmall};
 `;
 

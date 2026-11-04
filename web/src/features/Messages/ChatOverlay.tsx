@@ -3,16 +3,21 @@ import styled from '@emotion/styled';
 import { useStoreState, useStoreActions } from './storeHooks';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { ClickAwayListener, IconButton } from '@mui/material';
-import { Close, ExpandLess, ExpandMore, OpenInFull } from '@mui/icons-material';
+import {
+  Close,
+  ExpandLess,
+  ExpandMore,
+  InfoOutlined,
+  OpenInFull,
+} from '@mui/icons-material';
 import MessagesView from './MessagesView';
 import { useHeartbeat } from './useMessages';
 
 const ChatOverlay = () => {
   const { loggedIn } = useStoreState(state => state.Login);
-  const { open, minimised, active, recipient, settings } = useStoreState(
-    state => state.Messages,
-  );
-  const { closeChat, setMinimised, setActive } = useStoreActions(
+  const { open, minimised, active, recipient, settings, infoOpen } =
+    useStoreState(state => state.Messages);
+  const { closeChat, setMinimised, setActive, setInfoOpen } = useStoreActions(
     actions => actions.Messages,
   );
   const { pathname } = useLocation();
@@ -58,6 +63,18 @@ const ChatOverlay = () => {
           <BarTitle>
             Messages{unread > 0 && minimised ? ` (${unread})` : ''}
           </BarTitle>
+          <IconButton
+            aria-label="about messages"
+            size="small"
+            color="inherit"
+            onClick={e => {
+              e.stopPropagation();
+              setMinimised(false);
+              setInfoOpen(!infoOpen || minimised);
+            }}
+          >
+            <InfoOutlined fontSize="small" />
+          </IconButton>
           <IconButton
             aria-label={minimised ? 'restore' : 'minimise'}
             size="small"
