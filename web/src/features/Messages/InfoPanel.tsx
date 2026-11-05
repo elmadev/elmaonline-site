@@ -1,6 +1,11 @@
 import styled from '@emotion/styled';
 import { IconButton } from '@mui/material';
-import { Close, TimerOutlined, DeleteOutline } from '@mui/icons-material';
+import {
+  Close,
+  TimerOutlined,
+  DeleteOutline,
+  SentimentSatisfiedAltOutlined,
+} from '@mui/icons-material';
 import Header from 'components/Header';
 import Link from 'components/Link';
 import { OnlineDot } from './OnlineStatus';
@@ -53,6 +58,17 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => (
         <p>
           Use the timer next to the message box to make the next message
           disappear after a while. It goes back to never after each message.
+        </p>
+      </Section>
+      <Section>
+        <Header h3 nomargin>
+          <EmojiIcon /> Emojis
+        </Header>
+        <p>
+          Pick one with the smiley button next to the message box, or type a
+          colon and a name, like <Code>:thumbsup:</Code>, to get suggestions.
+          Press Enter or Tab to insert the selected one. Your recently used
+          emojis show up first.
         </p>
       </Section>
       <Section>
@@ -164,6 +180,16 @@ const TimerIcon = styled(TimerOutlined)`
 
 const DeleteIcon = styled(DeleteOutline)`
   ${iconStyle}
+`;
+
+const EmojiIcon = styled(SentimentSatisfiedAltOutlined)`
+  ${iconStyle}
+`;
+
+const Code = styled.code`
+  padding: 0 4px;
+  border-radius: 3px;
+  background: ${p => p.theme.hoverColor};
 `;
 
 export default InfoPanel;

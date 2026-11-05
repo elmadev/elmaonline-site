@@ -100,7 +100,7 @@ const Container = styled.div`
 `;
 
 const ListPane = styled.div<{ compact: boolean; full: boolean }>`
-  flex: ${p => (p.full ? '1' : `0 0 ${p.compact ? '220px' : '300px'}`)};
+  flex: ${p => (p.full ? '1' : `0 0 ${p.compact ? '180px' : '300px'}`)};
   min-width: 0;
   border-right: 1px solid ${p => p.theme.borderColor};
 `;

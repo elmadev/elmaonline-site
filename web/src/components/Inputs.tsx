@@ -96,6 +96,7 @@ type TextFieldProps = {
   margin?: 'none' | 'dense' | 'normal';
   size?: 'small' | 'medium';
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
+  inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
 };
 
 export const TextField = ({
@@ -112,6 +113,7 @@ export const TextField = ({
   margin = 'normal',
   size,
   onKeyDown,
+  inputRef,
 }: TextFieldProps) => {
   const id = name.replace(/\s/g, '');
 
@@ -126,6 +128,7 @@ export const TextField = ({
         inputProps={{ maxLength }}
         maxRows={maxRows}
         onKeyDown={onKeyDown}
+        inputRef={inputRef}
         variant="outlined"
         fullWidth
         error={Boolean(error)}
