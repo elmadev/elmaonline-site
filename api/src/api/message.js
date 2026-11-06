@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { authContext, secretMatches } from '#utils/auth';
 import { messageLimit } from '#middlewares/rateLimit';
 import { withOnlineStatus } from '#utils/online';
-import sequelize from '#data/sequelize';
+import { dbquery } from '#data/sequelize';
 import {
   Message,
   MessageConversation,
@@ -108,7 +108,7 @@ const getLatestMessageIndex = async ConversationIndex => {
 };
 
 const findDirectConversation = async (a, b) => {
-  const [rows] = await sequelize.query(
+  const rows = await dbquery(
     `
     SELECT c.ConversationIndex
     FROM message_conversation c
@@ -118,7 +118,7 @@ const findDirectConversation = async (a, b) => {
     HAVING COUNT(*) = 2
     LIMIT 1
     `,
-    { replacements: { a, b } },
+    { a, b },
   );
   return rows.length ? rows[0].ConversationIndex : null;
 };
@@ -194,7 +194,7 @@ const getNicks = async KuskiIndexes => {
 
 // unread messages per conversation, own and system messages don't count
 const getUnreadCounts = async (KuskiIndex, ignored) => {
-  const [rows] = await sequelize.query(
+  const rows = await dbquery(
     `
     SELECT m.ConversationIndex, COUNT(*) AS Unread
     FROM message m
@@ -207,7 +207,7 @@ const getUnreadCounts = async (KuskiIndex, ignored) => {
       ${ignored.length ? 'AND m.KuskiIndex NOT IN (:ignored)' : ''}
     GROUP BY m.ConversationIndex
     `,
-    { replacements: { KuskiIndex, ignored, now: now() } },
+    { KuskiIndex, ignored, now: now() },
   );
   return rows.reduce((acc, row) => {
     acc[row.ConversationIndex] = Number(row.Unread);
@@ -220,7 +220,7 @@ const getLastMessages = async (ConversationIndexes, ignored) => {
   if (!ConversationIndexes.length) {
     return {};
   }
-  const [rows] = await sequelize.query(
+  const rows = await dbquery(
     `
     SELECT MAX(MessageIndex) AS MessageIndex
     FROM message
@@ -229,7 +229,7 @@ const getLastMessages = async (ConversationIndexes, ignored) => {
       ${ignored.length ? 'AND KuskiIndex NOT IN (:ignored)' : ''}
     GROUP BY ConversationIndex
     `,
-    { replacements: { ConversationIndexes, ignored, now: now() } },
+    { ConversationIndexes, ignored, now: now() },
   );
   if (!rows.length) {
     return {};
