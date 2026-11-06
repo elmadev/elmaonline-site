@@ -32,6 +32,7 @@ import LevelsAddCollection from 'pages/levels-add-collection';
 import LevelpackCollection from 'pages/levelpack-collection';
 import Login from 'pages/login';
 import Map from 'pages/map';
+import Message from 'pages/message';
 import DatInfo from 'pages/datinfo';
 import Mod from 'pages/mod';
 import NotFound from 'pages/not-found';
@@ -358,6 +359,22 @@ const loginRoute = createRoute({
   component: Login,
 });
 
+const messageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/message',
+  component: function MessageComp() {
+    return <Message />;
+  },
+});
+
+const messageConversationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/message/$ConversationIndex',
+  component: function MessageComp() {
+    return <Message />;
+  },
+});
+
 const mapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/map',
@@ -512,6 +529,8 @@ const routeTree = rootRoute.addChildren([
   levelpackCollectionRoute,
   loginRoute,
   mapRoute,
+  messageRoute,
+  messageConversationRoute,
   modRoute,
   rankingRoute,
   recapRoute,

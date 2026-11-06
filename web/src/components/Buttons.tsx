@@ -9,6 +9,8 @@ import {
   FilterList,
   Close,
   Refresh,
+  Add,
+  Chat,
 } from '@mui/icons-material';
 
 type StyledButtonProps = {
@@ -51,6 +53,8 @@ const icons = {
   filter: FilterList,
   close: Close,
   refresh: Refresh,
+  add: Add,
+  chat: Chat,
 };
 
 type ButtonProps = {

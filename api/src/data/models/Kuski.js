@@ -123,6 +123,11 @@ const Kuski = Model.define(
       allowNull: true,
       defaultValue: null,
     },
+    LastActive: {
+      type: DataType.INTEGER,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     indexes: [{ fields: ['Kuski', 'TeamIndex', 'Country'] }],

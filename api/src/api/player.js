@@ -2,6 +2,7 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { like, searchPageLimit, searchOffset } from '#utils/database';
 import { authContext } from '#utils/auth';
+import { withOnlineStatus } from '#utils/online';
 import { pick, omit } from 'lodash-es';
 import {
   Team,
@@ -117,6 +118,7 @@ const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
       'RAdmin',
       'BmpCRC',
       'Confirmed',
+      'LastActive',
     ],
   };
   if (
@@ -127,7 +129,7 @@ const Player = async (IdentifierType, KuskiIdentifier, currentUser) => {
   }
   query.where[IdentifierType] = KuskiIdentifier;
   const data = await Kuski.findOne(query);
-  return data;
+  return data ? withOnlineStatus(data.toJSON()) : data;
 };
 
 const GetIgnored = async KuskiIndex => {

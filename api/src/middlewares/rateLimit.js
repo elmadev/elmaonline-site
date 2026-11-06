@@ -91,6 +91,16 @@ export const codeLimit = limiter({
   body: registerBody,
 });
 
+const errorBody = message => ({ error: message });
+
+// messages sent per user
+export const messageLimit = limiter({
+  minutes: 1,
+  limit: 30,
+  key: userKey,
+  body: errorBody,
+});
+
 // all runs search hits the huge time table, so keep it conservative
 export const allRunsLimit = limiter({
   minutes: 1,

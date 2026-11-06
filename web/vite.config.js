@@ -5,6 +5,70 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+// require instead of imports so the emoji json is only loaded when it's used
+const require = createRequire(import.meta.url);
+
+const emojibaseVersion = require('emojibase-data/package.json').version;
+const emojibaseFiles = ['data', 'messages'];
+const emojibasePath = `emojibase-data/${emojibaseVersion}/en`;
+
+// shortcode/emoji pairs for :name: suggestions
+const shortcodesId = 'virtual:emoji-shortcodes';
+const buildShortcodes = () => {
+  const data = require('emojibase-data/en/data.json');
+  const codes = require('emojibase-data/en/shortcodes/github.json');
+  return data.flatMap(({ hexcode, emoji }) => {
+    const names = codes[hexcode];
+    if (!names) {
+      return [];
+    }
+    return (Array.isArray(names) ? names : [names]).map(name => [name, emoji]);
+  });
+};
+
+const emojibasePlugin = () => ({
+  name: 'emojibase-data',
+  resolveId(id) {
+    return id === shortcodesId ? `\0${shortcodesId}` : null;
+  },
+  load(id) {
+    return id === `\0${shortcodesId}`
+      ? `export default ${JSON.stringify(buildShortcodes())};`
+      : null;
+  },
+  config: () => ({
+    define: {
+      'import.meta.env.VITE_EMOJIBASE_URL': JSON.stringify(
+        `/emojibase-data/${emojibaseVersion}`,
+      ),
+    },
+  }),
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const file = emojibaseFiles.find(
+        f => req.url === `/${emojibasePath}/${f}.json`,
+      );
+      if (!file) {
+        next();
+        return;
+      }
+      res.setHeader('Content-Type', 'application/json');
+      res.end(readFileSync(require.resolve(`emojibase-data/en/${file}.json`)));
+    });
+  },
+  generateBundle() {
+    emojibaseFiles.forEach(file => {
+      this.emitFile({
+        type: 'asset',
+        fileName: `${emojibasePath}/${file}.json`,
+        source: readFileSync(require.resolve(`emojibase-data/en/${file}.json`)),
+      });
+    });
+  },
+});
 
 export default defineConfig(() => {
   return {
@@ -20,6 +84,7 @@ export default defineConfig(() => {
       },
     },
     plugins: [
+      emojibasePlugin(),
       react({
         jsxImportSource: '@emotion/react',
         babel: {

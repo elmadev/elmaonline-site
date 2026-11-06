@@ -4,6 +4,7 @@ import { useStoreState } from 'easy-peasy';
 
 import TopBar from 'components/TopBar';
 import SideBar from 'components/SideBar';
+import ChatOverlay from 'features/Messages/ChatOverlay';
 import GlobalStyle from 'globalStyle';
 
 const Layout = ({ children, edge, t = '' }) => {
@@ -17,6 +18,7 @@ const Layout = ({ children, edge, t = '' }) => {
         <SideBar />
         <ChildrenCon edge={edge}>{children}</ChildrenCon>
       </Container>
+      <ChatOverlay />
     </>
   );
 };
