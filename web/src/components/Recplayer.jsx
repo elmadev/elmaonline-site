@@ -63,7 +63,9 @@ const Recplayer = props => {
       translucentGhosts = false,
       timer = true,
       minimap = false,
+      minimapSize = 1,
       lastAppleTime = true,
+      largeFont = false,
       zoomTextures = true,
       animatedObjects = true,
       stillObjects = false,
@@ -179,10 +181,14 @@ const Recplayer = props => {
       onTimerChange={value => setSetting({ name: 'timer', value })}
       minimap={minimap}
       onMinimapChange={value => setSetting({ name: 'minimap', value })}
+      minimapSize={minimapSize}
+      onMinimapSizeChange={value => setSetting({ name: 'minimapSize', value })}
       lastAppleTime={lastAppleTime}
       onLastAppleTimeChange={value =>
         setSetting({ name: 'lastAppleTime', value })
       }
+      largeFont={largeFont}
+      onLargeFontChange={value => setSetting({ name: 'largeFont', value })}
       zoomTextures={zoomTextures}
       onZoomTexturesChange={value =>
         setSetting({ name: 'zoomTextures', value })
