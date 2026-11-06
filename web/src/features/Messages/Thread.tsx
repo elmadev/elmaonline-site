@@ -266,9 +266,6 @@ const Thread = ({
   };
 
   const other = conversation ? directKuski(conversation, userid) : null;
-  const status = conversation?.IsGroup
-    ? `${conversation.Members.length} members`
-    : '';
 
   return (
     <Container>
@@ -286,10 +283,29 @@ const Thread = ({
                 <Kuski kuskiData={other} />
               </>
             ) : (
-              conversation && conversationTitle(conversation, userid)
+              <>
+                <TitleText>
+                  {conversation && conversationTitle(conversation, userid)}
+                </TitleText>
+                {conversation?.IsGroup && (
+                  <Status>{conversation.Members.length} members</Status>
+                )}
+              </>
             )}
           </Title>
-          {status && <Status>{status}</Status>}
+          {conversation?.IsGroup && (
+            <MemberList>
+              {conversation.Members.map(
+                m =>
+                  m.KuskiData && (
+                    <Member key={m.KuskiIndex}>
+                      <OnlineDot status={m.KuskiData.OnlineStatus} />
+                      <Kuski kuskiData={m.KuskiData} />
+                    </Member>
+                  ),
+              )}
+            </MemberList>
+          )}
         </HeaderText>
         {conversation?.IsGroup ? (
           <GroupMenu conversation={conversation} onLeft={onLeft} />
@@ -425,9 +441,34 @@ const Title = styled.div`
   white-space: nowrap;
 `;
 
-const Status = styled.div`
+const TitleText = styled.span`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Status = styled.span`
+  flex-shrink: 0;
+  margin-left: ${p => p.theme.padXSmall};
   font-size: 12px;
+  font-weight: 400;
   color: ${p => p.theme.lightTextColor};
+`;
+
+const MemberList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 ${p => p.theme.padSmall};
+  font-size: 12px;
+  line-height: 1.2;
+`;
+
+const Member = styled.span`
+  display: inline-flex;
+  align-items: center;
+  > :first-child {
+    margin-right: 2px;
+  }
 `;
 
 const Messages = styled.div`

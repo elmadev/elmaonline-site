@@ -234,7 +234,7 @@ const Container = styled.div`
   display: flex;
   align-items: flex-end;
   gap: ${p => p.theme.padXSmall};
-  padding: ${p => p.theme.padSmall};
+  padding: ${p => p.theme.padMedium} ${p => p.theme.padSmall};
   border-top: 1px solid ${p => p.theme.borderColor};
 `;
 

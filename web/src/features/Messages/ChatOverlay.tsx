@@ -135,11 +135,13 @@ const Box = styled.div<{ corner: string; minimised: boolean }>`
   z-index: 1250;
   display: flex;
   flex-direction: column;
-  width: ${p => (p.minimised ? '280px' : '720px')};
+  width: ${p => (p.minimised ? '280px' : '760px')};
   max-width: calc(100vw - 48px);
-  height: ${p => (p.minimised ? 'auto' : '480px')};
+  height: ${p => (p.minimised ? 'auto' : '520px')};
   max-height: calc(100vh - 80px);
   overflow: hidden;
+  /* stops wheel events from chaining to the page behind the chat */
+  overscroll-behavior: contain;
   background: ${p => p.theme.paperBackground};
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   @media (max-width: 600px) {

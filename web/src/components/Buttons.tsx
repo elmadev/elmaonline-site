@@ -18,9 +18,10 @@ type StyledButtonProps = {
   little: boolean;
   right: boolean;
   isLink: boolean;
+  hasIcon: boolean;
 };
 
-const styledProps = ['margin', 'little', 'right', 'isLink'];
+const styledProps = ['margin', 'little', 'right', 'isLink', 'hasIcon'];
 
 const StyledButton = styled(MuiButton, {
   shouldForwardProp: prop => !styledProps.includes(prop),
@@ -31,7 +32,7 @@ const StyledButton = styled(MuiButton, {
     ${p => p.right && `margin-right: ${p.theme.padXXSmall};`}
     padding: ${p =>
       p.little
-        ? `${p.isLink ? 0 : p.theme.padXXSmall} ${p.isLink ? 0 : p.theme.padXXSmall}`
+        ? `${p.isLink ? 0 : p.theme.padXXSmall} ${p.isLink ? 0 : p.hasIcon ? p.theme.padSmall : p.theme.padXXSmall}`
         : `${p.isLink ? 0 : p.theme.padXSmall} ${p.isLink ? 0 : p.theme.padMedium}`};
     a {
       display: block;
@@ -101,6 +102,7 @@ const Button = ({
       little={little}
       onClick={() => onClick && onClick()}
       isLink={Boolean(to)}
+      hasIcon={Boolean(Icon)}
     >
       {to ? (
         <Link to={to}>{children}</Link>
