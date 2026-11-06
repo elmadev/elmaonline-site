@@ -48,9 +48,9 @@ const ExpireSelector = ({
         onClick={e => setAnchorEl(e.currentTarget)}
       >
         <TimerOutlined />
-        {expireAfter > 0 && (
+        {expireAfter > 0 ? (
           <ExpireShort>{expireShortLabel(expireAfter)}</ExpireShort>
-        )}
+        ) : null}
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -174,7 +174,7 @@ const MessageInput = ({
 
   return (
     <Container>
-      {suggestions && (
+      {suggestions ? (
         <SuggestionList role="listbox" aria-label="emoji suggestions">
           {suggestions.matches.map((match, i) => (
             <Suggestion
@@ -191,7 +191,7 @@ const MessageInput = ({
             </Suggestion>
           ))}
         </SuggestionList>
-      )}
+      ) : null}
       <ExpireSelector expireAfter={expireAfter} onChange={onExpireChange} />
       <EmojiButton onSelect={insertAtCursor} />
       <Input

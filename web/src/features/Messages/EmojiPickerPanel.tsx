@@ -73,7 +73,7 @@ const EmojiPickerPanel = ({
           }}
         </EmojiPicker.SkinTone>
       </Top>
-      {recent.length > 0 && (
+      {recent.length > 0 ? (
         <>
           <Category>Recently used</Category>
           <RecentRow>
@@ -89,7 +89,7 @@ const EmojiPickerPanel = ({
             ))}
           </RecentRow>
         </>
-      )}
+      ) : null}
       <Viewport>
         <Status>
           <EmojiPicker.Loading>Loading…</EmojiPicker.Loading>

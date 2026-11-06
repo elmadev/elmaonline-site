@@ -113,7 +113,7 @@ const ChatOverlay = () => {
             <Close fontSize="small" />
           </IconButton>
         </Bar>
-        {!minimised && (
+        {!minimised ? (
           <Content>
             <MessagesView
               active={active}
@@ -122,7 +122,7 @@ const ChatOverlay = () => {
               compact
             />
           </Content>
-        )}
+        ) : null}
       </Box>
     </ClickAwayListener>
   );

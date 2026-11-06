@@ -114,7 +114,7 @@ const GroupMenu = ({
         fullWidth
         maxWidth="xs"
       >
-        {dialog === 'rename' && (
+        {dialog === 'rename' ? (
           <>
             <DialogTitle>Rename group</DialogTitle>
             <DialogContent>
@@ -126,7 +126,7 @@ const GroupMenu = ({
                 margin="dense"
                 autoFocus
               />
-              {error && <ErrorText>{error}</ErrorText>}
+              {error ? <ErrorText>{error}</ErrorText> : null}
             </DialogContent>
             <DialogActions>
               <Button naked onClick={close}>
@@ -140,8 +140,8 @@ const GroupMenu = ({
               </Button>
             </DialogActions>
           </>
-        )}
-        {dialog === 'add' && (
+        ) : null}
+        {dialog === 'add' ? (
           <>
             <DialogTitle>Add people</DialogTitle>
             <DialogContent>
@@ -153,7 +153,7 @@ const GroupMenu = ({
                   label="Kuskis"
                 />
               </PickerCon>
-              {error && <ErrorText>{error}</ErrorText>}
+              {error ? <ErrorText>{error}</ErrorText> : null}
             </DialogContent>
             <DialogActions>
               <Button naked onClick={close}>
@@ -172,7 +172,7 @@ const GroupMenu = ({
               </Button>
             </DialogActions>
           </>
-        )}
+        ) : null}
       </Dialog>
       <Alert
         open={dialog === 'leave'}
@@ -270,11 +270,11 @@ const Thread = ({
   return (
     <Container>
       <Header>
-        {onBack && (
+        {onBack ? (
           <IconButton aria-label="back" size="small" onClick={onBack}>
             <ArrowBack fontSize="small" />
           </IconButton>
-        )}
+        ) : null}
         <HeaderText>
           <Title>
             {other ? (
@@ -285,40 +285,39 @@ const Thread = ({
             ) : (
               <>
                 <TitleText>
-                  {conversation && conversationTitle(conversation, userid)}
+                  {conversation ? conversationTitle(conversation, userid) : ''}
                 </TitleText>
-                {conversation?.IsGroup && (
+                {conversation?.IsGroup ? (
                   <Status>{conversation.Members.length} members</Status>
-                )}
+                ) : null}
               </>
             )}
           </Title>
-          {conversation?.IsGroup && (
+          {conversation?.IsGroup ? (
             <MemberList>
-              {conversation.Members.map(
-                m =>
-                  m.KuskiData && (
-                    <Member key={m.KuskiIndex}>
-                      <OnlineDot status={m.KuskiData.OnlineStatus} />
-                      <Kuski kuskiData={m.KuskiData} />
-                    </Member>
-                  ),
+              {conversation.Members.map(m =>
+                m.KuskiData ? (
+                  <Member key={m.KuskiIndex}>
+                    <OnlineDot status={m.KuskiData.OnlineStatus} />
+                    <Kuski kuskiData={m.KuskiData} />
+                  </Member>
+                ) : null,
               )}
             </MemberList>
-          )}
+          ) : null}
         </HeaderText>
         {conversation?.IsGroup ? (
           <GroupMenu conversation={conversation} onLeft={onLeft} />
         ) : null}
       </Header>
       <Messages ref={scrollRef} onScroll={onScroll}>
-        {isLoading && (
+        {isLoading ? (
           <Center>
             <Loading />
           </Center>
-        )}
-        {isError && <Center>Conversation not found.</Center>}
-        {hasNextPage && (
+        ) : null}
+        {isError ? <Center>Conversation not found.</Center> : null}
+        {hasNextPage ? (
           <Center>
             <Button
               naked
@@ -331,7 +330,7 @@ const Thread = ({
               Load older messages
             </Button>
           </Center>
-        )}
+        ) : null}
         {messages.map((message, i) => {
           const nick = message.KuskiData?.Kuski || '';
           if (message.Type === 'system') {
@@ -352,14 +351,14 @@ const Thread = ({
             message.CreatedAt - prev.CreatedAt > 300;
           return (
             <Bubble key={message.MessageIndex} own={own} spaced={showMeta}>
-              {showMeta && (
+              {showMeta ? (
                 <Meta>
                   {!own && conversation?.IsGroup ? <b>{nick} </b> : null}
                   {formatTime(message.CreatedAt)}
                 </Meta>
-              )}
+              ) : null}
               <TextRow>
-                {own && !message.Pending && (
+                {own && !message.Pending ? (
                   <DeleteButton
                     className="delete-message"
                     aria-label="delete message"
@@ -368,25 +367,25 @@ const Thread = ({
                   >
                     <DeleteOutline fontSize="inherit" />
                   </DeleteButton>
-                )}
+                ) : null}
                 <Text own={own} pending={Boolean(message.Pending)}>
                   {message.Text}
-                  {message.ExpiresAt && (
+                  {message.ExpiresAt ? (
                     <ExpireMark
                       titleAccess={`Disappears ${formatDistanceToNowStrict(
                         new Date(message.ExpiresAt * 1000),
                         { addSuffix: true },
                       )}`}
                     />
-                  )}
+                  ) : null}
                 </Text>
               </TextRow>
-              {message.Pending && <Sending>Sending…</Sending>}
+              {message.Pending ? <Sending>Sending…</Sending> : null}
             </Bubble>
           );
         })}
       </Messages>
-      {send.error && <ErrorText>{send.error.message}</ErrorText>}
+      {send.error ? <ErrorText>{send.error.message}</ErrorText> : null}
       <MessageInput
         value={draft}
         onChange={text => setDraft({ key: ConversationIndex, text })}

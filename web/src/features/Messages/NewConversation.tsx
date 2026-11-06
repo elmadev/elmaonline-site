@@ -62,11 +62,11 @@ const NewConversation = ({
   return (
     <Container>
       <Header>
-        {onBack && (
+        {onBack ? (
           <IconButton aria-label="back" size="small" onClick={onBack}>
             <ArrowBack fontSize="small" />
           </IconButton>
-        )}
+        ) : null}
         <Title>{isGroup ? 'New group' : 'New message'}</Title>
       </Header>
       <Fields>
@@ -75,7 +75,7 @@ const NewConversation = ({
           onChange={setKuskis}
           exclude={[userid]}
         />
-        {isGroup && (
+        {isGroup ? (
           <GroupName
             name="Group name (optional)"
             value={name}
@@ -83,14 +83,14 @@ const NewConversation = ({
             maxLength={50}
             size="small"
           />
-        )}
-        {tooMany && (
+        ) : null}
+        {tooMany ? (
           <ErrorText>
             Groups can have at most {maxGroupMembers + 1} members.
           </ErrorText>
-        )}
-        {start.isPending && <Sending>Sending…</Sending>}
-        {start.error && <ErrorText>{start.error.message}</ErrorText>}
+        ) : null}
+        {start.isPending ? <Sending>Sending…</Sending> : null}
+        {start.error ? <ErrorText>{start.error.message}</ErrorText> : null}
       </Fields>
       <MessageInput
         value={text}

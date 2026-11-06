@@ -43,20 +43,20 @@ const ConversationList = ({
       <Button icon="add" little onClick={() => onSelect('new')}>
         New message
       </Button>
-      {onInfo && (
+      {onInfo ? (
         <IconButton aria-label="about messages" size="small" onClick={onInfo}>
           <InfoOutlined fontSize="small" />
         </IconButton>
-      )}
+      ) : null}
     </NewButton>
-    {isLoading && (
+    {isLoading ? (
       <Empty>
         <Loading />
       </Empty>
-    )}
-    {!isLoading && conversations.length === 0 && (
+    ) : null}
+    {!isLoading && conversations.length === 0 ? (
       <Empty>No messages yet.</Empty>
-    )}
+    ) : null}
     {conversations.map(c => (
       <Row
         key={c.ConversationIndex}
@@ -70,9 +70,9 @@ const ConversationList = ({
             <OnlineDot status={directKuski(c, userid)?.OnlineStatus} />
           )}
           <Name unread={c.Unread > 0}>{conversationTitle(c, userid)}</Name>
-          {c.Unread > 0 && (
+          {c.Unread > 0 ? (
             <UnreadBadge badgeContent={c.Unread} color="error" />
-          )}
+          ) : null}
         </Title>
         <Preview>{preview(c, userid)}</Preview>
       </Row>

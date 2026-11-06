@@ -47,7 +47,7 @@ const MessagesView = ({
 
   return (
     <Container>
-      {showList && (
+      {showList ? (
         <ListPane compact={compact} full={narrow}>
           <ConversationList
             conversations={conversations}
@@ -58,11 +58,11 @@ const MessagesView = ({
             onInfo={compact ? undefined : () => setInfoOpen(!infoOpen)}
           />
         </ListPane>
-      )}
-      {showMain && (
+      ) : null}
+      {showMain ? (
         <MainPane>
-          {showInfo && <InfoPanel onClose={closeInfo} />}
-          {active === 'new' && (
+          {showInfo ? <InfoPanel onClose={closeInfo} /> : null}
+          {active === 'new' ? (
             <NewConversation
               key={recipient?.KuskiIndex || 'new'}
               userid={me}
@@ -70,8 +70,8 @@ const MessagesView = ({
               onCreated={onSelect}
               onBack={back}
             />
-          )}
-          {typeof active === 'number' && (
+          ) : null}
+          {typeof active === 'number' ? (
             <Thread
               key={active}
               ConversationIndex={active}
@@ -82,12 +82,12 @@ const MessagesView = ({
               onBack={back}
               onLeft={() => onSelect(null)}
             />
-          )}
-          {active === null && (
+          ) : null}
+          {active === null ? (
             <Empty>Pick a conversation or start a new one.</Empty>
-          )}
+          ) : null}
         </MainPane>
-      )}
+      ) : null}
     </Container>
   );
 };
