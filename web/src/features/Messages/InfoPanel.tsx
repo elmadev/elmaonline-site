@@ -117,7 +117,7 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => (
 const Container = styled.div`
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   background: ${p => p.theme.paperBackground};
