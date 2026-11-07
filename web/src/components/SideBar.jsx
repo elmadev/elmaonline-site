@@ -31,7 +31,6 @@ const items = {
     { name: 'Replay upload', to: '/replays/upload' },
     { name: 'Get dat info', to: '/dat/info' },
     { name: 'Help', to: '/help' },
-    { name: 'Editor', to: '/editor' },
     { name: 'Shirt editor', to: '/shirt' },
   ],
 };
