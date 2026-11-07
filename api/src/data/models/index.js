@@ -63,6 +63,9 @@ import LGR from './LGR.js';
 import LGRTags from './LGRTags.js';
 import LGRComment from './LGRComment.js';
 import LevelPackStats from './LevelPackStats.js';
+import Message from './Message.js';
+import MessageConversation from './MessageConversation.js';
+import MessageMember from './MessageMember.js';
 
 Replay.belongsTo(Kuski, {
   foreignKey: 'DrivenBy',
@@ -589,6 +592,31 @@ Recap.belongsTo(Replay, {
   as: 'ReplayData',
 });
 
+MessageConversation.hasMany(MessageMember, {
+  foreignKey: 'ConversationIndex',
+  as: 'Members',
+});
+
+MessageConversation.hasMany(Message, {
+  foreignKey: 'ConversationIndex',
+  as: 'Messages',
+});
+
+MessageMember.belongsTo(MessageConversation, {
+  foreignKey: 'ConversationIndex',
+  as: 'Conversation',
+});
+
+MessageMember.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
+Message.belongsTo(Kuski, {
+  foreignKey: 'KuskiIndex',
+  as: 'KuskiData',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -656,4 +684,7 @@ export {
   Recap,
   ReplayLog,
   LevelPackStats,
+  Message,
+  MessageConversation,
+  MessageMember,
 };

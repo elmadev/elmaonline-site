@@ -1,4 +1,5 @@
 import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
+import { authContext } from '#utils/auth';
 
 const minute = 60 * 1000;
 
@@ -19,6 +20,13 @@ const bodyKey = field => req => {
   return ipKey(req);
 };
 
+// keys on the logged in user so limits follow the account, not the ip. falls
+// back to the ip when there is no valid token
+const userKey = req => {
+  const auth = authContext(req);
+  return auth.auth ? `user:${auth.userid}` : ipKey(req);
+};
+
 const limiter = ({ minutes, limit, key = ipKey, onlyFailed, body }) =>
   rateLimit({
     windowMs: minutes * minute,
@@ -34,7 +42,11 @@ const limiter = ({ minutes, limit, key = ipKey, onlyFailed, body }) =>
       res
         .status(429)
         .json(
-          body(`Too many attempts, please try again in ${minutes} minutes.`),
+          body(
+            `Too many attempts, please try again in ${minutes} ${
+              minutes === 1 ? 'minute' : 'minutes'
+            }.`,
+          ),
         ),
     standardHeaders: 'draft-8',
     legacyHeaders: false,
@@ -76,5 +88,23 @@ export const resetRequestLimit = [
 export const codeLimit = limiter({
   minutes: 15,
   limit: 20,
+  body: registerBody,
+});
+
+const errorBody = message => ({ error: message });
+
+// messages sent per user
+export const messageLimit = limiter({
+  minutes: 1,
+  limit: 30,
+  key: userKey,
+  body: errorBody,
+});
+
+// all runs search hits the huge time table, so keep it conservative
+export const allRunsLimit = limiter({
+  minutes: 1,
+  limit: 5,
+  key: userKey,
   body: registerBody,
 });

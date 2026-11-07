@@ -5,35 +5,7 @@ import Link from 'components/Link';
 import Layout from 'components/Layout';
 import Loading from 'components/Loading';
 
-const groups = [
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j',
-  'k',
-  'l',
-  'm',
-  'n',
-  'o',
-  'p',
-  'q',
-  'r',
-  's',
-  't',
-  'u',
-  'v',
-  'w',
-  'x',
-  'y',
-  'z',
-  '…',
-];
+const groups = [...'abcdefghijklmnopqrstuvwxyz', '…'];
 
 const Teams = () => {
   const [filter, setFilter] = useState('');
@@ -69,10 +41,15 @@ const Teams = () => {
       </Layout>
     );
 
+  const normalize = str =>
+    str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+  const normalizedFilter = normalize(filter);
   const filteredTeams = teams.filter(
-    k =>
-      filter.length < 1 ||
-      k.Team.toLowerCase().includes(filter.toLocaleLowerCase()),
+    k => filter.length < 1 || normalize(k.Team).includes(normalizedFilter),
   );
   return (
     <Layout edge t="Teams">
@@ -90,10 +67,7 @@ const Teams = () => {
         <KuskiList>
           {groups.map(g => {
             const letterTeams = filteredTeams.filter(k => {
-              const firstChar = k.Team[0]
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase();
+              const firstChar = normalize(k.Team[0]);
               return g === '…' ? !/^[a-z]$/.test(firstChar) : g === firstChar;
             });
             if (letterTeams.length < 1) return null;

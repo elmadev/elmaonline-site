@@ -20,6 +20,7 @@ const items = {
     { name: 'Chat Log', to: '/chatlog' },
     { name: 'Players', to: '/kuskis' },
     { name: 'Teams', to: '/teams' },
+    { name: 'Messages', to: '/message' },
     { name: 'Kuski map', to: '/map' },
   ],
   Competitions: [

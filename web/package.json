@@ -10,7 +10,7 @@
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
-    "@elmadev/react-rec-viewer": "^0.4.0",
+    "@elmadev/react-rec-viewer": "^0.5.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fingerprintjs/fingerprintjs": "^4.5.1",
@@ -25,7 +25,9 @@
     "dompurify": "^3.4.17",
     "easy-peasy": "^6.1.1",
     "elma-js": "https://github.com/ville-j/elma-js",
+    "emojibase-data": "18.0.0",
     "flag-icons": "^7.5.0",
+    "frimousse": "0.4.0",
     "leaflet": "^1.9.4",
     "level-editor-gui": "https://github.com/elmadev/level-editor-gui.git",
     "lodash": "^4.18.1",

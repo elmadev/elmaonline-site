@@ -5,48 +5,9 @@ import {
   createRouter,
   createRoute,
   createRootRoute,
+  lazyRouteComponent,
 } from '@tanstack/react-router';
 import config from 'config';
-import Home from 'pages/home';
-import Battle from 'pages/battle';
-import Battles from 'pages/battles';
-import ChatLog from 'pages/chatlog';
-import Confirm from 'pages/confirm';
-import Cup from 'pages/cup';
-import Cups from 'pages/cups';
-import BattleLeagues from 'pages/battleleagues';
-import BattleLeague from 'pages/battleleague';
-import Editor from 'pages/editor';
-import Error from 'pages/error';
-import ForgotPassword from 'pages/forgot-password';
-import Help from 'pages/help';
-import Kuski from 'pages/kuski';
-import Kuskis from 'pages/kuskis';
-import LGRs from 'pages/lgrs';
-import LGR from 'pages/lgr';
-import Level from 'pages/level';
-import LevelPack from 'pages/levelpack';
-import Levels from 'pages/levels';
-import LevelsAdd from 'pages/levels-add';
-import LevelsAddCollection from 'pages/levels-add-collection';
-import LevelpackCollection from 'pages/levelpack-collection';
-import Login from 'pages/login';
-import Map from 'pages/map';
-import DatInfo from 'pages/datinfo';
-import Mod from 'pages/mod';
-import NotFound from 'pages/not-found';
-import Ranking from 'pages/ranking';
-import Register from 'pages/register';
-import ReplayStandalone from 'pages/replay-standalone';
-import Replay from 'pages/replay';
-import Replays from 'pages/replays';
-import Search from 'pages/search';
-import Settings from 'pages/settings';
-import Team from 'pages/team';
-import Teams from 'pages/teams';
-import Upload from 'pages/upload';
-import Recap from 'pages/recap';
-import ShirtEditor from 'pages/shirt';
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
 import { useStoreState, useStoreRehydrated } from 'easy-peasy';
@@ -56,6 +17,56 @@ import {
   THEME_ID,
 } from '@mui/material/styles';
 import DefaultPropsProvider from '@mui/material/DefaultPropsProvider';
+
+const Home = lazyRouteComponent(() => import('pages/home'));
+const Battle = lazyRouteComponent(() => import('pages/battle'));
+const Battles = lazyRouteComponent(() => import('pages/battles'));
+const ChatLog = lazyRouteComponent(() => import('pages/chatlog'));
+const Confirm = lazyRouteComponent(() => import('pages/confirm'));
+const Cup = lazyRouteComponent(() => import('pages/cup'));
+const Cups = lazyRouteComponent(() => import('pages/cups'));
+const BattleLeagues = lazyRouteComponent(() => import('pages/battleleagues'));
+const BattleLeague = lazyRouteComponent(() => import('pages/battleleague'));
+const Editor = lazyRouteComponent(() => import('pages/editor'));
+const Error = lazyRouteComponent(() => import('pages/error'));
+const ForgotPassword = lazyRouteComponent(
+  () => import('pages/forgot-password'),
+);
+const Help = lazyRouteComponent(() => import('pages/help'));
+const Kuski = lazyRouteComponent(() => import('pages/kuski'));
+const Kuskis = lazyRouteComponent(() => import('pages/kuskis'));
+const LGRs = lazyRouteComponent(() => import('pages/lgrs'));
+const LGR = lazyRouteComponent(() => import('pages/lgr'));
+const Level = lazyRouteComponent(() => import('pages/level'));
+const LevelPack = lazyRouteComponent(() => import('pages/levelpack'));
+const Levels = lazyRouteComponent(() => import('pages/levels'));
+const LevelsAdd = lazyRouteComponent(() => import('pages/levels-add'));
+const LevelsAddCollection = lazyRouteComponent(
+  () => import('pages/levels-add-collection'),
+);
+const LevelpackCollection = lazyRouteComponent(
+  () => import('pages/levelpack-collection'),
+);
+const Login = lazyRouteComponent(() => import('pages/login'));
+const Map = lazyRouteComponent(() => import('pages/map'));
+const Message = lazyRouteComponent(() => import('pages/message'));
+const DatInfo = lazyRouteComponent(() => import('pages/datinfo'));
+const Mod = lazyRouteComponent(() => import('pages/mod'));
+const NotFound = lazyRouteComponent(() => import('pages/not-found'));
+const Ranking = lazyRouteComponent(() => import('pages/ranking'));
+const Register = lazyRouteComponent(() => import('pages/register'));
+const ReplayStandalone = lazyRouteComponent(
+  () => import('pages/replay-standalone'),
+);
+const Replay = lazyRouteComponent(() => import('pages/replay'));
+const Replays = lazyRouteComponent(() => import('pages/replays'));
+const Search = lazyRouteComponent(() => import('pages/search'));
+const Settings = lazyRouteComponent(() => import('pages/settings'));
+const Team = lazyRouteComponent(() => import('pages/team'));
+const Teams = lazyRouteComponent(() => import('pages/teams'));
+const Upload = lazyRouteComponent(() => import('pages/upload'));
+const Recap = lazyRouteComponent(() => import('pages/recap'));
+const ShirtEditor = lazyRouteComponent(() => import('pages/shirt'));
 
 const TanStackRouterDevtools =
   // eslint-disable-next-line no-undef
@@ -358,6 +369,22 @@ const loginRoute = createRoute({
   component: Login,
 });
 
+const messageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/message',
+  component: function MessageComp() {
+    return <Message />;
+  },
+});
+
+const messageConversationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/message/$ConversationIndex',
+  component: function MessageComp() {
+    return <Message />;
+  },
+});
+
 const mapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/map',
@@ -512,6 +539,8 @@ const routeTree = rootRoute.addChildren([
   levelpackCollectionRoute,
   loginRoute,
   mapRoute,
+  messageRoute,
+  messageConversationRoute,
   modRoute,
   rankingRoute,
   recapRoute,
@@ -533,6 +562,8 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  // A page's code starts downloading when a link to it is hovered or touched
+  defaultPreload: 'intent',
   defaultNotFoundComponent: () => <NotFound />,
 });
 
