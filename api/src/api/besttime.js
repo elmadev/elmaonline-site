@@ -90,7 +90,7 @@ const getMultiTimes = async (LevelIndex, limit) => {
 const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
   let where = { KuskiIndex };
   const personal = UserId === parseInt(KuskiIndex, 10);
-  where = { ...where, ...fromTo(from, to, 'Driven') };
+  where = { ...where, ...fromTo(from, to, 'Driven', 'datetime') };
   const include = [
     {
       model: Level,

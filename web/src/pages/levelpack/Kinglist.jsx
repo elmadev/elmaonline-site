@@ -5,6 +5,7 @@ import Header from 'components/Header';
 import { ListCell, ListContainer, ListHeader, ListRow } from 'components/List';
 import Kuski from 'components/Kuski';
 import { Text } from 'components/Containers';
+import styled from '@emotion/styled';
 
 // must match pointList in api/src/api/levelpack.js
 const pointList = [
@@ -63,41 +64,40 @@ const Kinglist = ({ highlight, highlightWeeks, name }) => {
         Points are awarded for the top 20 times on each level (levels excluded
         from total times are not counted):
         <br />
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateRows: 'repeat(5, auto)',
-            gridAutoFlow: 'column',
-            columnGap: '2.5vw',
-            width: 'fit-content',
-          }}
-        >
+        <PointsTable>
           {pointList.map((p, i) => {
             const n = i + 1;
             const suffix = { 1: 'st', 2: 'nd', 3: 'rd' }[n] || 'th';
             return (
-              <div
-                key={n}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  width: '75px',
-                }}
-              >
+              <PointsItem key={n}>
                 <span>
                   {n}
                   {suffix}:
                 </span>
                 <span>{p} pts</span>
-              </div>
+              </PointsItem>
             );
           })}
-        </div>
+        </PointsTable>
         <br />
         Records = number of 1st places.
       </Text>
     </>
   );
 };
+
+const PointsTable = styled.div`
+  display: grid;
+  grid-template-rows: repeat(5, auto);
+  grid-auto-flow: column;
+  column-gap: 2.5vw;
+  width: fit-content;
+`;
+
+const PointsItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 75px;
+`;
 
 export default Kinglist;

@@ -256,7 +256,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                 }}
               />
               <ListCell verticalAlign="middle">
-                <div style={{ display: 'flex' }}>
+                <FilterButtons>
                   <MuiButton
                     title="Apply date filter"
                     onClick={() => fetch({})}
@@ -273,7 +273,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                   >
                     <BackspaceOutlined />
                   </MuiButton>
-                </div>
+                </FilterButtons>
               </ListCell>
             </>
           )}
@@ -528,6 +528,10 @@ const RadioThin = styled(Radio)`
     padding-top: 0;
     padding-bottom: 0;
   }
+`;
+
+const FilterButtons = styled.div`
+  display: flex;
 `;
 
 export default TimesReplays;
