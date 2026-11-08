@@ -31,18 +31,18 @@ const PersonalStatsTab = ({
     actions => actions.Level,
   );
 
-  const fetchPersonalStats = () => {
+  const fetchPersonalStats = (dateFrom = from, dateTo = to) => {
     getTimeStats({
       LevelIndex,
-      from: from ? `${from} 00:00:00` : '',
-      to: to ? `${to} 23:59:59` : '',
+      from: dateFrom ? `${dateFrom} 00:00:00` : '',
+      to: dateTo ? `${dateTo} 23:59:59` : '',
     });
     if (nickId() > 0) {
       getPersonalLeaderHistory({
         LevelIndex,
         KuskiIndex: nickId(),
-        from: from ? new Date(from).getTime() / 1000 : '',
-        to: to ? new Date(to).getTime() / 1000 + 86400 : '',
+        from: dateFrom ? new Date(dateFrom).getTime() / 1000 : '',
+        to: dateTo ? new Date(dateTo).getTime() / 1000 + 86400 : '',
       });
     }
   };
@@ -85,7 +85,7 @@ const PersonalStatsTab = ({
           id="date-from"
           label="From"
           type="date"
-          defaultValue={from}
+          value={from}
           onChange={event => setFrom(event.target?.value)}
           InputLabelProps={{
             shrink: true,
@@ -99,7 +99,7 @@ const PersonalStatsTab = ({
           id="date-to"
           label="To"
           type="date"
-          defaultValue={to}
+          value={to}
           onChange={event => setTo(event.target?.value)}
           InputLabelProps={{
             shrink: true,
@@ -108,13 +108,21 @@ const PersonalStatsTab = ({
             max: new Date().toISOString().split('T')[0],
           }}
         />
-        <Button
-          secondary
-          onClick={() => fetchPersonalStats()}
-          disabled={!to || !from}
-        >
-          Submit
-        </Button>
+        <FilterControls>
+          <Button onClick={() => fetchPersonalStats()} disabled={!to || !from}>
+            Submit
+          </Button>
+          <Button
+            secondary
+            onClick={() => {
+              setFrom('');
+              setTo('');
+              fetchPersonalStats('', '');
+            }}
+          >
+            Clear
+          </Button>
+        </FilterControls>
       </Row>
       <StatsTable data={timeStats} loading={statsLoading !== LevelIndex} />
       <LeaderHistory
@@ -133,6 +141,11 @@ const Container = styled.div`
 
 const RangeField = styled(TextField)`
   margin-right: 16px !important;
+`;
+
+const FilterControls = styled.div`
+  display: flex;
+  gap: 6px;
 `;
 
 export default PersonalStatsTab;
