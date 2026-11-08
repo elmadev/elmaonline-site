@@ -65,6 +65,7 @@
     "test:e2e:coverage": "node e2e/coverage.js",
     "test:e2e:ui": "playwright test --config e2e/playwright.config.js --ui",
     "test:e2e:quick": "E2E_EXPLORE=0 playwright test --config e2e/playwright.config.js",
+    "test:e2e:corpus": "rm -f ../api/compare/corpus.txt && E2E_CORPUS=../api/compare/corpus.txt playwright test --config e2e/playwright.config.js",
     "test:e2e:update": "playwright test --config e2e/playwright.config.js --update-snapshots"
   },
   "browserslist": {

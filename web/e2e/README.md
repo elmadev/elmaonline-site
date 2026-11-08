@@ -21,6 +21,7 @@ Run from `web/`. Run `npx playwright install chromium` once first.
 | `yarn test:e2e:ui` | Playwright UI to step through pages |
 | `yarn test:e2e:update` | rewrite the snapshots |
 | `yarn test:e2e:coverage` | which endpoints in `src/api.js` appear in the snapshots |
+| `yarn test:e2e:corpus` | full run that also records every raw api call to `api/compare/corpus.txt`, the requests `api/compare` replays |
 
 The config is `playwright.config.js` in this folder. The built site is served on port 4173 and reused if already running, so rebuild (`yarn build --mode test`) or stop the server after changing app code.
 
