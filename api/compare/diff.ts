@@ -147,14 +147,35 @@ const normalizeSql = (sql: string) => sql.replace(/\s+/g, ' ').trim();
 
 // queries a handler runs in parallel arrive in any order, so this compares
 // them as a set: each query only one side sent is a difference
+//
+// newIds are the ids a write created on each side (baseline, candidate).
+// They differ because rolling back doesn't give auto increment values back.
+// Queries are matched as they are first. Only the ones left over are tried
+// again with the baseline's ids swapped for the candidate's, so an id that
+// happens to equal some other number (eg. a kuski's) can't hide a difference
 export const diffSql = (
   baseline: string[],
   candidate: string[],
+  newIds: [number, number][] = [],
 ): Difference[] => {
   const remaining = candidate.map(normalizeSql);
-  const differences: Difference[] = [];
+  const unmatched: string[] = [];
   for (const query of baseline.map(normalizeSql)) {
     const index = remaining.indexOf(query);
+    if (index === -1) {
+      unmatched.push(query);
+    } else {
+      remaining.splice(index, 1);
+    }
+  }
+  const differences: Difference[] = [];
+  for (const query of unmatched) {
+    const swapped = newIds.reduce(
+      (text, [from, to]) =>
+        text.replace(new RegExp(`\\b${from}\\b`, 'g'), String(to)),
+      query,
+    );
+    const index = remaining.indexOf(swapped);
     if (index === -1) {
       differences.push({
         path: 'only in baseline',

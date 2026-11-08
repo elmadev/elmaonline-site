@@ -67,7 +67,10 @@ const readCorpus = (file: string): Request[] => {
 
 // writes that leave the database (file storage, uploads) or that the runner
 // makes itself
-const neverSent = [/^POST \/token$/, /^\w+ \/upload(\/|$)/];
+const neverSent = [
+  /^POST (\/api)?\/token([?]|$)/,
+  /^\w+ (\/api)?\/upload([/?]|$)/,
+];
 
 const inArea = (request: Request) => {
   if (!options.area) return true;
@@ -283,9 +286,13 @@ const compareOnce = async (request: Request): Promise<Result> => {
       baselineError: `${a.status} ${String(a.body).slice(0, 100)}`,
     };
   }
+  const bodyDifferences = a.status === b.status ? diff(a.body, b.body) : [];
+  const newIds = bodyDifferences
+    .filter(d => isNewId(request, d))
+    .map(d => [d.baseline, d.candidate] as [number, number]);
   const differences =
     a.status === b.status
-      ? diff(a.body, b.body).filter(d => !isNewId(request, d))
+      ? bodyDifferences.filter(d => !isNewId(request, d))
       : [
           {
             path: '',
@@ -299,7 +306,7 @@ const compareOnce = async (request: Request): Promise<Result> => {
       sentSql(baseline, ids[0]),
       sentSql(candidate, ids[1]),
     ]);
-    differences.push(...diffSql(sqlA ?? [], sqlB ?? []));
+    differences.push(...diffSql(sqlA ?? [], sqlB ?? [], newIds));
   }
   return { request, differences };
 };
