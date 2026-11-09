@@ -61,7 +61,9 @@ const readCorpus = (file: string): Request[] => {
       const match = line.match(/^(guest|user) ([A-Z]+) (\S+)(?: (.+))?$/);
       if (!match) return fail(`${file}: can't parse "${line}"`);
       const [, who, method, path, body] = match;
-      return { line, who: who as Request['who'], method, path, body };
+      // the regex only lets guest or user through
+      const requester: Request['who'] = who === 'user' ? 'user' : 'guest';
+      return { line, who: requester, method, path, body };
     });
 };
 
@@ -162,6 +164,8 @@ interface CompareStatus {
 
 const checkCompareMode = async (server: string) => {
   const status = await fetch(`${server}/__compare/status`)
+    // json() is unknown, the status route is ours
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     .then(r => (r.ok ? (r.json() as Promise<CompareStatus>) : null))
     .catch(() => null);
   if (!status?.compare) {
@@ -189,11 +193,14 @@ const login = async (server: string) => {
       password: process.env.E2E_PASS,
     }),
   })
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     .then(r => r.json() as Promise<{ Response?: { token?: string } }>)
     .catch(() => null);
   const token = response?.Response?.token;
-  if (!token) fail(`Login as ${process.env.E2E_USER} failed on ${server}.`);
-  return token as string;
+  if (!token) {
+    return fail(`Login as ${process.env.E2E_USER} failed on ${server}.`);
+  }
+  return token;
 };
 
 const send = async (
@@ -229,6 +236,7 @@ const send = async (
 
 const sentSql = (server: string, compareId: string) =>
   fetch(`${server}/__compare/sql/${compareId}`)
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     .then(r => r.json() as Promise<string[] | null>)
     .catch(() => null);
 
@@ -287,9 +295,14 @@ const compareOnce = async (request: Request): Promise<Result> => {
     };
   }
   const bodyDifferences = a.status === b.status ? diff(a.body, b.body) : [];
+  // isNewId already checks both are numbers, the typeof checks are for tsc
   const newIds = bodyDifferences
     .filter(d => isNewId(request, d))
-    .map(d => [d.baseline, d.candidate] as [number, number]);
+    .flatMap((d): [number, number][] =>
+      typeof d.baseline === 'number' && typeof d.candidate === 'number'
+        ? [[d.baseline, d.candidate]]
+        : [],
+    );
   const differences =
     a.status === b.status
       ? bodyDifferences.filter(d => !isNewId(request, d))

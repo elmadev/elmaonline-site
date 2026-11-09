@@ -18,5 +18,5 @@
       "#contract/*": ["../contract/*"]
     }
   },
-  "include": ["src", "../contract"]
+  "include": ["src", "compare", "../contract"]
 }

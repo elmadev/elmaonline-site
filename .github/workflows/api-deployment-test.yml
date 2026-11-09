@@ -6,6 +6,7 @@ on:
       - dev
     paths:
       - "api/**"
+      - "contract/**"
   workflow_dispatch:
 
 concurrency:
@@ -35,4 +36,5 @@ jobs:
             git pull
             yarn install --immutable
             yarn typecheck
+            yarn importscheck
             pm2 restart api

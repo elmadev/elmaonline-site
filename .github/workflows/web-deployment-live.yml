@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - "web/**"
+      - "contract/**"
   workflow_dispatch:
 
 concurrency:
@@ -33,6 +34,10 @@ jobs:
       - name: Install dependencies
         working-directory: ./web
         run: yarn install --immutable
+
+      - name: Typecheck
+        working-directory: ./web
+        run: yarn typecheck
 
       - name: Build project
         working-directory: ./web

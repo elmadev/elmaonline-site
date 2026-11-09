@@ -44,6 +44,13 @@ export default [
     },
   },
   {
+    // cli script, its output is the console
+    files: ['compare/**'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: ['.yarn/**'],
   },
   eslintPluginPrettierRecommended,

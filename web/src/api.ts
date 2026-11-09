@@ -16,6 +16,8 @@ import type {
   ReplayShareResponse,
   ReplayUpdateBody,
 } from 'contract/replay.ts';
+import type { ApiError, ApiResult } from 'contract/response.ts';
+import type { ConversationData, MessageData } from 'types/message';
 import type {
   QueryFunctionContext,
   QueryKey,
@@ -118,12 +120,22 @@ export const useQueryAlt = <TQueryFnData, TData = TQueryFnData>(
 
 // apisauce adapter for useQuery/useMutation, resolves to the payload or throws
 // with the api's error message
-export const apiData = async request => {
+export const apiData = async <T>(
+  request: Promise<ApiResponse<T, unknown>>,
+): Promise<T> => {
   const res = await request;
-  if (res.ok) {
+  if (res.ok && res.data !== undefined) {
     return res.data;
   }
-  throw new Error(res.data?.error || 'Something went wrong, try again.');
+  const { data } = res;
+  const error =
+    typeof data === 'object' &&
+    data !== null &&
+    'error' in data &&
+    typeof data.error === 'string'
+      ? data.error
+      : '';
+  throw new Error(error || 'Something went wrong, try again.');
 };
 
 export { keepPreviousData };
@@ -694,33 +706,68 @@ export const MarkNotificationsSeen = () =>
   api.post(`notification/markSeen`, {});
 
 // messages
-export const GetConversations = () => api.get('message');
-export const GetMessages = data =>
-  api.get(`message/${data.ConversationIndex}`, {
+export const GetConversations = () =>
+  api.get<ConversationData[], ApiError>('message');
+export const GetMessages = (data: {
+  ConversationIndex: number;
+  before?: number;
+  limit?: number;
+}) =>
+  api.get<MessageData[], ApiError>(`message/${data.ConversationIndex}`, {
     before: data.before,
     limit: data.limit,
   });
-export const StartConversation = data => api.post('message', data);
-export const SendMessage = data =>
-  api.post(`message/${data.ConversationIndex}`, {
+export const StartConversation = (data: {
+  KuskiIndexes: number[];
+  Text: string;
+  Name?: string;
+  ExpireAfter: number;
+}) =>
+  api.post<{ ConversationIndex: number; message: MessageData }, ApiError>(
+    'message',
+    data,
+  );
+export const SendMessage = (data: {
+  ConversationIndex: number;
+  Text: string;
+  ExpireAfter: number;
+}) =>
+  api.post<MessageData, ApiError>(`message/${data.ConversationIndex}`, {
     Text: data.Text,
     ExpireAfter: data.ExpireAfter,
   });
-export const DeleteMessage = data =>
-  api.delete(`message/${data.ConversationIndex}/${data.MessageIndex}`);
-export const MarkConversationRead = data =>
-  api.post(`message/${data.ConversationIndex}/read`, {
+export const DeleteMessage = (data: {
+  ConversationIndex: number;
+  MessageIndex: number;
+}) =>
+  api.delete<ApiResult, ApiError>(
+    `message/${data.ConversationIndex}/${data.MessageIndex}`,
+  );
+export const MarkConversationRead = (data: {
+  ConversationIndex: number;
+  MessageIndex: number;
+}) =>
+  api.post<ApiResult, ApiError>(`message/${data.ConversationIndex}/read`, {
     MessageIndex: data.MessageIndex,
   });
-export const AddConversationMembers = data =>
-  api.post(`message/${data.ConversationIndex}/members`, {
+export const AddConversationMembers = (data: {
+  ConversationIndex: number;
+  KuskiIndexes: number[];
+}) =>
+  api.post<ApiResult, ApiError>(`message/${data.ConversationIndex}/members`, {
     KuskiIndexes: data.KuskiIndexes,
   });
-export const LeaveConversation = ConversationIndex =>
-  api.post(`message/${ConversationIndex}/leave`, {});
-export const RenameConversation = data =>
-  api.patch(`message/${data.ConversationIndex}`, { Name: data.Name });
-export const MessageHeartbeat = data => api.post('message/heartbeat', data);
+export const LeaveConversation = (ConversationIndex: number) =>
+  api.post<ApiResult, ApiError>(`message/${ConversationIndex}/leave`, {});
+export const RenameConversation = (data: {
+  ConversationIndex: number;
+  Name: string;
+}) =>
+  api.patch<ApiResult, ApiError>(`message/${data.ConversationIndex}`, {
+    Name: data.Name,
+  });
+export const MessageHeartbeat = (data: { hidden: boolean }) =>
+  api.post<{ unread: number }, ApiError>('message/heartbeat', data);
 
 // status
 export const SystemStatus = () => api.get('news/status');
