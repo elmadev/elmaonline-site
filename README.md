@@ -9,6 +9,10 @@ This is a monorepo for the [node backend](https://github.com/elmadev/elmaonline-
 - `yarn start` starts web and api in the same terminal
 - `yarn start:lan` starts frontend with local IP support and forwarding api calls to IP
 
+## TypeScript migration
+
+`api` and `web` are being moved to TypeScript, with shared types in `contract/`. See [MIGRATION.md](MIGRATION.md) for the checklist when converting a page.
+
 ## Communication
 
 Feel free to create issues/discussions here on github in order to discuss things related to the project. You can also join the [elma discord](https://discord.gg/j5WMFC6) #developers channel to chat.
