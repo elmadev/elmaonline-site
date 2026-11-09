@@ -128,7 +128,7 @@ const Kuski = sequelize.define<KuskiInstance>(
       defaultValue: null,
     },
     LastActive: {
-      type: DataType.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: null,
     },

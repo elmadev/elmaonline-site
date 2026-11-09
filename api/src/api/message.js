@@ -1,9 +1,9 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { authContext, secretMatches } from '#utils/auth';
-import { messageLimit } from '#middlewares/rateLimit';
-import { withOnlineStatus } from '#utils/online';
-import { dbquery } from '#data/sequelize';
+import { authContext, secretMatches } from '#utils/auth.js';
+import { messageLimit } from '#middlewares/rateLimit.js';
+import { withOnlineStatus } from '#utils/online.js';
+import { dbquery } from '#data/sequelize.js';
 import {
   Message,
   MessageConversation,

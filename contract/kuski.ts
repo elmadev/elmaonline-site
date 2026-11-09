@@ -23,4 +23,5 @@ export type KuskiRow = {
   Confirmed: number;
   ConfirmCode: string;
   Email: string | null;
+  LastActive: number | null;
 };

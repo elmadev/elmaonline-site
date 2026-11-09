@@ -1,5 +1,5 @@
 import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
-import { authContext } from '#utils/auth';
+import { authContext } from '#utils/auth.js';
 
 const minute = 60 * 1000;
 

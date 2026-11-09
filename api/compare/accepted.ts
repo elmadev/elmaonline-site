@@ -18,11 +18,37 @@ export interface Accepted {
 }
 
 export const accepted: Accepted[] = [
-  // {
-  //   endpoint: 'GET /replay/byUUID/:UUID',
-  //   path: 'Uploaded',
-  //   kind: 'type',
-  //   reason: 'datetime string -> unix seconds',
-  //   checkedIn: 'web/src/pages/replay/ReplayInfo.tsx',
-  // },
+  {
+    endpoint: 'GET /replay/byUUID/:UUID',
+    path: 'Uploaded',
+    kind: 'type',
+    reason: 'unix seconds as a string -> number, it is used as number any way',
+    checkedIn:
+      'web/src/features/ReplayCommentArchive/index.jsx (Uploaded * 1000), web/src/pages/search/index.jsx (date={r.Uploaded})',
+  },
+  {
+    endpoint: 'GET /replay/byLevelIndex/:LevelIndex',
+    path: '[*].Uploaded',
+    kind: 'type',
+    reason: 'unix seconds as a string -> number, it is used as number any way',
+    checkedIn:
+      'web/src/features/ReplayCommentArchive/index.jsx (Uploaded * 1000), web/src/pages/search/index.jsx (date={r.Uploaded})',
+  },
+  {
+    endpoint: 'GET /replay/byUUID/:UUID',
+    path: 'Finished',
+    kind: 'value',
+    reason:
+      'cup time replays sent the raw letter ("F"), now 1/0 like every other replay',
+    checkedIn:
+      'web never reads Finished from replay endpoints, only sends it in features/Upload/index.jsx',
+  },
+  {
+    endpoint: 'GET /replay/byLevelIndex/:LevelIndex',
+    path: '[*]',
+    kind: 'missing',
+    reason:
+      'a non-numeric LevelIndex returns [] instead of MySQL coercing it to level 0',
+    checkedIn: 'web only requests this with a numeric level index',
+  },
 ];

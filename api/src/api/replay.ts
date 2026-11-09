@@ -243,7 +243,7 @@ const timeFile2Rec = (c: Model): ReplayItem | null => {
     LevelIndex: time.dataValues.LevelIndex,
     TimeIndex: c.dataValues.TimeIndex,
     ReplayTime: time.dataValues.Time * 10,
-    Uploaded: toUnixSeconds(time.dataValues.Driven),
+    Uploaded: Number(time.dataValues.Driven) || 0,
     UUID: `${c.dataValues.UUID}_${c.dataValues.MD5}_${c.dataValues.TimeIndex}`,
     RecFileName: createRecName(
       time.dataValues.LevelData.dataValues.LevelName,

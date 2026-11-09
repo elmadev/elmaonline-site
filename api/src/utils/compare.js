@@ -5,7 +5,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomUUID } from 'node:crypto';
 import Sequelize from 'sequelize';
-import sequelize from '#data/sequelize';
+import sequelize from '#data/sequelize.js';
 import config from '../config.js';
 
 const storage = new AsyncLocalStorage();
