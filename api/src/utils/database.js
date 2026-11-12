@@ -75,11 +75,15 @@ export function searchOffset(offset) {
 
 export const formatLevelSearch = level => {
   if (level) {
-    if (
-      level.substring(0, 8).toLowerCase() === 'internal' ||
-      (level.substring(0, 3).toLowerCase() === 'int' && level.length <= 6)
-    ) {
-      return `QWQUU0${level.substring(level.length - 2, level.length)}`;
+    const intPrefix = ['internal', 'int'].find(p =>
+      level.toLowerCase().startsWith(p),
+    );
+    if (intPrefix) {
+      const suffix = level.substring(intPrefix.length);
+      const isIntNumber = /^(0[1-9]|[1-4][0-9]|5[0-5])$/.test(suffix);
+      if (isIntNumber) {
+        return `QWQUU0${suffix}`;
+      }
     }
   }
   return level;
