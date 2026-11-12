@@ -88,7 +88,11 @@ const Player = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${p => p.fancy && 'height: max(320px, 100cqw * 9 / 16);'}
+  height: max(320px, 100cqw * 9 / 16);
+  > div > div,
+  > div > div > svg {
+    max-height: none;
+  }
 `;
 
 const StyledFormControlLabel = styled(FormControlLabel)`
