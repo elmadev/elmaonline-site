@@ -19,7 +19,6 @@ const battleNotifier = ({ bnStorePath, client, fallbackChannelId }) => {
   const getFallbackChannel = () => client.channels.cache.get(fallbackChannelId);
 
   const notifyUsers = async ({ userIds, message }) => {
-    const dmBlockedUserIds = [];
     await Promise.all(
       userIds.map(async userId => {
         let user;
@@ -28,22 +27,13 @@ const battleNotifier = ({ bnStorePath, client, fallbackChannelId }) => {
           await user.send(message);
         } catch (error) {
           if (error instanceof DiscordAPIError) {
-            dmBlockedUserIds.push(user);
+            return;
           } else {
             logNotifyUserError(error);
           }
         }
       }),
     );
-
-    if (dmBlockedUserIds.length > 0) {
-      const userMentions = dmBlockedUserIds.join(' ');
-      const fallbackMessage = `${message}\n${userMentions}`;
-      const fallbackChannel = getFallbackChannel();
-      if (fallbackChannel) {
-        await fallbackChannel.send(fallbackMessage);
-      }
-    }
   };
 
   const notifyBattle = async (battle, message) => {
