@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ssh-deploy-live
   cancel-in-progress: false
 
 jobs:
@@ -30,7 +30,6 @@ jobs:
             source ~/.nvm/nvm.sh
             corepack enable
             cd ${{ secrets.SSH_PATH_LIVE }}
-            git restore yarn.lock
             git pull
             yarn install --immutable
             pm2 restart api
