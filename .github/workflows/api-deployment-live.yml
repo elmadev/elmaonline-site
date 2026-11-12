@@ -31,5 +31,5 @@ jobs:
             corepack enable
             cd ${{ secrets.SSH_PATH_LIVE }}
             git pull
-            yarn install --immutable
+            nice -n 10 yarn install --immutable
             pm2 restart api
