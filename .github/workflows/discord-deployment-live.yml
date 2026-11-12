@@ -31,6 +31,7 @@ jobs:
             set -e
             corepack enable
             cd ${{ secrets.SSH_PATH_LIVE }}
+            cd "$(git rev-parse --show-toplevel)/discord"
             git pull
-            yarn install --immutable
+            nice -n 10 yarn install --immutable
             pm2 restart discord
