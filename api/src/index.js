@@ -163,6 +163,20 @@ app.use((err, req, res, next) => {
 });
 
 // ----------------------------------------------------------
+// memory logging (temporary, to find out what grows between restarts)
+// ----------------------------------------------------------
+setInterval(() => {
+  const mb = Object.fromEntries(
+    Object.entries(process.memoryUsage()).map(([k, v]) => [
+      k,
+      Math.round(v / 1048576),
+    ]),
+  );
+  // eslint-disable-next-line no-console
+  console.log('mem', JSON.stringify(mb));
+}, 600_000).unref();
+
+// ----------------------------------------------------------
 // start server
 // ----------------------------------------------------------
 app.listen(config.port, () => {
