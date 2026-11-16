@@ -14,7 +14,42 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    if: contains(github.event.head_commit.message, 'skip ci') == false
+    name: typecheck, importscheck and lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: api/.nvmrc
+          cache: yarn
+          cache-dependency-path: api/yarn.lock
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: yarn install --immutable
+
+      - name: Typecheck
+        working-directory: ./api
+        run: yarn typecheck
+
+      - name: Importscheck
+        working-directory: ./api
+        run: yarn importscheck
+
+      - name: Lint
+        working-directory: ./api
+        run: yarn lint
+
   build:
+    needs: check
     if: contains(github.event.head_commit.message, 'skip ci') == false
     name: ssh into server, pull from repo, install deps, restart in pm2
     runs-on: ubuntu-latest
@@ -34,7 +69,5 @@ jobs:
             cd ${{ secrets.SSH_PATH }}
             git restore yarn.lock
             git pull
-            yarn install --immutable
-            yarn typecheck
-            yarn importscheck
+            nice -n 10 yarn workspaces focus --production
             pm2 restart api
