@@ -76,6 +76,36 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// memory spike logging (temporary): logs requests during which memory grew
+// by more than 20 MB. Requests overlap, so look for URLs that show up repeatedly.
+const MB = 1048576;
+const memSpikeThreshold = 20 * MB;
+app.use((req, res, next) => {
+  const before = process.memoryUsage();
+  const t1 = Date.now();
+
+  res.on('close', () => {
+    const after = process.memoryUsage();
+    const rss = after.rss - before.rss;
+    const heapTotal = after.heapTotal - before.heapTotal;
+    const heapUsed = after.heapUsed - before.heapUsed;
+    if (Math.max(rss, heapTotal, heapUsed) > memSpikeThreshold) {
+      const fmt = n => `${n >= 0 ? '+' : ''}${Math.round(n / MB)}MB`;
+      // eslint-disable-next-line no-console
+      console.log(
+        'memspike',
+        req.method,
+        req.originalUrl,
+        `${Date.now() - t1}ms`,
+        `rss ${fmt(rss)} heapTotal ${fmt(heapTotal)} heapUsed ${fmt(heapUsed)}`,
+        `now rss ${Math.round(after.rss / MB)}MB heapTotal ${Math.round(after.heapTotal / MB)}MB`,
+      );
+    }
+  });
+
+  next();
+});
+
 // ----------------------------------------------------------
 // compare mode, rolls back every request, see compare/README.md
 // ----------------------------------------------------------
@@ -161,20 +191,6 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).send(err.msg);
 });
-
-// ----------------------------------------------------------
-// memory logging (temporary, to find out what grows between restarts)
-// ----------------------------------------------------------
-setInterval(() => {
-  const mb = Object.fromEntries(
-    Object.entries(process.memoryUsage()).map(([k, v]) => [
-      k,
-      Math.round(v / 1048576),
-    ]),
-  );
-  // eslint-disable-next-line no-console
-  console.log('mem', JSON.stringify(mb));
-}, 600_000).unref();
 
 // ----------------------------------------------------------
 // start server
