@@ -41,11 +41,14 @@ const getPoints = (pos, pointSystem, eventMultiplier) => {
   return 10 * multiplier;
 };
 
+// events and their CupTimes can be model instances or plain objects
+const values = row => row.dataValues ?? row;
+
 export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
   const filtered = [];
   // loop events
   forEach(events, (eventValues, eventIndex) => {
-    const event = eventValues.dataValues;
+    const event = values(eventValues);
     filtered.push(event);
     filtered[eventIndex].StartTime = moment(
       filtered[eventIndex].StartTime,
@@ -54,16 +57,16 @@ export const filterResults = (events, ownerId = [], loggedId = 0, cupGroup) => {
       'X',
     );
     const sortedTimes = event.CupTimes.sort((a, b) => {
-      if (a.dataValues.Time === b.dataValues.Time) {
-        return a.dataValues.TimeIndex - b.dataValues.TimeIndex;
+      if (values(a).Time === values(b).Time) {
+        return values(a).TimeIndex - values(b).TimeIndex;
       }
-      return a.dataValues.Time - b.dataValues.Time;
+      return values(a).Time - values(b).Time;
     });
     const kuskisIn = [];
     const filteredResults = [];
     // loop results and insert best result from each kuski
     forEach(sortedTimes, timeValues => {
-      const time = timeValues.dataValues;
+      const time = values(timeValues);
       if (time.TimeExists) {
         if (kuskisIn.indexOf(time.KuskiIndex) === -1) {
           filteredResults.push(time);
