@@ -8,6 +8,7 @@ import {
 import { LevelStats, LevelStatsUpdate, Kuski, Team } from '#data/models';
 import { validKuski, validTeam } from '#utils/names';
 import { updateRanking, deleteRanking } from '#utils/ranking';
+import { clearRankingCache } from '#api/ranking';
 import { email, legacyTimes, orderLevels } from '#utils/dataImports';
 import { recapGenerate } from '#utils/recap';
 import { coldStorage, recoverRecFiles } from '#utils/timefile';
@@ -58,6 +59,7 @@ app.get('/levelstats/do-all/:batchSize/:sleepMs', async (req, res) => {
 app.get('/ranking/delete', async (req, res) => {
   if (secretMatches(req.header('Authorization'), config.run.ranking)) {
     const data = await deleteRanking();
+    clearRankingCache();
     res.json({ deleted: data });
   } else {
     res.status(401);
@@ -80,6 +82,7 @@ app.get('/ranking/:limit', async (req, res) => {
     await updateRanking(limit);
     await updateRanking(limit);
     await updateRanking(limit);
+    clearRankingCache();
   } else {
     res.status(401);
     res.send('Unauthorized');

@@ -77,14 +77,26 @@ app.use(async (req, res, next) => {
 });
 
 // memory spike logging (temporary): logs requests during which memory grew
-// by more than 20 MB. Requests overlap, so look for URLs that show up repeatedly.
+// by more than 20 MB. Requests overlap, so each line says how many other
+// requests ran at some point during this one: with "overlap 0" the request
+// caused the growth itself, with a high overlap it may only have waited
+// for another one.
 const MB = 1048576;
 const memSpikeThreshold = 20 * MB;
+let inflight = 0;
+let started = 0;
 app.use((req, res, next) => {
   const before = process.memoryUsage();
   const t1 = Date.now();
+  // others already running, plus (at close) those started since
+  const inflightAtStart = inflight;
+  const startedAtStart = started;
+  inflight += 1;
+  started += 1;
 
   res.on('close', () => {
+    inflight -= 1;
+    const overlap = inflightAtStart + (started - startedAtStart - 1);
     const after = process.memoryUsage();
     const rss = after.rss - before.rss;
     const heapTotal = after.heapTotal - before.heapTotal;
@@ -99,6 +111,7 @@ app.use((req, res, next) => {
         `${Date.now() - t1}ms`,
         `rss ${fmt(rss)} heapTotal ${fmt(heapTotal)} heapUsed ${fmt(heapUsed)}`,
         `now rss ${Math.round(after.rss / MB)}MB heapTotal ${Math.round(after.heapTotal / MB)}MB`,
+        `overlap ${overlap}`,
       );
     }
   });

@@ -21,6 +21,8 @@ import {
 } from '#data/models';
 import sequelize from '#data/sequelize';
 import { log } from '#utils/database';
+import { getKuskiData } from '#utils/kuskiData';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -117,59 +119,92 @@ const getCup = async ShortName => {
   return data;
 };
 
+// raw rows and separate queries instead of one findAll for reduced memory usage
 const getCupEvents = async (CupGroupIndex, KuskiIndex) => {
   const cupGroup = await SiteCupGroup.findOne({
     where: { CupGroupIndex },
   });
-  const data = await SiteCup.findAll({
+  if (!cupGroup) {
+    return [];
+  }
+  const events = await SiteCup.findAll({
     where: { CupGroupIndex },
-    include: [
-      {
-        model: Kuski,
-        as: 'KuskiData',
-      },
-      {
-        model: Level,
-        attributes: ['LevelName'],
-        as: 'Level',
-      },
-      {
-        model: SiteCupTime,
-        attributes: [
-          'CupTimeIndex',
-          'KuskiIndex',
-          'Time',
-          'TimeExists',
-          'CupTimeIndex',
-          'Replay',
-          'UUID',
-          'TeamIndex',
-        ],
-        as: 'CupTimes',
-        required: false,
-        where: { TimeExists: 1 },
-        include: [
-          {
-            model: Kuski,
-            attributes: ['Kuski', 'TeamIndex', 'Country'],
-            as: 'KuskiData',
-            include: [
-              {
-                model: Team,
-                attributes: ['Team'],
-                as: 'TeamData',
-              },
-            ],
-          },
-          {
-            model: Team,
-            attributes: ['Team'],
-            as: 'TeamData',
-          },
-        ],
-      },
-    ],
+    raw: true,
   });
+  const cupIndexes = events.map(e => e.CupIndex);
+  const levelIndexes = [...new Set(events.map(e => e.LevelIndex))];
+
+  const [designers, levels, times] = await Promise.all([
+    getKuskiData(events.map(e => e.Designer)),
+    levelIndexes.length
+      ? Level.findAll({
+          where: { LevelIndex: { [Op.in]: levelIndexes } },
+          attributes: ['LevelIndex', 'LevelName'],
+          raw: true,
+        })
+      : [],
+    cupIndexes.length
+      ? SiteCupTime.findAll({
+          where: { CupIndex: { [Op.in]: cupIndexes }, TimeExists: 1 },
+          attributes: [
+            'CupTimeIndex',
+            'KuskiIndex',
+            'Time',
+            'TimeExists',
+            'Replay',
+            'UUID',
+            'TeamIndex',
+            'CupIndex',
+          ],
+          raw: true,
+        })
+      : [],
+  ]);
+
+  const timeKuskiIndexes = [...new Set(times.map(t => t.KuskiIndex))];
+  const timeKuskis = timeKuskiIndexes.length
+    ? await Kuski.unscoped().findAll({
+        where: { KuskiIndex: { [Op.in]: timeKuskiIndexes } },
+        attributes: ['KuskiIndex', 'Kuski', 'TeamIndex', 'Country'],
+        raw: true,
+      })
+    : [];
+  const teamIndexes = [
+    ...new Set([
+      ...timeKuskis.map(k => k.TeamIndex),
+      ...times.map(t => t.TeamIndex),
+    ]),
+  ].filter(Boolean);
+  const teams = teamIndexes.length
+    ? await Team.findAll({
+        where: { TeamIndex: { [Op.in]: teamIndexes } },
+        attributes: ['TeamIndex', 'Team'],
+        raw: true,
+      })
+    : [];
+  const teamByIndex = new Map(teams.map(t => [t.TeamIndex, { Team: t.Team }]));
+  const kuskiByIndex = new Map(
+    timeKuskis.map(({ KuskiIndex: index, ...k }) => [
+      index,
+      { ...k, TeamData: teamByIndex.get(k.TeamIndex) ?? null },
+    ]),
+  );
+  const levelByIndex = new Map(
+    levels.map(l => [l.LevelIndex, { LevelName: l.LevelName }]),
+  );
+
+  const timesByCup = new Map(cupIndexes.map(i => [i, []]));
+  for (const { CupIndex, ...time } of times) {
+    time.KuskiData = kuskiByIndex.get(time.KuskiIndex) ?? null;
+    time.TeamData = teamByIndex.get(time.TeamIndex) ?? null;
+    timesByCup.get(CupIndex).push(time);
+  }
+  const data = events.map(e => ({
+    ...e,
+    KuskiData: designers.get(e.Designer) ?? null,
+    Level: levelByIndex.get(e.LevelIndex) ?? null,
+    CupTimes: timesByCup.get(e.CupIndex),
+  }));
   return filterResults(data, admins(cupGroup), KuskiIndex, cupGroup);
 };
 

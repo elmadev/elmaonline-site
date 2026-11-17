@@ -470,54 +470,97 @@ export const getTimes = async (
   if (!packInfo) {
     return [];
   }
-  let timeTable = Besttime;
-  let timeTableAlias = 'LevelBesttime';
+  const legacy = packInfo.Legacy && !eolOnly;
+  const timeTable = legacy ? LegacyBesttime : Besttime;
   const attributes = ['TimeIndex', 'Time', 'KuskiIndex'];
-  if (packInfo.Legacy && !eolOnly) {
-    timeTable = LegacyBesttime;
-    timeTableAlias = 'LevelLegacyBesttime';
+  if (legacy) {
     attributes.push('Source');
   }
-  const KuskiInclude = {
-    model: Kuski,
-    attributes: ['Kuski', 'Country'],
-    as: 'KuskiData',
-  };
+  let kuskiWhere = null;
   if (Country) {
-    KuskiInclude.where = { Country };
+    kuskiWhere = { Country };
   }
   if (TeamIndex) {
-    KuskiInclude.where = { TeamIndex };
+    kuskiWhere = { TeamIndex };
   }
   if (kuskis) {
-    KuskiInclude.where = { KuskiIndex: { [Op.in]: kuskis.split(',') } };
+    kuskiWhere = { KuskiIndex: { [Op.in]: kuskis.split(',') } };
   }
-  const times = await LevelPackLevel.findAll({
+
+  // raw rows and separate queries to limit memory usage
+  const levels = await LevelPackLevel.findAll({
     where: { LevelPackIndex: packInfo.LevelPackIndex },
     attributes: ['LevelIndex', 'Order', 'ExcludeFromTotal'],
-    include: [
-      {
-        model: timeTable,
-        as: timeTableAlias,
-        attributes,
-        include: [KuskiInclude],
-      },
-      {
-        model: Level,
-        as: 'Level',
-        attributes: ['LevelName', 'LongName', 'Hidden'],
-      },
-    ],
+    raw: true,
   });
-  if (packInfo.Legacy && !eolOnly) {
-    return times.map(t => {
-      return {
-        ...t.dataValues,
-        LevelBesttime: t.dataValues.LevelLegacyBesttime,
-      };
-    });
+  const levelIndexes = levels.map(l => l.LevelIndex);
+  const levelData = await Level.findAll({
+    where: { LevelIndex: { [Op.in]: levelIndexes } },
+    attributes: ['LevelIndex', 'LevelName', 'LongName', 'Hidden'],
+    raw: true,
+  });
+  const levelByIndex = new Map(
+    levelData.map(({ LevelIndex, ...rest }) => [LevelIndex, rest]),
+  );
+
+  const times = await timeTable.findAll({
+    where: { LevelIndex: { [Op.in]: levelIndexes } },
+    attributes: [...attributes, 'LevelIndex'],
+    include: kuskiWhere
+      ? [
+          {
+            model: Kuski.unscoped(),
+            as: 'KuskiData',
+            attributes: [],
+            where: kuskiWhere,
+          },
+        ]
+      : [],
+    raw: true,
+  });
+
+  // one KuskiData object per kuski, shared by all their times
+  const kuskiIndexes = [...new Set(times.map(t => t.KuskiIndex))];
+  const kuskiRows = kuskiIndexes.length
+    ? await Kuski.unscoped().findAll({
+        where: { KuskiIndex: { [Op.in]: kuskiIndexes } },
+        attributes: ['KuskiIndex', 'Kuski', 'Country', 'TeamIndex'],
+        raw: true,
+      })
+    : [];
+  const teamIndexes = [
+    ...new Set(kuskiRows.map(k => k.TeamIndex).filter(Boolean)),
+  ];
+  const teams = teamIndexes.length
+    ? await Team.findAll({
+        where: { TeamIndex: { [Op.in]: teamIndexes } },
+        attributes: { exclude: ['Locked'] },
+        raw: true,
+      })
+    : [];
+  const teamByIndex = new Map(teams.map(t => [t.TeamIndex, t]));
+  const kuskiByIndex = new Map(
+    kuskiRows.map(k => [
+      k.KuskiIndex,
+      {
+        Kuski: k.Kuski,
+        Country: k.Country,
+        TeamData: teamByIndex.get(k.TeamIndex) ?? null,
+      },
+    ]),
+  );
+
+  const timesByLevel = new Map(levelIndexes.map(i => [i, []]));
+  for (const { LevelIndex, ...time } of times) {
+    time.KuskiData = kuskiByIndex.get(time.KuskiIndex) ?? null;
+    timesByLevel.get(LevelIndex).push(time);
   }
-  return times;
+
+  return levels.map(l => ({
+    ...l,
+    Level: levelByIndex.get(l.LevelIndex) ?? null,
+    LevelBesttime: timesByLevel.get(l.LevelIndex),
+  }));
 };
 
 const getPacksByQuery = async query => {
@@ -743,8 +786,7 @@ export const kinglist = times => {
     if (!level.Level.Hidden && !level.ExcludeFromTotal) {
       const sortedTimes = level.LevelBesttime.sort(sortTimes);
       let currentPosition = 0;
-      forEach(sortedTimes, data => {
-        const time = data.dataValues;
+      forEach(sortedTimes, time => {
         const findKuski = kuskis.indexOf(time.KuskiIndex);
         if (findKuski > -1) {
           points[findKuski] = {
@@ -1128,6 +1170,36 @@ const updateStatsCache = () => {
   return statsCachePromise;
 };
 
+// memory cache for the unfiltered /:LevelPackName/stats responses
+const packStatsTtl = 5 * 60 * 1000;
+const packStatsMax = 20;
+const packStatsCache = new Map();
+
+const cachedPackStats = (LevelPackName, eolOnly) => {
+  const key = `${LevelPackName}|${eolOnly}`;
+  const cached = packStatsCache.get(key);
+  if (cached && Date.now() - cached.time < packStatsTtl) {
+    return cached.promise;
+  }
+  const promise = (async () => {
+    const data = await getTimes(LevelPackName, eolOnly);
+    const totals = totalTimes(data, true);
+    const points = kinglist(data);
+    return { ...totals, points };
+  })();
+  packStatsCache.delete(key);
+  packStatsCache.set(key, { time: Date.now(), promise });
+  promise.catch(() => {
+    if (packStatsCache.get(key)?.promise === promise) {
+      packStatsCache.delete(key);
+    }
+  });
+  if (packStatsCache.size > packStatsMax) {
+    packStatsCache.delete(packStatsCache.keys().next().value);
+  }
+  return promise;
+};
+
 // @see https://express-validator.github.io/docs/schema-validation.html
 // /update uses these except for LevelPackName.
 // /add could use these but it already had client-side validation so for
@@ -1305,10 +1377,7 @@ router
     res.json(besttimes);
   })
   .get('/:LevelPackName/stats', async (req, res) => {
-    const data = await getTimes(req.params.LevelPackName);
-    const totals = totalTimes(data, true);
-    const points = kinglist(data);
-    res.json({ ...totals, points });
+    res.json(await cachedPackStats(req.params.LevelPackName, 0));
   })
   .get('/:LevelPackName/records/:eolOnly', async (req, res) => {
     const records = await getRecords(
@@ -1331,13 +1400,8 @@ router
     },
   )
   .get('/:LevelPackName/stats/:eolOnly', async (req, res) => {
-    const data = await getTimes(
-      req.params.LevelPackName,
-      parseInt(req.params.eolOnly, 10),
-    );
-    const totals = totalTimes(data, true);
-    const points = kinglist(data);
-    res.json({ ...totals, points });
+    const eolOnly = parseInt(req.params.eolOnly, 10) ? 1 : 0;
+    res.json(await cachedPackStats(req.params.LevelPackName, eolOnly));
   })
   .get(
     '/:LevelPackName/stats/:eolOnly/:filter/:filterValue',
