@@ -4,6 +4,7 @@ import { authContext } from '#utils/auth';
 import { levelNameSearch, fromTo, log } from '#utils/database';
 import { groupBy, orderBy, uniqBy } from 'lodash-es';
 import {
+  AllFinished,
   Besttime,
   Kuski,
   Level,
@@ -116,7 +117,49 @@ const getLatest = async (KuskiIndex, limit, lev, from, to, UserId = 0) => {
     include,
     limit: parseInt(limit, 10) > 10000 ? 10000 : parseInt(limit, 10),
   };
-  const times = await Besttime.findAll(query);
+  let times = await Besttime.findAll(query);
+
+  // Gets extra attributes from the AllFinished table (FPSLimit, volts, etc.)
+  // for each time that has an existing TimeIndex (so no legacy times)
+  // and adds them to each time based on matching TimeIndex.
+  if (times.length > 0) {
+    const attributesExt = ['TimeIndex', 'Apples', 'FPSLimit'];
+    if (personal) {
+      attributesExt.push(
+        'Finished',
+        'BattleIndex',
+        'MaxSpeed',
+        'ThrottleTime',
+        'BrakeTime',
+        'LeftVolt',
+        'RightVolt',
+        'SuperVolt',
+        'Turn',
+        'OneWheel',
+      );
+    }
+    const timesExt = await AllFinished.findAll({
+      where: {
+        TimeIndex: times
+          .filter(time => time.TimeIndex != null)
+          .map(time => time.TimeIndex),
+      },
+      attributes: attributesExt,
+    });
+    const timesExtLookup = new Map(
+      timesExt.map(time => {
+        const { TimeIndex, ...attribs } = time.get({ plain: true });
+        return [TimeIndex, attribs];
+      }),
+    );
+    times = times.map(time => {
+      const timeExt = timesExtLookup.get(time.TimeIndex);
+      return {
+        ...time.get({ plain: true }),
+        ...(timeExt ?? {}),
+      };
+    });
+  }
   if (personal) {
     return times;
   }
