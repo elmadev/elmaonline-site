@@ -322,7 +322,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
                         parse="X"
                       />
                     </ListCell>
-                    <ListCell width={10} />
+                    <ListCell width={type !== 'runsAndReplays' ? 38 : 10} />
                     <ListCell width={100}>{time.FPSLimit || '-'}</ListCell>
                     <ListCell>
                       {(isMobile || hover === time.TimeIndex) &&
