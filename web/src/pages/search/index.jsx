@@ -80,7 +80,7 @@ const Search = () => {
     if (t === 'team') {
       getTeams({ q: encodeURIComponent(query.replace('?', '_')), offset: 0 });
     }
-  }, [q]);
+  }, [q, t]);
   useEffect(() => {
     if (mod() === 1 && showLocked) {
       const u = {};
