@@ -70,7 +70,15 @@ export default function ReplayList({
       uploadedBy,
       levelPack,
     });
-  }, [page, pageSize, includedTags, excludedTags, settings.sortBy]);
+  }, [
+    page,
+    pageSize,
+    includedTags,
+    excludedTags,
+    settings.sortBy,
+    drivenBy,
+    uploadedBy,
+  ]);
 
   const updatePage = pageNo => {
     setPage(pageNo);
