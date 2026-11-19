@@ -65,7 +65,7 @@ const TimesReplays = ({ KuskiIndex, collapse }) => {
 
   useEffect(() => {
     fetch();
-  }, [type]);
+  }, [type, KuskiIndex]);
 
   const isMobile = useMediaQuery('(max-width: 1024px)');
 
