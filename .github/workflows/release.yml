@@ -1,0 +1,196 @@
+name: Release to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag name (leave empty for vYYYY.MM.DD)"
+        required: false
+      deploy_all:
+        description: "Deploy api, discord and web even if unchanged"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Create tag and release
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.name }}
+      api: ${{ steps.changes.outputs.api }}
+      discord: ${{ steps.changes.outputs.discord }}
+      web: ${{ steps.changes.outputs.web }}
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Determine tag
+        id: tag
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          TAG="$INPUT_VERSION"
+          if [ -z "$TAG" ]; then
+            BASE="v$(date -u +%Y.%m.%d)"
+            TAG="$BASE"
+            N=2
+            while git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; do
+              TAG="$BASE.$N"
+              N=$((N+1))
+            done
+          fi
+          if ! [[ "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "::error::Invalid tag name '$TAG' (must start with v and contain only letters, digits, . _ -)"
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::Tag '$TAG' already exists"
+            exit 1
+          fi
+          echo "name=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Detect changed components
+        id: changes
+        env:
+          DEPLOY_ALL: ${{ inputs.deploy_all }}
+        run: |
+          PREV=$(git describe --tags --abbrev=0 --match 'v*' HEAD 2>/dev/null || true)
+          for c in api discord web; do
+            if [ "$DEPLOY_ALL" = "true" ] || [ -z "$PREV" ] || ! git diff --quiet "$PREV" HEAD -- "$c/"; then
+              echo "$c=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$c=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
+          echo "Previous release: ${PREV:-none}"
+          cat "$GITHUB_OUTPUT"
+
+      - name: Create tag and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.name }}
+          ACTOR: ${{ github.triggering_actor }}
+        run: |
+          gh release create "$TAG" \
+            --target "$(git rev-parse HEAD)" \
+            --title "$TAG" \
+            --notes "Released $(date -u '+%Y-%m-%d %H:%M UTC') by @$ACTOR" \
+            --generate-notes
+
+  deploy-api:
+    name: Deploy api
+    needs: release
+    if: needs.release.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ssh-deploy-live
+      cancel-in-progress: false
+    steps:
+      - name: ssh into server, checkout tag, install deps, restart in pm2
+        uses: appleboy/ssh-action@master
+        env:
+          TAG: ${{ needs.release.outputs.tag }}
+        with:
+          host: ${{ secrets.SSH_HOST_LIVE }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: TAG
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            set -e
+            corepack enable
+            cd ${{ secrets.SSH_PATH_LIVE }}
+            git fetch --tags origin
+            git checkout --detach "$TAG"
+            nice -n 10 yarn install --immutable
+            pm2 restart api
+
+  deploy-discord:
+    name: Deploy discord bot
+    needs: [release, deploy-api]
+    # run after api (shared checkout on the server), but also when api was skipped
+    if: always() && needs.release.result == 'success' && needs.deploy-api.result != 'failure' && needs.release.outputs.discord == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ssh-deploy-live
+      cancel-in-progress: false
+    steps:
+      - name: ssh into server, checkout tag, install deps, restart in pm2
+        uses: appleboy/ssh-action@master
+        env:
+          TAG: ${{ needs.release.outputs.tag }}
+        with:
+          host: ${{ secrets.SSH_HOST_LIVE }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: TAG
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            set -e
+            corepack enable
+            cd ${{ secrets.SSH_PATH_LIVE }}
+            cd "$(git rev-parse --show-toplevel)"
+            git fetch --tags origin
+            git checkout --detach "$TAG"
+            cd discord
+            nice -n 10 yarn install --immutable
+            pm2 restart discord
+
+  deploy-web:
+    name: Build and deploy web
+    needs: release
+    if: needs.release.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: web/yarn.lock
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: yarn install --immutable
+
+      - name: Build project
+        working-directory: ./web
+        run: yarn build
+        env:
+          VITE_API_URL: ${{ secrets.API_URL_LIVE }}
+          VITE_S3_SUB_FOLDER: ${{ secrets.S3_SUB_FOLDER_LIVE }}
+          VITE_UP_URL: ${{ secrets.UP_LIVE }}
+          VITE_RECAPTCHA: ${{ secrets.RECAPTCHA_LIVE }}
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_LIVE }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "web/build/*"
+          target: "${{ secrets.SSH_BUILD_PATH }}"
+          strip_components: 2
