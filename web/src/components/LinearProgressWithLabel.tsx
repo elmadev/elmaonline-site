@@ -3,15 +3,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { Column } from 'components/Containers';
 import styled from '@emotion/styled';
 import { Text } from 'components/Containers';
-import { addSeconds, format } from 'date-fns';
-
-export function formattedTime(seconds: number) {
-  const helperDate = addSeconds(new Date(0), seconds);
-  if (seconds >= 3600) {
-    return `1:${format(helperDate, 'mm:ss')}`;
-  }
-  return format(helperDate, 'mm:ss');
-}
+import { formattedTime } from 'utils/time';
 
 function perc2color(perc: number) {
   let r;

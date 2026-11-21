@@ -14,7 +14,7 @@ import {
   battleRemaining,
 } from 'utils/battle';
 import { useInterval } from 'utils/useInterval';
-import { formattedTime } from 'components/LinearProgressWithLabel';
+import { formattedTime } from 'utils/time';
 import { ListRow, ListCell, ListContainer, ListHeader } from 'components/List';
 import { estimateBattleStarts } from './estimateStarts';
 
