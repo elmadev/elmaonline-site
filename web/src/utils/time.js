@@ -11,4 +11,16 @@ const zeroPad = (num, size) => {
 const toLocalTime = (date, format) =>
   parse(date.toString(), format, new Date());
 
-export { toLocalTime, zeroPad };
+const formattedTime = seconds => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60)
+    .toString()
+    .padStart(2, '0');
+  const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+
+  return hours > 0
+    ? `${hours}:${minutes}:${remainingSeconds}`
+    : `${minutes}:${remainingSeconds}`;
+};
+
+export { formattedTime, toLocalTime, zeroPad };
