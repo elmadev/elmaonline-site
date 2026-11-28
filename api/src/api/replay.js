@@ -737,6 +737,13 @@ const getRandomReplays = async (limit = 100) => {
     },
     include: [
       {
+        model: Tag,
+        as: 'Tags',
+        through: {
+          attributes: [],
+        },
+      },
+      {
         model: Level,
         attributes: ['LevelName', 'LevelIndex'],
         as: 'LevelData',
